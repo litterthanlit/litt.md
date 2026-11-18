@@ -391,12 +391,64 @@ function CardPlanTile() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): getting this week's issue ready ---------- */
+
+const ISSUE_STEPS = [
+  { id: "posts", label: "Gather the week's posts" },
+  { id: "outtake", label: "Pick a picture that did not make it" },
+  { id: "opening", label: "Draft the opening lines for you to change" },
+  { id: "smaller", label: "Make the pictures smaller for email" },
+  { id: "links", label: "Check every link" },
+  { id: "test", label: "Send a test to you" },
+  { id: "schedule", label: "Schedule it for Friday at 9:00" },
+];
+
+function issueSteps(frame: number): PlanStep[] {
+  return ISSUE_STEPS.map((step, i) => ({ ...step, status: i < frame ? "done" : i === frame ? "running" : "pending" }));
+}
+
+function IssueReadyDemo() {
+  const frame = useFrame(ISSUE_STEPS.length + 1, 1400);
+  return (
+    <div className="w-full max-w-md">
+      <Plan label="Get issue 14 ready" steps={issueSteps(frame)} />
+    </div>
+  );
+}
+
+const ISSUE_RUN: (Omit<PlanStep, "status"> & { doing: string; did: string; target: string; seconds: number })[] = [
+  { id: "posts", label: "Gather the week's posts", doing: "Reading", did: "Read", target: "posts/spring", seconds: 0.4 },
+  { id: "opening", label: "Draft the opening lines", doing: "Writing", did: "Wrote", target: "letter/issue-14.md", seconds: 2.1 },
+  { id: "smaller", label: "Make the pictures smaller", doing: "Resizing", did: "Resized", target: "6 pictures", seconds: 6 },
+  { id: "test", label: "Send a test to you", doing: "Sending", did: "Sent", target: "hello@lowtide.site", seconds: 3 },
+];
+
+function IssuePlanTile() {
+  const total = ISSUE_RUN.length + 2; // each step, then two beats on the finished plan
+  const [ref, step] = useLoop<HTMLDivElement>(total, 1400, ISSUE_RUN.length);
+  const steps: PlanStep[] = ISSUE_RUN.map(({ id, label }, i) => ({ id, label, status: i < step ? "done" : i === step ? "running" : "pending" }));
+  return (
+    <div ref={ref} className="grid w-full max-w-md gap-6">
+      <Plan label="Get issue 14 ready" steps={steps} />
+      <div className="grid min-h-44 content-start gap-1 border-t border-line pt-4">
+        {ISSUE_RUN.slice(0, step + 1).map((s, i) =>
+          i < step ? (
+            <ToolCall key={s.id} status="done" action={s.did} target={s.target} duration={s.seconds} />
+          ) : (
+            <ToolCall key={s.id} status="running" action={s.doing} target={s.target} />
+          ),
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function PlanPage() {
   const [moveKey, replayMove] = useReplay();
   const [failedKey, replayFailed] = useReplay();
   const [panelKey, replayPanel] = useReplay();
   return (
-    <Page meta={meta} docs={docs} tile={<PlanTile />} tileByWorld={{ device: <CardPlanTile /> }}>
+    <Page meta={meta} docs={docs} tile={<PlanTile />} tileByWorld={{ device: <CardPlanTile />, flat: <IssuePlanTile /> }}>
       <Stage
         title="Moving a site, step by step"
         tier="instant"
@@ -404,6 +456,17 @@ export default function PlanPage() {
         code="MoveDemo"
         onReplay={replayMove}
         byWorld={{
+          flat: {
+            demo: (
+              <div key={moveKey} className="w-full">
+                <IssueReadyDemo />
+              </div>
+            ),
+            title: "Getting an issue ready, step by step",
+            code: "IssueReadyDemo",
+            caption:
+              "Litt gets issue 14 ready one step at a time. When a status changes, the mark swaps at once and only its colors fade, on the instant tier. The running step is full strength with a half-filled circle that never spins. A done step steps back to the muted color with a check, and is never struck through. The count and the rail move together, and the rail jumps with no tween. A screen reader hears the step as it starts.",
+          },
           device: {
             demo: (
               <div key={moveKey} className="w-full">

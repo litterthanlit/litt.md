@@ -303,15 +303,56 @@ function RecordingTile() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): what goes in an issue ---------- */
+
+function IssueOptionsDemo() {
+  return (
+    <div className="grid w-full max-w-xl gap-x-12 gap-y-6 sm:grid-cols-2">
+      <CheckboxGroup legend="In issue 14">
+        <Checkbox name="issue" value="posts" label="The week's posts" defaultChecked />
+        <Checkbox name="issue" value="outtake" label="A picture that did not make it" />
+        <Checkbox
+          name="issue"
+          value="replies"
+          label="Replies from readers"
+          description="Only the ones whose writers said yes."
+          defaultChecked
+        />
+      </CheckboxGroup>
+      <CheckboxGroup legend="With a paid plan" disabled>
+        <Checkbox label="Paid posts" defaultChecked />
+        <Checkbox label="Your own sender address" />
+        <Checkbox label="No footer" description="Comes with a paid plan." />
+      </CheckboxGroup>
+    </div>
+  );
+}
+
+function IssueOptionsTile() {
+  return (
+    <CheckboxGroup legend="In issue 14">
+      <Checkbox name="issue" value="posts" label="The week's posts" defaultChecked />
+      <Checkbox name="issue" value="outtake" label="A picture that did not make it" />
+      <Checkbox name="issue" value="replies" label="Replies from readers" description="Only the ones whose writers said yes." defaultChecked />
+    </CheckboxGroup>
+  );
+}
+
 export default function CheckboxPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<DeliverablesTile />} tileByWorld={{ device: <RecordingTile /> }}>
+    <Page meta={meta} docs={docs} tile={<DeliverablesTile />} tileByWorld={{ device: <RecordingTile />, flat: <IssueOptionsTile /> }}>
       <Stage
         title="Checkbox"
         tier="instant"
         caption="Click anywhere on a row, not only the chip. Hover and press wash the chip, and the fill, the edge and the check fade together on the instant tier. A description sits under the label, and the disabled group is muted and skipped by Tab."
         code="StatesDemo"
         byWorld={{
+          flat: {
+            demo: <IssueOptionsDemo />,
+            code: "IssueOptionsDemo",
+            caption:
+              "What goes in this week's issue. Click anywhere on a row, not only the box. An empty box is an outline and a checked one is the ink, and they fade on the instant tier. A description sits under the label. The paid plan's group is muted and skipped by Tab.",
+          },
           device: {
             demo: <RecordingOptionsDemo />,
             code: "RecordingOptionsDemo",

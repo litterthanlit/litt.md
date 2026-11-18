@@ -284,9 +284,67 @@ function AutoLevelTile() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): how the letter opens ---------- */
+
+const INTROS: Record<string, string> = {
+  Formal: "Dear reader, this week brings the last picture of the spring series, taken on the north pier at dawn.",
+  Polished: "Hello, and welcome back. This week closes the spring series with a dawn picture from the north pier.",
+  Warm: "Hi there, thanks for reading. The spring series ends this week, with one last dawn on the north pier.",
+  Friendly: "Hey, good to see you. Last one of the spring series this week: the north pier, just after dawn.",
+  Casual: "Hey! Last spring picture is in. North pier, way too early, worth it.",
+};
+
+function LetterVoiceDemo() {
+  const [voice, setVoice] = useState<PadValue>({ x: 10, y: 65 });
+  const atDefault = voice.x === VOICE_DEFAULT.x && voice.y === VOICE_DEFAULT.y;
+  return (
+    <div className="grid w-full max-w-sm gap-4">
+      <Pad
+        label="Your letter's voice"
+        help="How the opening lines of each issue read."
+        x={{ label: "Length", min: 0, max: 100, step: 5, minLabel: "Brief", maxLabel: "Detailed" }}
+        y={{ label: "Tone", min: 0, max: 100, step: 5, minLabel: "Formal", maxLabel: "Casual" }}
+        value={voice}
+        onValueChange={setVoice}
+        defaultMark={VOICE_DEFAULT}
+        formatValue={formatVoice}
+      />
+      <div className="flex items-center justify-between gap-4">
+        <p className="text-small text-fg-muted">{formatVoice(voice)}</p>
+        <Button size="sm" variant="secondary" disabled={atDefault} onClick={() => setVoice(VOICE_DEFAULT)}>
+          Reset
+        </Button>
+      </div>
+      <div className="grid gap-1 border-t border-line pt-4">
+        <p className="text-small text-fg-subtle">Issue 14 opens</p>
+        <p className="text-small text-fg-muted">{INTROS[toneOf(voice.y)]}</p>
+        <p className="text-caption font-normal tabular-nums text-fg-subtle">About {wordsOf(voice.x)} words</p>
+      </div>
+    </div>
+  );
+}
+
+function LetterVoiceTile() {
+  const [voice, setVoice] = useState<PadValue>({ x: 10, y: 65 });
+  return (
+    <div className="w-full max-w-sm">
+      <Pad
+        label="Your letter's voice"
+        help={formatVoice(voice)}
+        x={{ label: "Length", min: 0, max: 100, step: 5, minLabel: "Brief", maxLabel: "Detailed" }}
+        y={{ label: "Tone", min: 0, max: 100, step: 5, minLabel: "Formal", maxLabel: "Casual" }}
+        value={voice}
+        onValueChange={setVoice}
+        defaultMark={VOICE_DEFAULT}
+        formatValue={formatVoice}
+      />
+    </div>
+  );
+}
+
 export default function PadPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<VoiceTile />} tileByWorld={{ device: <AutoLevelTile /> }}>
+    <Page meta={meta} docs={docs} tile={<VoiceTile />} tileByWorld={{ device: <AutoLevelTile />, flat: <LetterVoiceTile /> }}>
       <Stage
         title="Your voice"
         tier="responsive"
@@ -294,6 +352,13 @@ export default function PadPage() {
         size="lg"
         caption="Press anywhere, drag, or use the arrow keys. The thumb, a round cap, and its crosshairs follow at once, with no easing; while you hold it, the cap sinks half a pixel and its cast tightens. The tooltip says the value in words. The dashed circle is the default, and Reset takes the thumb back to it. The words beside Reset say the same thing, and the reply under the pad changes with the tone and shows its length. Only the tooltip fades, on the responsive tier."
         byWorld={{
+          flat: {
+            demo: <LetterVoiceDemo />,
+            title: "Your letter's voice",
+            code: "LetterVoiceDemo",
+            caption:
+              "Press anywhere, drag, or use the arrow keys. The thumb, a circle, and its crosshairs follow at once, with no easing. The tooltip says the value in words. The dashed circle is the default, and Reset takes the thumb back to it. The words beside Reset say the same thing, and the opening lines under the pad change with the tone and show their length. Only the tooltip fades, on the responsive tier.",
+          },
           device: {
             demo: <AutoLevelDemo />,
             title: "Auto level",

@@ -380,9 +380,59 @@ function TimerTile() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): the day an issue goes out ---------- */
+
+function SendDateDemo() {
+  const today = getToday();
+  const [day, setDay] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [sent, setSent] = useState("");
+  const submit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!day) {
+      setError("Choose the day the issue goes out.");
+      setSent("");
+      e.currentTarget.querySelector<HTMLElement>("[aria-haspopup=dialog]")?.focus();
+      return;
+    }
+    setSent(`Sent send=${new FormData(e.currentTarget).get("send")}`);
+  };
+  return (
+    <form onSubmit={submit} noValidate className="grid w-full max-w-sm gap-6">
+      <DatePicker
+        label="Send on"
+        name="send"
+        min={today}
+        value={day}
+        onValueChange={(next) => {
+          setDay(next);
+          setError(null);
+        }}
+        hint="Issue 14 goes out at 9:00 on this day, to 412 subscribers."
+        error={error}
+      />
+      <div className="grid gap-3">
+        <Button variant="primary" type="submit">
+          Schedule issue
+        </Button>
+        <Status>{sent}</Status>
+      </div>
+    </form>
+  );
+}
+
+function SendDateTile() {
+  const [day, setDay] = useState<string | null>(null);
+  return (
+    <div className="w-full max-w-xs">
+      <DatePicker label="Send on" name="send" min={getToday()} value={day} onValueChange={setDay} hint="Issue 14 goes out at 9:00 on this day." />
+    </div>
+  );
+}
+
 export default function DatePickerPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<LaunchTile />} tileByWorld={{ device: <TimerTile /> }}>
+    <Page meta={meta} docs={docs} tile={<LaunchTile />} tileByWorld={{ device: <TimerTile />, flat: <SendDateTile /> }}>
       <Stage
         title="A launch date for a Framer site"
         tier="responsive"
@@ -390,6 +440,13 @@ export default function DatePickerPage() {
         align="start"
         code="LaunchDateDemo"
         byWorld={{
+          flat: {
+            demo: <SendDateDemo />,
+            title: "The day an issue goes out",
+            code: "SendDateDemo",
+            caption:
+              "The field holds the date in words, and it stays pressed while the calendar is open. Click it and the calendar grows out of it in a popover, on the responsive tier, with focus on today. Days before today are dimmed, because an issue cannot go out in the past. A pick closes it and focus returns to the field. Schedule with no date and the error says what to do.",
+          },
           device: {
             demo: <TimerDemo />,
             title: "A timer for a dawn recording",

@@ -266,6 +266,23 @@ function RecordingsEmptyDemo() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): the posts of a small site ---------- */
+
+const POSTS: Project[] = [
+  { id: "open-water", name: "Open water", client: "Spring series", deploy: "Published 2 days ago", status: "live", updated: "2026-11-16", description: "The first of the spring series. 4 min read.", tags: ["Coast", "Long exposure"] },
+  { id: "silk", name: "Notes on a slow shutter", client: "No series yet", deploy: "Not published", status: "draft", updated: "2026-11-17", description: "How the water turns to silk. 6 min read.", tags: ["Notes"] },
+  { id: "dusk-tide", name: "Dusk tide", client: "Spring series", deploy: "Published last week", status: "live", updated: "2026-11-09", description: "Twenty minutes after sunset. 3 min read.", tags: ["Coast"] },
+  { id: "garden", name: "What the garden did", client: "The garden", deploy: "Published in October", status: "live", updated: "2026-10-18", description: "Buds, rust and rain. 5 min read.", tags: ["Garden"] },
+  { id: "red-sun", name: "A red sun in March", client: "Spring series", deploy: "Not published", status: "draft", updated: "2026-11-12", description: "One picture and a short letter.", tags: ["Coast"] },
+  { id: "tide-line", name: "Drawing the tide line", client: "Pencil studies", deploy: "Published in October", status: "live", updated: "2026-10-04", description: "Studies before the series. 4 min read.", tags: ["Drawing"] },
+  { id: "rain", name: "A week of rain", client: "The garden", deploy: "Published in September", status: "live", updated: "2026-09-26", description: "Seven mornings from the back door. 3 min read.", tags: ["Garden", "Rain"] },
+  { id: "winter", name: "A winter series", client: "No series yet", deploy: "Not started", status: "idea", updated: "Winter", description: "The same pier, in the cold.", tags: ["Coast"] },
+];
+
+function PostsEntranceDemo() {
+  return <ProjectList projects={POSTS} className="max-w-3xl" />;
+}
+
 export default function ListPage() {
   const [listKey, replayList] = useReplay();
   const [cardsKey, resetCards] = useReplay();
@@ -277,7 +294,7 @@ export default function ListPage() {
         tier="expressive"
         align="start"
         code="EntranceDemo"
-        byWorld={{ device: { demo: <RecordingsEntranceDemo key={listKey} />, title: "Recordings", code: "RecordingsEntranceDemo" } }}
+        byWorld={{ flat: { demo: <PostsEntranceDemo key={listKey} />, title: "Posts", code: "PostsEntranceDemo" }, device: { demo: <RecordingsEntranceDemo key={listKey} />, title: "Recordings", code: "RecordingsEntranceDemo" } }}
         onReplay={replayList}
         caption="Each row fades in and rises from the travel token's distance to rest, on the expressive tier. Row n waits n times the stagger token. The cascade stops counting at six: rows seven and eight arrive with row six, so a long list never drags. Hover only changes the fill and a row never moves; on a touch screen the row you hold fills instead. Press Replay to watch it again."
       >

@@ -114,6 +114,45 @@ function PanelDemo() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): a small site's pages ---------- */
+
+const SITE: TreeNode[] = [
+  {
+    id: "posts",
+    label: "Posts",
+    children: [
+      {
+        id: "posts/spring",
+        label: "Spring series",
+        children: [
+          { id: "posts/spring/open-water", label: "Open water", detail: "6 pictures" },
+          { id: "posts/spring/dusk-tide", label: "Dusk tide", detail: "2 pictures" },
+          { id: "posts/spring/red-sun", label: "A red sun in March", detail: "Draft" },
+        ],
+      },
+      {
+        id: "posts/garden",
+        label: "The garden",
+        children: [{ id: "posts/garden/what-it-did", label: "What the garden did", detail: "4 pictures" }],
+      },
+      { id: "posts/silk", label: "Notes on a slow shutter", detail: "Draft" },
+    ],
+  },
+  { id: "letter", label: "Letter", children: [{ id: "letter/14", label: "Issue 14", detail: "Friday" }] },
+  { id: "about", label: "About" },
+  { id: "subscribe", label: "Subscribe" },
+];
+
+function SitePagesDemo() {
+  const [selected, setSelected] = useState<string | null>("posts/spring/open-water");
+  return (
+    <div className="grid w-full max-w-xs gap-4">
+      <Tree label="Low Tide" items={SITE} defaultExpanded={["posts", "posts/spring"]} selected={selected} onSelect={(id, node) => !node.children && setSelected(id)} />
+      <p className="text-caption font-normal text-fg-subtle">{selected ?? "No page open"}</p>
+    </div>
+  );
+}
+
 export default function TreePage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -122,6 +161,15 @@ export default function TreePage() {
         tier="responsive"
         align="start"
         code="FilesDemo"
+        byWorld={{
+          flat: {
+            demo: <SitePagesDemo />,
+            title: "A site's pages",
+            code: "SitePagesDemo",
+            caption:
+              "Press a folder to open it: the chevron turns a quarter on the responsive tier and the pages appear in place. Press a page to open it. Tab in and try the arrows: right opens and goes in, left closes and goes out. Type a letter to jump to a name. The words at the ends say how many pictures a post holds, or that it is a draft.",
+          },
+        }}
         caption="Press a folder to open it: the chevron turns a quarter on the responsive tier and the files appear in place. Press a file to open it. Tab in and try the arrows: right opens and goes in, left closes and goes out. Type a letter to jump to a name. M and + at the ends are change marks."
       >
         <FilesDemo />

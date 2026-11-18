@@ -323,14 +323,42 @@ function RecorderKeysTile() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): the posts readers read most ---------- */
+
+const MOST_READ = [
+  { label: "Open water", value: 612 },
+  { label: "Dusk tide", value: 341 },
+  { label: "What the garden did", value: 188 },
+  { label: "Drawing the tide line", value: 63 },
+];
+
+function MostReadDemo() {
+  return <BarList className="max-w-xl" label="Most-read posts this week" unit={["read", "reads"]} hue="blue" items={MOST_READ} />;
+}
+
+function MostReadTile() {
+  return (
+    <div className="w-full max-w-sm">
+      <BarList label="Most-read posts this week" unit={["read", "reads"]} hue="blue" items={MOST_READ.slice(0, 3)} />
+    </div>
+  );
+}
+
 export default function BarListPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<BarListTile />} tileByWorld={{ device: <RecorderKeysTile /> }}>
+    <Page meta={meta} docs={docs} tile={<BarListTile />} tileByWorld={{ device: <RecorderKeysTile />, flat: <MostReadTile /> }}>
       <Stage
         title="Most-used shortcuts"
         align="start"
         code="ShortcutsDemo"
         byWorld={{
+          flat: {
+            demo: <MostReadDemo />,
+            title: "Most-read posts",
+            code: "MostReadDemo",
+            caption:
+              "Each row is a post, a 4px rail and a count of reads this week. The rail is the Meter's: a quiet track with the fill in the blue mark tone, as wide as the row's share of the largest count. Blue says these bars count reads and nothing else. Every bar starts and ends at the same place, and the counts line up on their right edge.",
+          },
           device: {
             demo: <RecorderKeysDemo />,
             title: "Most-used keys",

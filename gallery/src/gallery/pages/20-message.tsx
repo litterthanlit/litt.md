@@ -863,6 +863,49 @@ function TakePhoneDemo() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): the same thread about the letter, not a site build ---------- */
+
+const BOUNCE_ANSWER: Block[] = [
+  { p: ["Issue 13 reached 409 of 412 readers on Friday. Three addresses sent it back:"] },
+  {
+    ul: [
+      ["Two mailboxes were full, so the letter will try them again on Monday."],
+      [{ code: "t.berg@oldmail.example" }, " no longer exists. Tomas wrote from a new address in October."],
+    ],
+  },
+  { p: ["Swap Tomas to his new address, and the full mailboxes need nothing from you. Every send is in the ", { link: "letter log", href: "#letter-log" }, "."] },
+];
+
+const BOUNCE_DONE: Block[] = [{ p: ["Done. Tomas gets issue 13 now, and issue 14 on Friday with everyone else."] }];
+
+function LetterThreadDemo() {
+  const [names, setNames] = useState(false);
+  const person = (who: string) => (names ? { name: who, avatar: <Avatar name={who} size="sm" decorative /> } : {});
+  const litt = names ? { name: "Litt", avatar: <Avatar name="Litt" size="sm" hue="neutral" decorative /> } : {};
+  return (
+    <div className="grid w-full gap-6">
+      <Switch label="Show names" checked={names} onCheckedChange={setNames} />
+      <Frame>
+        <Conversation label="Issue 13 thread">
+          <Message from="user" {...person("Nick")}>
+            Why did three readers not get issue 13?
+          </Message>
+          <Message {...litt} actions={<MessageActions copyText={markdownOf(BOUNCE_ANSWER)} onRetry={noop} />}>
+            <Answer blocks={BOUNCE_ANSWER} />
+          </Message>
+          <Message from="user" {...person("Nick")}>
+            Move Tomas to his new address and send it to him again.
+          </Message>
+          <Message {...litt} actions={<MessageActions copyText={markdownOf(BOUNCE_DONE)} onRetry={noop} />}>
+            <p className="text-small text-fg-subtle">The thinking and tool call rows sit here.</p>
+            <Answer blocks={BOUNCE_DONE} />
+          </Message>
+        </Conversation>
+      </Frame>
+    </div>
+  );
+}
+
 export default function MessagePage() {
   const [streamKey, replayStream] = useReplay();
   const [errorKey, resetError] = useReplay();
@@ -875,7 +918,7 @@ export default function MessagePage() {
         tier="instant"
         size="lg"
         code="ThreadDemo"
-        byWorld={{ device: { demo: <TakeThreadDemo />, title: "A thread about a take", code: "TakeThreadDemo" } }}
+        byWorld={{ flat: { demo: <LetterThreadDemo />, title: "A thread about the letter", code: "LetterThreadDemo" }, device: { demo: <TakeThreadDemo />, title: "A thread about a take", code: "TakeThreadDemo" } }}
         caption="Litt's words sit on the page in fg-muted with no bubble, and the person's turn is a raised bubble on the right. The actions under the latest answer are always there. Hover the older answer, or tab into it, to see its actions. Turn on names to see the optional heading and sm avatar. Nothing moves when the thread loads."
       >
         <ThreadDemo />

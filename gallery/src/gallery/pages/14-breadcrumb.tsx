@@ -409,6 +409,25 @@ function TakePhoneDemo() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): where a post sits on a small site ---------- */
+
+const POST_TRAIL: BreadcrumbItem[] = [
+  { label: "Low Tide", href: "/" },
+  { label: "Series", href: "/series" },
+  { label: "Spring series", href: "/series/spring" },
+  { label: "Open water", href: "/series/spring/open-water" },
+];
+
+function PostTrailDemo() {
+  const router = useDemoRouter();
+  return (
+    <div className="grid w-full max-w-lg gap-4">
+      <Breadcrumb items={POST_TRAIL} renderLink={router.renderLink} />
+      <Status>{router.went}</Status>
+    </div>
+  );
+}
+
 export default function BreadcrumbPage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -417,7 +436,7 @@ export default function BreadcrumbPage() {
         tier="instant"
         align="start"
         code="SettingsTrailDemo"
-        byWorld={{ device: { demo: <TakeTrailDemo />, title: "Where a take sits", code: "TakeTrailDemo" } }}
+        byWorld={{ flat: { demo: <PostTrailDemo />, title: "Where a post sits", code: "PostTrailDemo" }, device: { demo: <TakeTrailDemo />, title: "Where a take sits", code: "TakeTrailDemo" } }}
         caption="Each level is a link in muted text that turns to the full text color on hover, on the instant tier, with no underline and no fill. A slash in the subtle color sits between levels, because a chevron reads as something that opens. The current page is plain text in the full color and the browser hears aria-current. Nothing moves."
       >
         <SettingsTrailDemo />

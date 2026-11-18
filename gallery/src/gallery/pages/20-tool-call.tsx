@@ -454,6 +454,43 @@ function TakesPhoneDemo() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): Litt mends the spring series' picture links ---------- */
+
+const PICTURE_MATCHES = `posts/spring/open-water.md:6   ![Open water](/photos/open-water.jpg)
+posts/spring/dusk-tide.md:3    ![](/photos/dusk-tide.jpg)
+letter/issue-12.md:14          ![The garden](/photos/garden.jpg)`;
+
+const CHECK_LOG = `Checking 38 posts and 14 letters for pictures that do not load
+
+posts/spring/open-water.md    /photos/open-water.jpg    not found
+posts/spring/dusk-tide.md     /photos/dusk-tide.jpg     not found
+letter/issue-12.md            /photos/garden.jpg        not found
+
+3 pictures do not load. The pictures moved to /pictures on 12 November.`;
+
+function PicturesRunDemo() {
+  return (
+    <div className="grid w-full min-w-0 max-w-xl gap-3">
+      <p className="text-small text-fg-subtle">Litt is mending the spring series' pictures</p>
+      <div className="grid">
+        <ToolCall status="done" action="Read" target="posts/spring/open-water.md" duration={0.2} />
+        <ToolCall
+          status="done"
+          action="Searched"
+          target={'"/photos/"'}
+          label="the search"
+          duration={0.4}
+          input={'"/photos/" in posts/ and letter/'}
+          output={PICTURE_MATCHES}
+        />
+        <ToolCall status="failed" action="Checked" target="every picture link" duration={6} output={CHECK_LOG} />
+        <ToolCall status="denied" action="Send" target="issue 14 to 412 readers now" />
+        <ToolCall status="waiting" action="Publish" target="the mended posts" />
+      </div>
+    </div>
+  );
+}
+
 export default function ToolCallPage() {
   const [runKey, replayRun] = useReplay();
   const [approvalKey, resetApproval] = useReplay();
@@ -465,6 +502,13 @@ export default function ToolCallPage() {
         size="lg"
         code="RunDemo"
         byWorld={{
+          flat: {
+            demo: <PicturesRunDemo />,
+            title: "A run on a small site",
+            code: "PicturesRunDemo",
+            caption:
+              "Litt mending the pictures that stopped loading. Each call is one row: a mark, the action in words, the target in mono and the time. Failed, denied and waiting say so in words, and done and running say it in hidden text. Nothing spins, because running is a still half circle. Open the failed check: its output stays in the foreground color, since the mark already says it failed. The chevron turns on the instant tier. The output fades in and travels a quarter of the travel token on the responsive tier, and its height snaps.",
+          },
           device: {
             demo: <TakesRunDemo />,
             title: "A run on a card",

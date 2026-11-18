@@ -316,6 +316,47 @@ function ShareTakeMenu() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): a post's actions ---------- */
+
+const SERIES_NAMES = ["Spring series", "The garden", "Pencil studies", "No series"];
+
+function PostMenu() {
+  const [last, setLast] = useState("Nothing picked yet");
+  const pick = (what: string) => () => setLast(what);
+  return (
+    <div className="grid w-full max-w-md gap-4">
+      <div className="flex items-center justify-between gap-4 bg-surface-2 p-4 pl-6 shadow-[inset_0_0_0_1px_var(--line)] rounded-surface">
+        <div className="grid min-w-0 gap-1">
+          <span className="truncate text-body font-title text-fg">Open water</span>
+          <span className="truncate text-small text-fg-subtle">Spring series · published 2 days ago</span>
+        </div>
+        <Menu
+          label="Post actions"
+          align="end"
+          trigger={
+            <Button iconOnly variant="ghost" aria-label="More actions">
+              <MoreIcon />
+            </Button>
+          }
+        >
+          <MenuItem icon={<FileIcon />} shortcut="↵" onSelect={pick("Opened Open water")}>Open</MenuItem>
+          <MenuItem icon={<CopyIcon />} shortcut="⌘D" onSelect={pick("Duplicated Open water")}>Duplicate</MenuItem>
+          <MenuItem icon={<ShareIcon />} shortcut="⌘L" onSelect={pick("Copied the link to the post")}>Copy link</MenuItem>
+          <MenuSub icon={<FolderIcon />} label="Move to">
+            {SERIES_NAMES.map((s) => (
+              <MenuItem key={s} icon={<FolderIcon />} onSelect={pick(`Moved to ${s}`)}>{s}</MenuItem>
+            ))}
+          </MenuSub>
+          <MenuSeparator />
+          <MenuItem icon={<ArchiveIcon />} onSelect={pick("Hid Open water from the site")}>Hide from the site</MenuItem>
+          <MenuItem icon={<TrashIcon />} destructive onSelect={pick("Deleted Open water")}>Delete post</MenuItem>
+        </Menu>
+      </div>
+      <p className="text-caption font-normal text-fg-subtle" role="status">{last}</p>
+    </div>
+  );
+}
+
 export default function MenuPage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -325,7 +366,7 @@ export default function MenuPage() {
         size="lg"
         align="start"
         code="ProjectMenu"
-        byWorld={{ device: { demo: <TakeMenu />, title: "Take actions", code: "TakeMenu" } }}
+        byWorld={{ flat: { demo: <PostMenu />, title: "Post actions", code: "PostMenu" }, device: { demo: <TakeMenu />, title: "Take actions", code: "TakeMenu" } }}
         caption="The panel fades and scales from 0.98 out of the trigger's corner, and slides a quarter of the travel. One highlight glides between rows on the responsive tier. Open it with the pointer and nothing is lit until you move; open it with Enter or ArrowDown and the first row lights with a focus ring. Hover Move to for the submenu: it is solid, because glass never sits on glass."
       >
         <ProjectMenu />

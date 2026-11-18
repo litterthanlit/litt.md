@@ -422,14 +422,137 @@ function CrewTile() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): the readers who wrote back ---------- */
+
+const REPLIES = [
+  { name: "Mara Lindqvist", said: "The dusk picture is going on my wall.", when: "9:41" },
+  { name: "Tomas Berg", said: "Which pier was this? I want to walk there.", when: "9:12" },
+  { name: "Ava Okafor", said: "Shared it with my dad, who fishes there.", when: "Yesterday" },
+  { name: "Rui Matos", said: "More of the slow shutter ones, please.", when: "Yesterday" },
+  { name: "Lena Voss", said: "First letter I have read to the end in months.", when: "Mon" },
+];
+
+function RepliesDemo() {
+  return (
+    <ul aria-label="Replies to issue 13" className="w-full max-w-2xl">
+      {REPLIES.map((m) => (
+        <li key={m.name} className="flex items-center gap-4 border-b border-line py-3 last:border-b-0">
+          <Avatar name={m.name} decorative />
+          <div className="grid min-w-0 flex-1 gap-1 sm:flex sm:items-center sm:gap-4">
+            <span className="truncate text-small font-title text-fg sm:w-28 sm:shrink-0">{m.name}</span>
+            <span className="truncate text-small text-fg-subtle sm:min-w-0 sm:flex-1">{m.said}</span>
+          </div>
+          <span className="shrink-0 tabular-nums text-caption font-normal text-fg-subtle">{m.when}</span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+const READER_HUES: { hue: AvatarHue; name: string }[] = [
+  { hue: "blue", name: "Mara Lindqvist" },
+  { hue: "amber", name: "Tomas Berg" },
+  { hue: "teal", name: "Ava Okafor" },
+  { hue: "violet", name: "Rui Matos" },
+  { hue: "rose", name: "Lena Voss" },
+  { hue: "neutral", name: "A reader" },
+];
+
+function ReaderSizesDemo() {
+  return (
+    <div className="grid w-full max-w-2xl gap-8">
+      <div className="flex flex-wrap items-end gap-8">
+        {(["sm", "md", "lg"] as const).map((size, i) => (
+          <div key={size} className="grid justify-items-center gap-2">
+            <Avatar name="Mara Lindqvist" size={size} />
+            <span className="tabular-nums text-caption font-normal text-fg-subtle">{["24", "32", "44"][i]}</span>
+          </div>
+        ))}
+      </div>
+      <ul aria-label="Hues" className="flex flex-wrap gap-8">
+        {READER_HUES.map(({ hue, name }) => (
+          <li key={hue} className="grid justify-items-center gap-2">
+            <Avatar name={name} hue={hue} size="lg" />
+            <span className="text-caption font-normal text-fg-subtle">{hue}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function ReplyStackDemo() {
+  return (
+    <div className="grid w-full max-w-2xl gap-8">
+      <div className="litt-raised flex items-center justify-between gap-4 rounded-surface p-4">
+        <div className="grid min-w-0 gap-1">
+          <span className="truncate text-body font-title text-fg">Open water</span>
+          <span className="truncate text-small text-fg-subtle">Spring series, 26 replies</span>
+        </div>
+        <AvatarGroup label="Readers who replied, 26 people" total={26} ring="surface-1" className="shrink-0">
+          {TEAM.map((name) => (
+            <Avatar key={name} name={name} />
+          ))}
+        </AvatarGroup>
+      </div>
+      <div className="grid gap-4 sm:grid-cols-3">
+        {(
+          [
+            { ring: "canvas", tile: "bg-canvas" },
+            { ring: "surface-1", tile: "bg-surface-1" },
+            { ring: "surface-2", tile: "bg-surface-2" },
+          ] as const
+        ).map(({ ring, tile }) => (
+          <div key={ring} className="grid gap-3">
+            <div className={`grid place-items-center rounded-surface p-6 shadow-[inset_0_0_0_1px_var(--line)] ${tile}`}>
+              <AvatarGroup label={`Readers on ${ring}`} ring={ring} max={3}>
+                {TEAM.map((name) => (
+                  <Avatar key={name} name={name} />
+                ))}
+              </AvatarGroup>
+            </div>
+            <span className="text-center font-mono text-caption font-normal text-fg-subtle">ring=&quot;{ring}&quot;</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ReadersTile() {
+  return (
+    <div className="grid justify-items-center gap-4">
+      <AvatarGroup label="New readers this week, 86 people" total={86} ring="surface-1" size="lg">
+        {TILE_TEAM.map((n) => (
+          <Avatar key={n} name={n} />
+        ))}
+      </AvatarGroup>
+      <div className="flex items-center gap-3">
+        <Avatar name="Mara Lindqvist" decorative />
+        <span className="grid">
+          <span className="text-small font-title text-fg">Mara Lindqvist</span>
+          <span className="text-caption font-normal text-fg-subtle">Reader since issue 2</span>
+        </span>
+      </div>
+    </div>
+  );
+}
+
 export default function AvatarPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<AvatarTile />} tileByWorld={{ device: <CrewTile /> }}>
+    <Page meta={meta} docs={docs} tile={<AvatarTile />} tileByWorld={{ device: <CrewTile />, flat: <ReadersTile /> }}>
       <Stage
         title="Senders in an inbox"
         align="start"
         code="InboxDemo"
         byWorld={{
+          flat: {
+            demo: <RepliesDemo />,
+            title: "Readers who wrote back",
+            code: "RepliesDemo",
+            caption:
+              "The replies to issue 13, newest first. The name is written beside each avatar, so the avatar is decorative and a screen reader hears the name once. Each reader keeps the hue their name gives them, so Mara is the same color here as in every other list. Nothing moves.",
+          },
           device: {
             demo: <TakeActivityDemo />,
             title: "Who touched the take",
@@ -447,7 +570,7 @@ export default function AvatarPage() {
         title="Sizes and hues"
         align="start"
         code="SizesAndHuesDemo"
-        byWorld={{ device: { demo: <CrewSizesDemo />, code: "CrewSizesDemo" } }}
+        byWorld={{ flat: { demo: <ReaderSizesDemo />, code: "ReaderSizesDemo" }, device: { demo: <CrewSizesDemo />, code: "CrewSizesDemo" } }}
         caption="Small is 24 for dense rows and md is 32 for list rows. Large is 44 for a profile header. Initials step from caption to small to body, always at weight 400. The fill is the hue's tint, the letters are its text tone, and a hairline of the hue edges the circle, like a hue tag. Neutral is for a mark with no identity color."
       >
         <SizesAndHuesDemo />
@@ -467,7 +590,7 @@ export default function AvatarPage() {
         title="A team stack"
         align="start"
         code="TeamDemo"
-        byWorld={{ device: { demo: <CrewDemo />, title: "A crew stack", code: "CrewDemo" } }}
+        byWorld={{ flat: { demo: <ReplyStackDemo />, title: "A stack of readers", code: "ReplyStackDemo" }, device: { demo: <CrewDemo />, title: "A crew stack", code: "CrewDemo" } }}
         caption="Avatars overlap by a quarter of their size with the first on top. Each has a 2px ring in the surface it sits on, drawn as a zero-offset shadow, so the box never changes. The group shows the first few and counts the rest, from the total when only some are passed. Match the ring to the surface, or the cut-out shows."
       >
         <TeamDemo />

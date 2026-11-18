@@ -171,6 +171,56 @@ function SlatePhotoDemo() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): pictures for a post ---------- */
+
+const PICTURES_START: Upload[] = [
+  { id: "open-water", name: "open-water.jpg", size: 4_404_019 },
+  { id: "dusk-tide", name: "dusk-tide.jpg", size: 5_872_025, progress: 64, error: "The connection dropped at 64%." },
+];
+
+/** The same pretend upload, starting from two pictures: each climbs at its own pace, and one in four stops partway. */
+function usePictureUploads() {
+  const [uploads, setUploads] = useState<Upload[]>(PICTURES_START);
+  const timer = useRef(0);
+  useEffect(() => {
+    timer.current = window.setInterval(() => {
+      setUploads((all) =>
+        !all.some((u) => u.progress !== undefined && !u.error) ? all : all.map((u) => {
+          if (u.progress === undefined || u.error || u.progress >= 100) return u;
+          const step = 6 + (u.name.length % 5) * 3;
+          const next = Math.min(100, u.progress + step);
+          if (u.id.endsWith("-3") && next >= 40) return { ...u, progress: 40, error: "The connection dropped at 40%." };
+          return { ...u, progress: next >= 100 ? undefined : next };
+        }),
+      );
+    }, 300);
+    return () => window.clearInterval(timer.current);
+  }, []);
+  return {
+    uploads,
+    add: (files: File[]) =>
+      setUploads((all) => [...all, ...files.map((f, i) => ({ id: `${f.name}-${all.length + i}`, name: f.name, size: f.size, progress: 0 }))]),
+    retry: (id: string) => setUploads((all) => all.map((u) => (u.id === id ? { ...u, id: `${u.id}-again`, progress: 0, error: undefined } : u))),
+    remove: (id: string) => setUploads((all) => all.filter((u) => u.id !== id)),
+  };
+}
+
+function PostPicturesDemo() {
+  const { uploads, add, retry, remove } = usePictureUploads();
+  return (
+    <div className="grid w-full max-w-lg gap-6">
+      <FileDrop label="Pictures for this post" accept={["image/*"]} maxSize={20 * 1024 * 1024} hint="JPG, PNG or WebP, up to 20 MB a picture" onFiles={add} />
+      {uploads.length > 0 && (
+        <FileList label="Pictures for this post">
+          {uploads.map((u) => (
+            <FileRow key={u.id} name={u.name} size={u.size} progress={u.progress} error={u.error} onRetry={() => retry(u.id)} onRemove={() => remove(u.id)} />
+          ))}
+        </FileList>
+      )}
+    </div>
+  );
+}
+
 export default function FileDropPage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -181,6 +231,13 @@ export default function FileDropPage() {
         code="UploadDemo"
         caption="Drag files from your desktop over the area: it deepens (or is ringed in ink, or lights its lamp, by the look) and the words say what a drop will do. Drop them, or press Choose files. A file of another type or over 10 MB is turned away with a sentence under the area. Each file that gets in uploads on its own rail; the fourth one stops partway and offers Retry. Remove cancels an upload or takes a file away."
         byWorld={{
+          flat: {
+            demo: <PostPicturesDemo />,
+            title: "Add pictures to a post",
+            code: "PostPicturesDemo",
+            caption:
+              "Drag pictures from your desktop over the area: it is ringed in ink, and the words say what a drop will do. Drop them, or press Choose files. A file that is not a picture, or is over 20 MB, is turned away with a sentence under the area. Each picture that gets in uploads on its own rail; the fourth one stops partway and offers Retry. Remove cancels an upload or takes a picture away.",
+          },
           device: {
             demo: <CopyTakesDemo />,
             title: "Copy takes to the card",

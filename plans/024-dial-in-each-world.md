@@ -485,6 +485,43 @@ the demos (call 9), the shared captions and ledes that still describe Flat's old
   menu keep their float shadow (Flat's Float); steps' segments are progress, not lines; the charts keep grey marks and
   the first data hue for a series, not the ink. Flat's voice (call 9) is still phase 3.
 
+### Phase 3. Every Flat page in Flat's words (done, 2026-11-18, waiting for Nick)
+
+Nick: "go". Device's phase 3, copied: each page keeps its component and contract props and gets Flat's own stage
+through `byWorld` (and `tileByWorld` where the page has a `tile`), in call 9's voice: a small site, Low Tide
+(lowtide.site), its posts and series of pictures, and the Friday letter and its readers. Plain and friendly, sentence
+case, a unit on every number, status in words. Every other world draws the shared demo, unchanged, and Device's
+entries stay as they were.
+
+- [x] Flat's set first, lead stage and tile: button (Subscribe, Read the letter), switch (the letter's settings), media
+      (pictures in a post), carousel (the spring series, a strip of posts), lightbox (the series on the site), card (posts
+      with their pictures; the shared client words the 2a covers kept are gone), accordion (reader questions), avatar
+      (readers who wrote back), header (Low Tide under the glass bar, its pictures under it), tabs (the site's
+      dashboard), popover (share a draft), toast (draft saved, post published, issue sent). Their Variants too: button's
+      danger, loading and icons, switch's form, accent and disabled, carousel's strip, card's cover styles, accordion's
+      settings, avatar's sizes and stack, header's phone and current page, tabs' view switch and keyboard, toast's
+      action, burst and error.
+- [x] Then every other page's lead stage (and tile), in four commits: inputs and actions; tools; layout, data and
+      charts; the agent parts (Litt mends the series' picture links and gets issue 14 ready, not a studio's build).
+      Variants whose words broke the voice joined where the page's lead did: input's inline form, tag's status and list
+      of letters, stat's good and bad news.
+- [x] The registry's `<stem>-demo` items, `docs/*.md`, `llms.txt`, `llms-full.txt`, `docs.json` and
+      `registry.lock.json` are byte-identical to `d807d72` (a diff of the `gen-registry` and `gen-llms` output). A
+      Flat demo keeps its own imports apart from the shared demo's (a second import line where it needs one).
+- Left on purpose, as their words already speak Flat or there are none: icons, kbd (key names), segmented (a
+  reader's theme switch), heatmap (page views a day, a site's own), and the shop (cart, option picker, price, product
+  card, Shopify: prints from the site's pictures).
+- Left: 144 Variants stages still in the shared studio's words (a scan for deploy, build, Framer, client, project and
+  the studio's names; no lead stage is among them) (select, combobox, date picker, slider, table,
+  chart, form's settings and sign-in, popover, command menu, dialog, message, plan, run list, sources, thinking, tool
+  call and others), the next sweep if Nick wants them; a page's `TryIt` props and `study` objects, which take no
+  per-world demo; the drawn covers of `ProjectCover` in list and action bar (a real picture there is a new prop, a
+  contract change). No new noun was needed in `taste/`; Low Tide is a demo's name, not a noun of the voice.
+- Spelling waits on Open 4: the demos follow the shared spelling (American: color, gray, grayscale, center in captions
+  that describe the part) and avoid the words that differ where they could (harbour, ticked).
+
+**STOP**: Nick looks at the before and after sheet of phase 3 before phase 4 starts.
+
 **Open candidate: a fun icon set for Flat (trial, not decided).** Nick, 2026-11-18, with a reference of chunky outline
 icons: "also maybe we could trial a fun icon set for flat sort of like this". On the canvas as `Flat icons · …`
 (`gallery/src/canvas/flat-icons.tsx`): every one of `icons.tsx`'s 99 names, StatusIcon's five marks and ten fun ones

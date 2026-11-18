@@ -338,15 +338,92 @@ function TakeNameTile() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): a small site's settings, and the letter's sign-up ---------- */
+
+function SiteFieldsDemo() {
+  return (
+    <div className="grid w-full max-w-2xl gap-x-6 gap-y-8 sm:grid-cols-2">
+      <TextField label="Site name" defaultValue="Low Tide" help="Shown at the top of every page and in the browser tab." />
+      <TextField label="Address" defaultValue="low tide" spellCheck={false} error="Use letters, numbers and dots only, like lowtide.site." />
+      <TextField label="Your email" type="email" inputMode="email" placeholder="name@example.com" help="Replies from readers come here." />
+      <TextField label="Letter sender" mono defaultValue="letter@lowtide.site" disabled help="Set when you made the site, so it cannot change." />
+    </div>
+  );
+}
+
+function SiteNameTile() {
+  return (
+    <div className="w-full max-w-xs">
+      <TextField label="Site name" defaultValue="Low Tide" help="Shown at the top of every page and in the browser tab." />
+    </div>
+  );
+}
+
+function SubscribeFormDemo() {
+  const [email, setEmail] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [sent, setSent] = useState<string | null>(null);
+  const input = useRef<HTMLInputElement>(null);
+  const noteId = useId();
+
+  const submit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!EMAIL.test(email.trim())) {
+      setSent(null);
+      setError("Enter a full address, like mara@example.com.");
+      input.current?.focus(); // the field reads its label and its error together
+      return;
+    }
+    setError(null);
+    setSent(`Thank you. The next letter goes to ${email.trim()} on Friday.`);
+  };
+
+  return (
+    <form onSubmit={submit} noValidate aria-label="Subscribe to the letter" className="grid w-full max-w-xl gap-2">
+      <div className="grid gap-2 sm:grid-cols-[1fr_auto]">
+        <Input
+          ref={input}
+          size="lg"
+          type="email"
+          inputMode="email"
+          autoComplete="email"
+          aria-label="Your email"
+          aria-describedby={error ? noteId : undefined}
+          placeholder="you@example.com"
+          value={email}
+          invalid={!!error}
+          onChange={(e) => {
+            setEmail(e.target.value);
+            if (error) setError(null);
+          }}
+        />
+        <Button size="lg" variant="primary" type="submit">
+          Subscribe
+        </Button>
+      </div>
+      <p id={noteId} role="status" className={"min-h-5 text-small " + (error ? "text-danger" : "text-fg-subtle")}>
+        {error ?? sent}
+      </p>
+    </form>
+  );
+}
+
 export default function InputPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<ProjectNameTile />} tileByWorld={{ device: <TakeNameTile /> }}>
+    <Page meta={meta} docs={docs} tile={<ProjectNameTile />} tileByWorld={{ device: <TakeNameTile />, flat: <SiteNameTile /> }}>
       <Stage
         title="Fields"
         tier="instant"
         caption="Label above, hint below. Each field is the cut: a floor a hair below the page, the control line around it and the shade of its top wall, never a grey floor. Click into a field and the line turns to the focus color with a ring. The error turns the line to danger and says how to fix it. The disabled field lies flat on surface-2, muted and skipped by Tab. Each change fades on the instant tier, and the box never moves."
         code="StatesDemo"
         byWorld={{
+          flat: {
+            demo: <SiteFieldsDemo />,
+            title: "A site's fields",
+            code: "SiteFieldsDemo",
+            caption:
+              "Label above, hint below. Each field is a white pill on the grey ground, with no edge. Click into a field and the focus ring shows. The error marks the field in the danger color and says how to fix it in words. The disabled field fades back, muted and skipped by Tab. Each change fades on the instant tier, and the box never moves.",
+          },
           device: {
             demo: <TakeFieldsDemo />,
             title: "A take's fields",
@@ -374,7 +451,7 @@ export default function InputPage() {
         tier="instant"
         caption="A large input and a large primary button, side by side from 640px and stacked full width below it. The label is an aria-label, because the button says what the field is for. Try sending an invalid address: the line turns to danger, the message is linked to the field and focus returns to it."
         code="InlineFormDemo"
-        byWorld={{ device: { demo: <ManualFormDemo />, code: "ManualFormDemo" } }}
+        byWorld={{ flat: { demo: <SubscribeFormDemo />, code: "SubscribeFormDemo" }, device: { demo: <ManualFormDemo />, code: "ManualFormDemo" } }}
       >
         <InlineFormDemo />
       </Stage>

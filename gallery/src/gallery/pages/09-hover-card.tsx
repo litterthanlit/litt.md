@@ -186,6 +186,37 @@ function TakesDemo() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): a reader behind their reply ---------- */
+
+function ReaderDemo() {
+  return (
+    <p className="max-w-md text-reading text-fg-muted">
+      A reply to issue 13 from{" "}
+      <HoverCard>
+        <HoverCardTrigger>
+          <a href="#hover-card" className={link}>
+            Mara Lindqvist
+          </a>
+        </HoverCardTrigger>
+        <HoverCardContent>
+          <div className="grid gap-4">
+            <div className="flex items-center gap-3">
+              <Avatar name="Mara Lindqvist" size="lg" decorative />
+              <div className="grid gap-1">
+                <p className="text-small font-title text-fg">Mara Lindqvist</p>
+                <p className="text-small text-fg-subtle">Reader since issue 2</p>
+              </div>
+            </div>
+            <p className="text-small text-fg-muted">Malmö. Came for the spring series and stayed for the garden.</p>
+            <p className="tabular-nums text-caption font-normal text-fg-subtle">Opened 12 of 13 issues · 4 replies</p>
+          </div>
+        </HoverCardContent>
+      </HoverCard>{" "}
+      came in two hours ago.
+    </p>
+  );
+}
+
 export default function HoverCardPage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -196,6 +227,7 @@ export default function HoverCardPage() {
         code="PersonDemo"
         caption="Rest the pointer on the name for half a second, or Tab to it. The card grows from the link on the responsive tier and travels a quarter of the travel token from the side it opens on. Move into the card and it stays; leave both and it goes after 200ms. On a phone a tap just follows the link."
         byWorld={{
+          flat: { demo: <ReaderDemo />, title: "A reader behind their reply", code: "ReaderDemo" },
           device: {
             demo: <RecordistDemo />,
             title: "Who recorded a take",

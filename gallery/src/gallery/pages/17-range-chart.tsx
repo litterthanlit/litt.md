@@ -337,15 +337,39 @@ function TakesTile() {
   return <RangeChart label="Takes" unit={["take", "takes"]} bars={TAKES} segments={SHOOT_SEGMENTS} axis={MONTH_TICKS} defaultValue={LAUNCH_RANGE} height={56} className="w-full" />;
 }
 
+/* ---------- Flat's own (plans/024, phase 3): readers of a small site, before and after a series began ---------- */
+
+/** The same days at a small site's size: about a tenth of the studio's visitors. */
+const READERS: RangeChartBar[] = VISITORS.map((bar) => ({ ...bar, value: Math.round(bar.value / 10) }));
+
+const SERIES_SEGMENTS: RangeChartSegment[] = [
+  { label: "Before the spring series", start: 0 },
+  { label: "Open water", start: LAUNCH },
+  { label: "Since", start: SINCE },
+];
+
+function ReadersDemo() {
+  return (
+    <div className="w-full max-w-2xl">
+      <RangeChart label="Readers of lowtide.site" unit="readers" bars={READERS} segments={SERIES_SEGMENTS} axis={MONTH_TICKS} defaultValue={LAUNCH_RANGE} />
+    </div>
+  );
+}
+
+function ReadersTile() {
+  return <RangeChart label="Readers" unit="readers" bars={READERS} segments={SERIES_SEGMENTS} axis={MONTH_TICKS} defaultValue={LAUNCH_RANGE} height={56} className="w-full" />;
+}
+
 export default function RangeChartPage() {
   return (
-    <Page meta={meta} docs={docs} study={study} tile={<VisitorsTile />} tileByWorld={{ device: <TakesTile /> }}>
+    <Page meta={meta} docs={docs} study={study} tile={<VisitorsTile />} tileByWorld={{ device: <TakesTile />, flat: <ReadersTile /> }}>
       <Stage
         title="Visitors to halo.studio"
         tier="responsive"
         align="start"
         code="VisitorsDemo"
         byWorld={{
+          flat: { demo: <ReadersDemo />, title: "Readers of lowtide.site", code: "ReadersDemo" },
           device: {
             demo: <TakesDemo />,
             title: "Takes recorded",

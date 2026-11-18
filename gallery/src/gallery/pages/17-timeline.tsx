@@ -653,6 +653,51 @@ function CardRunningDemo() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): an issue going out ---------- */
+
+const SEND: DemoPhase[] = [
+  {
+    label: "Get ready",
+    hue: "blue",
+    steps: [
+      { label: "Check the links", seconds: 2, status: "done" },
+      { label: "Make the web copy", seconds: 1, status: "done" },
+      { label: "Make the pictures smaller", seconds: 6, status: "done", was: 14 },
+      { label: "Add a reply line", seconds: 0, status: "skipped" },
+    ],
+  },
+  {
+    label: "Send",
+    hue: "teal",
+    steps: [
+      { label: "Send to 412 subscribers", seconds: 22, status: "done", was: 31 },
+      { label: "Post it under Letter", seconds: 2, status: "done" },
+      { label: "Let readers know on the site", seconds: 1, status: "done" },
+    ],
+  },
+];
+
+function SendIssueDemo() {
+  return (
+    <div className="grid w-full max-w-xl gap-6">
+      <div className="grid gap-1">
+        <p className="text-body font-title text-fg">Issue 14, the last of the spring series</p>
+        <p className="text-caption font-normal text-fg-subtle">Friday at 9:00 · 6 pictures · 4 min read</p>
+      </div>
+      <Timeline label="Issue 14, sending steps" proportional>
+        {withStarts(SEND).map((phase) => (
+          <TimelinePhase key={phase.label} label={phase.label} duration={total(phase.steps)} hue={phase.hue}>
+            {phase.steps.map((step) => (
+              <TimelineStep key={step.label} at={step.at} label={step.label} status={step.status} seconds={step.seconds} previousSeconds={step.was} />
+            ))}
+          </TimelinePhase>
+        ))}
+        <TimelineResult tone="success" label="Sent to 409 readers" total={runTotal(SEND)} />
+      </Timeline>
+    </div>
+  );
+}
+
 export default function TimelinePage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -661,6 +706,13 @@ export default function TimelinePage() {
         size="lg"
         code="DeployDemo"
         byWorld={{
+          flat: {
+            demo: <SendIssueDemo />,
+            title: "An issue going out",
+            code: "SendIssueDemo",
+            caption:
+              "A send drawn to scale. Each step's row is as tall as its time, and a long step draws that time as a bar on the rail, in the color of its phase: blue for getting ready, teal for the send. The pale bar beside it is the last issue's, with its length at its foot, so a faster step reads as shorter at a glance. Short steps keep the thin line, a skipped step says so in words, and the result closes the send with its word after a status circle. Nothing on the page moves.",
+          },
           device: {
             demo: <OffloadDemo />,
             title: "An offload",

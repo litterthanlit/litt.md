@@ -154,6 +154,28 @@ function InputSettingsDemo() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): how many posts the front page shows ---------- */
+
+/** A post on the site takes about four minutes to read. */
+const MINUTES_A_POST = 4;
+
+function FrontPageDemo() {
+  const [posts, setPosts] = useState<number | null>(6);
+  return (
+    <NumberField
+      label="Posts on the front page"
+      unit="posts"
+      min={1}
+      max={24}
+      value={posts}
+      onValueChange={setPosts}
+      required
+      help={posts === null ? "Between 1 and 24." : `The newest ${posts} ${posts === 1 ? "post" : "posts"}, about ${posts * MINUTES_A_POST} min of reading.`}
+      className="w-full max-w-xs"
+    />
+  );
+}
+
 export default function NumberFieldPage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -163,6 +185,13 @@ export default function NumberFieldPage() {
         align="start"
         code="SeatsDemo"
         byWorld={{
+          flat: {
+            demo: <FrontPageDemo />,
+            title: "Posts on the front page",
+            code: "FrontPageDemo",
+            caption:
+              "How many posts the site's front page shows. Press + or −, hold one down to run, or use the arrow keys in the field. At 1 and at 24 the stepper that would go past is disabled. Type a number and leave the field: it is kept between the bounds, put on a whole post and shown with its unit. The reading time under it follows.",
+          },
           device: {
             demo: <PreRollDemo />,
             title: "Pre-roll on a recorder",

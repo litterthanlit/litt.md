@@ -112,6 +112,17 @@ function OpenDemo() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): pictures in a post ---------- */
+
+function PostPicturesDemo() {
+  return (
+    <div className="grid w-full max-w-3xl gap-6 sm:grid-cols-[2fr_1fr]">
+      <Media src={OPEN_WATER.src} srcSet={OPEN_WATER.srcSet} sizes="(min-width: 48rem) 32rem, 100vw" alt={OPEN_WATER.alt} ratio="16/9" caption="Open water, the first of the spring series" />
+      <Media src={BUDS.src} srcSet={BUDS.srcSet} sizes="(min-width: 48rem) 16rem, 100vw" alt={BUDS.alt} ratio="4/5" caption="Two buds, from Tuesday's post" />
+    </div>
+  );
+}
+
 /* Try it shows an address of your own in its code; the stage shows a study from the gallery's set. */
 function TryMedia(props: MediaProps) {
   return <Media {...props} src={GRAPHITE.src} srcSet={GRAPHITE.srcSet} sizes="28rem" />;
@@ -124,6 +135,15 @@ export default function MediaPage() {
         title="Pictures in frames"
         align="start"
         code="FramesDemo"
+        byWorld={{
+          flat: {
+            demo: <PostPicturesDemo />,
+            title: "Pictures in a post",
+            code: "PostPicturesDemo",
+            caption:
+              "Each frame has its shape before the picture arrives, so nothing below it moves, and the post never jumps as a reader scrolls. The radius is the surface's. The caption sits 8px under the frame, in the grey, and says what the picture is in plain words. They load as a site loads pictures: lazily, at the size the frame needs.",
+          },
+        }}
         caption="Each frame has its shape before the image arrives, so nothing below it moves. The radius is the surface's, and a hairline lies over the image so a pale sky keeps its edge on a pale page. The caption sits 8px under the frame, in the grey. These are renders from the Brand Playground, loaded as a site would load photographs: lazily, at the size the frame needs."
       >
         <FramesDemo />

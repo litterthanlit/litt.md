@@ -233,31 +233,38 @@ function LightDemo() {
 
 /* ---------- Flat's covers: a real picture, never a wireframe (Flat's call 3, v1.17) ---------- */
 
-/** A plate as a card's cover. The words stay the shared demo's until Flat's voice (plan 024, phase 3). */
+/** A plate as a card's cover. */
 function PlateCover({ plate }: { plate: Plate }) {
   return <img src={plate.src} srcSet={plate.srcSet} sizes="20rem" alt={plate.alt} className="absolute inset-0 size-full object-cover" />;
 }
 
+/* Flat's voice (plans/024, phase 3): the posts of a small site, each with its picture. */
+const POSTS: { id: string; name: string; note: string; status: string; tone: Site["tone"]; url: string }[] = [
+  { id: "open-water", name: "Open water", note: "The first of the spring series. 4 min read.", status: "Published", tone: "success", url: "https://lowtide.site/open-water" },
+  { id: "dusk-tide", name: "Dusk tide", note: "Twenty minutes after sunset, from the pier. 3 min read.", status: "Goes out Friday", tone: "warning", url: "https://lowtide.site/dusk-tide" },
+  { id: "silk", name: "Notes on a slow shutter", note: "How the water turns to silk. 6 min read.", status: "Draft", tone: "neutral", url: "https://lowtide.site/silk" },
+];
+
 function FlatClientCardsDemo() {
   return (
     <ul className="grid w-full grid-cols-[repeat(auto-fill,minmax(15rem,1fr))] gap-4">
-      {SITES.map((site, i) => (
-        <Card key={site.id} as="li" cover="inset">
+      {POSTS.map((post, i) => (
+        <Card key={post.id} as="li" cover="inset">
           <CardCover>
             <PlateCover plate={SERIES[i % SERIES.length]!} />
           </CardCover>
           <CardBody>
             <CardTitle>
-              <CardLink href="#card">{site.name}</CardLink>
+              <CardLink href="#card">{post.name}</CardLink>
             </CardTitle>
-            <CardDescription>{site.note}</CardDescription>
+            <CardDescription>{post.note}</CardDescription>
             <div className="mt-auto flex items-center justify-between pt-4">
-              <Status tone={site.tone}>{site.status}</Status>
+              <Status tone={post.tone}>{post.status}</Status>
               <a
-                href={site.url}
+                href={post.url}
                 className="relative inline-flex h-control-sm items-center gap-1 text-caption text-fg-subtle transition-colors duration-(--dur-instant) ease-litt hover:text-fg pointer-coarse:h-control-md"
               >
-                Visit site
+                View post
                 <ArrowUpRightIcon />
               </a>
             </div>
@@ -298,12 +305,12 @@ function FlatCoverStylesDemo() {
       <Card as="li">
         <CardBody>
           <CardTitle>
-            <CardLink href="#card">INV-0412</CardLink>
+            <CardLink href="#card">Issue 13</CardLink>
           </CardTitle>
-          <CardDescription>Halden Gallery, due 24 Oct</CardDescription>
-          <p className="mt-6 text-h4 font-normal tabular-nums text-fg">€4,800.00</p>
+          <CardDescription>The letter of 7 November</CardDescription>
+          <p className="mt-6 text-h4 font-normal tabular-nums text-fg">68% opened</p>
           <div className="mt-auto pt-4">
-            <Status tone="warning">Sent</Status>
+            <Status tone="success">Sent</Status>
           </div>
         </CardBody>
       </Card>
@@ -344,7 +351,7 @@ function FlatInkDemo() {
 }
 
 function FlatCardTile() {
-  const site = SITES[0]!;
+  const post = POSTS[0]!;
   return (
     <ul className="grid w-full max-w-xs">
       <Card as="li" cover="inset">
@@ -353,16 +360,16 @@ function FlatCardTile() {
         </CardCover>
         <CardBody>
           <CardTitle>
-            <CardLink href="#card">{site.name}</CardLink>
+            <CardLink href="#card">{post.name}</CardLink>
           </CardTitle>
-          <CardDescription>{site.note}</CardDescription>
+          <CardDescription>{post.note}</CardDescription>
           <div className="mt-auto flex items-center justify-between pt-4">
-            <Status tone={site.tone}>{site.status}</Status>
+            <Status tone={post.tone}>{post.status}</Status>
             <a
-              href={site.url}
+              href={post.url}
               className="relative inline-flex h-control-sm items-center gap-1 text-caption text-fg-subtle transition-colors duration-(--dur-instant) ease-litt hover:text-fg pointer-coarse:h-control-md"
             >
-              Visit site
+              View post
               <ArrowUpRightIcon />
             </a>
           </div>
@@ -553,7 +560,13 @@ export default function CardPage() {
         align="start"
         code="ClientCardsDemo"
         byWorld={{
-          flat: { demo: <FlatClientCardsDemo />, code: "FlatClientCardsDemo" },
+          flat: {
+            demo: <FlatClientCardsDemo />,
+            title: "Posts on the site",
+            code: "FlatClientCardsDemo",
+            caption:
+              "Each card is a post, with its picture as the cover: white paper on the grey ground, with no edge and nothing cast. Hover a card and its fill moves one step, a color fade on the instant tier. Nothing lifts, grows or scales. Press Tab: each card is one stop, and the focus ring wraps the whole card. View post is a second control, so it sits above the stretched link.",
+          },
           device: {
             demo: <TakeCardsDemo />,
             title: "Takes in the library",

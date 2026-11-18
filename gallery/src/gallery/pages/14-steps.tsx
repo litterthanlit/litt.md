@@ -223,14 +223,80 @@ function RecorderSetupTile() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): start a small site and its letter ---------- */
+
+const START: Step[] = [
+  { id: "name", label: "Name" },
+  { id: "first-post", label: "First post" },
+  { id: "letter", label: "Letter" },
+  { id: "address", label: "Address" },
+];
+
+const START_SAYS = [
+  "Name the site and say in one line what it is about.",
+  "Write a first post. A picture and a few lines are enough.",
+  "Pick the day the letter goes out, and what it is called.",
+  "Choose an address, like lowtide.site.",
+];
+
+function StartSiteDemo() {
+  const [step, setStep] = useState(1);
+  const finished = step >= START.length;
+  return (
+    <div className="grid w-full max-w-2xl gap-8">
+      <Steps label="Start your site" steps={START} current={step} onStepSelect={setStep} />
+      <div className="grid gap-1">
+        <p className="text-body font-title text-fg">{finished ? "Your site is live" : START[step]!.label}</p>
+        <p className="text-small text-fg-muted">{finished ? "Readers can find it now. You can change any of it in Settings." : START_SAYS[step]}</p>
+      </div>
+      <div className="flex gap-3">
+        <Button disabled={step === 0} onClick={() => setStep((s) => Math.max(0, s - 1))}>
+          Back
+        </Button>
+        {finished ? (
+          <Button variant="primary" onClick={() => setStep(0)}>
+            Start again
+          </Button>
+        ) : (
+          <Button variant="primary" onClick={() => setStep((s) => s + 1)}>
+            {step === START.length - 1 ? "Publish" : "Continue"}
+          </Button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function StartSiteTile() {
+  const [step, setStep] = useState(1);
+  const finished = step >= START.length;
+  return (
+    <div className="grid w-full max-w-md gap-6">
+      <Steps label="Start your site" steps={START} current={step} onStepSelect={setStep} />
+      <div className="grid gap-1">
+        <p className="text-body font-title text-fg">{finished ? "Your site is live" : START[step]!.label}</p>
+        <p className="text-small text-fg-muted">{finished ? "Readers can find it now." : START_SAYS[step]}</p>
+      </div>
+      <div className="flex gap-3">
+        <Button size="sm" disabled={step === 0} onClick={() => setStep((s) => Math.max(0, s - 1))}>
+          Back
+        </Button>
+        <Button size="sm" onClick={() => setStep((s) => (s >= START.length ? 0 : s + 1))}>
+          {finished ? "Start again" : "Continue"}
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 export default function StepsPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<SetupTile />} tileByWorld={{ device: <RecorderSetupTile /> }}>
+    <Page meta={meta} docs={docs} tile={<SetupTile />} tileByWorld={{ device: <RecorderSetupTile />, flat: <StartSiteTile /> }}>
       <Stage
         title="Set up a studio"
         align="start"
         code="SetupDemo"
-        byWorld={{ device: { demo: <RecorderSetupDemo />, title: "Set up the recorder", code: "RecorderSetupDemo" } }}
+        byWorld={{ flat: { demo: <StartSiteDemo />, title: "Start a site", code: "StartSiteDemo" }, device: { demo: <RecorderSetupDemo />, title: "Set up the recorder", code: "RecorderSetupDemo" } }}
         caption="Continue moves on and Back moves back; a done step is also a button that goes back to it. The current step is the half-filled mark at the title weight, done ones are checked in the muted ink, and the hairline after a done step turns to the foreground. Nothing animates. Finish marks every step done."
       >
         <SetupDemo />

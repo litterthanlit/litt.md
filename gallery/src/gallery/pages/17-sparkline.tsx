@@ -296,6 +296,47 @@ function TakesQuietDemo() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): a small site's week in figures ---------- */
+
+/** Readers a day for 14 days; the last seven add up to the 1,204 on the tile. */
+const READERS = [142, 160, 151, 170, 158, 149, 166, 171, 158, 180, 166, 175, 190, 164];
+/** Median minutes on a post, last 14 days. */
+const READ_TIME = [3.4, 3.6, 3.5, 3.8, 3.6, 3.9, 3.7, 4.1, 3.9, 4.2, 4, 4.3, 4.1, 4];
+const minutes = (v: number) => v + " min";
+/** Share of the letter opened, last 14 issues. */
+const OPENED = [55, 57, 59, 61, 57, 62, 64, 66, 61, 59, 62, 71, 64, 68];
+
+function SiteWeekDemo() {
+  return (
+    <div className="w-full max-w-3xl">
+      <StatGroup>
+        <Stat
+          label="Readers this week"
+          value="1,204"
+          delta="Up 86 on last week"
+          tone="good"
+          trend={<Sparkline label="Readers a day, last 14 days" values={READERS} hue="blue" />}
+        />
+        <Stat
+          label="Time on a post"
+          value={4}
+          unit="min"
+          delta="Up 30 s on last week"
+          tone="good"
+          trend={<Sparkline label="Median minutes on a post, last 14 days" values={READ_TIME} formatValue={minutes} baseline={3.5} />}
+        />
+        <Stat
+          label="Letter opened"
+          value={68}
+          unit="%"
+          trend={<Sparkline label="Share of the letter opened, last 14 issues" values={OPENED} hue="teal" formatValue={percent} />}
+        />
+        <Stat label="Subscribers" value={412} delta="Up 12 on last month" tone="good" />
+      </StatGroup>
+    </div>
+  );
+}
+
 export default function SparklinePage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -303,6 +344,13 @@ export default function SparklinePage() {
         title="Beside a figure"
         code="BesideAFigureDemo"
         byWorld={{
+          flat: {
+            demo: <SiteWeekDemo />,
+            title: "A site's week",
+            code: "SiteWeekDemo",
+            caption:
+              "Three of the four tiles carry a trend in the Stat's trend slot. It sits at the foot of the tile, so the lines stay level even though the opened tile has no delta. Readers are blue and the letter's opens are teal, because each color names one quantity. Time on a post stays in the foreground, with a dashed line at its 3.5 min mark. The dot on the latest day is the strongest mark, as in the line chart. The figure above each line is the exact reading, because a sparkline shows shape, not values. Nothing moves.",
+          },
           device: {
             demo: <CardWeekDemo />,
             code: "CardWeekDemo",

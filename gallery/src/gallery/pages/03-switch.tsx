@@ -291,6 +291,99 @@ function RecorderLockedDemo() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): a small site and its letter ---------- */
+
+function LetterSettingsDemo() {
+  const [saved, setSaved] = useState("");
+  const note = (setting: string) => (on: boolean) => setSaved(`Saved. ${setting} is ${on ? "on" : "off"}.`);
+
+  return (
+    <div className="grid w-full max-w-lg gap-3">
+      <p className="text-small font-title text-fg">Your letter</p>
+      <ul className="divide-y divide-line border-y border-line">
+        <li>
+          <Switch align="end" label="Send the letter every Friday at 9:00" defaultChecked onCheckedChange={note("The Friday letter")} />
+        </li>
+        <li>
+          <Switch align="end" label="Email me when someone subscribes" onCheckedChange={note("The new reader email")} />
+        </li>
+        <li>
+          <Switch
+            align="end"
+            label="Let readers reply"
+            description="A reply comes to your inbox, never to the site, so only you see it."
+            defaultChecked
+            onCheckedChange={note("Replies")}
+          />
+        </li>
+      </ul>
+      <p role="status" className="min-h-5 text-small text-fg-subtle">
+        {saved}
+      </p>
+    </div>
+  );
+}
+
+function SubscribeFormDemo() {
+  const [result, setResult] = useState("");
+
+  return (
+    <form
+      className="grid w-full max-w-sm gap-6"
+      onSubmit={(e) => {
+        e.preventDefault();
+        const sent = [...new FormData(e.currentTarget).entries()].map(([key, value]) => `${key}=${value}`);
+        setResult(sent.length ? `Sent: ${sent.join(", ")}` : "Sent: nothing, both are off.");
+      }}
+    >
+      <div className="grid justify-items-start">
+        <Switch name="letter" label="The weekly letter" description="One email on Friday morning with the week's posts." />
+        <Checkbox name="agreed" label="I agree to get email from Low Tide" />
+      </div>
+      <div className="grid gap-3">
+        <Button type="submit" variant="primary">
+          Save
+        </Button>
+        <p role="status" className="min-h-5 text-small text-fg-subtle">
+          {result}
+        </p>
+      </div>
+    </form>
+  );
+}
+
+function SiteLiveDemo() {
+  const [live, setLive] = useState(true);
+
+  return (
+    <div className="grid w-full max-w-sm gap-3">
+      <Switch
+        tone="accent"
+        align="end"
+        label="Low Tide is public"
+        description={live ? "Anyone can read lowtide.site." : "Only you can see lowtide.site."}
+        checked={live}
+        onCheckedChange={setLive}
+      />
+    </div>
+  );
+}
+
+function SiteLockedDemo() {
+  return (
+    <div className="grid w-full max-w-xl gap-x-12 gap-y-6 sm:grid-cols-2">
+      <div className="grid content-start gap-2">
+        <p className="text-small text-fg-subtle">Off and disabled</p>
+        <Switch disabled label="Paid posts" description="Comes with a paid plan." />
+      </div>
+      <div className="grid content-start gap-2">
+        <p className="text-small text-fg-subtle">On and disabled</p>
+        <Switch disabled defaultChecked label="Unsubscribe link" description="Every letter carries one." />
+      </div>
+    </div>
+  );
+}
+
 export default function SwitchPage() {
   return (
     <Page meta={meta} docs={docs} study={study}>
@@ -300,6 +393,13 @@ export default function SwitchPage() {
         caption="Click anywhere on a row, press Space on the switch, or take a block and drag it across. Pressing presses the block down, and it crosses on the responsive tier. The switches sit at the row's end, so they line up in one column, and every one is neutral: a list never takes the accent."
         code="SettingsListDemo"
         byWorld={{
+          flat: {
+            demo: <LetterSettingsDemo />,
+            title: "Letter settings",
+            code: "LetterSettingsDemo",
+            caption:
+              "Press anywhere on a row, press Space on the switch, or take the knob and drag it across: it crosses on the responsive tier. Off is an outline, on is the ink. The switches sit at the row's end, so they line up in one column, and every one is neutral: a list never takes the accent.",
+          },
           device: {
             demo: <RecordingSettingsDemo />,
             title: "Recording settings",
@@ -318,6 +418,12 @@ export default function SwitchPage() {
         caption="The default alignment puts the switch first, like the checkbox, so the two stack in one column. Press Save: a form sends the switch as digest=on while it is on and sends nothing while it is off. The checkbox is for the consent, because that choice can be wrong."
         code="DigestFormDemo"
         byWorld={{
+          flat: {
+            demo: <SubscribeFormDemo />,
+            code: "SubscribeFormDemo",
+            caption:
+              "The default alignment puts the switch first, like the checkbox, so the two stack in one column. Press Save: a form sends the switch as letter=on while it is on and sends nothing while it is off. The checkbox is for the consent, because that choice can be wrong.",
+          },
           device: {
             demo: <PhantomFormDemo />,
             code: "PhantomFormDemo",
@@ -335,6 +441,7 @@ export default function SwitchPage() {
         caption="The accent tone fills the block with the accent when it is on. It is the view's one accent fill, so it belongs to the one switch that is the view's main choice, such as whether a site is live."
         code="LiveDemo"
         byWorld={{
+          flat: { demo: <SiteLiveDemo />, code: "SiteLiveDemo" },
           device: {
             demo: <ArmDemo />,
             title: "Armed",
@@ -351,7 +458,7 @@ export default function SwitchPage() {
         tier="instant"
         caption="A disabled switch is muted, skipped by Tab and left out of a form. The tray goes flat to surface-2 with a hairline, and the block lies flat in it with no cast. The block stays on its side and uncovers its word, so the state still reads."
         code="DisabledDemo"
-        byWorld={{ device: { demo: <RecorderLockedDemo />, code: "RecorderLockedDemo" } }}
+        byWorld={{ flat: { demo: <SiteLockedDemo />, code: "SiteLockedDemo" }, device: { demo: <RecorderLockedDemo />, code: "RecorderLockedDemo" } }}
       >
         <DisabledDemo />
       </Stage>

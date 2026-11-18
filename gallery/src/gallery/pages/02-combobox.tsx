@@ -620,9 +620,91 @@ function LocationTile() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): where a post's picture was taken ---------- */
+
+const PLACES: ComboboxOption[] = [
+  { value: "north-pier", label: "North pier", group: "Along the coast" },
+  { value: "long-sands", label: "Long Sands", group: "Along the coast" },
+  { value: "the-point", label: "The point", group: "Along the coast" },
+  { value: "sea-wall", label: "Sea wall", group: "Along the coast" },
+  { value: "seal-rocks", label: "Seal rocks", group: "Along the coast" },
+  { value: "dune-path", label: "Dune path", group: "Along the coast" },
+  { value: "lighthouse", label: "The lighthouse", group: "Along the coast" },
+  { value: "salt-marsh", label: "Salt marsh", group: "Along the coast" },
+  { value: "cove", label: "Smugglers' cove", group: "Along the coast" },
+  { value: "tide-pools", label: "Tide pools", group: "Along the coast" },
+  { value: "back-garden", label: "The back garden", group: "At home" },
+  { value: "kitchen-window", label: "Kitchen window", group: "At home" },
+  { value: "allotment", label: "The allotment", group: "At home" },
+  { value: "church-lane", label: "Church lane", group: "At home" },
+  { value: "old-quarry", label: "The old quarry", group: "At home" },
+  { value: "river-path", label: "River path", group: "At home" },
+  { value: "market", label: "Saturday market", group: "At home" },
+  { value: "bus-stop", label: "The bus stop at dusk", group: "At home" },
+  { value: "orchard", label: "The orchard", group: "At home" },
+  { value: "ferry", label: "The morning ferry", group: "At home" },
+  { value: "zurich", label: "Zürich", group: "Away" },
+  { value: "malmo", label: "Malmö", group: "Away" },
+  { value: "arhus", label: "Århus", group: "Away" },
+  { value: "san-sebastian", label: "San Sebastián", group: "Away" },
+  { value: "lisbon", label: "Lisbon", group: "Away" },
+  { value: "cadiz", label: "Cádiz", group: "Away" },
+  { value: "porto", label: "Porto", group: "Away" },
+  { value: "bergen", label: "Bergen", group: "Away" },
+  { value: "trondheim", label: "Trondheim", group: "Away" },
+  { value: "reykjavik", label: "Reykjavík", group: "Away" },
+];
+
+function NewPostDemo() {
+  const [place, setPlace] = useState("");
+  const [sent, setSent] = useState("");
+  const send = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const data = new FormData(e.currentTarget);
+    setSent(`Sent place=${data.get("place") || "(none)"} title=${data.get("title")}`);
+  };
+  return (
+    <form onSubmit={send} className="grid w-full max-w-sm gap-6">
+      <Combobox
+        label="Where was it taken?"
+        name="place"
+        options={PLACES}
+        value={place}
+        onValueChange={setPlace}
+        placeholder="Search 30 places"
+        hint="Accents are optional: zurich finds Zürich."
+      />
+      <TextField label="Post title" name="title" defaultValue="Open water" />
+      <div className="grid gap-3">
+        <Button variant="primary" type="submit">
+          Save post
+        </Button>
+        <Status>{sent}</Status>
+      </div>
+    </form>
+  );
+}
+
+function PlaceTile() {
+  const [place, setPlace] = useState("");
+  return (
+    <div className="w-full max-w-xs">
+      <Combobox
+        label="Where was it taken?"
+        name="place"
+        options={PLACES}
+        value={place}
+        onValueChange={setPlace}
+        placeholder="Search 30 places"
+        hint="Accents are optional: zurich finds Zürich."
+      />
+    </div>
+  );
+}
+
 export default function ComboboxPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<ClientTile />} tileByWorld={{ device: <LocationTile /> }}>
+    <Page meta={meta} docs={docs} tile={<ClientTile />} tileByWorld={{ device: <LocationTile />, flat: <PlaceTile /> }}>
       <Stage
         title="A client for a new project"
         tier="responsive"
@@ -630,6 +712,13 @@ export default function ComboboxPage() {
         align="start"
         code="NewProjectDemo"
         byWorld={{
+          flat: {
+            demo: <NewPostDemo />,
+            title: "A place for a new post",
+            code: "NewPostDemo",
+            caption:
+              "Thirty places in three groups, where the pictures were taken. Type and the list grows out of the field and slides a quarter of the travel token on the responsive tier, then filters at once, with the first match lit and no change of height animated. Accents are optional, so zurich finds Zürich. Enter picks, the field shows the place, and Save post sends it through the field's name.",
+          },
           device: {
             demo: <SlateDemo />,
             title: "A location on the slate",

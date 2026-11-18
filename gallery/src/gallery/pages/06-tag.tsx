@@ -281,6 +281,80 @@ function ExportsDemo() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): a small site's posts and its letter ---------- */
+
+const POSTS = [
+  { name: "Open water", series: "Spring series · 4 min read", tags: ["Coast", "Long exposure"] },
+  { name: "What the garden did", series: "The garden · 5 min read", tags: ["Garden", "Rain"] },
+  { name: "Drawing the tide line", series: "Pencil studies · 4 min read", tags: ["Drawing", "Coast", "Notes"] },
+];
+
+function PostLabelsDemo() {
+  return (
+    <ul aria-label="Posts" className="grid w-full max-w-3xl gap-8 sm:grid-cols-3">
+      {POSTS.map((p) => (
+        <li key={p.name} className="grid content-start gap-4">
+          <div className="grid gap-1">
+            <span className="text-body font-title text-fg">{p.name}</span>
+            <span className="text-caption text-fg-subtle">{p.series}</span>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {p.tags.map((t) => (
+              <Tag key={t}>{t}</Tag>
+            ))}
+          </div>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+const POST_STATES = [
+  { tag: <Tag status="success">Published</Tag>, means: "On the site for every reader. Also Sent and Confirmed." },
+  { tag: <Tag status="warning">Scheduled</Tag>, means: "Goes out on its own. Also Sending and Paused." },
+  { tag: <Tag status="danger">Bounced</Tag>, means: "Needs you. Also Failed and Too large." },
+  { tag: <Tag status="neutral">Draft</Tag>, means: "Only you can see it. Also Hidden." },
+  { tag: <Tag status="neutral">Idea</Tag>, means: "Not started. The word tells it from Draft." },
+];
+
+function PostStatusDemo() {
+  return (
+    <dl className="grid w-full max-w-xl gap-3">
+      {POST_STATES.map(({ tag, means }) => (
+        <div key={means} className="grid grid-cols-[7.5rem_1fr] items-center gap-4 border-b border-line pb-3 last:border-b-0 last:pb-0">
+          <dt className="flex">{tag}</dt>
+          <dd className="text-small text-fg-subtle">{means}</dd>
+        </div>
+      ))}
+    </dl>
+  );
+}
+
+const LETTERS: { issue: string; to: string; status: TagStatus; label: string; when: string }[] = [
+  { issue: "Issue 13, a red sun in March", to: "412 readers", status: "success", label: "Sent", when: "Friday" },
+  { issue: "Issue 14, the last of the spring series", to: "412 readers", status: "warning", label: "Scheduled", when: "Fri 9:00" },
+  { issue: "Welcome letter", to: "3 readers", status: "danger", label: "Bounced", when: "1 h ago" },
+];
+
+function LettersDemo() {
+  return (
+    <ul aria-label="Recent letters" className="w-full max-w-2xl min-w-0 rounded-surface p-1 shadow-[inset_0_0_0_1px_var(--line)]">
+      {LETTERS.map((x) => (
+        <li key={x.issue} className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-line px-4 py-4 last:border-b-0">
+          <span className="min-w-0 basis-full truncate text-body font-title text-fg sm:flex-1 sm:basis-0">{x.issue}</span>
+          <span className="flex sm:w-24">
+            <Tag>{x.to}</Tag>
+          </span>
+          <span className="flex sm:w-24">
+            <Tag status={x.status}>{x.label}</Tag>
+          </span>
+          <span className="ml-auto text-right text-caption text-fg-subtle sm:ml-0 sm:w-20">{x.when}</span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 export default function TagPage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -291,7 +365,8 @@ export default function TagPage() {
         code="LabelsDemo"
         byWorld={{
           flat: {
-            demo: <LabelsDemo />,
+            demo: <PostLabelsDemo />,
+            code: "PostLabelsDemo",
             caption:
               "A plain tag is 24px tall at the control radius: the word in a pill, in the sans at the caption size and the label weight in fg-muted. The pill is white on the grey ground and the grey bubble inside a card. It names a kind or a platform and never asks to be pressed. Nothing moves.",
           },
@@ -312,7 +387,8 @@ export default function TagPage() {
         code="StatusDemo"
         byWorld={{
           flat: {
-            demo: <StatusDemo />,
+            demo: <PostStatusDemo />,
+            code: "PostStatusDemo",
             caption:
               "A status is a small circle in the status color and its word in the ink, with no pill, so a row of tags stays calm. The color sits only on the circle; every tag says its state in words, and neutral Draft and Idea differ by theirs.",
           },
@@ -360,6 +436,12 @@ export default function TagPage() {
         align="start"
         code="DeploysDemo"
         byWorld={{
+          flat: {
+            demo: <LettersDemo />,
+            title: "In a list of letters",
+            code: "LettersDemo",
+            caption: "A plain tag says who a letter went to and a status tag says how it did. Read in grayscale, the words still tell the story.",
+          },
           device: {
             demo: <ExportsDemo />,
             title: "In a list of exports",

@@ -759,6 +759,58 @@ function PhoneSettingsDemo() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): send this week's issue ---------- */
+
+function SendIssueDemo() {
+  const [open, setOpen] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [status, setStatus] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!busy) return;
+    const t = setTimeout(() => {
+      setBusy(false);
+      setOpen(false);
+      setStatus("Issue 14 is on its way to 412 subscribers.");
+    }, 1400);
+    return () => clearTimeout(t);
+  }, [busy]);
+
+  return (
+    <Launcher status={status}>
+      <Dialog open={open} onOpenChange={(o) => !busy && setOpen(o)}>
+        <DialogTrigger asChild>
+          <Button>Send issue 14</Button>
+        </DialogTrigger>
+        <DialogContent
+          title="Send issue 14 now?"
+          description="It goes to every subscriber and onto the site under Letter. A sent letter cannot be called back."
+          footer={
+            <>
+              <DialogClose asChild>
+                <Button disabled={busy}>Not yet</Button>
+              </DialogClose>
+              <Button variant="primary" loading={busy} onClick={() => setBusy(true)} data-autofocus>
+                Send
+              </Button>
+            </>
+          }
+        >
+          <dl className="grid gap-3">
+            <Row label="Subscribers">412</Row>
+            <Row label="Pictures">
+              <span className="tabular-nums text-caption font-normal">6</span>
+            </Row>
+            <Row label="Reading time">
+              <span className="text-caption font-normal">4 min</span>
+            </Row>
+          </dl>
+        </DialogContent>
+      </Dialog>
+    </Launcher>
+  );
+}
+
 export default function DialogPage() {
   return (
     <Page meta={meta} docs={docs} study={study}>
@@ -768,6 +820,12 @@ export default function DialogPage() {
         code="PublishDemo"
         caption="The panel fades in, rises by the travel token's distance and settles from 0.98 to full size on the expressive tier. The overlay only fades. Closing is quicker and never bounces. Esc, Cancel or a click outside closes it, and focus returns to the button."
         byWorld={{
+          flat: {
+            demo: <SendIssueDemo />,
+            code: "SendIssueDemo",
+            caption:
+              "A small site asks before it sends the week's issue. The panel fades in, rises by the travel token's distance and settles from 0.98 to full size on the expressive tier. The overlay only fades. Closing is quicker and never bounces. Esc, Not yet or a click outside closes it, and focus returns to the button.",
+          },
           device: {
             demo: <ExportSceneDemo />,
             code: "ExportSceneDemo",

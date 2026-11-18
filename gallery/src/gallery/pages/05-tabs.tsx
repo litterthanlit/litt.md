@@ -531,9 +531,234 @@ function TakeTabsTile() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): a small site's dashboard ---------- */
+
+function IssueResult({ tone }: { tone: "success" | "warning" | "muted" }) {
+  return (
+    <span className="flex w-20 shrink-0">
+      {tone === "success" ? <Tag status="success">Sent</Tag> : tone === "warning" ? <Tag status="warning">Friday</Tag> : <Tag status="neutral">Draft</Tag>}
+    </span>
+  );
+}
+
+const SITE_STATS: [string, string][] = [
+  ["Readers, last 7 days", "1,204"],
+  ["Subscribers", "412"],
+  ["Last post", "2 days ago"],
+  ["Posts", "38"],
+];
+
+const SITE_ACTIVITY: [string, string][] = [
+  ["Mara Lindqvist subscribed", "5 h ago"],
+  ["Published Open water", "2 days ago"],
+  ["Issue 13 sent to 408 readers", "Friday"],
+  ["Started the spring series", "March"],
+];
+
+const ISSUES: { n: number; title: string; when: string; tone: "success" | "warning" | "muted" }[] = [
+  { n: 15, title: "A new series, maybe", when: "No date", tone: "muted" },
+  { n: 14, title: "The last of the spring series", when: "Fri 9:00", tone: "warning" },
+  { n: 13, title: "A red sun in March", when: "14 Nov", tone: "success" },
+  { n: 12, title: "What the garden did", when: "7 Nov", tone: "success" },
+  { n: 11, title: "Notes on a slow shutter", when: "31 Oct", tone: "success" },
+];
+
+const SITE_SETTINGS: [string, string][] = [
+  ["Address", "lowtide.site"],
+  ["Letter", "Fridays at 9:00"],
+  ["Visibility", "Public"],
+  ["Replies", "On"],
+];
+
+function SiteTabs() {
+  return (
+    <Tabs defaultValue="overview" className="w-full max-w-xl">
+      <TabsList aria-label="Low Tide">
+        <TabsTrigger value="overview">Overview</TabsTrigger>
+        <TabsTrigger value="activity">Activity</TabsTrigger>
+        <TabsTrigger value="letter">Letter</TabsTrigger>
+        <TabsTrigger value="settings">Settings</TabsTrigger>
+      </TabsList>
+      <TabsPanels className="min-h-72 px-control-pad-md pt-6">
+        <TabsPanel value="overview">
+          <dl className="grid grid-cols-2 gap-x-6 gap-y-8">
+            {SITE_STATS.map(([label, value]) => (
+              <div key={label} className="grid gap-1">
+                <dt className="text-small text-fg-subtle">{label}</dt>
+                <dd className="text-h3 text-fg">{value}</dd>
+              </div>
+            ))}
+          </dl>
+        </TabsPanel>
+        <TabsPanel value="activity">
+          <Rows>
+            {SITE_ACTIVITY.map(([what, when]) => (
+              <li key={what} className="flex min-h-control-md items-center justify-between gap-4 py-2 text-small">
+                <span className="text-fg">{what}</span>
+                <span className="shrink-0 text-fg-subtle">{when}</span>
+              </li>
+            ))}
+          </Rows>
+        </TabsPanel>
+        <TabsPanel value="letter">
+          <Rows>
+            {ISSUES.map((issue) => (
+              <li key={issue.n} className="flex min-h-control-md items-center gap-3 py-2 text-small">
+                <IssueResult tone={issue.tone} />
+                <span className="tabular-nums text-caption font-normal text-fg-subtle">Issue {issue.n}</span>
+                <span className="min-w-0 flex-1 truncate text-fg">{issue.title}</span>
+                <span className="shrink-0 tabular-nums text-caption font-normal text-fg-subtle">{issue.when}</span>
+              </li>
+            ))}
+          </Rows>
+        </TabsPanel>
+        <TabsPanel value="settings">
+          <Rows>
+            {SITE_SETTINGS.map(([label, value]) => (
+              <li key={label} className="flex min-h-control-md items-center justify-between gap-4 py-2 text-small">
+                <span className="text-fg-subtle">{label}</span>
+                <span className="text-fg">{value}</span>
+              </li>
+            ))}
+          </Rows>
+        </TabsPanel>
+      </TabsPanels>
+    </Tabs>
+  );
+}
+
+const SITE_POSTS: { name: string; kind: string; when: string; time: string }[] = [
+  { name: "Open water", kind: "Spring series", when: "2 days ago", time: "08:10" },
+  { name: "Dusk tide", kind: "Spring series", when: "Last week", time: "19:42" },
+  { name: "What the garden did", kind: "The garden", when: "October", time: "07:05" },
+  { name: "Drawing the tide line", kind: "Pencil studies", when: "October", time: "11:30" },
+];
+
+function PostViewSwitch() {
+  return (
+    <Tabs defaultValue="list" variant="segmented" className="grid w-full max-w-md gap-6">
+      <TabsList aria-label="View">
+        <TabsTrigger value="list">List</TabsTrigger>
+        <TabsTrigger value="grid">Grid</TabsTrigger>
+        <TabsTrigger value="timeline">Timeline</TabsTrigger>
+      </TabsList>
+      <TabsPanels className="min-h-64">
+        <TabsPanel value="list">
+          <Rows>
+            {SITE_POSTS.map((p) => (
+              <li key={p.name} className="flex min-h-control-md items-center justify-between gap-4 py-2 text-small">
+                <span className="text-fg">{p.name}</span>
+                <span className="text-fg-subtle">{p.kind}</span>
+              </li>
+            ))}
+          </Rows>
+        </TabsPanel>
+        <TabsPanel value="grid">
+          <ul className="grid grid-cols-2 gap-3">
+            {SITE_POSTS.map((p) => (
+              <li key={p.name} className="grid h-28 content-between rounded-surface bg-surface-2 p-4">
+                <span className="text-small font-title text-fg">{p.name}</span>
+                <span className="text-caption text-fg-subtle">{p.kind}</span>
+              </li>
+            ))}
+          </ul>
+        </TabsPanel>
+        <TabsPanel value="timeline">
+          <ol className="relative grid gap-5 before:absolute before:top-2 before:bottom-2 before:left-[3px] before:w-px before:bg-line">
+            {SITE_POSTS.map((p) => (
+              <li key={p.name} className="relative flex items-center gap-4 text-small">
+                <span aria-hidden="true" className="relative h-px w-2 shrink-0 bg-fg-subtle" />
+                <span className="tabular-nums text-caption font-normal text-fg-subtle">{p.time}</span>
+                <span className="text-fg">{p.name}</span>
+                <span className="text-fg-subtle">{p.when}</span>
+              </li>
+            ))}
+          </ol>
+        </TabsPanel>
+      </TabsPanels>
+    </Tabs>
+  );
+}
+
+const ISSUE_PHASES: [string, string][] = [
+  ["draft", "The opening lines are written. Two posts and one picture to add."],
+  ["pictures", "Six pictures picked. Each gets a line saying what it shows."],
+  ["read", "Read it aloud once. One sentence in the second post is too long."],
+  ["test", "A test went to you. The links all work on a phone."],
+  ["send", "Goes out Friday at 9:00 to 412 subscribers."],
+];
+
+function IssueStepsDemo() {
+  return (
+    <div className="grid w-full min-w-0 max-w-xl gap-8">
+      <Tabs defaultValue="pictures" size="sm">
+        <TabsList aria-label="Issue 14">
+          {ISSUE_PHASES.map(([id]) => (
+            <TabsTrigger key={id} value={id}>
+              {id[0].toUpperCase() + id.slice(1)}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+        <TabsPanels className="min-h-20 px-control-pad-sm pt-4">
+          {ISSUE_PHASES.map(([id, text]) => (
+            <TabsPanel key={id} value={id}>
+              <p className="text-small text-fg-muted">{text}</p>
+            </TabsPanel>
+          ))}
+        </TabsPanels>
+      </Tabs>
+      <dl className="grid gap-3 text-small text-fg-subtle">
+        {(
+          [
+            [["←", "→"], "Move to the previous or next tab"],
+            [["Home", "End"], "Jump to the first or last tab"],
+            [["Tab"], "Leave the list for the panel"],
+          ] as [string[], string][]
+        ).map(([keys, label]) => (
+          <div key={label} className="flex items-center gap-3">
+            <dt className="flex min-w-24 gap-1">
+              {keys.map((k) => (
+                <Kbd key={k}>{k}</Kbd>
+              ))}
+            </dt>
+            <dd>{label}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  );
+}
+
+const SITE_TILE_TABS = ["Overview", "Readers", "Letter"];
+const SITE_TILE_TEXT = ["1,204 readers in the last 7 days.", "Mara Lindqvist subscribed 5 hours ago.", "Issue 14 goes out Friday at 9:00."];
+
+function SiteTabsTile() {
+  const [ref, step] = useLoop<HTMLDivElement>(SITE_TILE_TABS.length, 2200, 0);
+  const [own, setOwn] = useState<string | null>(null);
+  const value = own ?? SITE_TILE_TABS[step]!;
+  return (
+    <div ref={ref} className="w-full max-w-sm">
+      <Tabs value={value} onValueChange={setOwn}>
+        <TabsList aria-label="Low Tide">
+          {SITE_TILE_TABS.map((t) => (
+            <TabsTrigger key={t} value={t}>{t}</TabsTrigger>
+          ))}
+        </TabsList>
+        <TabsPanels className="min-h-16 px-control-pad-md pt-4">
+          {SITE_TILE_TABS.map((t, i) => (
+            <TabsPanel key={t} value={t}>
+              <p className="text-small text-fg-muted">{SITE_TILE_TEXT[i]}</p>
+            </TabsPanel>
+          ))}
+        </TabsPanels>
+      </Tabs>
+    </div>
+  );
+}
+
 export default function TabsPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<TabsTile />} tileByWorld={{ device: <TakeTabsTile /> }}>
+    <Page meta={meta} docs={docs} tile={<TabsTile />} tileByWorld={{ device: <TakeTabsTile />, flat: <SiteTabsTile /> }}>
       <Stage
         title="Project tabs"
         tier="responsive"
@@ -541,6 +766,13 @@ export default function TabsPage() {
         caption="Pick a tab. The chosen face (a tab standing on the plate in Press, a grey bubble in Flat) slides to it on the responsive tier while the label only changes color, on the instant tier. The new panel fades in from the side you chose, about half the travel distance, and the old one fades out the other way."
         code="ProjectTabs"
         byWorld={{
+          flat: {
+            demo: <SiteTabs />,
+            title: "A site's tabs",
+            code: "SiteTabs",
+            caption:
+              "A small site's dashboard: its overview, what happened, its letter and its settings. Pick a tab. The grey bubble slides to it on the responsive tier while the label only changes color, on the instant tier. The new panel fades in from the side you chose, about half the travel distance, and the old one fades out the other way.",
+          },
           device: {
             demo: <TakeTabs />,
             title: "A take's tabs",
@@ -558,7 +790,7 @@ export default function TabsPage() {
         tier="responsive"
         caption="The segmented style uses the same sliding face as a raised block in a tray (Press) or a bubble behind the word (Flat). Pick a view and the preview crossfades. Labels never change weight or size, so the group keeps its exact box. On a touch screen a tab you hold fills."
         code="ViewSwitch"
-        byWorld={{ device: { demo: <TakesViewSwitch />, code: "TakesViewSwitch" } }}
+        byWorld={{ flat: { demo: <PostViewSwitch />, code: "PostViewSwitch" }, device: { demo: <TakesViewSwitch />, code: "TakesViewSwitch" } }}
       >
         <ViewSwitch />
       </Stage>
@@ -568,7 +800,7 @@ export default function TabsPage() {
         tier="responsive"
         caption="Arrow keys move between tabs and select them, Home and End jump to the first and last, and Tab leaves the list for the panel. The indicator and the panel move the same way they do for a click."
         code="KeyboardDemo"
-        byWorld={{ device: { demo: <TakeStepsDemo />, code: "TakeStepsDemo" } }}
+        byWorld={{ flat: { demo: <IssueStepsDemo />, code: "IssueStepsDemo" }, device: { demo: <TakeStepsDemo />, code: "TakeStepsDemo" } }}
       >
         <KeyboardDemo />
       </Stage>

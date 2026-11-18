@@ -140,6 +140,50 @@ function SelectRecordingsDemo() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): the posts of a small site ---------- */
+
+const POSTS: Project[] = [
+  { id: "open-water", name: "Open water", client: "Spring series", deploy: "Published 2 days ago", status: "live", updated: "2026-11-16", description: "The first of the spring series. 4 min read.", tags: ["Coast"], cover: "landing" },
+  { id: "dusk-tide", name: "Dusk tide", client: "Spring series", deploy: "Published last week", status: "live", updated: "2026-11-09", description: "Twenty minutes after sunset. 3 min read.", tags: ["Coast"], cover: "identity" },
+  { id: "garden", name: "What the garden did", client: "The garden", deploy: "Published in October", status: "live", updated: "2026-10-18", description: "Buds, rust and rain. 5 min read.", tags: ["Garden"], cover: "type" },
+  { id: "tide-line", name: "Drawing the tide line", client: "Pencil studies", deploy: "Published in October", status: "live", updated: "2026-10-04", description: "Studies before the series. 4 min read.", tags: ["Drawing"], cover: "system" },
+  { id: "silk", name: "Notes on a slow shutter", client: "No series yet", deploy: "Not published", status: "draft", updated: "2026-11-17", description: "How the water turns to silk. 6 min read.", tags: ["Notes"], cover: "motion" },
+  { id: "red-sun", name: "A red sun in March", client: "Spring series", deploy: "Not published", status: "draft", updated: "2026-11-12", description: "One picture and a short letter.", tags: ["Coast"], cover: "template" },
+];
+
+function SelectPostsDemo() {
+  const [posts, setPosts] = useState(POSTS);
+  const [selected, setSelected] = useState<string[]>([]);
+  const hide = () => {
+    setPosts((all) => all.filter((p) => !selected.includes(p.id)));
+    setSelected([]);
+  };
+  return (
+    <div className="grid w-full gap-6">
+      <ProjectGrid
+        projects={posts}
+        filter="all"
+        selectedIds={selected}
+        onSelectedChange={(id, on) => setSelected((s) => (on ? [...s, id] : s.filter((x) => x !== id)))}
+        onClearFilter={() => {}}
+      />
+      <ActionBar count={selected.length} noun="posts" onClear={() => setSelected([])}>
+        <Button size="sm" icon={<ArchiveIcon />} onClick={hide}>
+          Hide from the site
+        </Button>
+        <Button size="sm" variant="ghost" icon={<ShareIcon />}>
+          Share
+        </Button>
+      </ActionBar>
+      {posts.length < POSTS.length && (
+        <Button size="sm" variant="ghost" className="justify-self-start" onClick={() => setPosts(POSTS)}>
+          Bring them back
+        </Button>
+      )}
+    </div>
+  );
+}
+
 export default function ActionBarPage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -149,7 +193,16 @@ export default function ActionBarPage() {
         size="lg"
         align="start"
         code="SelectDemo"
-        byWorld={{ device: { demo: <SelectRecordingsDemo />, title: "A selection of recordings", code: "SelectRecordingsDemo" } }}
+        byWorld={{
+          flat: {
+            demo: <SelectPostsDemo />,
+            title: "A selection of posts",
+            code: "SelectPostsDemo",
+            caption:
+              "Check a post's box. The bar rises by the travel token on the responsive tier and sticks 16px above the bottom of the view while the grid scrolls; at the end of the grid it rests under it, so it never covers a post. Check more and the count changes in place. Hide from the site acts on all of them, then the selection ends and the bar drops away. Esc in the bar clears it too.",
+          },
+          device: { demo: <SelectRecordingsDemo />, title: "A selection of recordings", code: "SelectRecordingsDemo" },
+        }}
         caption="Tick a card's box. The bar rises by the travel token on the responsive tier and sticks 16px above the bottom of the view while the grid scrolls; at the end of the grid it rests under it, so it never covers a card. Tick more and the count changes in place. Archive acts on all of them, then the selection ends and the bar drops away. Esc in the bar clears it too."
       >
         <SelectDemo />

@@ -6,6 +6,7 @@ import type { PlanStep } from "@/components/plan";
 import { RunCard } from "@/components/run-card";
 import { DeviceProvider } from "@/motion";
 import { Page, Stage, TryIt, useReplay, type PageDocs, type PageMeta } from "../kit";
+import { SERIES } from "../plates";
 
 export const meta: PageMeta = {
   id: "run-card",
@@ -417,10 +418,62 @@ function MixRunTile() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): Litt lays out the spring series page ---------- */
+
+const SERIES_PAGE = [
+  { id: "gather", label: "Gathering the six pictures" },
+  { id: "words", label: "Writing a line under each" },
+  { id: "layout", label: "Laying out the series page" },
+];
+
+/** How far the page has got at each step: 12% into the first, then on through the others, then done. */
+const SERIES_PROGRESS = [0.12, 0.45, 0.78, 1];
+
+function seriesSteps(at: number): PlanStep[] {
+  return SERIES_PAGE.map((step, i) => ({ ...step, status: i < at ? "done" : i === at ? "running" : "pending" }));
+}
+
+/** The pictures as far as the page has got: two, then four, then all six. */
+function SeriesPreview({ at }: { at: number }) {
+  const shown = at === 0 ? 2 : at === 1 ? 4 : SERIES.length;
+  return (
+    <ul aria-label={`Preview of the series page: ${shown} of ${SERIES.length} pictures`} className="grid grid-cols-3 gap-2">
+      {SERIES.map((plate, i) => (
+        <li key={plate.id} className="relative aspect-[4/3] overflow-hidden rounded-control bg-surface-2">
+          {i < shown && <img src={plate.src} srcSet={plate.srcSet} sizes="8rem" alt={plate.alt} className="absolute inset-0 size-full object-cover" />}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function SeriesPageDemo() {
+  const [at, setAt] = useState(0);
+  const finished = at === SERIES_PAGE.length;
+  return (
+    <div className="grid w-full max-w-2xl gap-4">
+      <RunCard title="Making the spring series page" steps={seriesSteps(at)} progress={SERIES_PROGRESS[at]} preview={<SeriesPreview at={at} />} />
+      <div>
+        <Button size="sm" onClick={() => setAt(finished ? 0 : at + 1)}>
+          {finished ? "Start again" : "Next step"}
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+function SeriesRunTile() {
+  return (
+    <div className="w-full max-w-md">
+      <RunCard title="Making the spring series page" steps={seriesSteps(0)} progress={SERIES_PROGRESS[0]} />
+    </div>
+  );
+}
+
 export default function RunCardPage() {
   const [endingsKey, resetEndings] = useReplay();
   return (
-    <Page meta={meta} docs={docs} tile={<RunTile />} tileByWorld={{ device: <MixRunTile /> }}>
+    <Page meta={meta} docs={docs} tile={<RunTile />} tileByWorld={{ device: <MixRunTile />, flat: <SeriesRunTile /> }}>
       <Stage
         title="A run in progress"
         tier="responsive"
@@ -428,6 +481,13 @@ export default function RunCardPage() {
         align="start"
         code="WorldDemo"
         byWorld={{
+          flat: {
+            demo: <SeriesPageDemo />,
+            title: "A series page in progress",
+            code: "SeriesPageDemo",
+            caption:
+              "Litt is making the spring series page in three steps, and the preview shows the pictures as far as it has got. Press Next step and the run moves on: the step's mark swaps at once, the figure rolls on the responsive tier, and the ring lights its next ticks at once. Press Hide and the steps leave on the exit token, then the card becomes a raised block: the ring travels from the end of the header to the start of the block, and the title, the words and the figure glide to their seats, on the responsive tier. The height snaps. Press the block and it all goes back, the steps dropping in a quarter of the travel token.",
+          },
           device: {
             demo: <MixDemo />,
             code: "MixDemo",

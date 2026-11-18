@@ -4,6 +4,7 @@ import { Header, type HeaderLink, type HeaderLinkProps } from "@/components/head
 import { ProjectCover, type CoverName } from "@/components/list-cover";
 import { DeviceProvider } from "@/motion";
 import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
+import { SERIES } from "../plates";
 
 export const meta: PageMeta = {
   id: "header",
@@ -629,15 +630,265 @@ function LibraryTile() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): a small site of pictures and its weekly letter ---------- */
+
+const SITE_NAV = [
+  { label: "Posts", href: "/posts" },
+  { label: "Series", href: "/series" },
+  { label: "Letter", href: "/letter" },
+  { label: "About", href: "/about" },
+];
+
+/** The site's one main action. */
+function SubscribeButton({ primary = true }: { primary?: boolean }) {
+  return (
+    <Button variant={primary ? "primary" : undefined} size="sm" className="pointer-coarse:h-control-md pointer-coarse:px-control-pad-md">
+      Subscribe
+    </Button>
+  );
+}
+
+/** The demo router again, over the site's links. */
+function useSiteRouter(initial: string) {
+  const [path, setPath] = useState(initial);
+  return {
+    links: SITE_NAV.map((l) => ({ ...l, current: l.href === path })),
+    home: (e: MouseEvent) => {
+      e.preventDefault();
+      setPath("/posts");
+    },
+    renderLink: (l: HeaderLink, props: HeaderLinkProps) => (
+      <a
+        href={l.href}
+        {...props}
+        onClick={(e) => {
+          e.preventDefault();
+          setPath(l.href);
+        }}
+      />
+    ),
+    onNavigate: (l: HeaderLink) => setPath(l.href),
+  };
+}
+
+const LATEST = [
+  { name: "Open water", note: "4 min read" },
+  { name: "Dusk tide", note: "3 min read" },
+  { name: "Notes on a slow shutter", note: "6 min read" },
+  { name: "A red sun in March", note: "2 min read" },
+];
+const SERIES_LIST = [
+  ["Spring series", "Six pictures from the coast, one a week since March."],
+  ["The garden", "Buds, rust and rain, from the back door."],
+  ["Pencil studies", "The tide line drawn before it was photographed."],
+];
+const ISSUES = [
+  ["Issue 14, the last of the spring series", "Fri 21 Nov"],
+  ["Issue 13, a red sun in March", "Fri 14 Nov"],
+  ["Issue 12, what the garden did", "Fri 7 Nov"],
+];
+
+/** The site's front page, top to bottom. Each section carries the href of the nav link that opens it. */
+function LowTidePage() {
+  return (
+    <div className="grid gap-16 px-gutter pt-16 pb-24">
+      <div className="grid max-w-[46ch] gap-4">
+        <p className="text-caption text-fg-subtle">1,204 readers this week</p>
+        <h3 className="text-h1 text-fg text-balance">Pictures and notes from the coast, every week.</h3>
+        <p className="text-reading text-fg-muted">
+          Low Tide is a small site and a Friday letter: one series at a time, and a few lines about how each picture was made.
+        </p>
+      </div>
+
+      <div data-section="/posts" className="grid gap-6">
+        <h3 className="text-h3 text-fg">Latest posts</h3>
+        <ul data-under-glass className="grid gap-6 @min-[32rem]:grid-cols-2 @min-[48rem]:grid-cols-4">
+          {LATEST.map((p, i) => {
+            const plate = SERIES[i % SERIES.length]!;
+            return (
+              <li key={p.name} className="grid gap-3">
+                <div className="litt-raised relative aspect-[8/5] overflow-hidden bg-surface-2">
+                  <img src={plate.src} srcSet={plate.srcSet} sizes="16rem" alt={plate.alt} className="absolute inset-0 size-full object-cover" />
+                </div>
+                <div className="grid gap-1">
+                  <p className="text-body font-title text-fg">{p.name}</p>
+                  <p className="text-small text-fg-subtle">{p.note}</p>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+
+      <div data-section="/series" className="grid gap-6">
+        <h3 className="text-h3 text-fg">Series</h3>
+        <ul className="grid gap-6 @min-[48rem]:grid-cols-3">
+          {SERIES_LIST.map(([title, text]) => (
+            <li key={title} className="grid content-start gap-2 border-t border-line in-[[data-material=flat]]:border-transparent pt-4">
+              <p className="text-body font-title text-fg">{title}</p>
+              <p className="text-small text-fg-subtle">{text}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div data-section="/letter" className="grid gap-6">
+        <h3 className="text-h3 text-fg">Letter</h3>
+        <ul>
+          {ISSUES.map(([title, date]) => (
+            <li key={title} className="flex items-baseline justify-between gap-4 border-b border-line in-[[data-material=flat]]:border-transparent py-3 first:border-t">
+              <span className="text-body font-title text-fg">{title}</span>
+              <span className="shrink-0 tabular-nums text-caption font-normal text-fg-subtle">{date}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div data-section="/about" className="grid max-w-[46ch] gap-4">
+        <h3 className="text-h3 text-fg">About</h3>
+        <p className="text-reading text-fg-muted">
+          I walk the same mile of coast most mornings and photograph what the tide leaves. Write back any time.
+        </p>
+        <p className="text-small text-fg-subtle">hello@lowtide.site</p>
+      </div>
+    </div>
+  );
+}
+
+function LowTideDesktopDemo() {
+  const frame = useRef<HTMLDivElement>(null);
+  const router = useSiteRouter("/posts");
+  useStartUnderBar(frame);
+  return (
+    <Frame ref={frame} label="Low Tide home page" className="h-120">
+      <Header
+        wordmark={<a href="/posts" onClick={router.home}>Low Tide</a>}
+        navLabel="Low Tide"
+        navFrom="sm"
+        links={router.links}
+        renderLink={router.renderLink}
+        onNavigate={router.onNavigate}
+        actions={<SubscribeButton />}
+      />
+      <LowTidePage />
+    </Frame>
+  );
+}
+
+function LowTidePhoneDemo() {
+  const frame = useRef<HTMLDivElement>(null);
+  const router = useSiteRouter("/series");
+  useStartUnderBar(frame);
+  return (
+    <div className="mx-auto w-full max-w-sm [--gutter:var(--space-4)]">
+      <Frame ref={frame} label="Low Tide home page, phone" className="h-136">
+        <Header
+          wordmark={<a href="/posts" onClick={router.home}>Low Tide</a>}
+          navLabel="Low Tide, phone"
+          links={router.links}
+          onNavigate={router.onNavigate}
+          actions={<SubscribeButton />}
+        />
+        <LowTidePage />
+      </Frame>
+    </div>
+  );
+}
+
+function LowTideCurrentDemo() {
+  const frame = useRef<HTMLDivElement>(null);
+  const [path, setPath] = useState("/posts");
+  useStartUnderBar(frame);
+
+  /* Where each section starts, and how much room the bar takes above it. */
+  const top = (href: string) => frame.current?.querySelector<HTMLElement>(`[data-section="${href}"]`)?.offsetTop ?? 0;
+  const room = () => parseFloat(getComputedStyle(frame.current!).scrollPaddingTop);
+  const go = (href: string) => frame.current?.scrollTo({ top: top(href) - room() });
+
+  /* Scroll by hand and current follows: the last section whose top has passed the bar. */
+  const follow = () => {
+    const box = frame.current!;
+    const atEnd = box.scrollTop + box.clientHeight >= box.scrollHeight - 1;
+    const passed = SITE_NAV.filter((l) => top(l.href) - room() <= box.scrollTop + 1);
+    setPath(atEnd ? SITE_NAV[SITE_NAV.length - 1]!.href : (passed[passed.length - 1]?.href ?? ""));
+  };
+
+  return (
+    <div className="grid w-full gap-4">
+      <Frame ref={frame} onScroll={follow} label="Low Tide home page, with jump links" className="h-120">
+        <Header
+          wordmark={
+            <a
+              href="/"
+              onClick={(e) => {
+                e.preventDefault();
+                frame.current?.scrollTo({ top: 0 });
+              }}
+            >
+              Low Tide
+            </a>
+          }
+          navLabel="Low Tide, jump links"
+          navFrom="sm"
+          links={SITE_NAV.map((l) => ({ ...l, current: l.href === path }))}
+          renderLink={(l, props) => (
+            <a
+              href={l.href}
+              {...props}
+              onClick={(e) => {
+                e.preventDefault();
+                go(l.href);
+              }}
+            />
+          )}
+          onNavigate={(l) => go(l.href)}
+          actions={<SubscribeButton />}
+        />
+        <LowTidePage />
+      </Frame>
+      <p role="status" className="text-caption font-normal text-fg-subtle">
+        {path ? `aria-current="page" on ${SITE_NAV.find((l) => l.href === path)?.label}` : "No link is current at the top of the page"}
+      </p>
+    </div>
+  );
+}
+
+function LowTideTile() {
+  const frame = useRef<HTMLDivElement>(null);
+  const router = useSiteRouter("/posts");
+  useStartUnderBar(frame);
+  return (
+    <Frame ref={frame} label="Low Tide home page" className="h-80">
+      <Header
+        wordmark={<a href="/posts" onClick={router.home}>Low Tide</a>}
+        navLabel="Low Tide"
+        navFrom="sm"
+        links={router.links}
+        renderLink={router.renderLink}
+        onNavigate={router.onNavigate}
+        actions={<SubscribeButton primary={false} />}
+      />
+      <LowTidePage />
+    </Frame>
+  );
+}
+
 export default function HeaderPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<HeaderTile />} tileByWorld={{ device: <LibraryTile /> }}>
+    <Page meta={meta} docs={docs} tile={<HeaderTile />} tileByWorld={{ device: <LibraryTile />, flat: <LowTideTile /> }}>
       <Stage
         title="Desktop"
         tier="instant"
         size="lg"
         code="DesktopDemo"
         byWorld={{
+          flat: {
+            demo: <LowTideDesktopDemo />,
+            title: "A small site",
+            code: "LowTideDesktopDemo",
+            caption:
+              "A small site of pictures and a weekly letter, under a glass bar: the pictures blur under it as you scroll. That is the one place glass belongs in a page: it floats over content. Hover a link and it takes a fill and brighter text on the instant tier. The glass itself never animates. Four short links, so the nav shows from 640px wide (navFrom sm) and folds below that. Subscribe is the ink, the page's one fill.",
+          },
           device: {
             demo: <LibraryDesktopDemo />,
             title: "Take library",
@@ -657,6 +908,14 @@ export default function HeaderPage() {
         size="lg"
         code="PhoneDemo"
         byWorld={{
+          flat: {
+            demo: (
+              <DeviceProvider mode="phone">
+                <LowTidePhoneDemo />
+              </DeviceProvider>
+            ),
+            code: "LowTidePhoneDemo",
+          },
           device: {
             demo: (
               <DeviceProvider mode="phone">
@@ -678,7 +937,7 @@ export default function HeaderPage() {
         tier="instant"
         size="lg"
         code="CurrentDemo"
-        byWorld={{ device: { demo: <LibraryCurrentDemo />, code: "LibraryCurrentDemo" } }}
+        byWorld={{ flat: { demo: <LowTideCurrentDemo />, code: "LowTideCurrentDemo" }, device: { demo: <LibraryCurrentDemo />, code: "LibraryCurrentDemo" } }}
         caption="Click a link and the page scrolls to its section, stopping below the bar because the frame sets scroll-padding-top. Scroll by hand and the current link follows. The header stays mounted and only current changes, which is all a router has to pass in. The current link wears the selected segment, a raised fill with a hairline, and the browser hears aria-current. At the very top no link is current. Only the fill and the color change, so no link moves or resizes."
       >
         <CurrentDemo />
