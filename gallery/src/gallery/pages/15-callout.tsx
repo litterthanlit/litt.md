@@ -218,6 +218,21 @@ function MixNarrowDemo() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): a tip in a small site's editor ---------- */
+
+function PictureKeyTipDemo() {
+  return (
+    <div className="w-full max-w-xl">
+      <Callout
+        icon={<LightbulbIcon />}
+        title="Try P to add a picture"
+        description="You added 18 pictures by mouse this week. The key takes one press."
+        action={<Kbd>P</Kbd>}
+      />
+    </div>
+  );
+}
+
 export default function CalloutPage() {
   const [renewalKey, showRenewal] = useReplay();
   return (
@@ -226,7 +241,7 @@ export default function CalloutPage() {
         title="A tip with a key"
         align="start"
         code="TipDemo"
-        byWorld={{ device: { demo: <RecordKeyTipDemo />, code: "RecordKeyTipDemo" } }}
+        byWorld={{ flat: { demo: <PictureKeyTipDemo />, code: "PictureKeyTipDemo" }, device: { demo: <RecordKeyTipDemo />, code: "RecordKeyTipDemo" } }}
         caption="A tip sits in the page flow on a raised surface, with no shadow and no rail. The lightbulb replaces the default icon and stays in the neutral tone. The key at the end is a Kbd, so it is a hint and not a button, and it hides on a phone. Nothing moves."
       >
         <TipDemo />

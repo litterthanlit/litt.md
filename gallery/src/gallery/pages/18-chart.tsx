@@ -446,6 +446,24 @@ function TakesNarrowDemo() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): new readers a day ---------- */
+
+const NEW_READERS = [4, 6, 3, 9, 7, 2, 1, 5, 8, 6, 14, 11, 9, 12];
+
+function NewReadersDemo() {
+  return (
+    <div className="w-full max-w-3xl">
+      <BarChart
+        label="New readers a day, last 14 days"
+        labels={DAYS}
+        series={[{ name: "New readers", values: NEW_READERS }]}
+        unit={["reader", "readers"]}
+        xTitle="Day"
+      />
+    </div>
+  );
+}
+
 export default function ChartPage() {
   const [deploys, replayDeploys] = useReplay();
   const [build, replayBuild] = useReplay();
@@ -458,6 +476,7 @@ export default function ChartPage() {
         code="DeploysDemo"
         onReplay={replayDeploys}
         byWorld={{
+          flat: { demo: <NewReadersDemo key={deploys} />, title: "New readers a day", code: "NewReadersDemo" },
           device: {
             demo: <TakesDemo key={deploys} />,
             title: "Takes per day",

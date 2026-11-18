@@ -219,10 +219,67 @@ function TakesPagesTile() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): every post on a small site ---------- */
+
+const POST_NAMES = ["Open water", "Dusk tide", "Notes on a slow shutter", "What the garden did", "Drawing the tide line", "A week of rain"];
+const SERIES_OF = ["Spring series", "Spring series", "No series", "The garden", "Pencil studies", "The garden"];
+type Post = { id: number; name: string; series: string; status: "published" | "draft" | "hidden"; read: number };
+const POSTS: Post[] = Array.from({ length: 23 }, (_, i) => ({
+  id: i,
+  name: POST_NAMES[i % POST_NAMES.length]! + (i >= POST_NAMES.length ? `, part ${Math.floor(i / POST_NAMES.length) + 1}` : ""),
+  series: SERIES_OF[i % SERIES_OF.length]!,
+  status: i === 2 ? "draft" : i % 9 === 7 ? "hidden" : "published",
+  read: Math.round(612 / (1 + i * 0.6)),
+}));
+const POST_TONE: Record<Post["status"], TagStatus> = { published: "success", draft: "neutral", hidden: "neutral" };
+const POST_WORD: Record<Post["status"], string> = { published: "Published", draft: "Draft", hidden: "Hidden" };
+
+function PostsDemo() {
+  const [page, setPage] = useState(1);
+  const size = 5;
+  const rows = POSTS.slice((page - 1) * size, page * size);
+  return (
+    <div className="w-full min-w-0 max-w-3xl">
+      <Table label="Every post">
+        <TableHeader>
+          <TableRow>
+            <TableHead>Post</TableHead>
+            <TableHead>Series</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead numeric>Readers</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {rows.map((p) => (
+            <TableRow key={p.id}>
+              <TableCell primary>{p.name}</TableCell>
+              <TableCell>{p.series}</TableCell>
+              <TableCell>
+                <Tag status={POST_TONE[p.status]}>{POST_WORD[p.status]}</Tag>
+              </TableCell>
+              <TableCell numeric>{p.status === "draft" ? "Not yet" : `${p.read} readers`}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+      <Pagination className="mt-4" label="Posts pages" page={page} pageSize={size} total={POSTS.length} onPageChange={setPage} />
+    </div>
+  );
+}
+
+function ReadersPagesTile() {
+  const [page, setPage] = useState(1);
+  return (
+    <div className="w-full max-w-sm">
+      <Pagination label="Subscribers pages" page={page} pageSize={20} total={412} onPageChange={setPage} />
+    </div>
+  );
+}
+
 export default function PaginationPage() {
   const [key, reset] = useReplay();
   return (
-    <Page meta={meta} docs={docs} tile={<PagesTile />} tileByWorld={{ device: <TakesPagesTile /> }}>
+    <Page meta={meta} docs={docs} tile={<PagesTile />} tileByWorld={{ device: <TakesPagesTile />, flat: <ReadersPagesTile /> }}>
       <Stage
         title="Under a table"
         tier="instant"
@@ -232,6 +289,13 @@ export default function PaginationPage() {
         onReplay={reset}
         replayLabel="Reset"
         byWorld={{
+          flat: {
+            demo: <PostsDemo key={key} />,
+            title: "Under a list of posts",
+            code: "PostsDemo",
+            caption:
+              "Five posts to a page, 23 on the site in all. The range says where you are, and Previous is disabled on the first page. Press Next to the end and Next is disabled while focus moves to Previous, so a keyboard user is never dropped.",
+          },
           device: {
             demo: <TakesDemo key={key} />,
             code: "TakesDemo",

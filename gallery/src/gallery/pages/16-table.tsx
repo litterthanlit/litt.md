@@ -1368,6 +1368,54 @@ function UnitsNarrowDemo() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): every issue of the letter ---------- */
+
+type Issue = { id: string; issue: number; title: string; status: Tone; word: string; opened: number | null; at: string };
+
+const ISSUES: Issue[] = [
+  { id: "i14", issue: 14, title: "The last of the spring series", status: "warning", word: "Friday", opened: null, at: "2026-11-21" },
+  { id: "i13", issue: 13, title: "A red sun in March", status: "success", word: "Sent", opened: 68, at: "2026-11-14" },
+  { id: "i12", issue: 12, title: "What the garden did", status: "success", word: "Sent", opened: 64, at: "2026-11-07" },
+  { id: "i11", issue: 11, title: "Notes on a slow shutter", status: "success", word: "Sent", opened: 71, at: "2026-10-31" },
+  { id: "i10", issue: 10, title: "Drawing the tide line", status: "success", word: "Sent", opened: 59, at: "2026-10-24" },
+  { id: "i9", issue: 9, title: "Dusk tide", status: "danger", word: "Bounced 3", opened: 62, at: "2026-10-17" },
+  { id: "i8", issue: 8, title: "Open water", status: "success", word: "Sent", opened: 66, at: "2026-10-10" },
+  { id: "i7", issue: 7, title: "Six pictures, one pier", status: "success", word: "Sent", opened: 61, at: "2026-10-03" },
+  { id: "i6", issue: 6, title: "A week of rain", status: "success", word: "Sent", opened: 57, at: "2026-09-26" },
+  { id: "i5", issue: 5, title: "The first pencil studies", status: "success", word: "Sent", opened: 55, at: "2026-09-19" },
+];
+
+function IssuesDemo() {
+  return (
+    <Table label="Every issue" entrance className="max-h-96 max-w-3xl">
+      <TableHeader>
+        <TableRow>
+          <TableHead>Issue</TableHead>
+          <TableHead>Title</TableHead>
+          <TableHead>Status</TableHead>
+          <TableHead numeric>Opened</TableHead>
+          <TableHead numeric>Sent</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {ISSUES.map((i) => (
+          <TableRow key={i.id}>
+            <TableCell primary>Issue {i.issue}</TableCell>
+            <TableCell>{i.title}</TableCell>
+            <TableCell>
+              <Status tone={i.status}>{i.word}</Status>
+            </TableCell>
+            <TableCell numeric>{i.opened === null ? "Not yet" : `${i.opened}%`}</TableCell>
+            <TableCell numeric>
+              <time dateTime={i.at}>{shortDate(i.at)}</time>
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  );
+}
+
 export default function TablePage() {
   const [deployKey, replayDeploys] = useReplay();
   const [invoiceKey, resetInvoices] = useReplay();
@@ -1381,7 +1429,7 @@ export default function TablePage() {
         size="lg"
         align="start"
         code="DeployHistoryDemo"
-        byWorld={{ device: { demo: <TakeLogDemo key={deployKey} />, title: "Take log", code: "TakeLogDemo" } }}
+        byWorld={{ flat: { demo: <IssuesDemo key={deployKey} />, title: "Every issue", code: "IssuesDemo" }, device: { demo: <TakeLogDemo key={deployKey} />, title: "Take log", code: "TakeLogDemo" } }}
         onReplay={replayDeploys}
         caption="Rows fade in and rise from the travel token's distance to rest, on the expressive tier. Row n waits n times the stagger token, and the cascade stops counting at six. It is this page's one expressive moment. The header is sticky inside the table's region, so scroll the rows and it stays. Hover fills a row and nothing moves; on a touch screen the row you hold fills instead. Press Replay to watch it again."
       >

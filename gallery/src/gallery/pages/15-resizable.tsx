@@ -190,6 +190,39 @@ function LibraryPanesDemo() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): a small site's posts beside the one you are writing ---------- */
+
+const SITE_FILES: TreeNode[] = [
+  { id: "posts", label: "Posts", children: [{ id: "posts/open-water", label: "Open water" }, { id: "posts/dusk-tide", label: "Dusk tide" }] },
+  { id: "letter", label: "Letter", children: [{ id: "letter/issue-14", label: "Issue 14" }] },
+  { id: "about", label: "About" },
+];
+
+const SITE_TEXT: Record<string, string[]> = {
+  "posts/open-water": ["Open water", "", "The first of the spring series. I stood on the north pier for forty minutes before the light came.", "", "4 min read · 6 pictures"],
+  "posts/dusk-tide": ["Dusk tide", "", "Twenty minutes after sunset, from the same pier, facing the other way.", "", "3 min read · 2 pictures"],
+  "letter/issue-14": ["Issue 14", "", "Hello again. This is the last of the spring series, and the one I nearly did not take.", "", "Goes out Friday at 9:00"],
+  about: ["About", "", "I walk the same mile of coast most mornings and photograph what the tide leaves."],
+};
+
+function PostSplitDemo() {
+  const [page, setPage] = useState("posts/open-water");
+  return (
+    <div className="litt-raised h-80 w-full overflow-hidden rounded-surface">
+      <ResizablePanelGroup direction="horizontal" className="h-full">
+        <ResizablePanel defaultSize={32} minSize={20} maxSize={50} className="p-2">
+          <Tree label="Low Tide" items={SITE_FILES} on="surface-1" defaultExpanded={["posts"]} selected={page} onSelect={(id, node) => !node.children && setPage(id)} />
+        </ResizablePanel>
+        <ResizableHandle label="Resize the list of pages" />
+        <ResizablePanel minSize={40} className="grid content-start gap-3 p-4">
+          <p className="text-caption font-normal text-fg-subtle">{page}</p>
+          <p className="text-small whitespace-pre-wrap text-fg-muted">{SITE_TEXT[page]?.join("\n")}</p>
+        </ResizablePanel>
+      </ResizablePanelGroup>
+    </div>
+  );
+}
+
 export default function ResizablePage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -199,6 +232,13 @@ export default function ResizablePage() {
         align="start"
         code="SplitDemo"
         byWorld={{
+          flat: {
+            demo: <PostSplitDemo />,
+            title: "Pages beside a post",
+            code: "PostSplitDemo",
+            caption:
+              "Drag the line between the site's pages and the post you are writing. It turns stronger under the pointer and follows it one to one, and the list stays between 20% and 50%. Double click it to put it back. Tab to it and the arrow keys move it by 5%.",
+          },
           device: {
             demo: <CardFilesDemo />,
             title: "A card beside its take",

@@ -167,15 +167,63 @@ function TakesTile() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): issues sent, and the emails a month allows ---------- */
+
+function IssuesSentDemo() {
+  const [issues, setIssues] = useState(13);
+  const [emails, setEmails] = useState(2060);
+  const [said, setSaid] = useState("");
+  const send = () => {
+    setSaid(`Sent issue ${issues + 1}. 412 emails used.`);
+    setIssues((n) => n + 1);
+    setEmails((e) => e - 412);
+  };
+  return (
+    <div className="grid w-full max-w-xl gap-4">
+      <StatGroup>
+        <Stat label="Issues sent" value={<RollingNumber value={issues} />} delta="One every Friday since August" />
+        <Stat label="Emails left this month" value={<RollingNumber value={emails} />} delta="412 an issue" />
+      </StatGroup>
+      <div className="flex flex-wrap items-center gap-4">
+        <Button variant="primary" disabled={emails < 412} onClick={send}>
+          Send the next issue
+        </Button>
+        <p role="status" className="text-small text-fg-subtle">
+          {said}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function SubscribersTile() {
+  const [readers, setReaders] = useState(412);
+  return (
+    <div className="grid w-full max-w-xs gap-4">
+      <Stat label="Subscribers" value={<RollingNumber value={readers} />} delta="Up 12 on last month" tone="good" />
+      <Button size="sm" className="justify-self-start" onClick={() => setReaders((n) => n + 1)}>
+        Add a reader
+      </Button>
+    </div>
+  );
+}
+
 export default function RollingNumberPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<DeployTile />} tileByWorld={{ device: <TakesTile /> }}>
+    <Page meta={meta} docs={docs} tile={<DeployTile />} tileByWorld={{ device: <TakesTile />, flat: <SubscribersTile /> }}>
       <Stage
         title="Deploys and credits"
         tier="responsive"
         align="start"
         code="DeploysDemo"
         byWorld={{
+          flat: {
+            demo: <IssuesSentDemo />,
+            title: "Issues and emails",
+            code: "IssuesSentDemo",
+            caption:
+              "Press Send the next issue. The issue count rises and its last digit rolls up from below; the emails left fall and their changed digits roll down from above. Only the digits that change move, by half of the travel token, on the responsive tier.",
+          },
           device: {
             demo: <TakesDemo />,
             title: "Takes and the card",

@@ -170,6 +170,47 @@ function StoppedDemo() {
   return <LogView label="Export log" lines={STOPPED} wrap lineNumbers={false} height="auto" className="w-full max-w-3xl" />;
 }
 
+/* ---------- Flat's own (plans/024, phase 3): an issue as it goes out ---------- */
+
+const SENDING: LogLine[] = [
+  { text: "Issue 14, the last of the spring series, to 412 subscribers" },
+  { text: "Checked every link in the letter: 9 links, all fine", level: "debug" },
+  { text: "Made the web copy at lowtide.site/letter/14" },
+  { text: "Making each picture smaller for email" },
+  { text: "Picture 3 is 6.2 MB; it will go out at 1.1 MB.", level: "warn" },
+  { text: "Saved 9.4 MB across 6 pictures", level: "debug" },
+  { text: "Sending, 100 at a time" },
+  { text: "Sent 100 of 412" },
+  { text: "Sent 200 of 412" },
+  { text: "Sent 300 of 412" },
+  { text: "3 addresses bounced: the mailbox is full or gone", level: "warn" },
+  { text: "Sent 409 of 412" },
+  { text: "Will try the full mailboxes again tomorrow", level: "debug" },
+  { text: "Posted issue 14 under Letter on the site" },
+  { text: "First open, from Malmö" },
+  { text: "Issue 14 sent to 409 readers in 34 s.", level: "success" },
+];
+
+function SendingDemo() {
+  const [lines, setLines] = useState<LogLine[]>([]);
+  useEffect(() => {
+    let i = 0;
+    let at = 3;
+    let timer = 0;
+    const next = () => {
+      const line = SENDING[i];
+      if (!line) return;
+      at += 0.4 + (i % 4) * 0.6;
+      setLines((all) => [...all, { ...line, id: i, time: clock(at) }]);
+      i++;
+      timer = window.setTimeout(next, 180 + (i % 3) * 140);
+    };
+    timer = window.setTimeout(next, 400);
+    return () => window.clearTimeout(timer);
+  }, []);
+  return <LogView label="Issue 14, sending" lines={lines} height="16rem" className="w-full max-w-3xl" />;
+}
+
 export default function LogViewPage() {
   const [run, replay] = useReplay();
   return (
@@ -180,6 +221,13 @@ export default function LogViewPage() {
         code="BuildDemo"
         onReplay={replay}
         byWorld={{
+          flat: {
+            demo: <SendingDemo key={run} />,
+            title: "An issue as it goes out",
+            code: "SendingDemo",
+            caption:
+              "The lines arrive unevenly, as a real send writes them, and the view follows the newest. Scroll up while it runs: it stays where you are, and a button says how many lines came since; press it to go back to the newest and follow again.",
+          },
           device: {
             demo: <OffloadDemo key={run} />,
             title: "A card as it offloads",

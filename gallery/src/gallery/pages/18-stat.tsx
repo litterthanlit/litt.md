@@ -273,6 +273,34 @@ function TakesTile() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): a small site's week in figures ---------- */
+
+function SiteStatsDemo() {
+  return (
+    <div className="w-full max-w-3xl">
+      <StatGroup>
+        <Stat label="Readers this week" value="1,204" delta="Up 86 on last week" tone="good" />
+        <Stat label="Subscribers" value={412} delta="Up 12 on last month" tone="good" />
+        <Stat label="Time on a post" value={4} unit="min" delta="Up 30 s on last week" tone="good" />
+        <Stat label="Letter opened" value={68} unit="%" />
+      </StatGroup>
+    </div>
+  );
+}
+
+function LetterNewsDemo() {
+  return (
+    <div className="w-full max-w-3xl">
+      <StatGroup>
+        <Stat label="Time on a post" value={4} unit="min" delta="Up 30 s on last week" tone="good" />
+        <Stat label="Unsubscribed" value={3} delta="Up 2 on last week" tone="bad" />
+        <Stat label="Replies this week" value={14} delta="Same as last week" />
+        <Stat label="Series" value={3} />
+      </StatGroup>
+    </div>
+  );
+}
+
 export default function StatPage() {
   return (
     <Page meta={meta} docs={docs} tile={<StatTile />} tileByWorld={{ device: <TakesTile />, flat: <ReadersTile /> }}>
@@ -280,6 +308,7 @@ export default function StatPage() {
         title="The studio this week"
         code="StudioStatsDemo"
         byWorld={{
+          flat: { demo: <SiteStatsDemo />, title: "The site this week", code: "SiteStatsDemo" },
           device: {
             demo: <ShootStatsDemo />,
             title: "The shoot this week",
@@ -297,6 +326,12 @@ export default function StatPage() {
         title="Good news, bad news, no news"
         code="NewsDemo"
         byWorld={{
+          flat: {
+            demo: <LetterNewsDemo />,
+            code: "LetterNewsDemo",
+            caption:
+              "A change that is good news gets a green status circle and one that is bad a red one, whichever way the number went. Time on a post that rose is good news, and readers who left are bad. A change that is neither has no circle. The words carry the direction in the quiet ink, and a screen reader also hears whether it was good or bad.",
+          },
           device: {
             demo: <ClipsDemo />,
             code: "ClipsDemo",

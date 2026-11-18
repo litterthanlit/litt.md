@@ -92,6 +92,44 @@ function StatesDemo() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): a picture going up to a post ---------- */
+
+function PictureUploadDemo() {
+  const [run, setRun] = useState(0);
+  const [sent, setSent] = useState<number | undefined>(undefined);
+  useEffect(() => {
+    if (!run) return;
+    setSent(undefined);
+    let at = 0;
+    const steps = [0.4, 0.9, 0.3, 1.1, 0.7, 1.4, 0.6, 1.2, 0.9, 0.5];
+    let i = 0;
+    const tick = () => {
+      at = Math.min(MB, at + steps[i++ % steps.length]!);
+      setSent(at);
+      if (at < MB) timer = window.setTimeout(tick, 280);
+    };
+    let timer = window.setTimeout(tick, 600); // a moment before the first byte, while the value is not known
+    return () => window.clearTimeout(timer);
+  }, [run]);
+
+  const done = sent !== undefined && sent >= MB;
+  return (
+    <div className="grid w-full max-w-sm gap-6">
+      <Progress
+        label="Uploading open-water.jpg"
+        value={run ? sent : 0}
+        max={MB}
+        valueText={run && sent !== undefined ? `${sent.toFixed(1)} of ${MB} MB` : run ? "Waiting" : `0 of ${MB} MB`}
+        status={done ? "done" : "active"}
+        message={done ? "open-water.jpg is in the post." : run ? `About ${Math.max(1, Math.ceil(((MB - (sent ?? 0)) / 0.8) * 0.28))} s left` : "Press Upload to start."}
+      />
+      <Button size="sm" className="justify-self-start" disabled={!!run && !done} onClick={() => setRun((r) => r + 1)}>
+        {run ? "Upload again" : "Upload"}
+      </Button>
+    </div>
+  );
+}
+
 export default function ProgressPage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -100,6 +138,7 @@ export default function ProgressPage() {
         tier="instant"
         align="start"
         code="UploadDemo"
+        byWorld={{ flat: { demo: <PictureUploadDemo />, title: "A picture for a post", code: "PictureUploadDemo" } }}
         caption="Press Upload. For a moment nothing is known, so the slot is empty and the reading says Waiting; then it fills as the bytes go, a transform on the instant tier, and the reading counts in tabular figures. The fill sits down in the channel: the top wall's shade and the lit lower wall are drawn over it. At the end the slot is full, the reading says Done, and a screen reader hears it once."
       >
         <UploadDemo />

@@ -157,6 +157,23 @@ function RecorderNarrowDemo() {
   return <CohortGrid className="w-full max-w-80" label="Recorders that made a take, by week registered, narrow" cohorts={WEEKLY} />;
 }
 
+/* ---------- Flat's own (plans/024, phase 3): readers who keep opening the letter ---------- */
+
+const READERS_BY_WEEK: Cohort[] = [
+  { label: "24 Aug", size: 41, values: [100, 83, 78, 76, 73, 71, 71, 68] },
+  { label: "31 Aug", size: 38, values: [100, 87, 79, 74, 71, 68, 68] },
+  { label: "7 Sep", size: 45, values: [100, 80, 76, 71, 69, 67] },
+  { label: "14 Sep", size: 52, values: [100, 85, 81, 77, 75] },
+  { label: "21 Sep", size: 47, values: [100, 83, 79, 74] },
+  { label: "28 Sep", size: 61, values: [100, 88, 82] },
+  { label: "5 Oct", size: 58, values: [100, 86] },
+  { label: "12 Oct", size: 70, values: [100] },
+];
+
+function ReadersWeeklyDemo() {
+  return <CohortGrid className="w-full max-w-3xl" label="Readers still opening the letter, by the week they subscribed" hue="teal" cohorts={READERS_BY_WEEK} />;
+}
+
 export default function CohortGridPage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -164,6 +181,13 @@ export default function CohortGridPage() {
         title="Weekly retention"
         code="WeeklyDemo"
         byWorld={{
+          flat: {
+            demo: <ReadersWeeklyDemo />,
+            title: "Readers who stay",
+            code: "ReadersWeeklyDemo",
+            caption:
+              "A row per week readers subscribed, oldest first, and a column per issue since: the share of them that opened it. Each cell has its share in tabular figures and a dot in front of it in teal's four steps, so the eye finds where readers stay without losing the numbers. Younger weeks have fewer issues behind them, so their rows end sooner.",
+          },
           device: {
             demo: <RecorderWeeklyDemo />,
             title: "Recorders in use",

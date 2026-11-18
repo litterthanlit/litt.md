@@ -313,6 +313,53 @@ function BackupPhoneDemo() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): how soon readers open the letter ---------- */
+
+/** The same spread of minutes, read as the time from send to open: long-time readers, and the ones who came this autumn. */
+const OPENS = { all: [...VIP, ...TEAM], long: VIP, new: TEAM };
+type Readers = keyof typeof OPENS;
+
+function OpenSpeedDemo() {
+  const [who, setWho] = useState<Readers>("all");
+  const values = OPENS[who];
+  return (
+    <div className="grid w-full max-w-3xl gap-8">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <p className="grid gap-1">
+          <span className="text-small text-fg-subtle">Time to open, issue 13</span>
+          <span className="flex items-baseline gap-2">
+            <span className="text-h3 tabular-nums text-fg">{duration(middle(values))}</span>
+            <span className="text-small text-fg-subtle">median</span>
+          </span>
+        </p>
+        <Segmented
+          legend="Readers"
+          size="sm"
+          value={who}
+          onValueChange={setWho}
+          options={[
+            { value: "all", label: "All" },
+            { value: "long", label: "Since spring" },
+            { value: "new", label: "New" },
+          ]}
+        />
+      </div>
+      <DotPlot
+        label="Time to open"
+        values={values}
+        scale="log"
+        domain={[3, 4320]}
+        ticks={REPLY_TICKS}
+        formatValue={duration}
+        unit={["open", "opens"]}
+        goal={240}
+        goalLabel="Within 4 h"
+        markers={who === "long" ? [] : [{ value: RUI, label: "Mara · 33 h" }]}
+      />
+    </div>
+  );
+}
+
 export default function DotPlotPage() {
   const [reply, replayReply] = useReplay();
   const [build, replayBuild] = useReplay();
@@ -324,6 +371,13 @@ export default function DotPlotPage() {
         size="lg"
         code="ReplySpeedDemo"
         byWorld={{
+          flat: {
+            demo: <OpenSpeedDemo key={reply} />,
+            title: "Time to open",
+            code: "OpenSpeedDemo",
+            caption:
+              "How soon readers opened issue 13 after it went out. Each column is a slice of that time on a log axis, so minutes and days share the plot, and its dots stack out from the center line. Blue is within four hours and gray is past it. The blue line is the median. Mara opened it 33 hours later, so she is one dot, ringed and named. Hover or arrow to a column for its range and count. The switch redraws at once. The plot fades in once, on the responsive tier. Replay it to watch.",
+          },
           device: {
             demo: <BackupWaitDemo key={reply} />,
             title: "Time to backup",
