@@ -6,6 +6,13 @@ To update an item, read the entries since your version, then reinstall it with `
 
 ## 2026-11-18 · Flat's ground
 
+Later the same day, Flat's data in colour (plans/024, Flat; Nick: "yes I love this all!"): the surfaces stay grey and white, and the data is bright Candy. Nothing changes outside Flat.
+
+- **changed** `litt`: under Flat the five data hues are Candy's, at the most chroma the screen holds (`--litt-flat-data-blue` to `--litt-flat-data-rose` and their `-text` tones, light and dark), each mark 3:1 and each `-text` tone 4.5:1 on the grey ground and on paper; the blue sits a little off Candy's in light so it keeps 0.12 from Blue 4. The ink card's mark and its line's dot take the other theme's step (`--litt-flat-data-blue-ink`), so they keep 3:1 on the ink in dark too (3.3:1 on white, was 2.9:1). Nothing in your code has to change.
+- **added** `litt`: slots six to eight, `--litt-data-sky`, `--litt-data-bubblegum` and `--litt-data-sun` with their `-text` and `-tint` tones (Tailwind gains `bg-litt-data-sky`, `text-litt-data-sky-text` and the rest): under Flat Candy's sky, bubblegum and sun (`--litt-flat-data-sky`, `-bubblegum`, `-sun`), and in every other world an alias of its own teal, rose and amber. And Flat's sequential ramp, Candy's bubblegum from light to deep (dim to bright in dark): `--litt-flat-data-seq-1` to `4`, read as `--litt-data-seq-1` to `4`, which only Flat sets. Nothing in your code has to change.
+- **changed** `flat-litt`: the same, in Flat's own install.
+- **changed** `press-litt`, `device-litt`, `plain-litt`, `rack-litt`, `heat-litt`: the new names ride along, slots six to eight as aliases of this world's teal, rose and amber, and no ramp. Nothing in these worlds changes.
+
 Later the same day, Flat's ink card and its parts in Flat's materials (plans/024, Flat, phase 2b). Nothing changes outside Flat.
 
 - **added** `litt`: `.litt-ink`, Flat's ink card (call 4): under Flat a surface marked with it is the ink as a rounded square, black in light and white in dark, its words the paper's color (`--litt-flat-paper`), its quiet words Flat's disabled grey (`--litt-flat-fg-disabled`, 7.1:1 on black and 5.5:1 on white), its line's dot in the first data hue's mark tone, and no ring and no shadow. It does nothing outside Flat. Nothing in your code has to change.

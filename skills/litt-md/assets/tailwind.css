@@ -100,6 +100,16 @@
   --color-data-rose: var(--data-rose);
   --color-data-rose-text: var(--data-rose-text);
   --color-data-rose-tint: var(--data-rose-tint);
+  /* Slots six to eight: Flat's own hues, every other world's teal, rose and amber. */
+  --color-data-sky: var(--data-sky);
+  --color-data-sky-text: var(--data-sky-text);
+  --color-data-sky-tint: var(--data-sky-tint);
+  --color-data-bubblegum: var(--data-bubblegum);
+  --color-data-bubblegum-text: var(--data-bubblegum-text);
+  --color-data-bubblegum-tint: var(--data-bubblegum-tint);
+  --color-data-sun: var(--data-sun);
+  --color-data-sun-text: var(--data-sun-text);
+  --color-data-sun-tint: var(--data-sun-tint);
 
   /* Type: each size carries its own leading and tracking (R9), and the title and
      caption steps their role's weight (R8).
