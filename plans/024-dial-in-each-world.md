@@ -553,6 +553,18 @@ word with no pill (a change to call 6, which kept the pill), to build after 2b a
 an approved call. Left: A, B, C, D and F; Flat stays as the nine calls have it. The lesson for the next reference: take
 the feeling it gives, shown on Flat's own parts, not a list of its features side by side.
 
+**Colourful means the data (2026-11-18).** Nick looked at the three directions on the canvas (A soft pastel surfaces,
+B colour pops on objects, C playful; `flat-directions.tsx`) and said: "I meant the data visualization and just overall,
+guages, heatmap, etc, should be colorful, my bad. and just the feel. I like this but I think it's not the right move".
+So the surfaces stay as the calls have them (the grey ground, white paper with no edge, pills, the ink card, a status as
+a dot and a word), and "colourful" means the data and the feel: gauge, heatmap, charts, sparkline, stat, meter and the
+rest. The directions stay on the canvas as a record. The study is `gallery/src/canvas/flat-data.tsx` (right of the
+directions, from x 8920): `Flat · data, today`, three candidate palettes (`flat-data-palettes.ts`: Candy, Spectrum,
+Studio, each eight hues, a ramp and a diverging pair, light and dark, checked with the dataviz validator) on every live
+data part, and `Flat · data in a screen`. Nothing ships until Nick picks; the pick becomes new `--flat-data-*` values
+through `evolve.md`, and slots six to eight, a ramp the Heatmap and Cohort grid read, and a diverging pair are contract
+changes.
+
 ## The order of work inside a world
 
 The same five phases for every world. A phase is not started until the one before it is committed.
