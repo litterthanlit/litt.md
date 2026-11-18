@@ -1,0 +1,179 @@
+/*
+ * Flat, three directions (flat-directions.tsx): what each direction does to the same screen, scoped to a frame by
+ * data-flat-dir. The palettes are custom properties the frame sets from flat-directions-data.ts (--soft-*, --soft-deep-*,
+ * --pop-*, --pop-mark-*, --block-*), so no colour is written here; every other value is a token, re-mapped. The few
+ * values no token holds (a rounder surface, the figure-size headline's room) carry litt-allow as candidates. Plain CSS is
+ * unlayered, so these win over the components' utilities and over tokens.css's own Flat rules (in @layer base).
+ */
+
+/* ---------------------------------------------------------------- shared */
+
+/* Words and marks on a pop are black in both themes: the ink in light, Flat's black in dark (6.2:1 and up on every pop). */
+[data-flat-dir][data-theme="light"] {
+  --on-pop: var(--flat-fg);
+}
+[data-flat-dir][data-theme="dark"] {
+  --on-pop: var(--flat-canvas);
+}
+
+/* What a pop fills: an icon's chip, a sticker, a badge, a drawing's blob, the sticky note, an emoji avatar, a swatch,
+   and a reaction, the heart or a mood once it is chosen. Before that a press target is the bubble it sits on. */
+[data-flat-dir] :is([data-chip], [data-sticker], [data-blob], [data-badge], [data-note], [data-emoji-avatar], [data-swatch]),
+[data-flat-dir] :is([data-reaction], [data-heart], [data-mood])[data-on] {
+  background: var(--pop-color);
+  color: var(--on-pop);
+}
+/* In :where(), so a direction's own fill for these (below) wins. */
+:where([data-flat-dir] :is([data-reaction], [data-heart], [data-mood]):not([data-on])) {
+  background: var(--block);
+  color: var(--fg);
+}
+[data-flat-dir] :is([data-pop-dot], [data-burst]) {
+  background: var(--pop-color);
+}
+[data-flat-dir] [data-blob-track] {
+  fill: var(--surface-3);
+}
+[data-flat-dir] [data-blob-fill] {
+  fill: var(--pop-color);
+}
+/* The emoji stack's ring, as AvatarGroup's: the paper it sits on. */
+[data-flat-dir] :is([data-emoji-avatar], [data-emoji-more]) {
+  box-shadow: 0 0 0 2px var(--surface-1);
+}
+/* A field reads --field, which the frame resolves once from its own --cut; restated where a section re-maps --cut. */
+[data-flat-dir] [data-kind] {
+  --field: var(--cut);
+}
+[data-flat-dir] [data-swatch][data-on] {
+  box-shadow: 0 0 0 2px var(--surface-1), 0 0 0 4px var(--fg);
+}
+
+/* ---------------------------------------------------------------- A · soft colour */
+
+[data-flat-dir="soft"] {
+  --radius-surface: 28px; /* litt-allow: candidate, a rounder surface for the soft direction */
+}
+[data-flat-dir="soft"] [data-dir-screen] {
+  gap: var(--space-12);
+}
+[data-flat-dir="soft"] section[data-kind] {
+  padding: var(--space-8);
+  gap: var(--space-6);
+}
+/* One pastel per kind, the paper of that section; its deeper step is the bubble (a chip, a reaction), and what a hand
+   uses inside it (a field, the chosen segment) is white paper, as on the ground. */
+[data-flat-dir="soft"] :is([data-kind="posts"], [data-kind="readers"], [data-kind="letter"], [data-kind="numbers"], [data-kind="drafts"]) {
+  --cut: var(--flat-paper);
+  --block: var(--flat-paper);
+  --slot: var(--flat-paper);
+}
+[data-flat-dir="soft"] [data-kind="posts"] {
+  --surface-1: var(--soft-sky);
+  --surface-3: var(--soft-deep-sky);
+}
+[data-flat-dir="soft"] [data-kind="readers"] {
+  --surface-1: var(--soft-lilac);
+  --surface-3: var(--soft-deep-lilac);
+}
+[data-flat-dir="soft"] [data-kind="letter"] {
+  --surface-1: var(--soft-butter);
+  --surface-3: var(--soft-deep-butter);
+}
+[data-flat-dir="soft"] [data-kind="numbers"] {
+  --surface-1: var(--soft-peach);
+  --surface-3: var(--soft-deep-peach);
+}
+[data-flat-dir="soft"] [data-kind="drafts"] {
+  --surface-1: var(--soft-mint);
+  --surface-3: var(--soft-deep-mint);
+}
+[data-flat-dir="soft"] [data-chip] {
+  background: var(--surface-3);
+  color: var(--fg);
+}
+/* Likes are rose, wherever they sit. */
+[data-flat-dir="soft"] [data-reaction] {
+  background: var(--soft-rose);
+  color: var(--fg);
+}
+
+/* ---------------------------------------------------------------- B · colour pops */
+
+/* A reader's avatar is the reader's pop with black initials (each Avatar carries its --pop-color). */
+[data-flat-dir="pops"] [data-pop],
+[data-flat-dir="playful"] [data-pop] {
+  --data-blue-tint: var(--pop-color);
+  --data-amber-tint: var(--pop-color);
+  --data-teal-tint: var(--pop-color);
+  --data-violet-tint: var(--pop-color);
+  --data-rose-tint: var(--pop-color);
+  --data-blue-text: var(--on-pop);
+  --data-amber-text: var(--on-pop);
+  --data-teal-text: var(--on-pop);
+  --data-violet-text: var(--on-pop);
+  --data-rose-text: var(--on-pop);
+}
+/* The chart is the numbers' object, so its bars take the numbers' pop, at its mark step (3:1 off paper and ground). */
+[data-flat-dir="pops"] [data-kind="numbers"] {
+  --data-blue: var(--pop-mark-tomato);
+}
+
+/* ---------------------------------------------------------------- C · playful */
+
+[data-flat-dir="playful"] {
+  --radius-surface: 32px; /* litt-allow: candidate, a chunkier surface for the playful direction */
+}
+[data-flat-dir="playful"] [data-dir-headline] {
+  font-size: var(--type-figure-size);
+  line-height: var(--type-figure-leading);
+  letter-spacing: var(--type-figure-tracking);
+}
+[data-flat-dir="playful"] [data-dir-title] {
+  font-size: var(--type-h1-size);
+  line-height: var(--type-h1-leading);
+}
+/* A colour block behind each section and the header; on it, what a hand uses is white paper (black in dark), and the
+   quiet words take the full ink, since the grey does not hold 4.5:1 on every block. */
+[data-flat-dir="playful"] :is([data-kind="header"], [data-kind="posts"], [data-kind="readers"], [data-kind="letter"], [data-kind="numbers"], [data-kind="drafts"]) {
+  --cut: var(--flat-paper);
+  --block: var(--flat-paper);
+  --slot: var(--flat-paper);
+  --fg-muted: var(--fg);
+  --fg-subtle: var(--fg);
+}
+[data-flat-dir="playful"] [data-kind="header"] {
+  --surface-1: var(--block-lemon);
+  background: var(--surface-1);
+  padding: var(--space-8);
+}
+[data-flat-dir="playful"] [data-kind="posts"] {
+  --surface-1: var(--block-sky);
+}
+[data-flat-dir="playful"] [data-kind="readers"] {
+  --surface-1: var(--block-lilac);
+}
+[data-flat-dir="playful"] [data-kind="letter"] {
+  --surface-1: var(--block-rose);
+}
+[data-flat-dir="playful"] [data-kind="numbers"] {
+  --surface-1: var(--block-peach);
+}
+[data-flat-dir="playful"] [data-kind="drafts"] {
+  --surface-1: var(--block-mint);
+}
+[data-flat-dir="playful"] [data-chip] {
+  background: var(--flat-paper);
+  color: var(--fg);
+}
+[data-flat-dir="playful"] :is([data-dir-row], [data-dir-chart]) {
+  background: var(--flat-paper);
+  padding: var(--space-3);
+}
+[data-flat-dir="playful"] [data-dir-row] {
+  padding-block: var(--space-2);
+}
+[data-flat-dir="playful"] [data-reaction] {
+  background: var(--pop-color);
+  color: var(--on-pop);
+}

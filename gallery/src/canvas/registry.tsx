@@ -30,6 +30,7 @@ import { PressRound2Preview, type PressRound2Id } from "./press-round2";
 import { FlatCallPreview, FlatTogetherPreview, type FlatCallId } from "./flat-calls";
 import { HypherDifferences, HypherTakePreview, type HypherTake } from "./flat-hypher";
 import { FlatIconComposition, FlatIconPairs, FlatIconSet, FlatIconsInUse } from "./flat-icons";
+import { FlatDirectionPreview, FlatNewParts, type FlatDirection } from "./flat-directions";
 import { NoUiPreview, type NoUiColumn, type NoUiScreen } from "./no-ui";
 import { StreakCuts, StreakHero, StreakPairs, StreakPalettes, StreakPrints } from "./streaks";
 import {
@@ -257,6 +258,15 @@ const HYPHER_TAKES: { take: HypherTake; name: string }[] = [
   { take: "new", name: "Flat · the new Flat, all calls" },
   { take: "hypher", name: "Flat · as Hypher" },
 ];
+/* Flat's redesign (flat-directions.tsx, Nick 2026-11-18: "new components fun airy easy approach colorful"): under the
+   Hypher comparison (which ends near y 18480) and right of Flat's calls (which end at x 3600), above the icons (from
+   y 22200): three directions, light over dark each, then Flat's own new parts. */
+const DIRS = { x: 3600 + 240, y: 18480 + 240, width: 1120, gap: 120, height: 2300, parts: 2880 };
+const FLAT_DIRECTIONS: { dir: FlatDirection; name: string }[] = [
+  { dir: "soft", name: "Flat · A soft colour" },
+  { dir: "pops", name: "Flat · B colour pops" },
+  { dir: "playful", name: "Flat · C playful" },
+];
 const flatRowY = (row: number) => FLAT_Y + FLAT.together + FLAT.gap + FLAT.heights.slice(0, row).reduce((sum, h) => sum + h + FLAT.gap, 0);
 const callRowY = (row: number) => CALLS_Y + CALL.heights.slice(0, row).reduce((sum, h) => sum + h + CALL.gap, 0);
 export const ITEMS: CanvasItem[] = [
@@ -431,6 +441,26 @@ export const ITEMS: CanvasItem[] = [
     width: 1120,
     height: 2640,
     render: () => <HypherDifferences />,
+  },
+  ...FLAT_DIRECTIONS.map(
+    ({ dir, name }, i): CanvasItem => ({
+      id: `flat-direction-${dir}`,
+      name,
+      x: DIRS.x + i * (DIRS.width + DIRS.gap),
+      y: DIRS.y,
+      width: DIRS.width,
+      height: DIRS.height,
+      render: () => <FlatDirectionPreview dir={dir} />,
+    }),
+  ),
+  {
+    id: "flat-new-parts",
+    name: "Flat · new components",
+    x: DIRS.x + 3 * (DIRS.width + DIRS.gap),
+    y: DIRS.y,
+    width: DIRS.width,
+    height: DIRS.parts,
+    render: () => <FlatNewParts />,
   },
   { id: "flat-icons-set", name: "Flat icons · the set", x: 0, y: ICONS_Y, width: ICONS.width, height: 3040, render: () => <FlatIconSet /> },
   { id: "flat-icons-pairs", name: "Flat icons · today and fun, side by side", x: ICONS.width + ICONS.gap, y: ICONS_Y, width: ICONS.width, height: 1100, render: () => <FlatIconPairs /> },
