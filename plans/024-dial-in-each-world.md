@@ -821,6 +821,38 @@ Sheets (scratchpad, not kept), before beside after at half scale: `flat-measure-
 `flat-gallery-<theme>.png`, `flat-about-<theme>.png`, `flat-progress-<theme>.png`,
 `flat-progress-variants-<theme>.png`, and `flat-vs-reference.png`.
 
+### Flat, round 3 (2026-11-19)
+
+List (a), the items an agent can do without Nick. Gallery code only: no token, registry item, shelf order, set, canvas,
+danger, ramp, File drop or other world changed, so no changelog line and the lock stands.
+
+- [x] About's scene frames are the sheet under Flat (`world.tsx`, `SceneStage`: `.flat-sheet`, the hairline gone under
+      Flat only). R10: About reads as the wall and the screen do, sheets on the ground, nothing outlined.
+- [x] Kbd and Icons have Flat's own: Kbd's lead is Writing the letter (`LetterKeysDemo`, five keys of the editor, no
+      rules), which its tile follows; Icons has a tile of the editor's eight icons over their words (`LetterIconsTile`,
+      `tileByWorld`) and Beside words in the letter's voice (`PostContextDemo`). The shared demos stay. R10: the first
+      three tiles of `#flat/components` all speak the letter.
+- [x] This week's heatmap is a week by hand (`systems/flat.tsx`): 02:00 to 04:00 empty, a morning rise at 08:00, the
+      evening read at 20:00 the weekday's deepest step, Friday morning the week's peak (the letter goes out at 9:00),
+      Saturday late, Sunday quietest; steps 1, 10, 20, 30, so each step is a time of day, not noise. R10: the ramp says
+      when people read.
+- [x] The letter's line says "one field to join", true in both themes.
+- [x] `#flat/progress` walks the ramp once, in the lead's caption; A picture going up's caption says only what is new
+      (one picture's fill, Waiting, Failed).
+- [x] A first-frame moment (`arrive-once.tsx`): on `#flat/components` the first tile (Button's readers) wakes on load
+      and its four readers arrive one after another on Flat's 0.28 spring; on `#flat/about` the five readers who wrote
+      back do the same. Once a visit, nothing on the Systems index or in the player, still under reduced motion and at
+      rest exactly as before. R10 felt: both views are warm before a hand moves.
+- [x] Player Home: each part's name at the title weight (500) over its line at body weight (400; the caption step had
+      carried 600 into it).
+- [x] The take larger on Flat's screen (`bodies/flat.tsx`, `useTakeZoom`, and `.flat-screen` in `app.css`): each take
+      zooms to fit the screen inside its padding, at most 1.5 and never below real size, measured as it loads and then
+      held. Take 1 goes from 452 by 67 (3.8%) to 702 by 126 (11.2%) of 1216 by 648; Switch 32%, Media 57%. Phone strip
+      unchanged. R10: the object, not the white air, holds the screen.
+
+Sheets (scratchpad, not kept): `flat-round3/sheets/flat-<home|take1|components|about|progress|kbd|icons>.png`, before
+beside after at half scale, light over dark.
+
 ## The order of work inside a world
 
 The same five phases for every world. A phase is not started until the one before it is committed.
