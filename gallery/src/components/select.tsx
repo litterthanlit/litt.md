@@ -63,6 +63,7 @@ import { useOverlayMotion } from "@/motion/deal";
 import { CheckIcon, ChevronsUpDownIcon } from "@/components/icons";
 import { GLIDE_ROW, useGlide, type Glide } from "@/components/glide";
 import { SelectDeviceList, SelectDeviceRow, SelectDeviceTrigger } from "@/worlds/device/select";
+import { SelectHeatList, SelectHeatRow, SelectHeatTrigger } from "@/worlds/heat/select";
 import { SelectRackList, SelectRackRow, SelectRackTrigger } from "@/worlds/rack/select";
 import { SelectFlatList, SelectFlatRow, SelectFlatTrigger } from "@/worlds/flat/select";
 import { SelectPlainList, SelectPlainRow, SelectPlainTrigger } from "@/worlds/plain/select";
@@ -238,7 +239,7 @@ function PressRow({ item, option }: SelectRowBodyProps) {
 
 function Row({ option }: { option: SelectOption }) {
   const ctx = useContext(ListCtx);
-  const Body = byWorld(useMaterial(), { press: PressRow, flat: SelectFlatRow, device: SelectDeviceRow, plain: SelectPlainRow, rack: SelectRackRow });
+  const Body = byWorld(useMaterial(), { press: PressRow, flat: SelectFlatRow, device: SelectDeviceRow, plain: SelectPlainRow, rack: SelectRackRow, heat: SelectHeatRow });
   if (!ctx) return null;
   const { glide, quiet, touch } = ctx;
   return (
@@ -427,7 +428,7 @@ function Surface({ ref, options, open, leaving, flat, input, onExited, style, ..
   };
   const ctx: ListContext = { glide, quiet: quietRef, touch };
 
-  const List = byWorld(useMaterial(), { press: PressList, flat: SelectFlatList, device: SelectDeviceList, plain: SelectPlainList, rack: SelectRackList });
+  const List = byWorld(useMaterial(), { press: PressList, flat: SelectFlatList, device: SelectDeviceList, plain: SelectPlainList, rack: SelectRackList, heat: SelectHeatList });
   const root: SelectListBodyProps["root"] = {
     ...rest,
     ref: setNode,
@@ -530,7 +531,7 @@ export function Select({
   const done = useCallback(() => setLeaving(false), []);
 
   /* The step keys (Device): the neighbour among the options a hand can pick. Nothing picked, either key picks the first. */
-  const Trigger = byWorld(useMaterial(), { press: PressTrigger, flat: SelectFlatTrigger, device: SelectDeviceTrigger, plain: SelectPlainTrigger, rack: SelectRackTrigger });
+  const Trigger = byWorld(useMaterial(), { press: PressTrigger, flat: SelectFlatTrigger, device: SelectDeviceTrigger, plain: SelectPlainTrigger, rack: SelectRackTrigger, heat: SelectHeatTrigger });
   const pickable = options.filter((o) => !o.disabled);
   const at = pickable.findIndex((o) => o.value === value);
   const step = {

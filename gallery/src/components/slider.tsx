@@ -64,6 +64,7 @@ import { byWorld, useMaterial } from "@/motion";
 import { SliderDevice } from "@/worlds/device/slider";
 import { SliderRack } from "@/worlds/rack/slider";
 import { SliderFlat } from "@/worlds/flat/slider";
+import { SliderHeat } from "@/worlds/heat/slider";
 
 export type SliderProps = {
   /** The label above the slider. Required, because it names the thumb for screen readers. */
@@ -466,7 +467,7 @@ function SliderPress({ range, caps, fill, notches, glide, held, shown, plateRef,
 /** The body for the material the slider stands in: the nearest MaterialProvider's, else <html>'s. */
 function useBody() {
   const material = useMaterial();
-  return { Body: byWorld(material, { press: SliderPress, flat: SliderFlat, device: SliderDevice, rack: SliderRack }), material };
+  return { Body: byWorld(material, { press: SliderPress, flat: SliderFlat, device: SliderDevice, rack: SliderRack, heat: SliderHeat }), material };
 }
 
 /** One slider: a label above that says the value, a cap riding in a slot on a raised plate, and optional words under its ends. Every value is a number, and a form sends it under name. */

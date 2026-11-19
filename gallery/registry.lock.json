@@ -48,7 +48,7 @@
     },
     "button": {
       "version": "2026.11.19",
-      "hash": "e558261c7413681b"
+      "hash": "9e3eeb473e5af18d"
     },
     "callout": {
       "version": "2026.11.18",
@@ -991,8 +991,8 @@
       "hash": "c9df98e6a587dc1a"
     },
     "heat-button": {
-      "version": "2026.11.16",
-      "hash": "b6669dc9b6886701"
+      "version": "2026.11.19",
+      "hash": "0c54472a4c9e8c3c"
     },
     "heat-callout": {
       "version": "2026.11.18",
@@ -1235,12 +1235,12 @@
       "hash": "9d6e7d1ba7b86f41"
     },
     "heat-segmented": {
-      "version": "2026.11.16",
-      "hash": "ef28e2eefc117549"
+      "version": "2026.11.19",
+      "hash": "109cee6fe4348fb1"
     },
     "heat-select": {
-      "version": "2026.11.17",
-      "hash": "71df92e834ab12f5"
+      "version": "2026.11.19",
+      "hash": "3e6ab028599e1393"
     },
     "heat-shopify": {
       "version": "2026.11.16",
@@ -1255,8 +1255,8 @@
       "hash": "a581a2f09b7fd384"
     },
     "heat-slider": {
-      "version": "2026.11.16",
-      "hash": "e212708a6a9eca22"
+      "version": "2026.11.19",
+      "hash": "53d2501b1d587fc3"
     },
     "heat-sources": {
       "version": "2026.11.18",
@@ -1275,8 +1275,8 @@
       "hash": "1925454f8d693be6"
     },
     "heat-stat": {
-      "version": "2026.11.16",
-      "hash": "eb373e3c3fc672b0"
+      "version": "2026.11.19",
+      "hash": "9f3b00c43544b5bf"
     },
     "heat-states": {
       "version": "2026.11.18",
@@ -1287,8 +1287,8 @@
       "hash": "eb874003dc2c37b0"
     },
     "heat-switch": {
-      "version": "2026.11.16",
-      "hash": "497f3e75d371913d"
+      "version": "2026.11.19",
+      "hash": "f7c6de940eece046"
     },
     "heat-table": {
       "version": "2026.11.16",
@@ -1299,8 +1299,8 @@
       "hash": "20ddca6bee9f812e"
     },
     "heat-tabs": {
-      "version": "2026.11.16",
-      "hash": "53062a120151c579"
+      "version": "2026.11.19",
+      "hash": "3bc1fb402100f2d8"
     },
     "heat-tag": {
       "version": "2026.11.18",
@@ -2624,11 +2624,11 @@
     },
     "segmented": {
       "version": "2026.11.19",
-      "hash": "13208db657fab518"
+      "hash": "82fb938dd9309e7c"
     },
     "select": {
-      "version": "2026.11.18",
-      "hash": "e393624b6c6224ed"
+      "version": "2026.11.19",
+      "hash": "58b12a3eba17ef0b"
     },
     "settings": {
       "version": "2026.11.03",
@@ -2656,7 +2656,7 @@
     },
     "slider": {
       "version": "2026.11.19",
-      "hash": "6da21d94eb69834c"
+      "hash": "e7c6b2ec671dbbda"
     },
     "sources": {
       "version": "2026.11.18",
@@ -2675,8 +2675,8 @@
       "hash": "1925454f8d693be6"
     },
     "stat": {
-      "version": "2026.11.18",
-      "hash": "997f7cb122efabeb"
+      "version": "2026.11.19",
+      "hash": "5f95cc1ea6d57159"
     },
     "states": {
       "version": "2026.11.18",
@@ -2688,7 +2688,7 @@
     },
     "switch": {
       "version": "2026.11.19",
-      "hash": "9e470d216019d1ea"
+      "hash": "a54eb3daf4aecc66"
     },
     "table": {
       "version": "2026.11.18",
@@ -2699,8 +2699,8 @@
       "hash": "20ddca6bee9f812e"
     },
     "tabs": {
-      "version": "2026.11.15",
-      "hash": "f448b593f96ff272"
+      "version": "2026.11.19",
+      "hash": "09e6f091be844c26"
     },
     "tag": {
       "version": "2026.11.18",
