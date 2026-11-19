@@ -4,9 +4,15 @@ Every change to the litt registry at https://littmd.vercel.app/r/, newest first.
 
 To update an item, read the entries since your version, then reinstall it with `--overwrite`. A **breaking** entry says what to change in your code.
 
-## 2026-11-19 · Rack Ableton identity, Heat complete & Flat's covers
+## 2026-11-19 · Flat expansion, Rack Ableton identity & Heat complete
 
-Rack Ableton Live identity (proposals/rack.md; taste/litt-principles.md, Rack): adds three Rack-only colorful music-studio components (`clip-launcher`, `device-rack`, `step-sequencer`) built on Rack's five clip colors and instant-cut grey module chrome, and brings Ableton Live voice demos across Rack's set. Nothing changes outside Rack.
+Flat expansion (skills/litt-md/taste/litt-principles.md, Flat): adds three more playful Flat-only editorial and personal-site components (`reaction-bar`, `reading-progress`, `goal-ring`) built on Flat's 0.28 expressive bounce, 40px standing figures, Candy data dots and sunset heatwave ramp, and refreshes Flat's front-door player set. Nothing changes outside Flat.
+
+- **added** `reaction-bar`, `flat-reaction-bar`: Reaction bar, a multi-choice reader reaction pill cluster whose pills flip from Flat's 1.5px outline to white paper with Candy data dots, a floating `+1` pop and optional 40px standing total. Needs `data-material="flat"` on `<html>`.
+- **added** `reading-progress`, `flat-reading-progress`: Reading progress, an airy editorial reading progress card pairing Flat's 40px completion percentage and remaining read time with a continuous sunset heatwave bar and interactive chapter pills. Needs `data-material="flat"` on `<html>`.
+- **added** `goal-ring`, `flat-goal-ring`: Goal ring, a radial sunset heatwave goal tracker with Flat's 40px standing figure and tactile `Log +1`, `+5` and `Reset` pill controls. Needs `data-material="flat"` on `<html>`.
+
+Earlier the same day, Rack Ableton Live identity (proposals/rack.md; taste/litt-principles.md, Rack): adds three Rack-only colorful music-studio components (`clip-launcher`, `device-rack`, `step-sequencer`) built on Rack's five clip colors and instant-cut grey module chrome, and brings Ableton Live voice demos across Rack's set. Nothing changes outside Rack.
 
 - **added** `clip-launcher`, `rack-clip-launcher`: Clip launcher, an Ableton-style Session View clip and scene grid with color-coded tracks (`amber`, `blue`, `teal`, `violet`, `rose`), seeded clip waveforms, empty stop slots, and Master scene launch buttons. Needs `data-material="rack"` on `<html>`.
 - **added** `device-rack`, `rack-device-rack`: Device rack, an Audio Effect Rack module with color-coded rotary Macro Dials supporting 1:1 vertical pointer drag, keyboard arrow steps, double-click reset, a device bypass toggle, and instant preset recall. Needs `data-material="rack"` on `<html>`.
