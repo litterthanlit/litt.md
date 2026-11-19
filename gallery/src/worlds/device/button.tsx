@@ -19,7 +19,9 @@
  *   icon-only key stays round. The face is `data-part="key"`.
  * - The contract (props, aria-busy, aria-disabled, sizes, label, spinner) is button.tsx's.
  */
+import type { KeyboardEvent, PointerEvent } from "react";
 import type { ButtonBodyProps, ButtonVariant } from "@/components/button";
+import { useSound } from "@/motion/sound";
 
 const base =
   "litt-target group relative inline-flex shrink-0 items-center justify-center whitespace-nowrap select-none font-title font-mono " +
@@ -61,13 +63,31 @@ const variants: Record<ButtonVariant, string> = {
 const down = "group-[:enabled:not([data-loading]):active]:translate-y-(--press-depth)";
 const downHalf = "group-[:enabled:not([data-loading]):active]:translate-y-[calc(var(--press-depth)/2)]";
 
-export function ButtonDeviceBody({ variant, iconOnly, sizeClass, shapeClass, blockClass, className, children, spinner, loading, rootProps }: ButtonBodyProps) {
-  const { style, ...root } = rootProps;
+export function ButtonDeviceBody({ variant, iconOnly, sizeClass, shapeClass, blockClass, className, children, spinner, loading, disabled, rootProps }: ButtonBodyProps) {
+  const { style, onPointerDown, onPointerUp, onKeyDown, onKeyUp, ...root } = rootProps;
+  const { play } = useSound();
+  const quiet = !!disabled || loading || "data-silent" in root;
   const ghost = variant === "ghost";
   const round = iconOnly ? "rounded-pill" : "rounded-key";
   return (
     <button
       {...root}
+      onPointerDown={(e: PointerEvent<HTMLButtonElement>) => {
+        onPointerDown?.(e);
+        if (!quiet && !e.defaultPrevented && e.button === 0) play("key-down");
+      }}
+      onPointerUp={(e: PointerEvent<HTMLButtonElement>) => {
+        onPointerUp?.(e);
+        if (!quiet && !e.defaultPrevented && e.button === 0) play("key-up");
+      }}
+      onKeyDown={(e: KeyboardEvent<HTMLButtonElement>) => {
+        onKeyDown?.(e);
+        if (!quiet && !e.defaultPrevented && !e.repeat && (e.key === "Enter" || e.key === " ")) play("key-down");
+      }}
+      onKeyUp={(e: KeyboardEvent<HTMLButtonElement>) => {
+        onKeyUp?.(e);
+        if (!quiet && !e.defaultPrevented && (e.key === "Enter" || e.key === " ")) play("key-up");
+      }}
       data-body="device"
       className={[base, sizeClass, variants[variant], shapeClass, blockClass, className].join(" ")}
       style={style}

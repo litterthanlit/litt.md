@@ -47,8 +47,8 @@
       "hash": "5472ede5c202dece"
     },
     "button": {
-      "version": "2026.11.17",
-      "hash": "64eae75b24613706"
+      "version": "2026.11.19",
+      "hash": "e558261c7413681b"
     },
     "callout": {
       "version": "2026.11.18",
@@ -79,16 +79,16 @@
       "hash": "b49f7b65c17320e6"
     },
     "checkbox": {
-      "version": "2026.11.16",
-      "hash": "a36627b4ebe1ba10"
+      "version": "2026.11.19",
+      "hash": "fd2ce76293634536"
     },
     "code-block": {
       "version": "2026.11.06",
       "hash": "941606ce76eb027f"
     },
     "code-input": {
-      "version": "2026.11.17",
-      "hash": "6b08c6f8be28b60f"
+      "version": "2026.11.19",
+      "hash": "5447afc241b64d56"
     },
     "cohort-grid": {
       "version": "2026.11.18",
@@ -175,8 +175,8 @@
       "hash": "c9df98e6a587dc1a"
     },
     "device-button": {
-      "version": "2026.11.17",
-      "hash": "a13abe532548f0e5"
+      "version": "2026.11.19",
+      "hash": "fe63f3cbe72d085e"
     },
     "device-callout": {
       "version": "2026.11.18",
@@ -203,16 +203,16 @@
       "hash": "98219150978a6ad1"
     },
     "device-checkbox": {
-      "version": "2026.11.16",
-      "hash": "89fe7caebc233f80"
+      "version": "2026.11.19",
+      "hash": "c760b7b224fe845e"
     },
     "device-code-block": {
       "version": "2026.11.16",
       "hash": "941606ce76eb027f"
     },
     "device-code-input": {
-      "version": "2026.11.17",
-      "hash": "bcfec1cb6eca3f5b"
+      "version": "2026.11.19",
+      "hash": "3cc0acc2da58d178"
     },
     "device-cohort-grid": {
       "version": "2026.11.18",
@@ -355,8 +355,8 @@
       "hash": "8967a4bc22675a71"
     },
     "device-motion": {
-      "version": "2026.11.17",
-      "hash": "3dd96098bf24cca2"
+      "version": "2026.11.19",
+      "hash": "e8898f3397aa42d5"
     },
     "device-number-field": {
       "version": "2026.11.17",
@@ -423,8 +423,8 @@
       "hash": "9d6e7d1ba7b86f41"
     },
     "device-segmented": {
-      "version": "2026.11.16",
-      "hash": "1b55fb1f1e7f3def"
+      "version": "2026.11.19",
+      "hash": "66cc19baae51dac8"
     },
     "device-select": {
       "version": "2026.11.17",
@@ -447,8 +447,8 @@
       "hash": "ff5c2635aa96439f"
     },
     "device-slider": {
-      "version": "2026.11.17",
-      "hash": "969921a81a4315a9"
+      "version": "2026.11.19",
+      "hash": "d4b56e20ecbb7f36"
     },
     "device-sources": {
       "version": "2026.11.18",
@@ -479,8 +479,8 @@
       "hash": "eb874003dc2c37b0"
     },
     "device-switch": {
-      "version": "2026.11.17",
-      "hash": "7649d793ff79da61"
+      "version": "2026.11.19",
+      "hash": "1825d000043732a1"
     },
     "device-table": {
       "version": "2026.11.16",
@@ -759,8 +759,8 @@
       "hash": "8967a4bc22675a71"
     },
     "flat-motion": {
-      "version": "2026.11.17",
-      "hash": "3dd96098bf24cca2"
+      "version": "2026.11.19",
+      "hash": "e8898f3397aa42d5"
     },
     "flat-number-field": {
       "version": "2026.11.17",
@@ -1167,8 +1167,8 @@
       "hash": "8967a4bc22675a71"
     },
     "heat-motion": {
-      "version": "2026.11.17",
-      "hash": "3dd96098bf24cca2"
+      "version": "2026.11.19",
+      "hash": "e8898f3397aa42d5"
     },
     "heat-number-field": {
       "version": "2026.11.17",
@@ -1407,8 +1407,8 @@
       "hash": "8967a4bc22675a71"
     },
     "motion": {
-      "version": "2026.11.17",
-      "hash": "3dd96098bf24cca2"
+      "version": "2026.11.19",
+      "hash": "e8898f3397aa42d5"
     },
     "number-field": {
       "version": "2026.11.17",
@@ -1631,8 +1631,8 @@
       "hash": "8967a4bc22675a71"
     },
     "plain-motion": {
-      "version": "2026.11.17",
-      "hash": "3dd96098bf24cca2"
+      "version": "2026.11.19",
+      "hash": "e8898f3397aa42d5"
     },
     "plain-number-field": {
       "version": "2026.11.17",
@@ -2019,8 +2019,8 @@
       "hash": "8967a4bc22675a71"
     },
     "press-motion": {
-      "version": "2026.11.17",
-      "hash": "3dd96098bf24cca2"
+      "version": "2026.11.19",
+      "hash": "e8898f3397aa42d5"
     },
     "press-number-field": {
       "version": "2026.11.17",
@@ -2419,8 +2419,8 @@
       "hash": "8967a4bc22675a71"
     },
     "rack-motion": {
-      "version": "2026.11.17",
-      "hash": "3dd96098bf24cca2"
+      "version": "2026.11.19",
+      "hash": "e8898f3397aa42d5"
     },
     "rack-number-field": {
       "version": "2026.11.17",
@@ -2623,8 +2623,8 @@
       "hash": "9d6e7d1ba7b86f41"
     },
     "segmented": {
-      "version": "2026.11.16",
-      "hash": "e3f5757a0fcd4309"
+      "version": "2026.11.19",
+      "hash": "13208db657fab518"
     },
     "select": {
       "version": "2026.11.18",
@@ -2655,8 +2655,8 @@
       "hash": "d76297bfb300f73d"
     },
     "slider": {
-      "version": "2026.11.18",
-      "hash": "3201e50bd5ca5d1f"
+      "version": "2026.11.19",
+      "hash": "6da21d94eb69834c"
     },
     "sources": {
       "version": "2026.11.18",
@@ -2687,8 +2687,8 @@
       "hash": "eb874003dc2c37b0"
     },
     "switch": {
-      "version": "2026.11.17",
-      "hash": "1e2d22e90f4039e2"
+      "version": "2026.11.19",
+      "hash": "9e470d216019d1ea"
     },
     "table": {
       "version": "2026.11.18",

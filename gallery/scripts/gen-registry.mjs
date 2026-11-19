@@ -56,7 +56,7 @@
  *
  * WHERE FILES LAND IN A HOST (shadcn puts a target without "~/" under src/ when the host has one)
  *   components/litt/<stem>.tsx       the components
- *   lib/litt/motion/{index,spring,tokens,rules,device,drag,deal,hand,fun}.ts(x), lib/litt/glide.tsx, lib/litt/shopify.ts, lib/litt/shopify-cart.tsx     the engines
+ *   lib/litt/motion/{index,spring,tokens,rules,device,drag,deal,hand,fun,sound}.ts(x), lib/litt/glide.tsx, lib/litt/shopify.ts, lib/litt/shopify-cart.tsx     the engines
  *   components/litt-blocks/<block>.tsx   the blocks: outside components/litt/, because a block is a starting point the host edits
  *   Every import between shipped files is relative, so no alias in the host matters, and none of
  *   it collides with the host's own components/ui/button.tsx. registryDependencies are absolute
@@ -820,7 +820,7 @@ const COPY = {
   motion: {
     title: "Motion",
     description: "The motion engine the components share. Hooks for the instant, responsive and expressive tiers, exits, travel and stagger, and the compact and coarse device signals, all reading litt's tokens.",
-    docs: "Installed in lib/litt/motion. The components use it for you, and it needs no provider. Fun mode, a trial, is a <FunMode> around the app: springier motion, the same at rest.",
+    docs: "Installed in lib/litt/motion. The components use it for you, and it needs no provider. Fun mode, a trial, is a <FunMode> around the app: springier motion, the same at rest. Under Device, useSound() answers a hand with synthesized Web Audio voices; wrap in <SoundProvider muted> to mute.",
   },
   glide: {
     title: "Glide",
@@ -1526,7 +1526,7 @@ function build(demos = []) {
     if (!m) fail(`${rel(f)}: a body is src/worlds/<world>/<part>.tsx`);
     if (!stems.includes(m[2])) fail(`${rel(f)}: no component "${m[2]}" for this body to belong to`);
   }
-  const motionFiles = ["index.tsx", "spring.ts", "tokens.ts", "rules.ts", "device.ts", "drag.ts", "deal.ts", "hand.ts", "fun.tsx"].map((f) => path.join(motionDir, f));
+  const motionFiles = ["index.tsx", "spring.ts", "tokens.ts", "rules.ts", "device.ts", "drag.ts", "deal.ts", "hand.ts", "fun.tsx", "sound.ts"].map((f) => path.join(motionDir, f));
   for (const f of motionFiles) if (!fs.existsSync(f)) fail(`${rel(f)} is missing`);
   // A block is named after the page that shows it, so its name finds that page, and never after a component.
   const blockFiles = blockNames.map((b) => path.join(blocksDir, `${b}.tsx`));
@@ -2195,6 +2195,8 @@ function verify(items, targets, transformed, shadcn, { littUrl = urlOf("litt"), 
       for (const n of names) {
         if (ALLOWED_FOREIGN_VARS.some((re) => re.test(n))) continue;
         if (local.has(n)) continue;
+        /* sound.ts reads Device's --litt-sound-* tokens and returns null when absent outside Device. */
+        if (file.target === "lib/litt/motion/sound.ts" && anotherWorld.has(n)) continue;
         if (!declared.has(n) && !CALLER_VARS.has(n)) bad(where, `uses ${n}, which the shipped CSS does not define`);
       }
       const left = survivors(text, file.target);

@@ -28,7 +28,7 @@ export type Take = {
  */
 const SET: Record<Material, string[]> = {
   press: ["button", "switch", "segmented", "slider", "input", "select", "dialog", "menu", "toast", "stat", "chart", "table"],
-  flat: ["button", "switch", "media", "carousel", "lightbox", "card", "accordion", "avatar", "header", "tabs", "popover", "toast"],
+  flat: ["progress", "button", "switch", "gauge", "heatmap", "media", "carousel", "card", "avatar", "tabs", "popover", "toast"],
   device: ["composer", "agent-indicator", "tool-call", "message", "seven-segment", "tape-progress", "switch", "slider", "gauge", "copy-button", "button", "command-menu"],
   plain: ["form", "input", "select", "checkbox", "button", "table", "details", "callout", "breadcrumb", "pagination", "tabs", "dialog"],
   rack: ["slider", "curve-editor", "spring-editor", "pad", "time-scrubber", "inspector", "number-field", "color-picker", "segmented", "switch", "button", "range-chart"],
@@ -54,11 +54,17 @@ export function takesOf(material: Material): Take[] {
   return got;
 }
 
-/** Every component in the world on its shelf: the groups in PAGE_GROUPS order, the sidebar's order within each. */
+/** Every component in the world on its shelf: the world's set first, then the remaining parts in PAGE_GROUPS order. */
 export function shelvesOf(material: Material): { group: string; pages: PageEntry[] }[] {
   const parts = partsOf(material);
-  return PAGE_GROUPS.flatMap((group) => {
-    const on = parts.filter((p) => p.group === group);
+  const featured = SET[material].flatMap((id) => {
+    const p = parts.find((q) => q.id === id);
+    return p ? [p] : [];
+  });
+  const inSet = new Set(featured.map((p) => p.id));
+  const rest = PAGE_GROUPS.flatMap((group) => {
+    const on = parts.filter((p) => p.group === group && !inSet.has(p.id));
     return on.length ? [{ group, pages: on }] : [];
   });
+  return featured.length ? [{ group: "In the set", pages: featured }, ...rest] : rest;
 }

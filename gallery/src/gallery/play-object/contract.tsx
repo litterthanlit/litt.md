@@ -67,6 +67,8 @@ type Props = {
   dark: boolean;
   /** What leads the object's top row, before Index, Details and Source: the world's own nav. */
   lead?: ReactNode;
+  /** World-level controls placed before Index, Details and Source (so Source stays last before the selector). */
+  actions?: ReactNode;
 };
 
 /** The world's object. Key it by world, so each world starts on its first take. */
@@ -78,7 +80,7 @@ export function PlayObject(props: Props) {
   );
 }
 
-function Loaded({ material, dark, lead }: Props) {
+function Loaded({ material, dark, lead, actions }: Props) {
   const body = use(bodyOf(material));
   const takes = takesOf(material);
   const shelves = shelvesOf(material);
@@ -195,19 +197,18 @@ function Loaded({ material, dark, lead }: Props) {
     <div {...lookAttributes({ accent: look.accent, material }, dark)} data-play-object={body.name} className="grid min-w-0 gap-4 bg-transparent">
       <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
         {lead}
-        {!compact && (
-          <div className="flex items-center gap-1">
-            <Button size="sm" variant="ghost" aria-current={at === null ? "page" : undefined} onClick={() => go(null)}>
-              Index
-            </Button>
-            <Button size="sm" variant="ghost" aria-expanded={details} aria-controls={`${id}-details`} onClick={() => (setPlaying(false), setDetails((d) => !d))}>
-              Details
-            </Button>
-            <a href={here} className={LINK}>
-              Source
-            </a>
-          </div>
-        )}
+        <div className="flex flex-wrap items-center gap-1">
+          {actions}
+          <Button size="sm" variant="ghost" aria-current={at === null ? "page" : undefined} onClick={() => go(null)}>
+            Index
+          </Button>
+          <Button size="sm" variant="ghost" aria-expanded={details} aria-controls={`${id}-details`} onClick={() => (setPlaying(false), setDetails((d) => !d))}>
+            Details
+          </Button>
+          <a href={here} className={LINK}>
+            Source
+          </a>
+        </div>
       </div>
       <body.Body {...bodyProps} />
       {createPortal(

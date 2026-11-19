@@ -90,7 +90,7 @@ function SpeakerIcon({ muted }: { muted: boolean }) {
 export function MuteKey({ muted, setMuted }: { muted: boolean; setMuted: (muted: boolean) => void }) {
   const toggle = useCallback(() => setMuted(!muted), [muted, setMuted]);
   return (
-    <Button size="sm" variant="ghost" aria-pressed={muted} aria-keyshortcuts="M" title="Mute (M)" icon={<SpeakerIcon muted={muted} />} onClick={toggle}>
+    <Button size="sm" variant="ghost" data-silent="" aria-pressed={muted} aria-keyshortcuts="M" title="Mute (M)" icon={<SpeakerIcon muted={muted} />} onClick={toggle}>
       Mute
     </Button>
   );

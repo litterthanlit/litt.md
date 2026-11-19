@@ -14,7 +14,9 @@
  *   later (its body draws its own keys).
  */
 import { Suspense, useEffect, useRef, type ReactNode } from "react";
-import { useDark } from "./customize-state";
+import { Button } from "@/components/button";
+import { MoonIcon, SunIcon } from "@/components/icons";
+import { useCustomize, useDark } from "./customize-state";
 import { materialOf, type Material } from "./look";
 import { PlayObject } from "./play-object/contract";
 import { inWorld, pages } from "./registry";
@@ -41,7 +43,7 @@ type Here = "player" | "components" | "about" | "own" | "page";
 function Lead({ material, here }: { material: Material; here: Here }) {
   const world = materialOf(material);
   return (
-    <nav aria-label={world.name} className="-mx-2 flex items-center gap-1">
+    <nav aria-label={world.name} className="-mx-2 flex flex-wrap items-center gap-1">
       <a href={HOME} className={LINK}>
         Home
       </a>
@@ -57,7 +59,31 @@ function Lead({ material, here }: { material: Material; here: Here }) {
       <a href={`#${material}/about`} aria-current={here === "about" ? "page" : undefined} className={LINK}>
         About
       </a>
+      {material === "device" && (
+        <a href="#device/sound" aria-current={here === "own" ? "page" : undefined} className={LINK}>
+          Sound
+        </a>
+      )}
     </nav>
+  );
+}
+
+/** One ghost control to flip between light and dark inside a closed world without adding chrome or an accent fill. */
+function ThemeToggle() {
+  const dark = useDark();
+  const { setTheme } = useCustomize();
+  const label = dark ? "Switch to light theme" : "Switch to dark theme";
+  return (
+    <Button
+      size="sm"
+      variant="ghost"
+      aria-label={label}
+      title={label}
+      icon={dark ? <SunIcon aria-hidden="true" /> : <MoonIcon aria-hidden="true" />}
+      onClick={() => setTheme(dark ? "light" : "dark")}
+    >
+      {dark ? "Light" : "Dark"}
+    </Button>
   );
 }
 
@@ -84,7 +110,7 @@ export function WorldSite({ material }: { material: Material }) {
   const world = materialOf(material);
   const [muted, setMuted] = useMuted();
   const sounds = material === "device";
-  useMuteKey(muted, setMuted, sounds && here !== "player");
+  useMuteKey(muted, setMuted, sounds);
 
   let body: ReactNode;
   if (here === "player")
@@ -93,7 +119,7 @@ export function WorldSite({ material }: { material: Material }) {
         <h1 tabIndex={-1} className="sr-only">
           {world.name}, its set on its {world.object}
         </h1>
-        <PlayObject material={material} dark={dark} lead={<Lead material={material} here="player" />} />
+        <PlayObject material={material} dark={dark} lead={<Lead material={material} here="player" />} actions={<ThemeToggle />} />
       </>
     );
   else if (here === "about") body = <World material={material} />;
@@ -122,8 +148,11 @@ export function WorldSite({ material }: { material: Material }) {
       <div className="mx-auto grid w-full max-w-wide gap-6 px-gutter py-6">
         {here !== "player" && (
           <header className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
-            <Lead material={material} here={here === "own" ? "page" : here} />
-            {sounds && <MuteKey muted={muted} setMuted={setMuted} />}
+            <Lead material={material} here={here} />
+            <div className="flex flex-wrap items-center gap-1">
+              {sounds && <MuteKey muted={muted} setMuted={setMuted} />}
+              <ThemeToggle />
+            </div>
           </header>
         )}
         <main ref={main} id="main" tabIndex={-1} className="min-w-0 outline-none">

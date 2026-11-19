@@ -14,8 +14,9 @@
  * body beyond that. The cap stands proud of the 16px well, so it is never a box inside a curve.
  */
 import * as RadixSlider from "@radix-ui/react-slider";
-import type { CSSProperties } from "react";
+import { useEffect, useRef, type CSSProperties } from "react";
 import type { SliderBodyProps } from "@/components/slider";
+import { useSound } from "@/motion/sound";
 
 const rootLook =
   "group relative block h-control-md w-full cursor-grab touch-pan-y select-none " +
@@ -56,6 +57,26 @@ function ticksOf(notches: SliderBodyProps["notches"]) {
 
 /** The Device body: a fader in a well on a notched rail, for one cap or two. */
 export function SliderDevice({ range, caps, fill, notches, glide, held, plateRef, root, thumbs }: SliderBodyProps) {
+  const { play } = useSound();
+  const ticks = ticksOf(notches);
+  const buckets = caps.map((c) => ticks.filter((t) => t.p <= c.p + 1e-6).length);
+  const bucketKey = buckets.join(",");
+  const prev = useRef(buckets);
+  const latest = useRef({ buckets, caps });
+  latest.current = { buckets, caps };
+  useEffect(() => {
+    const { buckets: now, caps: cur } = latest.current;
+    if (prev.current.length === now.length) {
+      for (let i = 0; i < now.length; i++) {
+        if (now[i] !== prev.current[i]) {
+          play("notch", { pitch: 0.9 + cur[i]!.p * 0.2 });
+          break;
+        }
+      }
+    }
+    prev.current = now;
+  }, [bucketKey, play]);
+
   return (
     <RadixSlider.Root ref={plateRef} {...root} data-body="device" data-no-drag="" data-held={held ? "" : undefined} className={rootLook}>
       <span aria-hidden="true" data-part="slot" className={well} style={insetX(10)}>
@@ -63,7 +84,7 @@ export function SliderDevice({ range, caps, fill, notches, glide, held, plateRef
           <span className={(range ? "absolute inset-0 " : "absolute inset-y-0 right-0 w-[calc(100%+0.625rem)] ") + fillLook} />
         </span>
       </span>
-      {ticksOf(notches).map((n) => (
+      {ticks.map((n) => (
         <span
           key={n.p}
           aria-hidden="true"
