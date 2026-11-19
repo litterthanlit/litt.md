@@ -709,6 +709,41 @@ Candy sat about 15,000px down the wall and nowhere on About) set where to start:
 - Left: the wall's order and its tiles' structure (Nick's, not decided); Kbd and Icons tiles on the first shelf carry
   no Candy, since neither holds data or identity; the player body and dark paper-on-ground contrast (separate items).
 
+### Flat, leftovers (done, 2026-11-19, waiting for Nick)
+
+Phase 5's leftovers that need no call from Nick. R10 for each: easy first, then what it should make someone feel.
+
+- [x] A wall tile under Flat is a sheet of its own again (`.flat-sheet` in `app.css`, gallery chrome): paper in light; in
+      dark the ground lifted 8% toward the ink (1.18:1, the step light's paper stands off the ground, 1.17:1), from
+      Flat's own tokens with no new hex. 16px corners, nothing cast. Inside it, in light, what was paper on the ground
+      takes the grey bubble (fields, keys, the secondary pill, a card) and a field in that card is paper again; in dark
+      black paper reads on the lifted sheet as it is. The name is a caption centred under its object, the two centred
+      together, and the tile is 288px at least where it was 384. Marked `paper` on `#flat/components`. Same tile on the
+      overview. *Easy: each name belongs to its object at a glance. Felt: a wall of white cards, each holding one thing,
+      like prints laid out on a table.*
+- [x] Flat's kinds join `test:materials` (`FLAT_KINDS`, phase 1's twelve). It reads `#flat` (Home and every take) and
+      `#flat/components`: every data-part a Flat kind, and every part of the player body (Home, the pills, Play, the
+      screen) inside one. Device's rules unchanged; the self-test adds a Device key's kind and an unmarked Play on
+      Flat's player (six breaks, all caught). The player's pills are `pill`, the travelling chosen pill and the screen
+      `paper`, Play `circle`; `frame` is gone from Flat. *Easy: the check knows Flat's words, so the next part is held to them.*
+- [x] Action bar: Flat's posts show the gallery's plates as covers (Open water, Dusk tide, Sprig, Graphite, Silk, Red
+      sun), through a new optional `image` on a list's project (`list` and every world's copy, 2026-11-19). *Felt:
+      your own pictures, not placeholders, so selecting them feels like tidying your site.*
+- [x] Combobox in Flat's words: the hint is "Readers see it under the picture, in the post and in Issue 14." on the
+      lead and the tile (Flat's own demos; the shared demo is unchanged). The caption still says zurich finds Zürich,
+      since that is what it does.
+- [x] The player: no 5% ink ring. The screen is the same sheet as a tile (`.flat-screen`), filled at the object's 16px,
+      the take on it as on its tile. Home under Flat: nothing under body size (the name at h1, the audience, each part's
+      line and Every component at body), the set's rows taller, Every component at the screen's foot, so Home fills
+      it. The pills are body size. Other worlds' Home unchanged. *Easy: Home reads at arm's length. Felt: a light sheet
+      of paper, not a box in a box.*
+- Checked: `test:materials` and `--self-test`, `test:wall`, `test:playground` and `--self-test`, `test:worlds`,
+  `test:corners`; `#device`, `#device/components`, `#heat` take 3, `#rack/components`, `#press/list`,
+  `#press/action-bar`, `#plain/combobox`, light and dark, pixel-equal to before.
+- For Nick: dark's sheet is a mix (8% `--flat-fg` into `--flat-ground`) in gallery CSS. If it is right, it wants a name in
+  tokens.css (`--flat-sheet`, through `evolve.md`), so a host's Flat can lift a panel the same way. Dark paper on the
+  ground (1.1:1) is unchanged. Still left: the wall's order, a data part in the set, something moving on the first screen.
+
 ## The order of work inside a world
 
 The same five phases for every world. A phase is not started until the one before it is committed.
