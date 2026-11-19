@@ -16,8 +16,9 @@
  *   highlight when lit and an outline when not, and the key's side says the rest.
  */
 import * as SwitchPrimitive from "@radix-ui/react-switch";
-import type { CSSProperties } from "react";
+import { useEffect, useRef, type CSSProperties } from "react";
 import type { SwitchBodyProps } from "@/components/switch";
+import { useSound } from "@/motion/sound";
 
 const focusRing = "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus";
 
@@ -67,9 +68,20 @@ const follow: CSSProperties = {
 
 /** Device, the toggle key: a key that flips in a well with a detent, its word and a lamp on LCD glass beside it. */
 export function SwitchDeviceBody({ shown, disabled, dragging, x, words, root, className }: SwitchBodyProps) {
+  const { play } = useSound();
+  const prev = useRef(shown);
+  useEffect(() => {
+    if (dragging && prev.current !== shown && !disabled) play("switch");
+    prev.current = shown;
+  }, [shown, dragging, disabled, play]);
+  const onCheckedChange = (next: boolean) => {
+    if (!disabled) play("switch");
+    prev.current = next;
+    root.onCheckedChange?.(next);
+  };
   const lit = !disabled && shown;
   return (
-    <SwitchPrimitive.Root {...root} data-body="device" className={housing + className}>
+    <SwitchPrimitive.Root {...root} onCheckedChange={onCheckedChange} data-body="device" className={housing + className}>
       <span aria-hidden="true" data-part="well" className={well + (disabled ? wellDisabled : wellOn)}>
         <SwitchPrimitive.Thumb
           data-part="key"

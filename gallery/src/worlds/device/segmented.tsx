@@ -14,6 +14,7 @@
  */
 import type { CSSProperties } from "react";
 import type { SegmentedBodyProps, SegmentedSize } from "@/components/segmented";
+import { useSound } from "@/motion/sound";
 
 const sizes: Record<SegmentedSize, { track: string; key: string }> = {
   sm: { track: "h-control-sm pointer-coarse:h-control-md", key: "px-2.5 text-caption pointer-coarse:text-small" },
@@ -30,6 +31,7 @@ const flip: CSSProperties = {
 
 /** Device, the keys: a row of keys in one well, the chosen one latched down with its lamp lit. */
 export function SegmentedDeviceBody({ legend, showLegend, name, value, options, size, block, disabled, className, select }: SegmentedBodyProps) {
+  const { play } = useSound();
   const look = sizes[size];
   return (
     <fieldset data-body="device" disabled={disabled} className={"m-0 min-w-0 border-0 p-0 " + className}>
@@ -59,7 +61,10 @@ export function SegmentedDeviceBody({ legend, showLegend, name, value, options, 
                 value={o.value}
                 checked={selected}
                 disabled={o.disabled}
-                onChange={() => select(o.value)}
+                onChange={() => {
+                  play("switch");
+                  select(o.value);
+                }}
               />
               <span
                 style={flip}

@@ -16,8 +16,9 @@
  * - Forced colors drops shadows, so each pane gets a real border, the current one an outline, and the segments follow
  *   the system text color with their dim ones still at 10%.
  */
-import type { CSSProperties } from "react";
+import { useEffect, useRef, type CSSProperties } from "react";
 import type { CodeInputBodyProps } from "@/components/code-input";
+import { useSound } from "@/motion/sound";
 
 /* The figure's numbers, in its own units (the same as the Seven-segment part's). */
 const T = 6.6;
@@ -71,6 +72,23 @@ const pane =
 
 /** Device, the segments: a pane of LCD glass per character, an unlit eight until its character is typed. */
 export function CodeInputDeviceBody({ length, cellHeight, code, at, focused, disabled, error }: CodeInputBodyProps) {
+  const { play } = useSound();
+  const prev = useRef(code.length);
+  useEffect(() => {
+    if (disabled) {
+      prev.current = code.length;
+      return;
+    }
+    if (code.length > prev.current) {
+      const ch = code[code.length - 1] ?? "";
+      const n = /^\d$/.test(ch) ? Number(ch) : code.length - 1;
+      play("digit", { pitch: 0.9 + n * 0.018 });
+    } else if (code.length < prev.current) {
+      play("key-up");
+    }
+    prev.current = code.length;
+  }, [code, disabled, play]);
+
   return (
     <div aria-hidden="true" data-body="device" className="flex w-full gap-2">
       {Array.from({ length }, (_, i) => {

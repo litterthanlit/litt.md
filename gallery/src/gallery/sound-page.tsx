@@ -62,6 +62,7 @@ function VoiceKey({ down, up, label, name, values, size = "lg" }: { down: VoiceN
     <Button
       size={size}
       aria-label={name}
+      data-silent=""
       onPointerDown={(e: PointerEvent) => e.button === 0 && sound(down)}
       onPointerUp={(e: PointerEvent) => up && e.button === 0 && sound(up)}
       onKeyDown={(e: KeyboardEvent) => !e.repeat && (e.key === "Enter" || e.key === " ") && sound(down)}

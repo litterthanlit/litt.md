@@ -18,6 +18,7 @@
  */
 import type { CSSProperties } from "react";
 import type { ChoiceBodyProps } from "@/components/checkbox";
+import { useSound } from "@/motion/sound";
 
 /* The detent: a change switches in place in three even steps on the instant tier, as a display's segments light. */
 const STEPS = "steps(3, end)";
@@ -72,10 +73,21 @@ const lampMixed =
 
 /** Device, the latching key: a square key in a well that stays down with its lamp lit when checked, half lit when mixed. */
 export function ChoiceDeviceBody({ kind, input }: ChoiceBodyProps) {
+  const { play } = useSound();
+  const { onChange, ...rest } = input;
   const radio = kind === "radio";
   return (
     <>
-      <input {...input} data-body="device" className={key + (radio ? "" : mixed)} style={detent} />
+      <input
+        {...rest}
+        onChange={(e) => {
+          play("switch");
+          onChange?.(e);
+        }}
+        data-body="device"
+        className={key + (radio ? "" : mixed)}
+        style={detent}
+      />
       <span aria-hidden="true" className={well} />
       <span aria-hidden="true" className={lamp + (radio ? "" : lampMixed)} style={detent}>
         <span style={detent} />

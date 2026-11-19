@@ -6,7 +6,7 @@
  *   const { play } = useSound();
  *   <button onPointerDown={() => play("key-down")} onPointerUp={() => play("key-up")}>
  *
- * - The values live in tokens.css, under Device (`--sound-<voice>-pitch`, `-length`, `-level`), so a voice is tuned
+ * - The values live in tokens.css, under Device (each voice's pitch, length and level tokens), so a voice is tuned
  *   there and nowhere else, and check.mjs (check 17) bounds them: a level at most -12 dBFS, a length at most 120ms.
  *   Pitch is the voice's body in Hz, length runs to the end of its longest envelope, and level is its peak in dBFS.
  *   This file keeps only each voice's shape: its layers as the reference draws them at the reference's pitch and
@@ -271,12 +271,25 @@ function synthesize(ctx: BaseAudioContext, destination: AudioNode, when: number,
 /* The tokens.                                                               */
 /* ------------------------------------------------------------------------ */
 
-/** A voice's values from tokens.css (--sound-<voice>-pitch, -length, -level), or null where Device has none. */
+/** The exact custom property names for each voice, written out so the registry rewriter prefixes them for hosts. */
+const VOICE_TOKENS: Record<VoiceName, readonly [pitch: string, length: string, level: string]> = {
+  "key-down": ["--sound-key-down-pitch", "--sound-key-down-length", "--sound-key-down-level"],
+  "key-up": ["--sound-key-up-pitch", "--sound-key-up-length", "--sound-key-up-level"],
+  switch: ["--sound-switch-pitch", "--sound-switch-length", "--sound-switch-level"],
+  notch: ["--sound-notch-pitch", "--sound-notch-length", "--sound-notch-level"],
+  digit: ["--sound-digit-pitch", "--sound-digit-length", "--sound-digit-level"],
+};
+
+/** A voice's values from tokens.css (pitch, length and level), or null where Device has none. */
 export function readVoice(name: VoiceName, root: Element | null = typeof document === "undefined" ? null : document.documentElement): VoiceValues | null {
   if (!root) return null;
   const cs = getComputedStyle(root);
-  const num = (part: string) => parseFloat(cs.getPropertyValue(`--sound-${name}-${part}`));
-  const values = { pitch: num("pitch"), length: num("length"), level: num("level") };
+  const [p, l, g] = VOICE_TOKENS[name];
+  const values = {
+    pitch: parseFloat(cs.getPropertyValue(p)),
+    length: parseFloat(cs.getPropertyValue(l)),
+    level: parseFloat(cs.getPropertyValue(g)),
+  };
   return Number.isFinite(values.pitch) && Number.isFinite(values.length) && Number.isFinite(values.level) ? values : null;
 }
 

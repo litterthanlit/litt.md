@@ -1,9 +1,10 @@
 /**
  * A world's gallery view (#<world>/components): every component in the world, live, as the overview's wall draws them
- * (wall-tile.tsx). The player runs the world's set; this holds the rest. The groups come in the gallery's order
- * (PAGE_GROUPS), each a section under its h2 with the wall's two columns of tiles, and a row of jump links leads to
- * them. A tile's name opens its page in the world (#<world>/<id>). Nothing here links out of the world (plans/019).
- * Quiet (plans/024, phase 0): no counts and no line of explanation; a tile is the object and its name.
+ * (wall-tile.tsx). The world's set leads under "In the set", followed by the remaining groups in the gallery's order
+ * (PAGE_GROUPS) deduplicated so each component appears once, each a section under its h2 with the wall's two columns of
+ * tiles, and a row of jump links leads to them. A tile's name opens its page in the world (#<world>/<id>). Nothing here
+ * links out of the world (plans/019). Quiet (plans/024, phase 0): no counts and no line of explanation; a tile is the
+ * object and its name.
  */
 import { useId } from "react";
 import { Toaster } from "@/components/toast";
