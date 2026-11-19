@@ -27,6 +27,7 @@ import { useRef, type RefObject } from "react";
 import { byWorld, useMaterial } from "@/motion";
 import { PaginationDeviceBody } from "@/worlds/device/pagination";
 import { PaginationFlatBody } from "@/worlds/flat/pagination";
+import { PaginationHeatBody } from "@/worlds/heat/pagination";
 import { PaginationRackBody } from "@/worlds/rack/pagination";
 
 export type PaginationProps = {
@@ -182,7 +183,7 @@ export function Pagination({ label, page, pageSize, total, onPageChange, classNa
     if (from === "next" && to >= count) requestAnimationFrame(() => previous.current?.focus());
   };
 
-  const Body = byWorld(useMaterial(), { press: PressBody, flat: PaginationFlatBody, device: PaginationDeviceBody, rack: PaginationRackBody });
+  const Body = byWorld(useMaterial(), { press: PressBody, flat: PaginationFlatBody, device: PaginationDeviceBody, rack: PaginationRackBody, heat: PaginationHeatBody });
   return (
     <Body
       label={label}
