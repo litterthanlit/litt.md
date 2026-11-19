@@ -290,11 +290,12 @@
   --flat-data-bubblegum-text: #cd057a;
   --flat-data-sun: #a68105;
   --flat-data-sun-text: #846604;
-  /* The sequential ramp, Candy's bubblegum: how much, light to deep. */
-  --flat-data-seq-1: #ec7db5;
-  --flat-data-seq-2: #e44499;
-  --flat-data-seq-3: #c90f78;
-  --flat-data-seq-4: #a00358;
+  /* The sequential ramp, a sunset (v1.20): how much, from gold through tangerine and crimson to plum, light to deep.
+     Lightness carries the order; the hue walks with it. */
+  --flat-data-seq-1: #de9814;
+  --flat-data-seq-2: #e15f0a;
+  --flat-data-seq-3: #ca2356;
+  --flat-data-seq-4: #892784;
 
   /* Device's values (data-material="device", below; proposals/device.md): the components studies' hardware, a cool
      aluminium body with plates on it, wells cut into it, keys standing on it and fields behind LCD glass. The neutrals
@@ -787,11 +788,11 @@
   --flat-data-bubblegum-text: #ff74b0;
   --flat-data-sun: #b68e0a;
   --flat-data-sun-text: #d2a408;
-  /* The sequential ramp, Candy's bubblegum: how much, dim to bright. */
-  --flat-data-seq-1: #982b5a;
-  --flat-data-seq-2: #d43b86;
-  --flat-data-seq-3: #f971b3;
-  --flat-data-seq-4: #febad9;
+  /* The sequential ramp, a sunset (v1.20): how much, from plum through magenta and coral to gold, dim to bright. */
+  --flat-data-seq-1: #5c46a7;
+  --flat-data-seq-2: #c547a3;
+  --flat-data-seq-3: #fa8054;
+  --flat-data-seq-4: #f7cc4b;
 
   /* Device's values (data-material="device", below; proposals/device.md). */
   --device-canvas: #1d1f22;
@@ -1232,11 +1233,11 @@
     --flat-data-bubblegum-text: #ff74b0;
     --flat-data-sun: #b68e0a;
     --flat-data-sun-text: #d2a408;
-    /* The sequential ramp, Candy's bubblegum: how much, dim to bright. */
-    --flat-data-seq-1: #982b5a;
-    --flat-data-seq-2: #d43b86;
-    --flat-data-seq-3: #f971b3;
-    --flat-data-seq-4: #febad9;
+    /* The sequential ramp, a sunset (v1.20): how much, from plum through magenta and coral to gold, dim to bright. */
+    --flat-data-seq-1: #5c46a7;
+    --flat-data-seq-2: #c547a3;
+    --flat-data-seq-3: #fa8054;
+    --flat-data-seq-4: #f7cc4b;
 
     /* Device's values (data-material="device", below; proposals/device.md). */
     --device-canvas: #1d1f22;
@@ -1835,7 +1836,7 @@
   --data-teal-tint: color-mix(in oklab, var(--data-teal) var(--tint-strength), var(--surface-1));
   --data-violet-tint: color-mix(in oklab, var(--data-violet) var(--tint-strength), var(--surface-1));
   --data-rose-tint: color-mix(in oklab, var(--data-rose) var(--tint-strength), var(--surface-1));
-  /* Slots six to eight and the bubblegum ramp (v1.18). */
+  /* Slots six to eight and the sunset ramp (v1.18, v1.20). */
   --data-sky: var(--flat-data-sky);
   --data-sky-text: var(--flat-data-sky-text);
   --data-sky-tint: color-mix(in oklab, var(--data-sky) var(--tint-strength), var(--surface-1));

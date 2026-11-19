@@ -579,7 +579,7 @@ Nick saw the study and the recommendation: "yes I love this all! open a pr! keep
       (series and Meter), Legend, Heatmap, Cohort grid and Gauge accept; every other world aliases them to its teal,
       rose and amber. Under Flat a Breakdown shows eight before Other and `hues` hands out eight (lines six to eight
       dashed long, dash-dot-dot and short); elsewhere five, unchanged (`byWorld(useMaterial(), { press: 5, flat: 8 })`).
-      `--flat-data-seq-1..4`, Candy's bubblegum ramp, read as `--data-seq-*` only under Flat: a Heatmap or Cohort grid
+      `--flat-data-seq-1..4`, Candy's bubblegum ramp (the sunset since v1.20), read as `--data-seq-*` only under Flat: a Heatmap or Cohort grid
       with no `hue` walks it (elsewhere blue's and teal's mixes, as before), and `Gauge ramp` lets the lit ticks walk
       steps two to four by thirds of the arc (elsewhere it keeps the hue). The ramp is picked by `byWorld`, so a world's
       own install never names a token its CSS lacks. Flat's demos: the heatmap's lead and tile (reads by hour, a week,
@@ -618,6 +618,150 @@ make people feel something ... ease of use and invoke emotion".
 - Flat's set holds no data part (no gauge, heatmap or chart), so Candy shows on the player only in the pictures; whether
   a data part joins the set is Nick's call.
 - The take's arrival stays instant: the contract owns it ("a take change is instant in every motion").
+
+### Phase 5. Measure (done, 2026-11-18)
+
+Re-shot at `89028e6` the way the audit did (1440 by 1000, `#flat` on Home, take 1 and take 5, `#flat/components`,
+`#flat/about`), light and dark, beside the audit's commit `8862c94` rebuilt and shot the same way, and beside
+`sheet-reference.png`. Flat goes from **4 to 7**; under 8 on four traits, so it goes back before Nick's STOP.
+
+| Trait | Score | Read |
+|---|---|---|
+| 1. One object, one vocabulary | 6 | Ground, paper and ink hold in light: fields, pills and the file drop are paper on grey, no ring, no shadow. In dark they collapse: paper and ground sit 1.1:1 apart (the code input's empty cells are 22 on a 23 ground, invisible; fields and the chosen pill barely read). Only `frame` and `lettering` are marked; Flat's kinds are in no check. Wireframe covers survive in the Action bar tile's grid of posts (call 3 reached the card page only). |
+| 2. Studies, not demos | 6 | The set and most leads speak the letter (Subscribe, Issue 14, readers, posts). Left in the studio's words: About's scenes (Bakehouse Nord as a client, Selected work, "Start a project"), the combobox ("Accents are optional: zurich finds Zürich"). Kbd and Icons open the wall as shared demos. Nothing moves in the first frame of any of the three surfaces; the reference's studies do. |
+| 3. Restraint | 8 | One ink fill per view (Subscribe, Install); colour lives in the data (Candy) and a status's dot, and one ink card on the wall. Only the player's frame, a 5% ink ring round a ground screen, reads as an outline where Flat says nothing is outlined. |
+| 4. Stripped to the name | 6 | Player: the rail is gone and the readout is one figure, good. Gallery view: with the tiles' fill gone, a tile is ground on ground, so each name floats about 200px under its object and belongs to it only by position; the first shelf is still Actions (Button, Kbd, Icons). About: the case study's hero is the words "Hero, Bakehouse Nord" on ground in light (no plate at all now), and three scene captions describe the old grey ("fields that are grey fills", "a grey pill filters", "a grey plate for the image"), now false. |
+| 5. One scale | 7 | Pill and circle everywhere, 16 then 8 on the player, the 40px figure the one tall number. But the player's Home and pills are caption size (about 11px) under a screen that is half empty, and a wall tile is 360 by 260 round a 100px object, so the scale of the view is mostly air. |
+
+**R10.** Easy: mostly. In light the player is plain at a glance (the paper pill says where you are, `05 / 12` says how
+far), but in dark the code input cannot be used by sight, the wall's names have to be matched to objects by guess, and
+About opens on an empty hero. Felt: what Flat should make someone feel is light, bright, a small happy surprise. It is
+earned by the paper pill landing on Flat's 0.28 bounce and by Candy (the bubblegum gauge, the dot plot, the blue
+beeswarm, the ink card's line), but Candy sits about 15,000px down the wall and nowhere in the player or on About, and
+the first screen of all three surfaces is grey with black words: on first look it reads as "clean", which R10 fails.
+
+**Left, by phase:**
+
+- Phase 1 (taste, `evolve.md`): dark paper. Flat's paper and ground at 1.1:1 in dark leave empty cells, fields and the
+  chosen pill without an edge; a step between them, or an edge rule for an empty well in dark, is Nick's call first.
+- Phase 2: Flat's kinds (`ground`, `paper`, `pill`, `circle`, `ink`) join `test:materials` and mark the parts (the
+  player's pills and Play first). The gauge's label crosses its arc's first ticks on the wall.
+- Phase 3: the wall's tile under Flat needs an edge or its name beside the object (today the name floats off it); the
+  first shelf the set, not Actions; the Action bar's wireframe covers become the gallery's plates; About's scenes in
+  the letter's voice, the case study's hero a plate picture, and the three captions that describe the old grey
+  rewritten; the combobox's lead in Flat's words; something in Candy and in motion in the first frame of the wall and
+  About.
+- Phase 4: the player's frame without a ring that reads as an outline; Home and the pills above caption size, the
+  screen not half empty; a data part in the set so Candy is on the player (Nick's call, from phase 4).
+
+Sheets (scratchpad, not kept): `flat-player-light.png`, `flat-player-dark.png`, `flat-gallery-light.png`,
+`flat-gallery-dark.png`, `flat-about-light.png`, `flat-about-dark.png` (before beside after), the whole wall after
+(`flat-gallery-<theme>-whole-after.png`) and `flat-vs-reference.png`.
+
+### Flat, full of feel (done, 2026-11-18, waiting for Nick)
+
+Nick: "launch opus to work on flat and make components full of feel and that cotton candy vibe. vivid.", with the
+Spectrum palette's sunset ramp on the data canvas's Heatmap and Gauge in dark: "this was also cool". R10 is the bar:
+easy first, then a feeling each change can name, made by Flat's own means (Candy data, its 0.28 bounce on the view's
+one moment, under a hand). Surfaces and chrome stay grey, white and ink (R7). Phase 5's read ("Felt: only far down":
+Candy sat about 15,000px down the wall and nowhere on About) set where to start: the first screens.
+
+- [x] The sunset ramp, `taste:` (v1.20): `--flat-data-seq-1..4` are Spectrum's sunset in place of Candy's bubblegum,
+      gold, tangerine, crimson and plum (light to deep) in light; plum, magenta, coral and gold (dim to bright) in dark.
+      The values are Spectrum's unchanged. Validator (dataviz, ordinal, on the ground and on paper, both themes):
+      lightness monotone, adjacent ΔL at least 0.089 (light) and 0.130 (dark), the light end 2.08:1 and 2.44:1 (light)
+      and 2.47:1 and 2.74:1 (dark), all pass; its one-hue check fails by design (spread 40° light, 60° dark), since Nick
+      asked for the multi-hue ramp. Under protan, deutan and tritan the lightness still walks one way (worst adjacent
+      ΔL 0.038, protan light, steps three to four, ΔE 11.6). `check.mjs` holds it (each step further from the ground,
+      steps two to four 3:1 on ground, paper and surface-2: light 3.07, 4.62, 6.68 on the ground). R7, Flat's colour
+      rule, `material.md`, the journal and the registry changelog say so.
+      *Feel: warmth that grows with the number, a sunset where your readers are.* Part: Heatmap, Cohort grid, Gauge.
+- [x] The Gauge's `ramp` walks every step, tick by tick (each tick its place on the arc, mixed in OKLab between the
+      two steps it falls between), so the arc is plum to gold in dark as in the screenshot, and the marking tick is its
+      own place's colour. The arc's first ticks stand about 2:1; the figure says the value (R5). The Heatmap's legend
+      reads Less, the empty dot, then the four steps, More, in both themes.
+- [x] Slots six to eight (`sky`, `bubblegum`, `sun`) in Bar list, Sparkline, Funnel, Spread, Dot plot, Tag, Avatar and
+      Timeline, as Breakdown, Chart and Legend take them; every other world aliases them. Each hue prop's JSDoc says so.
+      An avatar with no hue still picks from the first five, so nothing repaints. Avatar's union now prints as
+      `AvatarHue` in the docs (past 80 characters), so its Try it gives the hues by hand (`optional` is new on a
+      hand-given choice control).
+- [x] `#flat/about` in Flat's voice with Candy on its first screen: This week (readers at the figure size, the reads
+      by the hour on the sunset ramp, a pill that switches the week, the readers who wrote back in their own hues), A
+      post (the Dusk tide plate, its tags in sky and bubblegum), Your posts (bars in each kind's hue under a filter
+      pill), The letter (last issue's opens on a ramped Gauge, one field), Reading. The studio's words (Bakehouse Nord,
+      Selected work, Start a project), the hero that was a grey plate with words, and the three false lines are gone.
+      *Feel: your site is alive this week, and warm where people read.* Parts: Heatmap, Stat, Avatar, Segmented.
+- [x] `#flat/button`'s lead and its wall tile (the first tile on `#flat/components`): Subscribe is live. You join the
+      readers at the front of a row of Candy avatars (their fluid pictures), arriving on Flat's expressive spring with
+      its bounce; the words say "You're reader 1,205". At once under reduced motion; press again to leave.
+      *Feel: welcomed.* Parts: Button, AvatarGroup.
+- [x] Flat's gauge tile says Emails left, so the label no longer crosses the arc's first ticks.
+- [x] Every other world unchanged: `#device/heatmap`, `#press/gauge`, `#heat/breakdown`, `#rack/stat` (Variants open and
+      shut) and `#press/bar-list`, `#rack/tag`, `#device/avatar`, `#plain/timeline`, `#heat/sparkline`, `#press/funnel`,
+      `#device/spread`, `#rack/dot-plot` (open), light, pixel-equal to `main` down to the docs table, whose prop
+      descriptions changed.
+- On the canvas for Nick, each bending an approved call (`flat-feel.tsx`, right of the data study from x 15240, y
+  18720; `Flat · full of feel, options for Nick`, then `Flat · feel, option A` to `F`, light beside dark): A confetti
+  on Subscribe (R7, colour off the data), B a like that pops in bubblegum (R7, the icon trial), C progress that walks
+  the sunset (Progress's "never a data hue"), D a pill that dips to 0.94 and settles on the bounce (Flat's "does not
+  move, like pressing paper"), E reactions in Candy (a new part, colour on a control), F an empty state that glows
+  (R1, decoration). Shipping tokens only.
+- Left: the wall's order and its tiles' structure (Nick's, not decided); Kbd and Icons tiles on the first shelf carry
+  no Candy, since neither holds data or identity; the player body and dark paper-on-ground contrast (separate items).
+
+### Flat, leftovers (done, 2026-11-19, waiting for Nick)
+
+Phase 5's leftovers that need no call from Nick. R10 for each: easy first, then what it should make someone feel.
+
+- [x] A wall tile under Flat is a sheet of its own again (`.flat-sheet` in `app.css`, gallery chrome): paper in light; in
+      dark the ground lifted 8% toward the ink (1.18:1, the step light's paper stands off the ground, 1.17:1), from
+      Flat's own tokens with no new hex. 16px corners, nothing cast. Inside it, in light, what was paper on the ground
+      takes the grey bubble (fields, keys, the secondary pill, a card) and a field in that card is paper again; in dark
+      black paper reads on the lifted sheet as it is. The name is a caption centred under its object, the two centred
+      together, and the tile is 288px at least where it was 384. Marked `paper` on `#flat/components`. Same tile on the
+      overview. *Easy: each name belongs to its object at a glance. Felt: a wall of white cards, each holding one thing,
+      like prints laid out on a table.*
+- [x] Flat's kinds join `test:materials` (`FLAT_KINDS`, phase 1's twelve). It reads `#flat` (Home and every take) and
+      `#flat/components`: every data-part a Flat kind, and every part of the player body (Home, the pills, Play, the
+      screen) inside one. Device's rules unchanged; the self-test adds a Device key's kind and an unmarked Play on
+      Flat's player (six breaks, all caught). The player's pills are `pill`, the travelling chosen pill and the screen
+      `paper`, Play `circle`; `frame` is gone from Flat. *Easy: the check knows Flat's words, so the next part is held to them.*
+- [x] Action bar: Flat's posts show the gallery's plates as covers (Open water, Dusk tide, Sprig, Graphite, Silk, Red
+      sun), through a new optional `image` on a list's project (`list` and every world's copy, 2026-11-19). *Felt:
+      your own pictures, not placeholders, so selecting them feels like tidying your site.*
+- [x] Combobox in Flat's words: the hint is "Readers see it under the picture, in the post and in Issue 14." on the
+      lead and the tile (Flat's own demos; the shared demo is unchanged). The caption still says zurich finds Zürich,
+      since that is what it does.
+- [x] The player: no 5% ink ring. The screen is the same sheet as a tile (`.flat-screen`), filled at the object's 16px,
+      the take on it as on its tile. Home under Flat: nothing under body size (the name at h1, the audience, each part's
+      line and Every component at body), the set's rows taller, Every component at the screen's foot, so Home fills
+      it. The pills are body size. Other worlds' Home unchanged. *Easy: Home reads at arm's length. Felt: a light sheet
+      of paper, not a box in a box.*
+- Checked: `test:materials` and `--self-test`, `test:wall`, `test:playground` and `--self-test`, `test:worlds`,
+  `test:corners`; `#device`, `#device/components`, `#heat` take 3, `#rack/components`, `#press/list`,
+  `#press/action-bar`, `#plain/combobox`, light and dark, pixel-equal to before.
+- For Nick: dark's sheet is a mix (8% `--flat-fg` into `--flat-ground`) in gallery CSS. If it is right, it wants a name in
+  tokens.css (`--flat-sheet`, through `evolve.md`), so a host's Flat can lift a panel the same way. Dark paper on the
+  ground (1.1:1) is unchanged. Still left: the wall's order, a data part in the set, something moving on the first screen.
+
+### Flat heatwave (Progress) (done, 2026-11-19)
+
+Nick, on the feel canvas's option C: "C is amazing tho. Flat heatwave is the move". In Flat, how far along you are is
+warmth. A taste change through `evolve.md` (journal, profile v1.21, R6 and R7, Flat's colour table, `material.md`,
+`components.md`'s Progress), Flat and Progress only.
+
+- [x] `segments` on Progress's contract (every world): one slot per thing counted, a segment lit once its share is done.
+      Outside Flat it lights in the ink, as before.
+- [x] Under Flat the fill walks the sunset (`byWorld` in `progress.tsx`, as the Gauge's `ramp`, same mapping): each
+      done segment at its place on the ramp; a continuous fill one colour, the step at its value, never a gradient
+      (R1, R7). Failed keeps danger. A colour fade on the instant tier; at once under reduced motion.
+      *Easy: the reading says "7 of 12 pictures" in words, so the first steps' 2:1 never carries the value. Felt: the
+      series warms as it nears the end.*
+- [x] `#flat/progress`: the lead and its tile are Spring series, 7 of 12 pictures, with Add a picture; Variants hold
+      the picture upload (warming as it goes) and every state. Other worlds' demos unchanged. Option C stays on the
+      canvas, marked shipped.
+- Checked: `#press/progress`, `#device/progress`, `#heat/progress`, Variants open, light and dark, pixel-equal to
+  before but the docs table's new `segments` row.
 
 ## The order of work inside a world
 

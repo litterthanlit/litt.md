@@ -4,7 +4,26 @@ Every change to the litt registry at https://littmd.vercel.app/r/, newest first.
 
 To update an item, read the entries since your version, then reinstall it with `--overwrite`. A **breaking** entry says what to change in your code.
 
+## 2026-11-19 · Flat's covers
+
+Flat's leftovers (plans/024, Flat): a list's card can show a picture as its cover, so a site's posts show their pictures in place of drawn wireframes. Nothing changes for a card that passes `cover` or nothing.
+
+- **added** `progress`, `press-progress`, `flat-progress`, `device-progress`, `plain-progress`, `rack-progress`, `heat-progress`: `segments` cuts the slot into one segment per thing counted (twelve pictures), each its own slot, 4px apart; a segment lights once its share is done, with a color fade on the instant tier. Leave it out for one continuous slot, as before.
+- **changed** `progress`, `flat-progress`: Flat heatwave (Nick, on the canvas's option C: "C is amazing tho. Flat heatwave is the move"). Under Flat how far along you are is warmth: the fill walks the sunset ramp (`--litt-data-seq-1` to `4`), read off its four steps as a ramped Gauge's ticks are. A continuous fill is one color, the step at its value, so it warms as it grows; each done segment lights at its own place on the ramp. Failed keeps `--litt-danger`. Props are unchanged, and nothing changes outside Flat: `press-progress`, `device-progress`, `plain-progress`, `rack-progress` and `heat-progress` keep the ink.
+
+Earlier the same day, Flat's covers.
+
+- **added** `list`, `press-list`, `flat-list`, `device-list`, `plain-list`, `rack-list`, `heat-list`: a project's `image` (`src`, an optional `srcSet`, and `alt`) is its card's cover, in place of a drawn `cover`: it fills the cover's 8:5 box, cropped to it, and loads lazily. Existing projects are unchanged.
+
 ## 2026-11-18 · Flat's ground
+
+Later the same day, Flat's sunset ramp (plans/024, Flat; Nick, on the Spectrum palette's ramp on a Heatmap and a Gauge: "this was also cool"). Nothing changes outside Flat.
+
+- **changed** `litt`: under Flat the sequential ramp (`--litt-flat-data-seq-1` to `4`, read as `--litt-data-seq-1` to `4`) is a sunset in place of Candy's bubblegum: gold, tangerine, crimson and plum, light to deep, in light; plum, magenta, coral and gold, dim to bright, in dark. Its hue walks with its lightness, so each step still stands further from the ground than the last, and steps two to four keep 3:1 on the ground and on paper. A Flat heatmap, cohort grid or ramped gauge takes it with no change in your code.
+- **changed** `flat-litt`, `press-litt`, `device-litt`, `plain-litt`, `rack-litt`, `heat-litt`: the same values ride along in `:root`; only Flat reads them, so nothing changes in the other worlds.
+- **changed** `gauge`, `press-gauge`, `flat-gauge`, `device-gauge`, `plain-gauge`, `rack-gauge`, `heat-gauge`: with `ramp`, under Flat, each lit tick takes its own place on the arc read off all four steps of the ramp, blended in OKLab, so the arc walks the whole sunset (plum to gold in dark) and the marking tick is its own place's colour. Every other world has no ramp, so `ramp` there keeps the hue, unchanged. Props are unchanged.
+- **changed** `heatmap`, `press-heatmap`, `flat-heatmap`, `device-heatmap`, `plain-heatmap`, `rack-heatmap`, `heat-heatmap`, `cohort-grid`, `press-cohort-grid`, `flat-cohort-grid`, `device-cohort-grid`, `plain-cohort-grid`, `rack-cohort-grid`, `heat-cohort-grid`: their notes name the sunset ramp. What they draw is unchanged outside Flat.
+- **added** `bar-list`, `press-bar-list`, `flat-bar-list`, `device-bar-list`, `plain-bar-list`, `rack-bar-list`, `heat-bar-list`, `sparkline`, `press-sparkline`, `flat-sparkline`, `device-sparkline`, `plain-sparkline`, `rack-sparkline`, `heat-sparkline`, `funnel`, `press-funnel`, `flat-funnel`, `device-funnel`, `plain-funnel`, `rack-funnel`, `heat-funnel`, `spread`, `press-spread`, `flat-spread`, `device-spread`, `plain-spread`, `rack-spread`, `heat-spread`, `dot-plot`, `press-dot-plot`, `flat-dot-plot`, `device-dot-plot`, `plain-dot-plot`, `rack-dot-plot`, `heat-dot-plot`, `tag`, `press-tag`, `flat-tag`, `device-tag`, `plain-tag`, `rack-tag`, `heat-tag`, `avatar`, `press-avatar`, `flat-avatar`, `device-avatar`, `plain-avatar`, `rack-avatar`, `heat-avatar`, `timeline`, `press-timeline`, `flat-timeline`, `device-timeline`, `plain-timeline`, `rack-timeline`, `heat-timeline`: `hue` takes `sky`, `bubblegum` and `sun`, Flat's slots six to eight, as Breakdown, Chart and Legend do; in every other world they are its teal, rose and amber. An avatar with no `hue` still picks one of the first five from its name. Existing parts are unchanged.
 
 Later the same day, Flat's data in colour (plans/024, Flat; Nick: "yes I love this all!"): the surfaces stay grey and white, and the data is bright Candy. Nothing changes outside Flat.
 

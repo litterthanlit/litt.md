@@ -672,7 +672,7 @@ function NewPostDemo() {
         value={place}
         onValueChange={setPlace}
         placeholder="Search 30 places"
-        hint="Accents are optional: zurich finds Zürich."
+        hint="Readers see it under the picture, in the post and in Issue 14."
       />
       <TextField label="Post title" name="title" defaultValue="Open water" />
       <div className="grid gap-3">
@@ -696,7 +696,7 @@ function PlaceTile() {
         value={place}
         onValueChange={setPlace}
         placeholder="Search 30 places"
-        hint="Accents are optional: zurich finds Zürich."
+        hint="Readers see it under the picture, in the post and in Issue 14."
       />
     </div>
   );

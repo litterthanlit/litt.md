@@ -3,6 +3,7 @@ import { ActionBar } from "@/components/action-bar";
 import { Button } from "@/components/button";
 import { ArchiveIcon, ShareIcon } from "@/components/icons";
 import { ProjectGrid, type Project } from "@/components/list";
+import { DUSK_TIDE, GRAPHITE, OPEN_WATER, RED_SUN, SILK, SPRIG, type Plate } from "@/gallery/plates";
 import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
@@ -142,13 +143,16 @@ function SelectRecordingsDemo() {
 
 /* ---------- Flat's own (plans/024, phase 3): the posts of a small site ---------- */
 
+/** A post's picture as its card's cover: the gallery's plates, not drawn wireframes (Flat's call 3). */
+const cover = (p: Plate): Project["image"] => ({ src: p.src, srcSet: p.srcSet, alt: p.alt });
+
 const POSTS: Project[] = [
-  { id: "open-water", name: "Open water", client: "Spring series", deploy: "Published 2 days ago", status: "live", updated: "2026-11-16", description: "The first of the spring series. 4 min read.", tags: ["Coast"], cover: "landing" },
-  { id: "dusk-tide", name: "Dusk tide", client: "Spring series", deploy: "Published last week", status: "live", updated: "2026-11-09", description: "Twenty minutes after sunset. 3 min read.", tags: ["Coast"], cover: "identity" },
-  { id: "garden", name: "What the garden did", client: "The garden", deploy: "Published in October", status: "live", updated: "2026-10-18", description: "Buds, rust and rain. 5 min read.", tags: ["Garden"], cover: "type" },
-  { id: "tide-line", name: "Drawing the tide line", client: "Pencil studies", deploy: "Published in October", status: "live", updated: "2026-10-04", description: "Studies before the series. 4 min read.", tags: ["Drawing"], cover: "system" },
-  { id: "silk", name: "Notes on a slow shutter", client: "No series yet", deploy: "Not published", status: "draft", updated: "2026-11-17", description: "How the water turns to silk. 6 min read.", tags: ["Notes"], cover: "motion" },
-  { id: "red-sun", name: "A red sun in March", client: "Spring series", deploy: "Not published", status: "draft", updated: "2026-11-12", description: "One picture and a short letter.", tags: ["Coast"], cover: "template" },
+  { id: "open-water", name: "Open water", client: "Spring series", deploy: "Published 2 days ago", status: "live", updated: "2026-11-16", description: "The first of the spring series. 4 min read.", tags: ["Coast"], image: cover(OPEN_WATER) },
+  { id: "dusk-tide", name: "Dusk tide", client: "Spring series", deploy: "Published last week", status: "live", updated: "2026-11-09", description: "Twenty minutes after sunset. 3 min read.", tags: ["Coast"], image: cover(DUSK_TIDE) },
+  { id: "garden", name: "What the garden did", client: "The garden", deploy: "Published in October", status: "live", updated: "2026-10-18", description: "Buds, rust and rain. 5 min read.", tags: ["Garden"], image: cover(SPRIG) },
+  { id: "tide-line", name: "Drawing the tide line", client: "Pencil studies", deploy: "Published in October", status: "live", updated: "2026-10-04", description: "Studies before the series. 4 min read.", tags: ["Drawing"], image: cover(GRAPHITE) },
+  { id: "silk", name: "Notes on a slow shutter", client: "No series yet", deploy: "Not published", status: "draft", updated: "2026-11-17", description: "How the water turns to silk. 6 min read.", tags: ["Notes"], image: cover(SILK) },
+  { id: "red-sun", name: "A red sun in March", client: "Spring series", deploy: "Not published", status: "draft", updated: "2026-11-12", description: "One picture and a short letter.", tags: ["Coast"], image: cover(RED_SUN) },
 ];
 
 function SelectPostsDemo() {

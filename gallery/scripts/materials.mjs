@@ -2,10 +2,12 @@
 /**
  * Device's materials and colour rule (plans/024, Device, phase 2), after the components repo's check:anatomy. From a
  * build, on the player (#device) and every #device/* page (scripts/routes.mjs), light and dark, at 1440 by 900, with Variants open.
+ * Flat's kinds too (plans/024, Flat, leftovers), on Flat's player (#flat, Home and every take) and its gallery view
+ * (#flat/components, every component as its tile).
  *
  *   npm run build && npm run test:materials
  *   node scripts/materials.mjs --pages device/button,device/tag
- *   node scripts/materials.mjs --self-test     puts back an orange primary key and a teal gauge (and two more), fails if missed
+ *   node scripts/materials.mjs --self-test     puts back an orange primary key and a teal gauge (and four more), fails if missed
  *
  * It fails when, anywhere on a Device page:
  * - an element carries a data-part kind that is not one of Device's (KINDS, after litt-principles.md, Device's materials,
@@ -22,6 +24,11 @@
  * video and canvas are content, not material (a cover keeps its palette), and so is code, whose highlighting is the
  * reader's; so is a colour the data paints inline (a product's swatch, the colour picker's colour), or anything
  * inside [data-artwork].
+ *
+ * On Flat's pages it fails when an element carries a data-part kind that is not one of Flat's (FLAT_KINDS, after
+ * litt-principles.md, Flat's materials, and plans/024's phase 1 list), or when a part of Flat's player body (a pill, Play,
+ * the screen) is in no data-part. Flat's colour rule is not read here: test:wall and test:playground hold its one ink
+ * fill, and its data hues are the data's.
  *
  * KNOWN holds breaks that are not fixed yet: each prints, none fails the run, and one that no longer happens fails it,
  * so the entry goes when the fix lands. The player (#device) is read too, on Home, as it opens.
@@ -60,12 +67,18 @@ if (!fs.existsSync(path.join(dist, "index.html"))) {
 export const KINDS = ["frame", "plate", "well", "slot", "collar", "key", "cap", "lcd", "chip", "bezel", "glass", "window", "light",
   "lettering", "screen", "matrix", "reel", "tape", "face"];
 
+/** Flat's data-part kinds (plans/024, Flat, phase 1; taste/litt-principles.md, Flat's materials). */
+export const FLAT_KINDS = ["ground", "paper", "pill", "circle", "bubble", "ink", "ink-card", "outline", "float", "mark", "figure", "lettering"];
+
 /** Breaks not fixed yet, as "page · theme · rule · what": printed, never failing, and failing once gone. */
 const KNOWN = [];
 
-const only = (get("pages", selfTest ? "device/button" : "") || "").split(",").filter(Boolean);
-/* #device is the player: the recorder and what its screen shows, read since plan 024's phase 4 drew it in Device's materials. */
-const PAGES = (only.length ? only : routes({ only: ["device"] }).filter((r) => r === "device" || r.startsWith("device/")));
+const only = (get("pages", selfTest ? "device/button,flat" : "") || "").split(",").filter(Boolean);
+/* #device is the player: the recorder and what its screen shows, read since plan 024's phase 4 drew it in Device's materials.
+   Flat is read on its player and its gallery view, which between them draw every Flat part. */
+const PAGES = only.length ? only : [...routes({ only: ["device"] }).filter((r) => r === "device" || r.startsWith("device/")), "flat", "flat/components"];
+/** The world a route is in, which picks the rules it is read by. */
+const worldOf = (route) => route.split("/")[0];
 
 const types = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".svg": "image/svg+xml", ".json": "application/json", ".woff2": "font/woff2", ".md": "text/markdown", ".txt": "text/plain" };
 const server = http.createServer((req, res) => {
@@ -78,7 +91,7 @@ const server = http.createServer((req, res) => {
 const base = `http://localhost:${server.address().port}/index.html`;
 
 /** Runs in the page: every break of the rule, as [rule, what] pairs. */
-function read(KINDS) {
+function read([KINDS, world]) {
   /* sRGB to OKLab/OKLCH, through a canvas so any CSS colour (oklch, color-mix results, named) parses. */
   const cx = document.createElement("canvas").getContext("2d", { willReadFrequently: true });
   const cache = new Map();
@@ -129,9 +142,20 @@ function read(KINDS) {
   const seen = new Set();
   const add = (rule, what) => { const k = rule + what; if (!seen.has(k)) { seen.add(k); out.push([rule, what]); } };
 
+  const World = world[0].toUpperCase() + world.slice(1);
   for (const el of document.querySelectorAll("[data-part]")) {
     const k = el.getAttribute("data-part");
-    if (!KINDS.includes(k)) add("kind", `data-part="${k}" is not a Device kind: ${name(el)}`);
+    if (!KINDS.includes(k)) add("kind", `data-part="${k}" is not a ${World} kind: ${name(el)}`);
+  }
+
+  /* Flat: its kinds only, and every part of its player body marked (the top row and the screen's take are not the body). */
+  if (world === "flat") {
+    const body = document.querySelector('[data-play-object="flat"]');
+    for (const el of body ? body.querySelectorAll(':scope > :not(:first-child) :is(button, [role=slider] > *, [data-play-frame=screen])') : []) {
+      if (el.parentElement.closest("[data-play-frame=screen]")) continue;
+      if (!el.closest("[data-part]")) add("unmarked", `a part of Flat's player is in no data-part: ${name(el)}`);
+    }
+    return out;
   }
 
   for (const el of document.body.querySelectorAll("*")) {
@@ -205,10 +229,11 @@ async function check(route, theme, mutate) {
     await pg.mouse.move(0, 0);
     await pg.waitForTimeout(150);
     if (mutate) await pg.evaluate(mutate);
-    const found = (await pg.evaluate(read, KINDS)).map(([rule, what]) => `${route} · ${theme} · ${rule} · ${what}`);
+    const rules = [worldOf(route) === "flat" ? FLAT_KINDS : KINDS, worldOf(route)];
+    const found = (await pg.evaluate(read, rules)).map(([rule, what]) => `${route} · ${theme} · ${rule} · ${what}`);
     /* The player: Home, then every take on its screen, stepped with the tape's keys as a person would. */
     const slider = pg.locator("[data-play-object] [role=slider][aria-label=Components]");
-    if (route === "device" && !mutate && (await slider.count())) {
+    if ((route === "device" || route === "flat") && !mutate && (await slider.count())) {
       const n = Number(await slider.getAttribute("aria-valuemax"));
       for (let k = 1; k <= n; k++) {
         await slider.focus();
@@ -217,7 +242,7 @@ async function check(route, theme, mutate) {
         await pg.waitForTimeout(250);
         await slider.evaluate((el) => el.blur());
         const take = await pg.evaluate(() => document.querySelector("[data-play-take]")?.getAttribute("data-play-take"));
-        for (const [rule, what] of await pg.evaluate(read, KINDS)) found.push(`${route} · ${theme} · ${rule} · ${take}: ${what}`);
+        for (const [rule, what] of await pg.evaluate(read, rules)) found.push(`${route} · ${theme} · ${rule} · ${take}: ${what}`);
       }
     }
     return [...new Set(found), ...errors.map((e) => `${route} · ${theme} · error · ${e}`)];
@@ -227,7 +252,9 @@ async function check(route, theme, mutate) {
 }
 
 if (selfTest) {
-  /* The four breaks: Device's old orange primary key, the old teal gauge, a Press plate's kind and a stage on a dark screen. */
+  /* The six breaks: Device's old orange primary key, the old teal gauge, a Press plate's kind and a stage on a dark
+     screen on #device/button; a Device key's kind and an unmarked Play on Flat's player. */
+  const [DEVICE, FLAT] = PAGES;
   const breaks = [
     ["an orange primary key", "orange", () => {
       const b = document.createElement("button");
@@ -256,12 +283,20 @@ if (selfTest) {
       box.removeAttribute("data-part");
       box.classList.add("litt-raised");
     }],
-  ];
-  const clean = await check(PAGES[0], "light");
-  if (clean.length) { console.error(`materials --self-test: ${PAGES[0]} is not clean to start with:\n  ${clean.join("\n  ")}`); process.exit(1); }
+    ["a Device key's kind on Flat's player", "kind", () => {
+      document.querySelector('[data-play-object="flat"] [data-part="pill"]').setAttribute("data-part", "key");
+    }, FLAT],
+    ["an unmarked Play on Flat's player", "unmarked", () => {
+      document.querySelector('[data-play-object="flat"] button[aria-label="Play"]').removeAttribute("data-part");
+    }, FLAT],
+  ].map(([label, rule, mutate, page = DEVICE]) => [label, rule, mutate, page]);
+  for (const page of [DEVICE, FLAT]) {
+    const clean = await check(page, "light");
+    if (clean.length) { console.error(`materials --self-test: ${page} is not clean to start with:\n  ${clean.join("\n  ")}`); process.exit(1); }
+  }
   let missed = 0;
-  for (const [label, rule, mutate] of breaks) {
-    const found = await check(PAGES[0], "light", mutate);
+  for (const [label, rule, mutate, page] of breaks) {
+    const found = await check(page, "light", mutate);
     const caught = found.some((f) => f.split(" · ")[2] === rule);
     if (!caught) missed++;
     console.log(`${caught ? "✓" : "✗"} self-test: ${label} ${caught ? "is caught" : "is MISSED"}${caught ? `: ${found.find((f) => f.split(" · ")[2] === rule).split(" · ").slice(3).join(" · ")}` : ""}`);
@@ -295,4 +330,5 @@ if (fails.length || gone.length) {
   console.error(`\nmaterials: ${fails.length} break${fails.length === 1 ? "" : "s"} of Device's materials and colour rule on ${PAGES.length} pages${gone.length ? `, ${gone.length} KNOWN entr${gone.length === 1 ? "y" : "ies"} gone` : ""}.`);
   process.exit(1);
 }
-console.log(`materials: ${PAGES.length} Device pages, light and dark, keep Device's kinds, its colour rule and a plate under every stage${known.length ? ` (${known.length} known)` : ""}.`);
+const flat = PAGES.filter((r) => worldOf(r) === "flat").length;
+console.log(`materials: ${PAGES.length - flat} Device pages, light and dark, keep Device's kinds, its colour rule and a plate under every stage; ${flat} Flat pages keep Flat's kinds and a marked player${known.length ? ` (${known.length} known)` : ""}.`);

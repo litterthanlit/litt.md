@@ -24,8 +24,8 @@
  */
 import { useId } from "react";
 
-/** The five data hues, in their fixed order (R7). */
-export type FunnelHue = "blue" | "amber" | "teal" | "violet" | "rose";
+/** The data hues, in their fixed order (R7): the five, then slots six to eight, Flat's own (elsewhere its teal, rose and amber). */
+export type FunnelHue = "blue" | "amber" | "teal" | "violet" | "rose" | "sky" | "bubblegum" | "sun";
 
 /** A hue's mark tone fills every rail. */
 const MARK: Record<FunnelHue, string> = {
@@ -34,6 +34,9 @@ const MARK: Record<FunnelHue, string> = {
   teal: "bg-data-teal",
   violet: "bg-data-violet",
   rose: "bg-data-rose",
+  sky: "bg-data-sky",
+  bubblegum: "bg-data-bubblegum",
+  sun: "bg-data-sun",
 };
 /** The Meter's track. */
 const TRACK = "bg-[color-mix(in_oklab,var(--fg)_12%,transparent)]";
@@ -68,7 +71,7 @@ export type FunnelProps = {
   label: string;
   /** The steps, in the order people go through them. Every rail is measured against the first. */
   steps: FunnelStep[];
-  /** The one data hue every rail fills with. A funnel is one quantity, so it takes one hue. */
+  /** The one data hue every rail fills with. A funnel is one quantity, so it takes one hue. `sky`, `bubblegum` and `sun` are Flat's slots six to eight; in every other world they are its teal, rose and amber. */
   hue?: FunnelHue;
   /** The reading at the end of the header, in tabular figures. Defaults to the last step as a share of the first: "4.1% overall". */
   overallText?: string;

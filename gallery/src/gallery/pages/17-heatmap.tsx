@@ -358,7 +358,7 @@ export default function HeatmapPage() {
             title: "The week on the ramp",
             code: "ReadsWeekDemo",
             caption:
-              "Reads of your site by hour, a row a day, with Friday's swell when the letter goes out. No hue is passed, so the four steps are Flat's sequential ramp: bubblegum from light to deep (dim to bright in dark), one hue for one quantity, and the deepest dots are the busiest hours. The legend under the grid walks the same steps. Hover a dot, or arrow to it, and a ring and a tooltip name the hour and the reads. Nothing moves on arrival.",
+              "Reads of your site by hour, a row a day, with Friday's swell when the letter goes out. No hue is passed, so the four steps are Flat's sequential ramp, a sunset: gold through crimson to plum (plum to gold in dark), its lightness walking one way for one quantity, and the deepest dots are the busiest hours. The legend under the grid walks the same steps. Hover a dot, or arrow to it, and a ring and a tooltip name the hour and the reads. Nothing moves on arrival.",
           },
           device: {
             demo: <MinutesDemo />,
