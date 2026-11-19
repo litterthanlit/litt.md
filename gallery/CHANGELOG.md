@@ -10,7 +10,8 @@ Rack Ableton Live identity (proposals/rack.md; taste/litt-principles.md, Rack): 
 
 - **added** `clip-launcher`, `rack-clip-launcher`: Clip launcher, an Ableton-style Session View clip and scene grid with color-coded tracks (`amber`, `blue`, `teal`, `violet`, `rose`), seeded clip waveforms, empty stop slots, and Master scene launch buttons. Needs `data-material="rack"` on `<html>`.
 - **added** `device-rack`, `rack-device-rack`: Device rack, an Audio Effect Rack module with color-coded rotary Macro Dials supporting 1:1 vertical pointer drag, keyboard arrow steps, double-click reset, a device bypass toggle, and instant preset recall. Needs `data-material="rack"` on `<html>`.
-- **added** `step-sequencer`, `rack-step-sequencer`: Step sequencer, a colorful 8-step drum and bass pattern grid with four color-coded instrument lanes, pattern presets (`House`, `Breakbeat`, `Minimal`), and a Play / Stop playhead. Needs `data-material="rack"` on `<html>`.
+- **added** `step-sequencer`, `rack-step-sequencer`: Step sequencer, a colorful 8-step drum and bass pattern grid with four color-coded instrument lanes, pattern presets (`House`, `Breakbeat`, `Minimal`), and a Play / Stop playhead. Responsive 8-step grid fits narrow mobile viewports without clipping. Needs `data-material="rack"` on `<html>`.
+- **changed** `button`, `press-button`, `flat-button`, `device-button`, `plain-button`, `rack-button`, `heat-button`: keeps icon-only `ButtonHeatBody` (`worlds/heat/button.tsx`) square (`rounded-none`) instead of inheriting `rounded-pill`. Props are unchanged and nothing changes outside Heat.
 
 Earlier the same day, Heat complete (proposals/heat.md; taste/litt-principles.md, Heat): completes all 23 dedicated Heat bodies (`chart`, `composer`, `file-drop`, `token-input`), adds three Heat-only street-racing signature components (`pursuit-meter`, `lap-timer`, `tune-menu`), and brings racing-menu voice demos across Heat's set. Nothing changes outside Heat.
 

@@ -177,8 +177,8 @@ export function StepSequencer({
         <div
           role="group"
           aria-labelledby={headingId}
-          className="grid min-w-[22rem] gap-1.5"
-          style={{ gridTemplateColumns: `4.5rem repeat(${STEPS}, minmax(0, 1fr))` }}
+          className="grid min-w-[17rem] gap-1 sm:min-w-[22rem] sm:gap-1.5"
+          style={{ gridTemplateColumns: `minmax(3.25rem, 4.5rem) repeat(${STEPS}, minmax(1.375rem, 1fr))` }}
         >
           {/* Step index ruler */}
           <span className="self-center px-1 font-mono text-caption text-fg-subtle">Steps</span>
@@ -205,7 +205,7 @@ export function StepSequencer({
               <div key={lane.id} className="contents">
                 <span
                   className={
-                    "flex items-center truncate rounded-control border px-2 text-caption font-title " +
+                    "flex items-center truncate rounded-control border px-1.5 text-caption font-title sm:px-2 " +
                     tone.tint +
                     " " +
                     tone.border +

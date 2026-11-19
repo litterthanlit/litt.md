@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 /**
- * Device's materials and colour rule (plans/024, Device, phase 2), after the components repo's check:anatomy. From a
- * build, on the player (#device) and every #device/* page (scripts/routes.mjs), light and dark, at 1440 by 900, with Variants open.
- * Flat's kinds too (plans/024, Flat, leftovers), on Flat's player (#flat, Home and every take) and its gallery view
- * (#flat/components, every component as its tile).
+ * World material checks (plans/024, Device, phase 2; Flat leftovers; Heat & Rack invariants), after the components
+ * repo's check:anatomy. From a build, on the player (#device) and every #device/* page (scripts/routes.mjs), plus
+ * Flat (#flat, #flat/components), Heat (#heat, #heat/components), and Rack (#rack, #rack/components), light and dark,
+ * at 1440 by 900, with Variants open.
  *
  *   npm run build && npm run test:materials
  *   node scripts/materials.mjs --pages device/button,device/tag
- *   node scripts/materials.mjs --self-test     puts back an orange primary key and a teal gauge (and four more), fails if missed
+ *   node scripts/materials.mjs --self-test     injects 9 material breaks across Device, Flat, Heat and Rack, fails if missed
  *
  * It fails when, anywhere on a Device page:
  * - an element carries a data-part kind that is not one of Device's (KINDS, after litt-principles.md, Device's materials,
@@ -29,6 +29,13 @@
  * litt-principles.md, Flat's materials, and plans/024's phase 1 list), or when a part of Flat's player body (a pill, Play,
  * the screen) is in no data-part. Flat's colour rule is not read here: test:wall and test:playground hold its one ink
  * fill, and its data hues are the data's.
+ *
+ * On Heat's pages (#heat, #heat/components) it fails when data-material is not "heat", when the player omits
+ * [data-play-object="heat"], when any Heat body or player-body surface casts a drop shadow (non-zero offset or blur;
+ * zero-offset 1px outlines pass), or when a Heat slab/control rounds its corners (radio circles and tiny <=16px marks exempt).
+ *
+ * On Rack's pages (#rack, #rack/components) it fails when data-material is not "rack", when the player omits
+ * [data-play-object="rack"], or when any Rack body or player-body surface casts a drop shadow (zero-offset 1px outlines pass).
  *
  * KNOWN holds breaks that are not fixed yet: each prints, none fails the run, and one that no longer happens fails it,
  * so the entry goes when the fix lands. The player (#device) is read too, on Home, as it opens.
@@ -73,10 +80,20 @@ export const FLAT_KINDS = ["ground", "paper", "pill", "circle", "bubble", "ink",
 /** Breaks not fixed yet, as "page · theme · rule · what": printed, never failing, and failing once gone. */
 const KNOWN = [];
 
-const only = (get("pages", selfTest ? "device/button,flat" : "") || "").split(",").filter(Boolean);
+const only = (get("pages", selfTest ? "device/button,flat,heat,rack" : "") || "").split(",").filter(Boolean);
 /* #device is the player: the recorder and what its screen shows, read since plan 024's phase 4 drew it in Device's materials.
-   Flat is read on its player and its gallery view, which between them draw every Flat part. */
-const PAGES = only.length ? only : [...routes({ only: ["device"] }).filter((r) => r === "device" || r.startsWith("device/")), "flat", "flat/components"];
+   Flat, Heat, and Rack are read on their players and their gallery views, which between them draw every world body. */
+const PAGES = only.length
+  ? only
+  : [
+      ...routes({ only: ["device"] }).filter((r) => r === "device" || r.startsWith("device/")),
+      "flat",
+      "flat/components",
+      "heat",
+      "heat/components",
+      "rack",
+      "rack/components",
+    ];
 /** The world a route is in, which picks the rules it is read by. */
 const worldOf = (route) => route.split("/")[0];
 
@@ -91,7 +108,7 @@ const server = http.createServer((req, res) => {
 const base = `http://localhost:${server.address().port}/index.html`;
 
 /** Runs in the page: every break of the rule, as [rule, what] pairs. */
-function read([KINDS, world]) {
+function read([KINDS, world, route]) {
   /* sRGB to OKLab/OKLCH, through a canvas so any CSS colour (oklch, color-mix results, named) parses. */
   const cx = document.createElement("canvas").getContext("2d", { willReadFrequently: true });
   const cache = new Map();
@@ -141,6 +158,71 @@ function read([KINDS, world]) {
   const out = [];
   const seen = new Set();
   const add = (rule, what) => { const k = rule + what; if (!seen.has(k)) { seen.add(k); out.push([rule, what]); } };
+
+  /* Heat and Rack material invariants (zero cast shadows; square corners on Heat; mounted PlayObject). */
+  if (world === "heat" || world === "rack") {
+    const mat = document.documentElement.getAttribute("data-material");
+    if (mat !== world) add("material", `expected data-material="${world}" on <html>, got "${mat}"`);
+    const player = document.querySelector(`[data-play-object="${world}"]`);
+    if (route === world && !player) add("object", `missing [data-play-object="${world}"] on #${route}`);
+
+    /** True when a computed boxShadow string casts a drop shadow (non-zero offset or blur); 0 0 0 Npx outlines pass. */
+    const hasCastShadow = (bs) => {
+      if (!bs || bs === "none") return false;
+      const layers = [];
+      let depth = 0;
+      let start = 0;
+      for (let i = 0; i < bs.length; i++) {
+        if (bs[i] === "(") depth++;
+        else if (bs[i] === ")") depth--;
+        else if (bs[i] === "," && depth === 0) { layers.push(bs.slice(start, i)); start = i + 1; }
+      }
+      layers.push(bs.slice(start));
+      for (const layer of layers) {
+        const stripped = layer.replace(/[a-z-]+\([^()]*\)/gi, "").replace(/\binset\b/gi, "");
+        const nums = [...stripped.matchAll(/-?\d+(?:\.\d+)?px/g)].map((m) => parseFloat(m[0]));
+        const [x = 0, y = 0, blur = 0] = nums;
+        if (Math.abs(x) > 0.01 || Math.abs(y) > 0.01 || blur > 0.01) return true;
+      }
+      return false;
+    };
+
+    const targets = new Set();
+    if (player) {
+      for (const child of player.querySelectorAll(":scope > :not(:first-child)")) {
+        if (child.getAttribute("role") === "status") continue;
+        targets.add(child);
+        for (const el of child.querySelectorAll("*")) {
+          if (el.closest("[data-play-frame=screen]")) continue;
+          targets.add(el);
+        }
+      }
+    }
+    for (const body of document.querySelectorAll(`[data-body="${world}"]`)) {
+      targets.add(body);
+      for (const el of body.querySelectorAll("*")) targets.add(el);
+    }
+
+    for (const el of targets) {
+      if (el instanceof SVGElement) continue;
+      const r = el.getBoundingClientRect();
+      if (r.width < 1 || r.height < 1) continue;
+      const cs = getComputedStyle(el);
+      if (cs.visibility === "hidden" || cs.display === "none") continue;
+      if (hasCastShadow(cs.boxShadow)) add("shadow", `a cast shadow (${cs.boxShadow}) on ${name(el)}`);
+      if (world === "heat") {
+        const isRadio = el.matches('input[type="radio"], [role="radio"]');
+        const isTinyDot = r.width <= 16 && r.height <= 16;
+        if (!isRadio && !isTinyDot) {
+          const radii = [cs.borderTopLeftRadius, cs.borderTopRightRadius, cs.borderBottomRightRadius, cs.borderBottomLeftRadius];
+          if (radii.some((v) => parseFloat(v) > 0.5)) {
+            add("radius", `rounded corner (${cs.borderRadius}) on Heat ${name(el)}`);
+          }
+        }
+      }
+    }
+    return out;
+  }
 
   const World = world[0].toUpperCase() + world.slice(1);
   for (const el of document.querySelectorAll("[data-part]")) {
@@ -229,7 +311,7 @@ async function check(route, theme, mutate) {
     await pg.mouse.move(0, 0);
     await pg.waitForTimeout(150);
     if (mutate) await pg.evaluate(mutate);
-    const rules = [worldOf(route) === "flat" ? FLAT_KINDS : KINDS, worldOf(route)];
+    const rules = [worldOf(route) === "flat" ? FLAT_KINDS : KINDS, worldOf(route), route];
     const found = (await pg.evaluate(read, rules)).map(([rule, what]) => `${route} · ${theme} · ${rule} · ${what}`);
     /* The player: Home, then every take on its screen, stepped with the tape's keys as a person would. */
     const slider = pg.locator("[data-play-object] [role=slider][aria-label=Components]");
@@ -252,9 +334,9 @@ async function check(route, theme, mutate) {
 }
 
 if (selfTest) {
-  /* The six breaks: Device's old orange primary key, the old teal gauge, a Press plate's kind and a stage on a dark
-     screen on #device/button; a Device key's kind and an unmarked Play on Flat's player. */
-  const [DEVICE, FLAT] = PAGES;
+  /* Nine breaks: Device's 4 checks on #device/button, Flat's 2 checks on #flat, Heat's 2 checks (radius & shadow)
+     on #heat, and Rack's cast-shadow check on #rack. */
+  const [DEVICE, FLAT, HEAT, RACK] = PAGES;
   const breaks = [
     ["an orange primary key", "orange", () => {
       const b = document.createElement("button");
@@ -289,8 +371,17 @@ if (selfTest) {
     ["an unmarked Play on Flat's player", "unmarked", () => {
       document.querySelector('[data-play-object="flat"] button[aria-label="Play"]').removeAttribute("data-part");
     }, FLAT],
+    ["a rounded slab on Heat's player", "radius", () => {
+      document.querySelector('[data-play-object="heat"] > :nth-child(2)').style.borderRadius = "12px";
+    }, HEAT],
+    ["a drop shadow on Heat's player", "shadow", () => {
+      document.querySelector('[data-play-object="heat"] > :nth-child(2)').style.boxShadow = "0 4px 12px rgba(0, 0, 0, 0.35)";
+    }, HEAT],
+    ["a drop shadow on Rack's player", "shadow", () => {
+      document.querySelector('[data-play-object="rack"] > :nth-child(2)').style.boxShadow = "0 4px 12px rgba(0, 0, 0, 0.35)";
+    }, RACK],
   ].map(([label, rule, mutate, page = DEVICE]) => [label, rule, mutate, page]);
-  for (const page of [DEVICE, FLAT]) {
+  for (const page of [DEVICE, FLAT, HEAT, RACK]) {
     const clean = await check(page, "light");
     if (clean.length) { console.error(`materials --self-test: ${page} is not clean to start with:\n  ${clean.join("\n  ")}`); process.exit(1); }
   }
@@ -327,8 +418,11 @@ for (const k of known) console.log(`known · ${k}`);
 for (const f of fails) console.error(`✗ ${f}`);
 for (const g of gone) console.error(`✗ fixed, take it out of KNOWN: ${g}`);
 if (fails.length || gone.length) {
-  console.error(`\nmaterials: ${fails.length} break${fails.length === 1 ? "" : "s"} of Device's materials and colour rule on ${PAGES.length} pages${gone.length ? `, ${gone.length} KNOWN entr${gone.length === 1 ? "y" : "ies"} gone` : ""}.`);
+  console.error(`\nmaterials: ${fails.length} break${fails.length === 1 ? "" : "s"} across ${PAGES.length} pages${gone.length ? `, ${gone.length} KNOWN entr${gone.length === 1 ? "y" : "ies"} gone` : ""}.`);
   process.exit(1);
 }
 const flat = PAGES.filter((r) => worldOf(r) === "flat").length;
-console.log(`materials: ${PAGES.length - flat} Device pages, light and dark, keep Device's kinds, its colour rule and a plate under every stage; ${flat} Flat pages keep Flat's kinds and a marked player${known.length ? ` (${known.length} known)` : ""}.`);
+const heat = PAGES.filter((r) => worldOf(r) === "heat").length;
+const rack = PAGES.filter((r) => worldOf(r) === "rack").length;
+const device = PAGES.length - flat - heat - rack;
+console.log(`materials: ${device} Device, ${flat} Flat, ${heat} Heat, and ${rack} Rack pages, light and dark, keep their material rules${known.length ? ` (${known.length} known)` : ""}.`);
