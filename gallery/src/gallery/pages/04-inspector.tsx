@@ -540,9 +540,30 @@ function PostCardInspectorTile() {
   );
 }
 
+/* ---------- Rack's own (proposals/rack.md): track channel strip inspector ---------- */
+
+type TrackStrip = { gain: number; pan: number; mono: boolean };
+const STRIP_DEFAULT: TrackStrip = { gain: -3, pan: 0, mono: false };
+
+function TrackInspectorTile() {
+  const [strip, setStrip] = useState<TrackStrip>(STRIP_DEFAULT);
+  return (
+    <div className="w-full max-w-xs">
+      <Inspector title="Drums · Channel" value={strip} onValueChange={setStrip} defaultValue={STRIP_DEFAULT}>
+        <InspectorGroup title="Output" summary={`${strip.gain < 0 ? "−" : ""}${Math.abs(strip.gain)} dB`}>
+          <Slider label="Gain" value={strip.gain} onValueChange={(gain) => setStrip({ ...strip, gain })} min={-24} max={6} step={1} home={0} formatValue={(v) => `${v < 0 ? "−" : ""}${Math.abs(v)} dB`} />
+        </InspectorGroup>
+        <InspectorGroup title="Stereo" summary={strip.mono ? "Mono" : "Stereo"} defaultOpen={false}>
+          <Switch label="Mono fold" align="end" checked={strip.mono} onCheckedChange={(mono) => setStrip({ ...strip, mono })} />
+        </InspectorGroup>
+      </Inspector>
+    </div>
+  );
+}
+
 export default function InspectorPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<InspectorTile />} tileByWorld={{ device: <TakeCardInspectorTile />, flat: <PostCardInspectorTile /> }}>
+    <Page meta={meta} docs={docs} tile={<InspectorTile />} tileByWorld={{ device: <TakeCardInspectorTile />, flat: <PostCardInspectorTile />, rack: <TrackInspectorTile /> }}>
       <Stage
         title="Tune a toast"
         tier="responsive"

@@ -216,9 +216,45 @@ function PictureFadeTile() {
   );
 }
 
+/* ---------- Rack's own (proposals/rack.md): synth filter sweep automation lane ---------- */
+
+function FilterSweepDemo() {
+  const [curve, setCurve] = useState<CubicBezier>([0.6, 0, 0.9, 0.4]);
+  const preset = PRESETS.find((p) => p.curve.every((n, i) => n === curve[i]));
+  return (
+    <div className="grid w-full max-w-sm gap-4">
+      <Segmented
+        legend="Automation shape"
+        size="sm"
+        block
+        options={PRESETS.map(({ value, label }) => ({ value, label }))}
+        value={preset?.value ?? ""}
+        onValueChange={(v) => setCurve(PRESETS.find((p) => p.value === v)!.curve)}
+      />
+      <CurveEditor
+        label="Synth · Filter sweep into the drop"
+        help="4 bars of low-pass cutoff automation, 120 Hz to 12 kHz."
+        value={curve}
+        onValueChange={setCurve}
+        defaultMark={PRESETS[0].curve}
+        duration={960}
+      />
+    </div>
+  );
+}
+
+function FilterSweepTile() {
+  const [curve, setCurve] = useState<CubicBezier>([0.6, 0, 0.9, 0.4]);
+  return (
+    <div className="w-full max-w-sm">
+      <CurveEditor label="Filter sweep · 4 bars" value={curve} onValueChange={setCurve} height={144} preview={false} />
+    </div>
+  );
+}
+
 export default function CurveEditorPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<CurveTile />} tileByWorld={{ device: <FadeTile />, flat: <PictureFadeTile /> }}>
+    <Page meta={meta} docs={docs} tile={<CurveTile />} tileByWorld={{ device: <FadeTile />, flat: <PictureFadeTile />, rack: <FilterSweepTile /> }}>
       <Stage
         title="A hero's exit"
         tier="instant"
@@ -233,6 +269,13 @@ export default function CurveEditorPage() {
             code: "FadeOutDemo",
             caption:
               "The shape of the fade at the end of a take. Take a handle and drag it, or press anywhere and the nearer handle comes to you. The curve, its arms and the CSS under it follow at once, with no easing. The words say what the curve does, and when you let go a dot crosses the rail on it, over the fade's 2 s. The dashed curve is the default, and a double-click goes back to it. The Segmented control above sets a starting point; once you move a handle, none of them is picked.",
+          },
+          rack: {
+            demo: <FilterSweepDemo />,
+            title: "Filter sweep automation",
+            code: "FilterSweepDemo",
+            caption:
+              "An automation curve on the Synth track's low-pass filter leading into the drop. Drag either handle to shape the 4-bar sweep on the frame, or double-click to snap back to default.",
           },
         }}
       >

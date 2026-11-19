@@ -201,6 +201,45 @@ function SendingLogDemo() {
   );
 }
 
+/* ---------- Rack's own (proposals/rack.md): arrangement playhead scrubbing bars & cue markers ---------- */
+
+const CUE_LOG: (LogLine & { at: number })[] = [
+  { at: 1, time: "Bar 1", text: "Intro · Percussion pulse enters at 124 BPM" },
+  { at: 9, time: "Bar 9", text: "Verse · Bass sub pulse locked to grid" },
+  { at: 17, time: "Bar 17", text: "Build · Synth low-pass filter sweep opens" },
+  { at: 25, time: "Bar 25", level: "warn", text: "Drop · Full drum kit & acid bass line" },
+  { at: 41, time: "Bar 41", text: "Break · Keys Rhodes VII solo + Dub Echo" },
+  { at: 49, time: "Bar 49", level: "success", text: "Outro · Master bus fade out complete" },
+];
+
+const CUE_MARKS: TimeScrubberMark[] = [
+  { at: 9, label: "Verse" },
+  { at: 25, label: "Drop", tone: "warning" },
+  { at: 41, label: "Break" },
+  { at: 49, label: "Outro", tone: "success" },
+];
+
+function ArrangementPlayheadDemo() {
+  const [bar, setBar] = useState(25);
+  const lines = useMemo(() => CUE_LOG.filter((l) => l.at <= bar), [bar]);
+  return (
+    <div className="grid w-full max-w-xl gap-4">
+      <TimeScrubber
+        label="Ghost town · Arrangement"
+        min={1}
+        max={57}
+        step={1}
+        majorEvery={8}
+        value={bar}
+        onValueChange={setBar}
+        formatValue={(b) => `Bar ${b}`}
+        marks={CUE_MARKS}
+      />
+      <LogView label="Arrangement cue markers" height="14rem" lines={lines} />
+    </div>
+  );
+}
+
 export default function TimeScrubberPage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -224,6 +263,13 @@ export default function TimeScrubberPage() {
             code: "TakeLogDemo",
             caption:
               "Drag the ruler and the log shows what the recorder wrote while the take ran, up to the needle. It follows the pointer one to one; let go and it settles on the nearest second, or on an event let go within half a step of it, on the responsive tier. Press the ruler to go to the time under the pointer. Tab to it, then Page Up and Page Down go from marker to marker, and to the clip.",
+          },
+          rack: {
+            demo: <ArrangementPlayheadDemo />,
+            title: "Arrangement playhead",
+            code: "ArrangementPlayheadDemo",
+            caption:
+              "Scrub the playhead across bars 1 to 57 of Ghost town. Page Up and Page Down jump cleanly between arrangement cue markers: Verse, Drop, Break, and Outro.",
           },
         }}
       >

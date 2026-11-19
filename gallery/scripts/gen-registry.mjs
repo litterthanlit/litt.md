@@ -839,6 +839,22 @@ const COPY = {
     description: "A keyboard-driven street-racing tuning and settings slab with hazard-stripe bands, amber corner brackets and chevrons on the active row, dashed balance bars and keycap hints. A Heat part.",
     docs: "Needs data-material=\"heat\" on <html>. Drive rows with Up and Down arrows, tune levels or cycle presets with Left and Right arrows, or drag along any dash bar.",
   },
+  /* Rack's own parts (proposals/rack.md; taste/litt-principles.md, Rack): each needs data-material="rack" on <html>; its page says so. */
+  "clip-launcher": {
+    title: "Clip launcher",
+    description: "An Ableton-style Session View clip grid with color-coded tracks, seeded clip waveforms, empty stop slots, and Master scene launch buttons. A Rack part.",
+    docs: "Needs data-material=\"rack\" on <html>. Click any clip to launch or stop it on the frame, or trigger a Master scene row to fire every track at once.",
+  },
+  "device-rack": {
+    title: "Device rack",
+    description: "An Audio Effect Rack module with color-coded rotary macro dials supporting vertical pointer drag, keyboard steps, a device bypass toggle, and instant preset recall. A Rack part.",
+    docs: "Needs data-material=\"rack\" on <html>. Drag vertically on any dial, step with arrow keys, double-click to reset to default, or switch presets in the title bar.",
+  },
+  "step-sequencer": {
+    title: "Step sequencer",
+    description: "A colorful 8-step drum and bass pattern grid with four color-coded instrument lanes, pattern presets, and a Play / Stop playhead. A Rack part.",
+    docs: "Needs data-material=\"rack\" on <html>. Starts stopped; click any step to toggle a hit on the frame, cycle patterns, or press Play to step across all 8 beats.",
+  },
   litt: {
     title: "litt tokens",
     description: "litt.md's colors, type, space, shape, depth and motion as CSS variables, Tailwind names and the litt-glass, litt-raised, litt-trim, litt-lit and litt-grain classes. Every name starts with litt, so none of it touches your own.",

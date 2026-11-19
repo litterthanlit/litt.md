@@ -451,6 +451,90 @@ function TireCompoundDemo() {
   );
 }
 
+/* ---------- Rack's own (proposals/rack.md): quantization grid and track monitor/warp modes ---------- */
+
+type Quantize = "bar" | "eighth" | "sixteenth";
+
+const QUANTIZE_NOTES: Record<Quantize, string> = {
+  bar: "Launches clips on the next bar downbeat.",
+  eighth: "Snaps clip launches to 1/8 note divisions.",
+  sixteenth: "Tight 1/16 grid for drum and synth triggers.",
+};
+
+function QuantizeGridDemo() {
+  const [grid, setGrid] = useState<Quantize>("bar");
+  return (
+    <div className="grid justify-items-center gap-4">
+      <Segmented
+        legend="Global quantization"
+        size="sm"
+        value={grid}
+        onValueChange={setGrid}
+        options={[
+          { value: "bar", label: "1 Bar" },
+          { value: "eighth", label: "1/8" },
+          { value: "sixteenth", label: "1/16" },
+        ]}
+      />
+      <p role="status" className="text-small text-fg-subtle">
+        {QUANTIZE_NOTES[grid]}
+      </p>
+    </div>
+  );
+}
+
+type MonitorMode = "in" | "auto" | "off";
+type WarpMode = "beats" | "tones" | "complex";
+
+const WARP_NOTES: Record<WarpMode, string> = {
+  beats: "Preserves drum transients across tempo changes.",
+  tones: "Best for vocals, bass, and monophonic leads.",
+  complex: "Full-mix warping for stems and chord chops.",
+};
+
+function TrackMonitorDemo() {
+  const [monitor, setMonitor] = useState<MonitorMode>("auto");
+  const [warp, setWarp] = useState<WarpMode>("beats");
+  return (
+    <form className="grid w-full max-w-sm gap-6" onSubmit={(e) => e.preventDefault()}>
+      <div className="grid gap-2">
+        <Segmented
+          legend="Monitor"
+          showLegend
+          block
+          name="monitor"
+          value={monitor}
+          onValueChange={setMonitor}
+          options={[
+            { value: "in", label: "In" },
+            { value: "auto", label: "Auto" },
+            { value: "off", label: "Off" },
+          ]}
+        />
+        <p className="text-small text-fg-subtle">
+          {monitor === "in" ? "Always monitors live input." : monitor === "auto" ? "Monitors input when track is armed." : "Plays clips only."}
+        </p>
+      </div>
+      <div className="grid gap-2">
+        <Segmented
+          legend="Warp mode"
+          showLegend
+          block
+          name="warp"
+          value={warp}
+          onValueChange={setWarp}
+          options={[
+            { value: "beats", label: "Beats" },
+            { value: "tones", label: "Tones" },
+            { value: "complex", label: "Complex" },
+          ]}
+        />
+        <p className="text-small text-fg-subtle">{WARP_NOTES[warp]}</p>
+      </div>
+    </form>
+  );
+}
+
 export default function SegmentedPage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -466,6 +550,13 @@ export default function SegmentedPage() {
             code: "InputTypeDemo",
             caption:
               "The small size, as on a recorder's input strip. The legend is hidden from sight and read to a screen reader as Input 1, because the options name the control. The selected surface moves to your pick through transform on the responsive tier, and the line under it says what the input expects.",
+          },
+          rack: {
+            demo: <QuantizeGridDemo />,
+            title: "Global quantization",
+            code: "QuantizeGridDemo",
+            caption:
+              "Under Rack, Segmented cuts cleanly in place like Live's chooser — 1 Bar, 1/8, or 1/16 launch quantization.",
           },
           heat: {
             demo: <TransmissionDemo />,
@@ -486,6 +577,7 @@ export default function SegmentedPage() {
         code="FormDemo"
         byWorld={{
           device: { demo: <ShareTakeDemo />, code: "ShareTakeDemo" },
+          rack: { demo: <TrackMonitorDemo />, code: "TrackMonitorDemo" },
           heat: { demo: <EventRulesDemo />, code: "EventRulesDemo" },
         }}
       >
