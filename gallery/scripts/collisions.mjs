@@ -423,9 +423,7 @@ const KNOWN = [
   { file: "src/components/slider.tsx", wins: "duration-(--dur-responsive)", loses: "duration-(--dur-instant)", sites: 1, why: "the glide's duration joined onto the face's fade" },
   { file: "src/components/slider.tsx", wins: "ease-responsive", loses: "ease-litt", sites: 1, why: "the glide's ease joined onto the face's fade" },
   { file: "src/components/switch.tsx", wins: "text-fg-disabled", loses: "text-fg", sites: 1, why: "disabled joins its ink onto the floor word's" },
-  { file: "src/worlds/heat/switch.tsx", wins: "text-fg-disabled", loses: "text-fg", sites: 1, why: "disabled joins its ink onto the floor word's (Press's switch until 2026-11-16, verbatim)" },
   { file: "src/components/steps.tsx", wins: "pb-6", loses: "pb-0", sites: 1, why: "the last step joins pb-0 onto pb-6 and loses, so it keeps its 24px foot; whether it should is a look call" },
-  { file: "src/worlds/heat/button.tsx", wins: "bg-clip-padding", loses: "bg-clip-border", sites: 1, why: "ghost joins bg-clip-border onto the base's bg-clip-padding and loses, so its hover fill stops inside the 3px plate; whether it should is a look call" },
 ];
 
 /**

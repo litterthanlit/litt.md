@@ -33,6 +33,7 @@ import { byWorld, useFun, useFunValue, useMaterial } from "@/motion";
 import { StatFlatBody } from "@/worlds/flat/stat";
 import { StatDeviceBody } from "@/worlds/device/stat";
 import { StatRackBody } from "@/worlds/rack/stat";
+import { StatHeatBody } from "@/worlds/heat/stat";
 
 /** Whether a change is good news, bad news or neither. It sets the delta's color, and a hidden word for screen readers. */
 export type StatTone = "good" | "bad" | "neutral";
@@ -109,7 +110,7 @@ export function Stat({ label, value, unit, delta, tone = "neutral", trend, class
   const fun = useFun();
   const numeric = typeof value === "number";
   const counted = useFunValue(numeric ? value : 0, { kind: "draw" });
-  const Body = byWorld(useMaterial(), { press: PressBody, flat: StatFlatBody, device: StatDeviceBody, rack: StatRackBody });
+  const Body = byWorld(useMaterial(), { press: PressBody, flat: StatFlatBody, device: StatDeviceBody, rack: StatRackBody, heat: StatHeatBody });
   const figure =
     fun && numeric && counted.moving ? (
       <>
