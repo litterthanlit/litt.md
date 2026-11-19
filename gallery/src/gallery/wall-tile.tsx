@@ -15,6 +15,7 @@ import { Button } from "@/components/button";
 import { ExpandIcon } from "@/components/icons";
 import { DEVICE_PLATE, PreviewContext, WorldContext } from "./kit";
 import type { PageEntry } from "./registry";
+import { ArriveContext } from "./arrive-once";
 
 /** Pages whose tile is two rows tall beside two short ones: their component needs the height. */
 export const TALL = new Set(["plan", "app-shell", "list", "action-bar", "timeline", "message", "rule-builder"]);
@@ -55,7 +56,7 @@ function PageTile({ page }: { page: PageEntry }) {
   );
 }
 
-export function WallTile({ page, href, onOpen, onFollow, heading: Heading = "h2" }: {
+export function WallTile({ page, href, onOpen, onFollow, heading: Heading = "h2", arrive = false }: {
   page: PageEntry;
   /** Where the tile's name goes: the page, in its world. */
   href: string;
@@ -64,6 +65,8 @@ export function WallTile({ page, href, onOpen, onFollow, heading: Heading = "h2"
   /** Called with the tile as its name is followed, before the page changes. */
   onFollow?: (tile: HTMLElement) => void;
   heading?: "h2" | "h3";
+  /** Wake on mount and let the tile's own arrival play once (arrive-once.tsx): Flat's first tile on its gallery view. */
+  arrive?: boolean;
 }) {
   const button = useRef<HTMLButtonElement>(null);
   const ref = useRef<HTMLDivElement>(null);
@@ -101,10 +104,12 @@ export function WallTile({ page, href, onOpen, onFollow, heading: Heading = "h2"
     >
       <div inert={!settled} data-open-zone={zone} className={"col-span-2 grid min-w-0 place-items-center p-6 sm:p-10 " + FLAT_ROOM}>
         {near && (
-          <StillMotion active={!awake}>
-            <div data-open-zone={zone} className="grid w-full min-w-0 place-items-center [&>*]:min-w-0">
-              <PageTile page={page} />
-            </div>
+          <StillMotion active={!awake && !arrive}>
+            <ArriveContext.Provider value={arrive}>
+              <div data-open-zone={zone} className="grid w-full min-w-0 place-items-center [&>*]:min-w-0">
+                <PageTile page={page} />
+              </div>
+            </ArriveContext.Provider>
           </StillMotion>
         )}
       </div>

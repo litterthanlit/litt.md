@@ -5,6 +5,7 @@ import { motion } from "motion/react";
 import { Avatar, AvatarGroup, type AvatarHue } from "@/components/avatar";
 import { useMotionDial, useTransition } from "@/motion";
 import { Page, Stage, TryIt, type PageDocs, type PageMeta, type PageStudy } from "../kit";
+import { Arrive, useArriveAsked, useArriveOnce } from "../arrive-once";
 
 export const meta: PageMeta = {
   id: "button",
@@ -220,8 +221,10 @@ const READERS: { name: string; hue: AvatarHue }[] = [
 ];
 
 /** A letter's sign-up row, live: Subscribe welcomes you into the readers, your avatar arriving at the front on Flat's
-    expressive spring (its 0.28 bounce, the view's one moment, on a hand only; at once under reduced motion). */
+    expressive spring (its 0.28 bounce, the view's one moment, on a hand only; at once under reduced motion). As the
+    first tile of Flat's gallery view the readers arrive the same way once on load (arrive-once.tsx), and nowhere else. */
 function SubscribeDemo() {
+  const arrive = useArriveOnce("flat-wall-readers", useArriveAsked());
   const [joined, setJoined] = useState(false);
   const spring = useTransition("expressive");
   const count = joined ? 1205 : 1204;
@@ -242,8 +245,10 @@ function SubscribeDemo() {
               <Avatar name="You" hue="bubblegum" look="fluid" size="sm" />
             </motion.span>
           )}
-          {READERS.map((r) => (
-            <Avatar key={r.name} name={r.name} hue={r.hue} look="fluid" size="sm" />
+          {READERS.map((r, i) => (
+            <Arrive key={r.name} on={arrive} index={i}>
+              <Avatar name={r.name} hue={r.hue} look="fluid" size="sm" />
+            </Arrive>
           ))}
         </AvatarGroup>
         <p className="text-small text-fg-muted" aria-live="polite">

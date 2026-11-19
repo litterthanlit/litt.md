@@ -296,8 +296,10 @@ const FLAT_HOME = {
   view: "in-[[data-material=flat]]:grid-rows-[auto_auto_minmax(0,1fr)] in-[[data-material=flat]]:gap-10",
   name: "in-[[data-material=flat]]:text-h1",
   audience: "in-[[data-material=flat]]:text-body in-[[data-material=flat]]:text-fg-muted",
-  title: "in-[[data-material=flat]]:text-body",
-  lede: "in-[[data-material=flat]]:text-body in-[[data-material=flat]]:text-fg-muted",
+  /* The name the stronger of the two (round 3): the title weight over the line at body weight. The line's caption step
+     carries the label weight, so Flat sets it back to the body's. */
+  title: "in-[[data-material=flat]]:text-body in-[[data-material=flat]]:font-title",
+  lede: "in-[[data-material=flat]]:text-body in-[[data-material=flat]]:font-normal in-[[data-material=flat]]:text-fg-muted",
   everything: "in-[[data-material=flat]]:self-end in-[[data-material=flat]]:text-body",
 };
 

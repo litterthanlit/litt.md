@@ -19,7 +19,7 @@
  * - The DOM puts the selector and Play before the screen, so the keyboard meets the controls first; order puts the
  *   screen on top.
  */
-import { useEffect, useId, useRef } from "react";
+import { useEffect, useId, useLayoutEffect, useRef } from "react";
 import { LayoutGroup, motion } from "motion/react";
 import { useTransition } from "@/motion";
 import type { PlayObjectBody, PlayObjectBodyProps } from "../body";
@@ -111,7 +111,53 @@ function PlayCircle({ play, className }: { play: PlayObjectBodyProps["play"]; cl
   );
 }
 
+/** The most a take grows on the screen: half again its real size, so a tile still reads as the object it is. */
+const TAKE_ZOOM_MAX = 1.5;
+
+/**
+ * The take larger on the sheet (plans/024, Flat, round 3): a take is its wall tile at real size, which left take 1 at
+ * 4% of the screen. Each take grows to fit the screen inside its padding, at most TAKE_ZOOM_MAX and never below its
+ * real size, as `--take-zoom` on the sheet, which `.flat-screen` reads as the take's CSS zoom (app.css), so it lays out
+ * and takes a hand at its new size. It is measured while a take loads (its first 600ms) and then held, so a take that
+ * grows under a hand (an accordion opening) scrolls in its screen rather than shrinking. Nothing animates: the take
+ * shows at its size. The phone's strip fills the screen as it is and is not zoomed.
+ */
+function useTakeZoom(at: number | null, on: boolean) {
+  const sheet = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => {
+    const box = sheet.current;
+    if (!box) return;
+    /* Each take starts at its real size, so one still loading never wears the last one's zoom. */
+    box.style.removeProperty("--take-zoom");
+    if (!on || at === null) return;
+    const take = box.querySelector<HTMLElement>("[data-play-take]:not([data-play-take=home])");
+    const inner = take?.firstElementChild;
+    if (!take || !(inner instanceof HTMLElement)) return;
+    let hold = 0;
+    const ro = new ResizeObserver(() => fit());
+    const fit = () => {
+      const zoom = Number(getComputedStyle(inner).zoom) || 1;
+      const r = inner.getBoundingClientRect();
+      if (r.width < 1 || r.height < 1) return;
+      const cs = getComputedStyle(take);
+      const w = take.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+      const h = take.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
+      const next = Math.max(1, Math.min(TAKE_ZOOM_MAX, w / (r.width / zoom), h / (r.height / zoom)));
+      box.style.setProperty("--take-zoom", next.toFixed(3));
+      hold ||= window.setTimeout(() => ro.disconnect(), 600);
+    };
+    fit();
+    ro.observe(inner);
+    return () => {
+      clearTimeout(hold);
+      ro.disconnect();
+    };
+  }, [at, on]);
+  return sheet;
+}
+
 function FlatBody({ takes, at, selector, pick, index, play, readout, screen, compact }: PlayObjectBodyProps) {
+  const sheet = useTakeZoom(at, !compact);
   if (compact) {
     return (
       <div className={COMPACT_BOX}>
@@ -135,7 +181,7 @@ function FlatBody({ takes, at, selector, pick, index, play, readout, screen, com
           <PlayCircle play={play} className="size-control-md" />
         </div>
       </div>
-      <div data-part="paper" className="order-1 flex rounded-[var(--object-radius)] forced-colors:border">
+      <div ref={sheet} data-part="paper" className="order-1 flex rounded-[var(--object-radius)] forced-colors:border">
         {screen}
       </div>
     </div>

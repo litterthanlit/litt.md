@@ -763,6 +763,96 @@ warmth. A taste change through `evolve.md` (journal, profile v1.21, R6 and R7, F
 - Checked: `#press/progress`, `#device/progress`, `#heat/progress`, Variants open, light and dark, pixel-equal to
   before but the docs table's new `segments` row.
 
+### Phase 5 again. Measure (2026-11-19)
+
+Re-shot at `232c66c` the way phase 5 did (a build, 1440 by 1000, `#flat` on Home, take 1 and take 5,
+`#flat/components`, `#flat/about`), plus `#flat/progress` with Variants shut and open, light and dark, beside phase 5's
+commit `89028e6` rebuilt and shot the same way, and beside `sheet-reference.png`. Flat stays at **7** (7.2, from 6.6):
+up a point on two traits, still under 8 on four, so it goes back once more before the STOP's second round.
+
+| Trait | Score | Read |
+|---|---|---|
+| 1. One object, one vocabulary | 7 (6) | The wall is ground with paper sheets on it, and dark's lifted sheet fixes what phase 5 found worst: the code input's cells, fields and the chosen pill now read in dark. The player's screen is the same sheet, its ring gone; Flat's kinds are in `test:materials`; the Action bar's covers are plates. Left: About's scenes are still `bg-canvas` boxes with a 1px `outline-line` ring (`world.tsx`), outlined where Flat outlines nothing and not the sheet the wall and the screen use; and off the sheet, dark paper on the ground is still 1.1:1 (About's This week pill and its fields, Progress's Try it panel). |
+| 2. Studies, not demos | 7 (6) | Subscribe is live with its readers, About is a letter's week (1,204 readers, A post, Your posts, Issue 14's opens), the combobox and Progress (Spring series, 7 of 12 pictures) speak the letter. Left: Kbd and Icons are still the shared demos, two of the first three tiles; This week's heatmap is not a believable day (00:00 lit every day, 01:00 to 03:00 empty, then nearly every hour at the top two steps), so the ramp reads as confetti, not a rhythm; nothing moves in the first frame of the wall or About (the player is right not to). |
+| 3. Restraint | 8 (8) | One ink fill per view still; colour is in the data, the readers' pictures and a status's dot. New: the heatwave puts the sunset on a control-like part (approved), and its middle sits on top of danger: Failed's red is 5.1 from steps 7 and 8 in light and 3.2 from step 8 in dark (OKLab ΔE × 100), so a failed upload beside a lit series is told apart only by its word. |
+| 4. Stripped to the name | 7 (6) | The wall's names sit centred under their objects, on the same sheet: matched at a glance. The player's Home fills its screen at body size. Left: the first shelf is still Actions; a shelf's odd last tile sits alone (Icons, Color picker); on Home each part's line is set at weight 600, heavier than its name at 400, so the explanation outranks the name; `#flat/progress` explains twice, the lead's caption and A picture going up's both walk the ramp in a paragraph (gold to plum, 2:1 off the slot). |
+| 5. One scale | 7 (7) | Pill and circle, 16 then 8, the one figure at 40px (1,204, the 01 / 12 readout). Left: take 1's object fills 3.8% of the screen (452 by 67 in 1216 by 648), the screen mostly white air; the wall is 16,532px tall, two 600px columns round objects of about 100px. |
+
+**R10.** Easy: yes, in light, and now mostly in dark. A newcomer matches every wall name to its object, reads Home at arm's
+length, and can type a code in dark. Not yet: in dark the This week pill and the letter's field are black on a ground
+1.1:1 away; a Failed bar is red beside a series whose eighth step is the same red; and The letter's caption says "one
+white field on the ground", false in dark. Felt: About now opens warm (the figure, the sunset by the hour, the readers'
+faces in the first 1,000px), Subscribe welcomes you into the row on the bounce, and Spring series warms as pictures
+land. Candy is still not on the player beyond the readers' faces and the plates, and the wall's first screen is grey,
+white and ink with one row of avatars, so both read "clean" until a hand moves; the sunset's light end goes from gold
+to plum, which deepens more than it warms, so "warms as it nears the end" is true in dark and only half true in light.
+
+**Left, by phase:**
+
+(a) An agent can do these without Nick:
+
+- Phase 3: About's scene frames under Flat take the sheet (`.flat-sheet`, no outline) in place of `bg-canvas` with an
+  `outline-line` ring (`world.tsx`, the scene and the scene frame); other worlds unchanged.
+- Phase 3: Kbd and Icons get Flat's own demos (`byWorld`, `tileByWorld`), in the letter's words.
+- Phase 3: This week's heatmap gets a believable week (quiet nights, a morning and an evening peak, a quieter Sunday),
+  so the ramp says when people read.
+- Phase 3: The letter's caption true in both themes ("one field", not "one white field").
+- Phase 3: `#flat/progress` says the ramp once: the lead's caption, or A picture going up's, not both.
+- Phase 3: something in motion in the first frame of the wall and About, under reduced motion still (the player keeps
+  nothing playing on load).
+- Phase 4: Home's part lines at body weight under their names, the name the stronger of the two.
+- Phase 4: the take larger on Flat's screen (take 1 is 3.8% of it), within the contract's tile scale.
+
+(b) Nick's calls:
+
+- Dark paper on the ground (1.1:1): a step between them, or an edge for an empty well in dark (`evolve.md`).
+- The dark tile sheet as a token, `--flat-sheet` (8% `--flat-fg` into `--flat-ground`, in gallery CSS today).
+- Shelf order: Flat's set first on `#flat/components`, in place of Actions; and whether a shelf's odd last tile stands
+  alone (the tiles' structure is Nick's).
+- A data part (gauge, heatmap or chart) in the player's set, so Candy is on the player.
+- The feel canvas's options A, B, D, E and F (C shipped as heatwave).
+- File drop's rows warming with heatwave, as Progress does.
+- Heatwave's colour fade (the instant tier) against Flat's 0.28 spring for a segment lighting.
+- New: Failed's danger beside the sunset's middle (ΔE 3.2 dark, 5.1 light): keep danger and rely on the word, or move
+  the failed fill off the ramp's hue.
+- New: light's sunset ends in plum, deeper but cooler; whether "warmer" should mean "deeper" in light.
+
+Sheets (scratchpad, not kept), before beside after at half scale: `flat-measure-2/flat-player-<theme>.png`,
+`flat-gallery-<theme>.png`, `flat-about-<theme>.png`, `flat-progress-<theme>.png`,
+`flat-progress-variants-<theme>.png`, and `flat-vs-reference.png`.
+
+### Flat, round 3 (2026-11-19)
+
+List (a), the items an agent can do without Nick. Gallery code only: no token, registry item, shelf order, set, canvas,
+danger, ramp, File drop or other world changed, so no changelog line and the lock stands.
+
+- [x] About's scene frames are the sheet under Flat (`world.tsx`, `SceneStage`: `.flat-sheet`, the hairline gone under
+      Flat only). R10: About reads as the wall and the screen do, sheets on the ground, nothing outlined.
+- [x] Kbd and Icons have Flat's own: Kbd's lead is Writing the letter (`LetterKeysDemo`, five keys of the editor, no
+      rules), which its tile follows; Icons has a tile of the editor's eight icons over their words (`LetterIconsTile`,
+      `tileByWorld`) and Beside words in the letter's voice (`PostContextDemo`). The shared demos stay. R10: the first
+      three tiles of `#flat/components` all speak the letter.
+- [x] This week's heatmap is a week by hand (`systems/flat.tsx`): 02:00 to 04:00 empty, a morning rise at 08:00, the
+      evening read at 20:00 the weekday's deepest step, Friday morning the week's peak (the letter goes out at 9:00),
+      Saturday late, Sunday quietest; steps 1, 10, 20, 30, so each step is a time of day, not noise. R10: the ramp says
+      when people read.
+- [x] The letter's line says "one field to join", true in both themes.
+- [x] `#flat/progress` walks the ramp once, in the lead's caption; A picture going up's caption says only what is new
+      (one picture's fill, Waiting, Failed).
+- [x] A first-frame moment (`arrive-once.tsx`): on `#flat/components` the first tile (Button's readers) wakes on load
+      and its four readers arrive one after another on Flat's 0.28 spring; on `#flat/about` the five readers who wrote
+      back do the same. Once a visit, nothing on the Systems index or in the player, still under reduced motion and at
+      rest exactly as before. R10 felt: both views are warm before a hand moves.
+- [x] Player Home: each part's name at the title weight (500) over its line at body weight (400; the caption step had
+      carried 600 into it).
+- [x] The take larger on Flat's screen (`bodies/flat.tsx`, `useTakeZoom`, and `.flat-screen` in `app.css`): each take
+      zooms to fit the screen inside its padding, at most 1.5 and never below real size, measured as it loads and then
+      held. Take 1 goes from 452 by 67 (3.8%) to 702 by 126 (11.2%) of 1216 by 648; Switch 32%, Media 57%. Phone strip
+      unchanged. R10: the object, not the white air, holds the screen.
+
+Sheets (scratchpad, not kept): `flat-round3/sheets/flat-<home|take1|components|about|progress|kbd|icons>.png`, before
+beside after at half scale, light over dark.
+
 ## The order of work inside a world
 
 The same five phases for every world. A phase is not started until the one before it is committed.
