@@ -282,29 +282,41 @@ function Rail({ material, takes, total, at, open }: { material: Material; takes:
 }
 
 const ROW =
-  "litt-target grid w-full cursor-pointer content-center gap-0.5 rounded-control px-3 py-2 text-left " +
+  "litt-target grid w-full cursor-pointer content-center gap-0.5 rounded-control px-3 py-2 text-left in-[[data-material=flat]]:gap-1 in-[[data-material=flat]]:py-3 " +
   "hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus";
 
 /**
  * Home, inside the screen (Nick, 2026-11-15, after design.how's systems): the world's name and line, then the set to
  * pick from, each part with its one line, then the way to every component in the world.
+ *
+ * Under Flat (plans/024, Flat, leftovers) nothing on Home is under body size, and Home fills the screen: the set gets
+ * room to breathe and the way to every component sits at its foot. Every other world draws it as it was.
  */
+const FLAT_HOME = {
+  view: "in-[[data-material=flat]]:grid-rows-[auto_auto_minmax(0,1fr)] in-[[data-material=flat]]:gap-10",
+  name: "in-[[data-material=flat]]:text-h1",
+  audience: "in-[[data-material=flat]]:text-body in-[[data-material=flat]]:text-fg-muted",
+  title: "in-[[data-material=flat]]:text-body",
+  lede: "in-[[data-material=flat]]:text-body in-[[data-material=flat]]:text-fg-muted",
+  everything: "in-[[data-material=flat]]:self-end in-[[data-material=flat]]:text-body",
+};
+
 function HomeView({ material, takes, total, groups, open }: { material: Material; takes: Take[]; total: number; groups: number; open: (i: number) => void }) {
   const world = materialOf(material);
   return (
-    <div data-play-take="home" className="grid h-full min-h-0 content-start gap-8 overflow-auto overscroll-contain p-6 sm:p-10">
+    <div data-play-take="home" className={"grid h-full min-h-0 content-start gap-8 overflow-auto overscroll-contain p-6 sm:p-10 " + FLAT_HOME.view}>
       <header className="grid gap-2">
-        <h2 className="text-h3 text-fg">{world.name}</h2>
+        <h2 className={"text-h3 text-fg " + FLAT_HOME.name}>{world.name}</h2>
         <p className="max-w-[48ch] text-body text-fg-muted">{world.tagline}</p>
-        <p className="max-w-[56ch] text-small text-fg-subtle">{world.audience}</p>
+        <p className={"max-w-[56ch] text-small text-fg-subtle " + FLAT_HOME.audience}>{world.audience}</p>
       </header>
       <nav aria-label={`The set in ${world.name}`} data-play-index="" className="-mx-3">
         <ul className="grid gap-x-6 md:grid-cols-2 lg:grid-cols-3">
           {takes.map((t, i) => (
             <li key={t.id} className="grid min-w-0">
               <button type="button" aria-describedby={`set-${material}-${t.id}`} className={ROW} onClick={() => open(i)}>
-                <span className="text-small text-fg">{t.title}</span>
-                <span id={`set-${material}-${t.id}`} aria-hidden="true" className="line-clamp-2 text-caption text-fg-subtle">
+                <span className={"text-small text-fg " + FLAT_HOME.title}>{t.title}</span>
+                <span id={`set-${material}-${t.id}`} aria-hidden="true" className={"line-clamp-2 text-caption text-fg-subtle " + FLAT_HOME.lede}>
                   {t.lede}
                 </span>
               </button>
@@ -315,7 +327,7 @@ function HomeView({ material, takes, total, groups, open }: { material: Material
       <a
         href={`#${material}/components`}
         data-play-everything=""
-        className="justify-self-start rounded-control text-small text-fg underline decoration-line-strong underline-offset-4 hover:decoration-current focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+        className={"justify-self-start rounded-control text-small text-fg underline decoration-line-strong underline-offset-4 hover:decoration-current focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus " + FLAT_HOME.everything}
       >
         Every component, {total} in {groups} groups
       </a>

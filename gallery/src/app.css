@@ -30,3 +30,36 @@
     --sh-break: currentColor;
   }
 }
+
+/* Flat's sheet (plans/024, Flat, leftovers): a wall tile (.flat-sheet) and the player's screen (.flat-screen) under Flat
+   are a sheet of their own on the grey ground, so an object and its name read as one thing. In light the sheet is
+   paper; in dark it is the ground lifted a step of ink (8%, about the step light's paper stands off the ground: 1.18:1
+   against 1.17:1), since dark paper sits below the ground. Nothing outlines it and nothing is cast. What stood on the
+   ground inside now stands on the sheet: in light paper turns to the grey bubble (a card, a field, a block, a key) and a
+   field inside that card is paper again; in dark black paper reads on the lifted sheet as it is. What the screen opens
+   (a dialog, a toast) floats over the take, so it keeps its paper. Unlayered, so it wins over the tokens' layered paper
+   rule and over a utility's background. Outside Flat it does nothing. */
+[data-material="flat"] :is(.flat-sheet, .flat-screen) {
+  --sheet: light-dark(var(--flat-paper), color-mix(in oklab, var(--flat-fg) 8%, var(--flat-ground)));
+  --canvas: var(--sheet);
+  --well: var(--sheet);
+  --focus-ring: 0 0 0 2px var(--canvas), 0 0 0 4px var(--focus);
+}
+[data-material="flat"] .flat-sheet {
+  background-color: var(--sheet);
+}
+[data-material="flat"] :is(.flat-sheet, .flat-screen [data-play-take]) {
+  --surface-1: light-dark(var(--flat-surface-3), var(--flat-paper));
+  --block: var(--surface-1);
+  --cut: var(--surface-1);
+  --slot: var(--surface-1);
+  --field: var(--surface-1);
+  --block-hover: color-mix(in oklab, var(--surface-1), var(--flat-fg) 2.5%);
+}
+[data-material="flat"] :is(.flat-sheet, .flat-screen [data-play-take]) :is(.litt-raised, .litt-glass, .litt-paper) {
+  --block: light-dark(var(--flat-paper), var(--flat-surface-3));
+  --cut: var(--block);
+  --slot: var(--block);
+  --field: var(--block);
+  --block-hover: color-mix(in oklab, var(--block), var(--flat-fg) 2.5%);
+}

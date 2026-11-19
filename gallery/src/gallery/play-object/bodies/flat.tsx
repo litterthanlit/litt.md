@@ -1,21 +1,23 @@
 /**
- * Flat's object, a page in a grey frame (plans/018, Flat's row; plans/024, Flat, phase 4), drawn only from Flat's
- * materials (taste/litt-principles.md, Flat's materials): the grey ground, white paper with no edge, pills and circles,
- * the ink. No body: grey is the object, the frame from litt.design's work slider, and nothing is cast or outlined.
+ * Flat's object, a page on the grey ground (plans/018, Flat's row; plans/024, Flat, phase 4 and leftovers), drawn only
+ * from Flat's materials (taste/litt-principles.md, Flat's materials): the grey ground, white paper with no edge, pills
+ * and circles, the ink. No body: grey is the object, after litt.design's work slider, and nothing is cast or outlined.
  *
- * - The frame (`frame`) is a grey a step of ink off the ground, at the object's radius (--object-radius, the surface's
- *   outside Device), and the screen sits 8px into it at that radius less the 8px, concentric. The screen holds the take alone, on Flat's ground: no rail (body.rail is false). The
- *   set is on Home, behind Index and on the pills.
- * - Under the frame, the caption (`lettering`), in the ink: the take's place as the one figure that stands up (call 8),
+ * - The screen is a sheet (`paper`) on the ground, as a wall tile is under Flat (.flat-screen in app.css: paper in light,
+ *   the ground lifted a step in dark), at the object's radius (--object-radius, the surface's outside Device). It is
+ *   filled, not framed: no ring of a second grey round it, since Flat outlines nothing (plans/024, Flat, leftovers). It
+ *   holds the take alone: no rail (body.rail is false). The set is on Home, behind Index and on the pills.
+ * - Under the screen, the caption (`lettering`), in the ink: the take's place as the one figure that stands up (call 8),
  *   over the size of the set, and the take's name.
  * - Under the caption, the selector: a row of pills, Home and then the set. On the ground, chosen is white (the bubble
  *   on the ground), so the current pill is paper with its name in the ink, and the paper travels from pill to pill on
  *   the expressive spring, Flat's 0.28 bounce: the view's one moment. Under reduced motion it lands at once. The rest
- *   are words in the quiet ink, with no pill drawn until a hand is on one.
- * - Play is a circle, a key with one symbol, white on the ground.
+ *   are words in the quiet ink, with no pill drawn until a hand is on one. Each is a `pill`, the travelling paper `paper`,
+ *   and the words are body size, never under it.
+ * - Play is a `circle`, a key with one symbol, white on the ground.
  * - No fill in the ink (it is Flat's accent): the take on the screen holds the view's one primary action (R6).
  * - The DOM puts the selector and Play before the screen, so the keyboard meets the controls first; order puts the
- *   frame on top.
+ *   screen on top.
  */
 import { useEffect, useId, useRef } from "react";
 import { LayoutGroup, motion } from "motion/react";
@@ -25,7 +27,7 @@ import { COMPACT_BOX, COMPACT_SCREEN, SCREEN_HEIGHT } from "../body";
 
 /* A pill in the row: the words in the quiet ink, the ink under a hand or when chosen. */
 const PILL =
-  "relative isolate inline-flex h-control-sm shrink-0 cursor-pointer items-center rounded-control px-3.5 text-small whitespace-nowrap select-none " +
+  "relative isolate inline-flex h-control-sm shrink-0 cursor-pointer items-center rounded-control px-3.5 text-body whitespace-nowrap select-none " +
   "transition-colors duration-(--dur-instant) ease-litt pointer-coarse:h-control-md";
 const QUIET = "text-fg-muted hover:bg-[color-mix(in_oklab,var(--block),transparent_40%)] hover:text-fg";
 
@@ -37,6 +39,7 @@ function Chosen({ id }: { id: string }) {
       layoutId={id}
       transition={enter}
       aria-hidden="true"
+      data-part="paper"
       className="absolute inset-0 -z-10 rounded-control bg-block forced-colors:border forced-colors:border-[Highlight]"
     />
   );
@@ -56,7 +59,7 @@ function Pills({ takes, at, selector, pick, index, className }: Pick<PlayObjectB
     <LayoutGroup id={id}>
       <div ref={row} className={"flex min-w-0 items-center gap-1 overflow-x-auto overscroll-x-contain [scrollbar-width:none] " + className}>
         {/* Home, the first place on the selector: Index's key, out of the tab order like the take pills. */}
-        <button {...index} aria-label={undefined} data-chosen={at === null ? "" : undefined} className={PILL + " " + (at === null ? "text-fg" : QUIET)}>
+        <button {...index} aria-label={undefined} data-part="pill" data-chosen={at === null ? "" : undefined} className={PILL + " " + (at === null ? "text-fg" : QUIET)}>
           {at === null && <Chosen id={id} />}
           Home
         </button>
@@ -65,7 +68,7 @@ function Pills({ takes, at, selector, pick, index, className }: Pick<PlayObjectB
           className="flex shrink-0 items-center gap-1 rounded-control focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus"
         >
           {takes.map((t, i) => (
-            <span key={t.id} aria-hidden="true" data-chosen={i === at ? "" : undefined} onClick={() => pick(i)} className={PILL + " " + (i === at ? "text-fg" : QUIET)}>
+            <span key={t.id} aria-hidden="true" data-part="pill" data-chosen={i === at ? "" : undefined} onClick={() => pick(i)} className={PILL + " " + (i === at ? "text-fg" : QUIET)}>
               {i === at && <Chosen id={id} />}
               {t.title}
             </span>
@@ -93,6 +96,7 @@ function PlayCircle({ play, className }: { play: PlayObjectBodyProps["play"]; cl
   return (
     <button
       {...play}
+      data-part="circle"
       className={
         "grid shrink-0 cursor-pointer place-items-center rounded-pill bg-block text-fg transition-[background-color,scale] duration-(--dur-instant) ease-litt " +
         "hover:bg-(--block-hover) active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus " +
@@ -131,7 +135,7 @@ function FlatBody({ takes, at, selector, pick, index, play, readout, screen, com
           <PlayCircle play={play} className="size-control-md" />
         </div>
       </div>
-      <div data-part="frame" className="order-1 flex rounded-[var(--object-radius)] bg-[color-mix(in_oklab,var(--fg)_5%,var(--canvas))] p-2 forced-colors:border">
+      <div data-part="paper" className="order-1 flex rounded-[var(--object-radius)] forced-colors:border">
         {screen}
       </div>
     </div>
@@ -140,7 +144,7 @@ function FlatBody({ takes, at, selector, pick, index, play, readout, screen, com
 
 export const flat: PlayObjectBody = {
   name: "flat",
-  shape: (compact) => (compact ? COMPACT_SCREEN : SCREEN_HEIGHT + " w-full rounded-[calc(var(--object-radius)-8px)]"),
+  shape: (compact) => "flat-screen " + (compact ? COMPACT_SCREEN : SCREEN_HEIGHT + " w-full rounded-[var(--object-radius)]"),
   rail: false,
   Body: FlatBody,
 };
