@@ -36,10 +36,14 @@ export type { PlayObjectBody, PlayObjectBodyProps } from "./body";
 /** How long Play holds each take. */
 export const TAKE_MS = 4000;
 
-/** The bodies drawn so far, loaded on demand. A world not here, or one whose body fails to load, draws bare. */
+/** The six worlds' bodies, loaded on demand. A body that fails to load falls back to bare. */
 const BODIES: Partial<Record<Material, () => Promise<PlayObjectBody>>> = {
+  press: () => import("./bodies/press").then((m) => m.press),
   flat: () => import("./bodies/flat").then((m) => m.flat),
   device: () => import("./bodies/device").then((m) => m.device),
+  plain: () => import("./bodies/plain").then((m) => m.plain),
+  rack: () => import("./bodies/rack").then((m) => m.rack),
+  heat: () => import("./bodies/heat").then((m) => m.heat),
 };
 
 const bodies = new Map<Material, Promise<PlayObjectBody>>();
