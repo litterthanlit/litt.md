@@ -56,11 +56,12 @@ const brackets =
 export function ButtonHeatBody({ variant, size, iconOnly, sizeClass, shapeClass, blockClass, className, fun, children, spinner, loading, rootProps }: ButtonBodyProps) {
   const { style, ...root } = rootProps;
   const bracketTone = variant === "primary" ? " text-accent-fg" : variant === "danger" ? " text-danger" : " text-accent-text";
+  const squareShape = shapeClass.replace(/\brounded-\S+/g, "rounded-none");
   return (
     <button
       {...root}
       data-body="heat"
-      className={[base, sizeClass, iconOnly ? "px-0" : pads[size], variants[variant], disabledLook, shapeClass, blockClass, className].join(" ")}
+      className={[base, sizeClass, iconOnly ? "px-0" : pads[size], variants[variant], disabledLook, squareShape, blockClass, className].join(" ")}
       style={fun ? { ...fun, ...style } : style}
     >
       <span aria-hidden="true" className={brackets + bracketTone} />

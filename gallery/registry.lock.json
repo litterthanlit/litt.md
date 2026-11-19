@@ -48,7 +48,7 @@
     },
     "button": {
       "version": "2026.11.19",
-      "hash": "9e3eeb473e5af18d"
+      "hash": "93ce2d30481c492d"
     },
     "callout": {
       "version": "2026.11.18",
@@ -591,7 +591,7 @@
       "hash": "a7deda94f7d16e53"
     },
     "flat-button": {
-      "version": "2026.11.16",
+      "version": "2026.11.19",
       "hash": "7880d6d957952910"
     },
     "flat-callout": {
@@ -1012,7 +1012,7 @@
     },
     "heat-button": {
       "version": "2026.11.19",
-      "hash": "0c54472a4c9e8c3c"
+      "hash": "4ab488ad0fe7533d"
     },
     "heat-callout": {
       "version": "2026.11.18",
@@ -1495,7 +1495,7 @@
       "hash": "c9df98e6a587dc1a"
     },
     "plain-button": {
-      "version": "2026.11.16",
+      "version": "2026.11.19",
       "hash": "de51df162dcccdf6"
     },
     "plain-callout": {
@@ -1887,7 +1887,7 @@
       "hash": "c9df98e6a587dc1a"
     },
     "press-button": {
-      "version": "2026.11.16",
+      "version": "2026.11.19",
       "hash": "15bea5b30d4f6415"
     },
     "press-callout": {
@@ -2291,7 +2291,7 @@
       "hash": "c9df98e6a587dc1a"
     },
     "rack-button": {
-      "version": "2026.11.16",
+      "version": "2026.11.19",
       "hash": "fd50f591d94fca94"
     },
     "rack-callout": {
