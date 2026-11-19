@@ -1,10 +1,13 @@
 /**
  * Flat's scenes (scene.ts): a small site and its letter, and the people who read them (plans/024, call 9). Ink on paper,
  * the grey is the ground, nothing casts, and the pill is what a hand touches. Colour is the data and who a reader is,
- * in Candy: the week's reads on the sunset ramp, a kind of post in its own hue, a reader's avatar (R7, R10). Nothing
- * moves on its own; what moves answers a hand (a pill's bubble, a heatmap's lens).
+ * in Candy: the week's reads on the sunset ramp, a kind of post in its own hue, a reader's avatar (R7, R10). What moves
+ * answers a hand (a pill's bubble, a heatmap's lens), but for one moment: on Flat's About the readers who wrote back
+ * arrive once on load on Flat's spring (arrive-once.tsx; still under reduced motion, and on the Systems index).
  */
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { WorldContext } from "@/gallery/kit";
+import { Arrive, useArriveOnce } from "@/gallery/arrive-once";
 import { Avatar, AvatarGroup, type AvatarHue } from "@/components/avatar";
 import { BarList, type BarListHue } from "@/components/bar-list";
 import { Button } from "@/components/button";
@@ -29,21 +32,25 @@ const SLOT_TICKS = [
   { index: 6, label: "12:00" },
   { index: 9, label: "18:00" },
 ];
-/* A reader's day: quiet at night, a morning coffee, a lunch dip, the evening read. */
-const SHAPE = [1, 0, 0, 3, 9, 7, 6, 5, 6, 10, 12, 6];
-/** Reads for a week: the day's shape, Friday's swell when the letter goes out, a little noise that never changes. */
-function week(scale: number, friday: number): number[][] {
-  return DAYS.map((_, d) =>
-    SHAPE.map((v, h) => {
-      const wobble = v > 2 ? ((d * 7 + h * 13) % 5) - 2 : 0;
-      const swell = d === 4 && h >= 4 && h <= 6 ? friday : 0;
-      return Math.max(0, Math.round((v * scale + wobble + swell) * 2));
-    }),
-  );
-}
+/*
+ * A week of reads, by hand: quiet from midnight to six, a morning rise with the coffee (08:00) and the evening read
+ * (20:00) the best hours of a weekday, a lunch bump between. The letter goes out Friday at 9:00, so Friday morning is
+ * the week's peak; Saturday wakes late and reads through the day; Sunday is the quietest, with its own evening read.
+ */
+const THIS_WEEK = [
+  [3, 0, 0, 4, 22, 13, 15, 8, 9, 22, 31, 8],
+  [2, 0, 0, 5, 24, 14, 13, 9, 8, 23, 33, 9],
+  [3, 0, 0, 4, 21, 12, 16, 7, 9, 21, 30, 8],
+  [1, 0, 0, 5, 23, 13, 14, 8, 9, 24, 32, 9],
+  [2, 0, 0, 6, 34, 38, 24, 14, 11, 16, 21, 6],
+  [5, 1, 0, 0, 7, 18, 21, 15, 13, 11, 17, 9],
+  [3, 0, 0, 0, 4, 12, 14, 11, 10, 14, 24, 6],
+];
+/** The week before: the same rhythm, a little quieter. */
+const LAST_WEEK = THIS_WEEK.map((day) => day.map((v) => Math.round(v * 0.88)));
 const WEEKS = {
-  this: { label: "This week", reads: week(1.4, 14), readers: 1204, delta: "Up 86 on last week", tone: "good" as const },
-  last: { label: "Last week", reads: week(1.1, 9), readers: 1118, delta: "Up 40 on the week before", tone: "good" as const },
+  this: { label: "This week", reads: THIS_WEEK, readers: 1204, delta: "Up 86 on last week", tone: "good" as const },
+  last: { label: "Last week", reads: LAST_WEEK, readers: 1118, delta: "Up 40 on the week before", tone: "good" as const },
 };
 type WeekId = keyof typeof WEEKS;
 
@@ -58,6 +65,7 @@ const WROTE_BACK: { name: string; hue: AvatarHue }[] = [
 
 function ThisWeek() {
   const [id, setId] = useState<WeekId>("this");
+  const arrive = useArriveOnce("flat-about-wrote-back", useContext(WorldContext) === "flat");
   const w = WEEKS[id];
   return (
     <div className="grid gap-5">
@@ -75,13 +83,15 @@ function ThisWeek() {
         columns={SLOTS}
         columnTicks={SLOT_TICKS}
         cell={16}
-        steps={[4, 12, 20, 28]}
+        steps={[1, 10, 20, 30]}
         unit={["read", "reads"]}
       />
       <div className="flex items-center gap-3">
         <AvatarGroup label="Readers who wrote back, 23 people" size="sm" max={5} total={23}>
-          {WROTE_BACK.map((r) => (
-            <Avatar key={r.name} name={r.name} hue={r.hue} look="fluid" size="sm" />
+          {WROTE_BACK.map((r, i) => (
+            <Arrive key={r.name} on={arrive} index={i}>
+              <Avatar name={r.name} hue={r.hue} look="fluid" size="sm" />
+            </Arrive>
           ))}
         </AvatarGroup>
         <span className="text-small text-fg-muted">23 readers wrote back</span>
@@ -246,7 +256,7 @@ const scenes: Scene[] = [
   { id: "this-week", title: "This week", line: "Your readers by the hour, on the sunset ramp that warms where they read; a pill switches the week, and the people who wrote back each wear their own colour.", Render: ThisWeek },
   { id: "a-post", title: "A post", line: "A post's top: a real picture on paper, the words in ink, and a tag for each thing it is filed under, in that thing's colour.", Render: Post },
   { id: "your-posts", title: "Your posts", line: "The posts read most this month, each bar in its kind's colour, and a pill that filters them; no rules and no frames.", Render: YourPosts },
-  { id: "the-letter", title: "The letter", line: "Friday's letter: the last issue's opens walk the sunset round the arc, and one white field on the ground to join.", Render: Letter },
+  { id: "the-letter", title: "The letter", line: "Friday's letter: the last issue's opens walk the sunset round the arc, and one field to join.", Render: Letter },
   { id: "reading", title: "Reading", line: "A post's top in ink, with who wrote it, a standfirst and a pager to step on.", Render: Reading },
 ];
 

@@ -510,9 +510,56 @@ function IconsTile() {
   );
 }
 
+/* ---------- Flat's own (plans/024, Flat, round 3): a small site and its letter ---------- */
+
+/* What a small site's editor does, each icon over its word, in the ink. */
+const LETTER_ICONS = [
+  ["Write", Icons.EditIcon], ["Picture", Icons.ImageIcon], ["Link", Icons.LinkIcon], ["Send", Icons.SendIcon],
+  ["Schedule", Icons.CalendarIcon], ["Readers", Icons.UsersIcon], ["Replies", Icons.MailIcon], ["Archive", Icons.ArchiveIcon],
+] as const;
+
+function LetterIconsTile() {
+  return (
+    <ul aria-label="The letter's icons" className="grid grid-cols-4 gap-x-6 gap-y-5">
+      {LETTER_ICONS.map(([name, Glyph]) => (
+        <li key={name} className="grid justify-items-center gap-2 text-fg">
+          <Glyph aria-hidden="true" />
+          <span className="text-small text-fg-muted">{name}</span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function PostContextDemo() {
+  return (
+    <div className="grid w-full max-w-md gap-8">
+      <div className="flex flex-wrap items-center gap-3">
+        <Button icon={<ShareIcon />}>Share the post</Button>
+        <Button variant="ghost" iconOnly aria-label="Post settings" icon={<SettingsIcon />} />
+        <Button variant="ghost" iconOnly aria-label="More for this post" icon={<MoreIcon />} />
+      </div>
+      <ul className="grid gap-3 text-small text-fg">
+        <li className="flex items-center gap-2">
+          <CheckCircleIcon className="shrink-0 text-success" />
+          Issue 13 went to 1,204 readers
+        </li>
+        <li className="flex items-center gap-2">
+          <WarningIcon className="shrink-0 text-warning" />
+          Two pictures have no description yet
+        </li>
+        <li className="flex items-center gap-2">
+          <AlertIcon className="shrink-0 text-danger" />
+          The letter to 3 readers came back
+        </li>
+      </ul>
+    </div>
+  );
+}
+
 export default function IconsPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<IconsTile />}>
+    <Page meta={meta} docs={docs} tile={<IconsTile />} tileByWorld={{ flat: <LetterIconsTile /> }}>
       <Stage
         title="The set"
         size="lg"
@@ -532,6 +579,7 @@ export default function IconsPage() {
         title="Beside words"
         code="ContextDemo"
         caption="An icon takes the color of its text. In a button it is 16px, 8px from the label, and alone it needs an aria-label. A status color goes on the icon only, and the words say the same thing."
+        byWorld={{ flat: { demo: <PostContextDemo />, code: "PostContextDemo" } }}
       >
         <ContextDemo />
       </Stage>

@@ -4,6 +4,7 @@
  * (PAGE_GROUPS), each a section under its h2 with the wall's two columns of tiles, and a row of jump links leads to
  * them. A tile's name opens its page in the world (#<world>/<id>). Nothing here links out of the world (plans/019).
  * Quiet (plans/024, phase 0): no counts and no line of explanation; a tile is the object and its name.
+ * Under Flat the first tile plays its arrival once on load (arrive-once.tsx), the view's one moment before a hand.
  */
 import { useId } from "react";
 import { Toaster } from "@/components/toast";
@@ -56,9 +57,9 @@ export function WorldGallery({ material }: { material: Material }) {
               {s.group}
             </h2>
             <ul className="grid gap-4 md:grid-flow-row-dense md:grid-cols-2">
-              {s.pages.map((p) => (
+              {s.pages.map((p, i) => (
                 <li key={p.id} className={"grid min-w-0 " + (TALL.has(p.id) ? "md:row-span-2" : "")}>
-                  <WallTile page={p} href={`#${material}/${p.id}`} heading="h3" />
+                  <WallTile page={p} href={`#${material}/${p.id}`} heading="h3" arrive={material === "flat" && k === 0 && i === 0} />
                 </li>
               ))}
             </ul>

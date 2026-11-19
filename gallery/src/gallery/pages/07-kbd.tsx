@@ -134,6 +134,34 @@ function HintsDemo() {
   );
 }
 
+/* ---------- Flat's own (plans/024, Flat, round 3): writing the letter ---------- */
+
+/* What a small site's editor answers while you write the letter. No rules between rows: Flat draws no lines. */
+const LETTER_KEYS: { label: string; keys: string[] }[] = [
+  { label: "Bold the words", keys: ["⌘B"] },
+  { label: "Link the words", keys: ["⌘K"] },
+  { label: "Add a picture", keys: ["⇧⌘I"] },
+  { label: "Schedule for Friday", keys: ["⌘↵"] },
+  { label: "Close the draft", keys: ["esc"] },
+];
+
+function LetterKeysDemo() {
+  return (
+    <dl aria-label="Writing the letter" className="grid w-full max-w-xs">
+      {LETTER_KEYS.map((s) => (
+        <div key={s.label} className="flex h-10 items-center justify-between gap-4">
+          <dt className="text-body text-fg">{s.label}</dt>
+          <dd className="flex gap-1">
+            {s.keys.map((k) => (
+              <Kbd key={k}>{k}</Kbd>
+            ))}
+          </dd>
+        </div>
+      ))}
+    </dl>
+  );
+}
+
 export default function KbdPage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -141,6 +169,15 @@ export default function KbdPage() {
         title="Keys"
         caption="A key cap is the smallest raised block: 20px tall at the control radius, casting a little straight down, with a darker lower edge, so it reads as a key and not a tag. Geist at weight 400 in fg-subtle. A glyph fills a square, and a word such as esc grows to fit. Nothing moves."
         code="KeysDemo"
+        byWorld={{
+          flat: {
+            demo: <LetterKeysDemo />,
+            title: "Writing the letter",
+            code: "LetterKeysDemo",
+            caption:
+              "The keys a small site's editor answers while you write the letter, each opposite what it does, so the eye finds the words first. A key cap is a small pill with no edge and nothing cast, its glyph in the quiet ink. A chord written in glyphs is one cap, and a named key such as esc is a word. Nothing moves.",
+          },
+        }}
       >
         <KeysDemo />
       </Stage>

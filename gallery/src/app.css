@@ -48,6 +48,11 @@
 [data-material="flat"] .flat-sheet {
   background-color: var(--sheet);
 }
+/* The take larger on Flat's screen (plans/024, Flat, round 3): the body sets --take-zoom to fit the take to the screen
+   (bodies/flat.tsx, useTakeZoom), and the take's object reads it as its zoom. Home is the screen's own and never zooms. */
+.flat-screen [data-play-take]:not([data-play-take="home"]) > * {
+  zoom: var(--take-zoom, 1);
+}
 [data-material="flat"] :is(.flat-sheet, .flat-screen [data-play-take]) {
   --surface-1: light-dark(var(--flat-surface-3), var(--flat-paper));
   --block: var(--surface-1);

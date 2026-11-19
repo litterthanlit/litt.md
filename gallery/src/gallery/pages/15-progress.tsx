@@ -209,7 +209,7 @@ export default function ProgressPage() {
             title: "A picture going up, and every state",
             code: "FlatStatesDemo",
             caption:
-              "Press Upload: the fill is one color, the sunset's step at its value, so it warms as the bytes go and is the deepest step when done, never a gradient. A series lights segment by segment. Waiting is an empty slot and a word. Failed keeps the fill where it stopped in the danger color and says Failed.",
+              "Press Upload: one picture fills as its bytes go, on the series' colors, one at a time and never a gradient. Waiting is an empty slot and a word. Failed keeps the fill where it stopped in the danger color and says Failed.",
           },
         }}
         caption="Waiting, running, done and failed. Waiting is an empty slot and a word, with nothing moving. Failed keeps the fill where it stopped, in the danger color, says Failed, and the message says what to do."
