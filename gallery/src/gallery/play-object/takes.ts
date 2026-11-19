@@ -28,7 +28,7 @@ export type Take = {
  */
 const SET: Record<Material, string[]> = {
   press: ["button", "switch", "segmented", "slider", "input", "select", "dialog", "menu", "toast", "stat", "chart", "table"],
-  flat: ["progress", "button", "switch", "gauge", "heatmap", "media", "carousel", "card", "avatar", "tabs", "popover", "toast"],
+  flat: ["progress", "poll", "streak", "kudos", "button", "gauge", "heatmap", "card", "carousel", "avatar", "popover", "toast"],
   device: ["composer", "agent-indicator", "tool-call", "message", "seven-segment", "tape-progress", "switch", "slider", "gauge", "copy-button", "button", "command-menu"],
   plain: ["form", "input", "select", "checkbox", "button", "table", "details", "callout", "breadcrumb", "pagination", "tabs", "dialog"],
   rack: ["slider", "curve-editor", "spring-editor", "pad", "time-scrubber", "inspector", "number-field", "color-picker", "segmented", "switch", "button", "range-chart"],

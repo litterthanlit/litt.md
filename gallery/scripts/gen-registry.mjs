@@ -807,6 +807,22 @@ const COPY = {
     description: "A figure or a count on seven-segment digits behind LCD glass, each digit's segments lit from the ink and fading like phosphor when they change. A Device part.",
     docs: "Needs data-material=\"device\" on <html>. Pass a value and the digits; a change rolls the segments on the instant tier. Under reduced motion they switch at once.",
   },
+  /* Flat's own parts (skills/litt-md/taste/litt-principles.md, Flat): each needs data-material="flat" on <html>; its page says so. */
+  poll: {
+    title: "Poll",
+    description: "A reader poll of paper pills on grey whose Candy data share bars spring open on Flat's 0.28 bounce, with the total votes at Flat's 40px figure size. A Flat part.",
+    docs: "Needs data-material=\"flat\" on <html>. Pass the question and choices; picking any pill reveals or moves your vote and announces the share in words. Under reduced motion the bars land at once.",
+  },
+  streak: {
+    title: "Streak",
+    description: "A publishing or reading cadence tracker with a standing 40px figure and pill capsules walking Flat's sunset heatwave ramp, with an outlined current slot that bounces warm when logged. A Flat part.",
+    docs: "Needs data-material=\"flat\" on <html>. Pass the slots and unit; mark the latest slot current so readers can toggle it. Under reduced motion the count and pill update at once.",
+  },
+  kudos: {
+    title: "Kudos",
+    description: "A multi-tap reader cheer pill that pops on Flat's 0.28 bounce, warms a row of sunset heatwave dots and floats a +1 badge on each tap. A Flat part.",
+    docs: "Needs data-material=\"flat\" on <html>. Pass count and subject; tapping again at the cap clears your taps. Under reduced motion nothing bounces or floats and the count updates at once.",
+  },
   litt: {
     title: "litt tokens",
     description: "litt.md's colors, type, space, shape, depth and motion as CSS variables, Tailwind names and the litt-glass, litt-raised, litt-trim, litt-lit and litt-grain classes. Every name starts with litt, so none of it touches your own.",

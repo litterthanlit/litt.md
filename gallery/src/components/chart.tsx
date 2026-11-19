@@ -63,6 +63,7 @@ import { useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useSta
 import { animate, AnimatePresence, motion, useMotionValueEvent, useTransform } from "motion/react";
 import { byWorld, countText, useExit, useFun, useFunValue, useMaterial, useTransition, useTravel } from "@/motion";
 import { ChartDeviceBody } from "@/worlds/device/chart";
+import { ChartFlatBody } from "@/worlds/flat/chart";
 import { ChartRackBody } from "@/worlds/rack/chart";
 
 /* ----------------------------------------------------------------- types */
@@ -382,7 +383,7 @@ function Chart({
   const enter = useTransition("responsive");
   const empty = n === 0 || series.length === 0;
   const bars = kind === "bar" ? barMarks(g, series, paint, n, emphasis, fmt) : null;
-  const Body = byWorld(body, { press: PressBody, flat: FlatBody, device: ChartDeviceBody, rack: ChartRackBody });
+  const Body = byWorld(body, { press: PressBody, flat: ChartFlatBody, device: ChartDeviceBody, rack: ChartRackBody });
   const marks = bars ? (
     <BarRects bars={bars.bars} ring={ring !== null ? bars.ringOf(ring) : null} entrance={entrance} enter={enter} />
   ) : kind === "stack" ? (
@@ -752,17 +753,6 @@ function BarRects({ bars, ring, entrance, enter }: Pick<ChartBodyProps, "bars" |
       ))}
       {ring && <rect {...ring} fill="none" strokeWidth={2} className="stroke-focus" />}
     </g>
-  );
-}
-
-/** Flat: the chart as it has always been. A hairline grid, the value axis and the marks, on the page with no ground. */
-function FlatBody({ width, height, text, g, labels, fmt, marks, band }: ChartBodyProps) {
-  return (
-    <svg width={width} height={height} role="img" aria-label={text} className="block overflow-visible">
-      <Grid g={g} labels={labels} fmt={fmt} />
-      {band && <rect {...band} className="fill-[color-mix(in_oklab,var(--fg)_4%,transparent)]" />}
-      {marks}
-    </svg>
   );
 }
 
