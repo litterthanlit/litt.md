@@ -185,6 +185,35 @@ function EmailsLeftDemo() {
   );
 }
 
+/* ---------- Heat's own (proposals/heat.md): engine RPM tachometer and nitrous reserve ---------- */
+
+function TachometerDemo() {
+  return (
+    <Gauge
+      label="Engine RPM"
+      value={7400}
+      max={8500}
+      valueText="7,400 of 8,500 RPM, 6th gear"
+      figure="7,400"
+      caption="6th gear · 318 km/h"
+      hue="amber"
+    />
+  );
+}
+
+function NitrousReserveDemo() {
+  return (
+    <Gauge
+      label="Nitrous"
+      value={68}
+      max={100}
+      valueText="68 of 100 percent nitrous remaining"
+      figure="68%"
+      caption="of 100% bottle"
+    />
+  );
+}
+
 export default function GaugePage() {
   return (
     <Page
@@ -194,6 +223,7 @@ export default function GaugePage() {
       tileByWorld={{
         device: <Gauge label="Card left" value={192} max={480} valueText="3 hours 12 minutes of recording left, of 8 hours" figure="3H 12M" caption="of 8H at 48 kHz · 24 bit" size={200} />,
         flat: <Gauge label="Emails left" value={1648} max={2500} valueText="1,648 emails left this month, of 2,500" figure="1,648" caption="of 2,500 this month" ramp size={200} />,
+        heat: <Gauge label="Engine RPM" value={7400} max={8500} valueText="7,400 of 8,500 RPM, 6th gear" figure="7,400" caption="6th gear · 318 km/h" hue="amber" size={200} />,
       }}
     >
       <Stage
@@ -213,7 +243,14 @@ export default function GaugePage() {
             title: "Card left",
             code: "CardLeftDemo",
             caption:
-              "A storage quota, as the recorder says it: the card's time left at the format it records, in hours and minutes as the LCD's clock reads, not gigabytes. No hue, so the ticks are the ink; on Device colour is a signal, red for REC and orange for a hand on it, and a quantity is neither. The figure reads 3H 12M and a screen reader hears the sentence. Nothing glows and nothing moves."
+              "A storage quota, as the recorder says it: the card's time left at the format it records, in hours and minutes as the LCD's clock reads, not gigabytes. No hue, so the ticks are the ink; on Device colour is a signal, red for REC and orange for a hand on it, and a quantity is neither. The figure reads 3H 12M and a screen reader hears the sentence. Nothing glows and nothing moves.",
+          },
+          heat: {
+            demo: <TachometerDemo />,
+            title: "Engine RPM",
+            code: "TachometerDemo",
+            caption:
+              "A rev counter against an 8,500 RPM redline. Under Heat the amber data slot is brake red, keeping clean separation from the menu's selection amber while the longer marking tick holds 7,400 RPM.",
           },
         }}
       >
@@ -230,6 +267,13 @@ export default function GaugePage() {
             code: "CardUsedDemo",
             caption:
               "The ticks are the ink, as every gauge is under Device. The figure can read shorter than the value text: it says 42 GB, and a screen reader hears 42 of 128 GB used. The caption carries the card's size.",
+          },
+          heat: {
+            demo: <NitrousReserveDemo />,
+            title: "Nitrous reserve",
+            code: "NitrousReserveDemo",
+            caption:
+              "With no hue the ticks draw in cream ink on black (or dark ink on sepia paper by day), reading 68% of the nitrous bottle.",
           },
         }}
         caption="With no hue the ticks are the foreground, the quiet default for a single quantity. The figure can read shorter than the value text: it says 42 GB, and a screen reader hears 42 of 100 GB. The caption carries the limit."

@@ -64,6 +64,7 @@ import { animate, AnimatePresence, motion, useMotionValueEvent, useTransform } f
 import { byWorld, countText, useExit, useFun, useFunValue, useMaterial, useTransition, useTravel } from "@/motion";
 import { ChartDeviceBody } from "@/worlds/device/chart";
 import { ChartFlatBody } from "@/worlds/flat/chart";
+import { ChartHeatBody } from "@/worlds/heat/chart";
 import { ChartRackBody } from "@/worlds/rack/chart";
 
 /* ----------------------------------------------------------------- types */
@@ -121,7 +122,7 @@ const AXIS = 28; // room under the plot for the category labels
 const LABEL_GAP = 6; // between a value label and the plot
 const FIGURE = 7.2; // advance of a 12px tabular figure in Geist (letters run narrower)
 const MAX_BAR = 32;
-type World = "press" | "flat" | "device" | "rack";
+type World = "press" | "flat" | "device" | "rack" | "heat";
 /** The room a body keeps around the plot: a value axis on the left or none, and the space above the plot. */
 type Frame = { axis: boolean; top: number };
 const FRAME: Record<World, Frame> = {
@@ -129,6 +130,7 @@ const FRAME: Record<World, Frame> = {
   flat: { axis: true, top: TOP }, // today's chart
   device: { axis: false, top: 44 }, // the readout sits on the bezel above the screen
   rack: { axis: true, top: TOP },
+  heat: { axis: true, top: TOP },
 };
 const MAX_RAIL = 8; // a stacked column: a rail, not a block
 const RAIL_GAP = 2; // air between the segments of a stacked column, the Breakdown's
@@ -297,7 +299,7 @@ function Chart({
   const slots = byWorld(material, { press: 5, flat: 8 });
   const paint = useMemo(() => paints(series, hues || stacked, slots), [series, hues, stacked, slots]);
   /* A world without a chart body of its own (Plain) draws Press's (byWorld). */
-  const body: World = byWorld<World>(material, { press: "press", flat: "flat", device: "device", rack: "rack" });
+  const body: World = byWorld<World>(material, { press: "press", flat: "flat", device: "device", rack: "rack", heat: "heat" });
   const [boxRef, width] = useWidth();
   const g = useMemo(
     () => layout(width, height, labels, series, fmt, stacked, FRAME[body]),
@@ -383,7 +385,7 @@ function Chart({
   const enter = useTransition("responsive");
   const empty = n === 0 || series.length === 0;
   const bars = kind === "bar" ? barMarks(g, series, paint, n, emphasis, fmt) : null;
-  const Body = byWorld(body, { press: PressBody, flat: ChartFlatBody, device: ChartDeviceBody, rack: ChartRackBody });
+  const Body = byWorld(body, { press: PressBody, flat: ChartFlatBody, device: ChartDeviceBody, rack: ChartRackBody, heat: ChartHeatBody });
   const marks = bars ? (
     <BarRects bars={bars.bars} ring={ring !== null ? bars.ringOf(ring) : null} entrance={entrance} enter={enter} />
   ) : kind === "stack" ? (

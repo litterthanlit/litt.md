@@ -319,6 +319,138 @@ function MeterHoldDemo() {
   );
 }
 
+/* ---------- Heat's own (proposals/heat.md): transmission, race rules, and tire compounds ---------- */
+
+type Transmission = "auto" | "manual" | "clutch";
+
+const TRANSMISSION_NOTES: Record<Transmission, string> = {
+  auto: "Automatic shifts at redline.",
+  manual: "Shift gears with paddles or keys.",
+  clutch: "Full manual clutch for faster launches.",
+};
+
+function TransmissionDemo() {
+  const [gear, setGear] = useState<Transmission>("manual");
+  return (
+    <div className="grid justify-items-center gap-4">
+      <Segmented
+        legend="Transmission"
+        size="sm"
+        value={gear}
+        onValueChange={setGear}
+        options={[
+          { value: "auto", label: "Auto" },
+          { value: "manual", label: "Manual" },
+          { value: "clutch", label: "Clutch" },
+        ]}
+      />
+      <p role="status" className="text-small text-fg-subtle">
+        {TRANSMISSION_NOTES[gear]}
+      </p>
+    </div>
+  );
+}
+
+type SessionMode = "free" | "ranked";
+type CameraView = "bumper" | "hood" | "chase";
+
+const CAMERA_NOTES: Record<CameraView, string> = {
+  bumper: "Lowest to the asphalt for apex sightlines.",
+  hood: "Shows the front fenders through tight chicanes.",
+  chase: "Wide rear view for traffic and pursuits.",
+};
+
+function EventRulesDemo() {
+  const [session, setSession] = useState<SessionMode>("ranked");
+  const [camera, setCamera] = useState<CameraView>("chase");
+  return (
+    <form className="grid w-full max-w-sm gap-6" onSubmit={(e) => e.preventDefault()}>
+      <div className="grid gap-2">
+        <Segmented
+          legend="Session"
+          showLegend
+          block
+          name="session"
+          value={session}
+          onValueChange={setSession}
+          options={[
+            { value: "free", label: "Free roam" },
+            { value: "ranked", label: "Ranked" },
+          ]}
+        />
+        <p className="text-small text-fg-subtle">
+          {session === "free" ? "Practice lines with pursuit heat off." : "Lap times count toward the Blacklist standings."}
+        </p>
+      </div>
+      <div className="grid gap-2">
+        <Segmented
+          legend="Camera"
+          showLegend
+          block
+          name="camera"
+          value={camera}
+          onValueChange={setCamera}
+          options={[
+            { value: "bumper", label: "Bumper" },
+            { value: "hood", label: "Hood" },
+            { value: "chase", label: "Chase" },
+          ]}
+        />
+        <p className="text-small text-fg-subtle">{CAMERA_NOTES[camera]}</p>
+      </div>
+    </form>
+  );
+}
+
+function TireCompoundDemo() {
+  const [compound, setCompound] = useState("soft");
+  return (
+    <div className="grid justify-items-start gap-6">
+      <Segmented
+        legend="Tire compound, small"
+        size="sm"
+        value={compound}
+        onValueChange={setCompound}
+        options={[
+          { value: "soft", label: "Soft" },
+          { value: "medium", label: "Medium" },
+          { value: "hard", label: "Hard" },
+        ]}
+      />
+      <Segmented
+        legend="Tire compound, medium"
+        size="md"
+        value={compound}
+        onValueChange={setCompound}
+        options={[
+          { value: "soft", label: "Soft" },
+          { value: "medium", label: "Medium" },
+          { value: "hard", label: "Hard" },
+        ]}
+      />
+      <Segmented
+        legend="Nitrous mix"
+        size="md"
+        defaultValue="balanced"
+        options={[
+          { value: "balanced", label: "Balanced" },
+          { value: "overboost", label: "Overboost", disabled: true },
+        ]}
+      />
+      <Segmented
+        legend="Ghost replay, unavailable"
+        size="sm"
+        disabled
+        defaultValue="off"
+        options={[
+          { value: "off", label: "Off" },
+          { value: "best", label: "Best lap" },
+        ]}
+      />
+    </div>
+  );
+}
+
 export default function SegmentedPage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -335,6 +467,13 @@ export default function SegmentedPage() {
             caption:
               "The small size, as on a recorder's input strip. The legend is hidden from sight and read to a screen reader as Input 1, because the options name the control. The selected surface moves to your pick through transform on the responsive tier, and the line under it says what the input expects.",
           },
+          heat: {
+            demo: <TransmissionDemo />,
+            title: "Transmission",
+            code: "TransmissionDemo",
+            caption:
+              "Under Heat, the chosen option snaps into four 6px amber corner brackets with ‹ › chevrons on a flat square track — Auto, Manual, or Clutch.",
+          },
         }}
       >
         <ThemeDemo />
@@ -345,7 +484,10 @@ export default function SegmentedPage() {
         tier="responsive"
         caption="The medium size with the legend shown and the track full width, so it lines up with 44px fields. Segments share one width, so the surface keeps its shape as it moves. Arrow keys move and select, because the options share one name."
         code="FormDemo"
-        byWorld={{ device: { demo: <ShareTakeDemo />, code: "ShareTakeDemo" } }}
+        byWorld={{
+          device: { demo: <ShareTakeDemo />, code: "ShareTakeDemo" },
+          heat: { demo: <EventRulesDemo />, code: "EventRulesDemo" },
+        }}
       >
         <FormDemo />
       </Stage>
@@ -361,6 +503,12 @@ export default function SegmentedPage() {
             code: "MeterHoldDemo",
             caption:
               "Small is 32 and medium is 44, on the same scale as Button. Both peak holds share one value, so picking in one moves the other. 96 kHz is disabled, muted and skipped by the arrow keys, and a disabled control stays readable.",
+          },
+          heat: {
+            demo: <TireCompoundDemo />,
+            code: "TireCompoundDemo",
+            caption:
+              "Small is 32 and medium is 44. Both tire compound selectors stay in sync; Overboost is locked until stage 3 tuning, and Ghost replay lies flat while disabled.",
           },
         }}
       >

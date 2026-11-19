@@ -579,9 +579,48 @@ function EveryTile() {
   );
 }
 
+/* ---------- Heat's own (proposals/heat.md): event circuit and tune preset picker ---------- */
+
+const HEAT_TRACKS: SelectOption[] = [
+  { value: "camden", label: "Camden Beach sprint" },
+  { value: "rosewood", label: "Rosewood circuit" },
+  { value: "rockport", label: "Rockport tollbooth" },
+  { value: "downtown", label: "Downtown loop" },
+];
+
+function RaceEventFormDemo() {
+  const [sent, setSent] = useState("");
+  const send = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const data = new FormData(e.currentTarget);
+    setSent(`Locked grid: track=${data.get("track")}`);
+  };
+  return (
+    <form onSubmit={send} className="grid w-full max-w-sm gap-6">
+      <SelectField label="Event track" name="track" options={HEAT_TRACKS} defaultValue="camden" help="Sets weather, lap count and pursuit sector." />
+      <TextField label="Driver handle" name="driver" defaultValue="Rin Vale" />
+      <TextField label="Vehicle" name="vehicle" defaultValue="Skyline GT-R · Blacklist #4" />
+      <div className="grid gap-3">
+        <Button variant="primary" type="submit">
+          Enter event
+        </Button>
+        <Status>{sent}</Status>
+      </div>
+    </form>
+  );
+}
+
+function TrackSelectTile() {
+  return (
+    <div className="w-full max-w-xs">
+      <SelectField label="Event track" options={HEAT_TRACKS} defaultValue="camden" help="Camden Beach · 5 laps" />
+    </div>
+  );
+}
+
 export default function SelectPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<RoleTile />} tileByWorld={{ device: <SampleRateTile />, flat: <EveryTile /> }}>
+    <Page meta={meta} docs={docs} tile={<RoleTile />} tileByWorld={{ device: <SampleRateTile />, flat: <EveryTile />, heat: <TrackSelectTile /> }}>
       <Stage
         title="A role in an account form"
         tier="responsive"
@@ -602,6 +641,13 @@ export default function SelectPage() {
             code: "RecorderSettingsDemo",
             caption:
               "The sample rate sits in the settings like any other field: its label engraved above, the help below, at the inputs' height. The select is a readout in a well, the value on LCD glass, with two small keys at its end that step the rate without opening the list. Press the readout, or press Space, and the list switches on where it stands, a screen of rows in the mono. The chosen row has a lamp lit at its start, and the row under the keyboard sits on the one blue. Save sends the value through the field's name.",
+          },
+          heat: {
+            demo: <RaceEventFormDemo />,
+            title: "Event track in a race entry",
+            code: "RaceEventFormDemo",
+            caption:
+              "Under Heat, the trigger is a flat square key that opens a hazard-striped black dropdown slab where the highlighted circuit snaps into four 8px amber corner brackets.",
           },
         }}
         caption="The role field sits in the form like any other: label above, help below, at the inputs' height. You type into an input, so it is cut into the page; you press the select, so it is raised, like a button. Click it, or press Space, and the list grows out of the trigger and slides a quarter of the travel token from the side it opens on, on the responsive tier. The check marks Designer. Save sends the value through the field's name."

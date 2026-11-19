@@ -293,6 +293,58 @@ function PostIconsDemo() {
   );
 }
 
+/* ---------- Heat's own (proposals/heat.md): street-racing menu keys ---------- */
+
+function RaceActionDemo() {
+  return (
+    <div className="flex flex-wrap items-center gap-3">
+      <Button variant="primary">Start race</Button>
+      <Button variant="secondary">Tune car</Button>
+      <Button variant="ghost">Back</Button>
+      <Button disabled>Event locked</Button>
+    </div>
+  );
+}
+
+function SellCarDemo() {
+  return (
+    <div className="flex flex-wrap items-center gap-3">
+      <Button variant="danger" icon={<TrashIcon />}>Sell vehicle</Button>
+      <Button variant="danger" size="sm">Clear record</Button>
+      <Button variant="danger" disabled>Sell vehicle</Button>
+    </div>
+  );
+}
+
+function SaveTuneDemo() {
+  const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    if (!loading) return;
+    const t = setTimeout(() => setLoading(false), 1600);
+    return () => clearTimeout(t);
+  }, [loading]);
+  return (
+    <div className="flex flex-wrap items-center gap-3">
+      <Button variant="primary" loading={loading} onClick={() => setLoading(true)}>Save tune</Button>
+      <Button loading={loading} onClick={() => setLoading(true)}>Export replay</Button>
+    </div>
+  );
+}
+
+function GarageIconsDemo() {
+  return (
+    <div className="flex flex-wrap items-center gap-3">
+      <Button icon={<PlusIcon />}>New preset</Button>
+      <Button><CopyIcon /> Copy tune code</Button>
+      <Button variant="ghost" iconRight={<ArrowUpRightIcon />}>Open standings</Button>
+      <Button iconOnly aria-label="Copy tune code"><CopyIcon /></Button>
+      <Button iconOnly variant="ghost" aria-label="Tuning settings"><SettingsIcon /></Button>
+      <Button iconOnly variant="ghost" aria-label="More actions"><MoreIcon /></Button>
+      <Button iconOnly variant="ghost" size="sm" aria-label="Sell vehicle"><TrashIcon /></Button>
+    </div>
+  );
+}
+
 export default function ButtonPage() {
   return (
     <Page meta={meta} docs={docs} study={study}>
@@ -313,6 +365,12 @@ export default function ButtonPage() {
             code: "ExportTakeDemo",
             caption:
               "The keys of a recorder's export sheet. Export take is the primary, the ink key: on Device orange is a hand on it, never a key's fill. Add marker is a key in the body's grey, Cancel lies flat on the plate until a press sinks it into a well, and Arm track, disabled, lies flat with no skirt. A press sinks the whole face 2px onto its skirt at once.",
+          },
+          heat: {
+            demo: <RaceActionDemo />,
+            code: "RaceActionDemo",
+            caption:
+              "Street-racing menu keys. Start race is the one amber fill in the view, framed in ink corner brackets under the hand. Tune car is a flat dark cell whose four 8px amber corner brackets snap on under hover and focus. Back sits flat until targeted, and Event locked lies flat on surface-2 with no brackets.",
           },
         }}
       >
@@ -337,6 +395,12 @@ export default function ButtonPage() {
             caption:
               "A destructive action is the grey key with its words in red, so the word that names the loss is the only loud thing: Delete take, Erase card. It is never filled red. Disabled, it lies flat and loses the red. The one red key is the confirm of the dialog that asks.",
           },
+          heat: {
+            demo: <SellCarDemo />,
+            code: "SellCarDemo",
+            caption:
+              "A destructive racing-menu key keeps the flat dark cell with brake-red words and danger corner brackets on hover: Sell vehicle, Clear record. Disabled, it lies flat and drops the red.",
+          },
         }}
       >
         <DangerDemo />
@@ -346,11 +410,11 @@ export default function ButtonPage() {
         <SizesDemo />
       </Stage>
 
-      <Stage title="Loading" tier="instant" caption="The label stays mounted at opacity 0 while the spinner shows, so the button keeps its exact width. Press either button." code="LoadingDemo" byWorld={{ flat: { demo: <SaveDraftDemo />, code: "SaveDraftDemo" }, device: { demo: <SaveSceneDemo />, code: "SaveSceneDemo" } }}>
+      <Stage title="Loading" tier="instant" caption="The label stays mounted at opacity 0 while the spinner shows, so the button keeps its exact width. Press either button." code="LoadingDemo" byWorld={{ flat: { demo: <SaveDraftDemo />, code: "SaveDraftDemo" }, device: { demo: <SaveSceneDemo />, code: "SaveSceneDemo" }, heat: { demo: <SaveTuneDemo />, code: "SaveTuneDemo" } }}>
         <LoadingDemo />
       </Stage>
 
-      <Stage title="Icons" tier="instant" caption="16px solid icons, 8px from the label. Pass one as the icon prop, or as a child before the label, as shadcn writes it: both sit the same. Icon-only buttons are round and labelled for screen readers. An arrow appears only when a button leaves the site." code="IconsDemo" byWorld={{ flat: { demo: <PostIconsDemo />, code: "PostIconsDemo" }, device: { demo: <TakeIconsDemo />, code: "TakeIconsDemo" } }}>
+      <Stage title="Icons" tier="instant" caption="16px solid icons, 8px from the label. Pass one as the icon prop, or as a child before the label, as shadcn writes it: both sit the same. Icon-only buttons are round and labelled for screen readers. An arrow appears only when a button leaves the site." code="IconsDemo" byWorld={{ flat: { demo: <PostIconsDemo />, code: "PostIconsDemo" }, device: { demo: <TakeIconsDemo />, code: "TakeIconsDemo" }, heat: { demo: <GarageIconsDemo />, code: "GarageIconsDemo" } }}>
         <IconsDemo />
       </Stage>
 

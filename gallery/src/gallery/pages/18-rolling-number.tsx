@@ -208,9 +208,67 @@ function SubscribersTile() {
   );
 }
 
+/* ---------- Heat's own (proposals/heat.md): pursuit bounty and garage bankroll ---------- */
+
+function BountyDemo() {
+  const [roadblocks, setRoadblocks] = useState(12);
+  const [bounty, setBounty] = useState(142500);
+  const [said, setSaid] = useState("");
+  const clearBlock = () => {
+    setRoadblocks((r) => r + 1);
+    setBounty((b) => b + 12500);
+    setSaid(`Cleared roadblock ${roadblocks + 1}. Added 12,500 bounty.`);
+  };
+  return (
+    <div className="grid w-full max-w-xl gap-4">
+      <StatGroup>
+        <Stat label="Bounty" value={<RollingNumber value={bounty} />} delta="12,500 per roadblock" tone="good" />
+        <Stat label="Roadblocks cleared" value={<RollingNumber value={roadblocks} />} delta="Condition ×3 pursuit" />
+      </StatGroup>
+      <div className="flex flex-wrap items-center gap-4">
+        <Button variant="primary" onClick={clearBlock}>
+          Clear roadblock
+        </Button>
+        <p role="status" className="text-small text-fg-subtle">
+          {said}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function GarageCashDemo() {
+  const [cash, setCash] = useState(48500);
+  return (
+    <div className="grid w-full max-w-sm gap-4">
+      <Stat label="Garage cash" value={<RollingNumber value={cash} format={{ style: "currency", currency: "USD", maximumFractionDigits: 0 }} />} />
+      <div className="flex flex-wrap gap-3">
+        <Button size="sm" onClick={() => setCash((c) => c + 15000)}>
+          Win sprint, $15,000
+        </Button>
+        <Button size="sm" variant="ghost" onClick={() => setCash((c) => Math.max(0, c - 4500))}>
+          Fit turbo kit, $4,500
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+function BountyTile() {
+  const [bounty, setBounty] = useState(142500);
+  return (
+    <div className="grid w-full max-w-xs gap-4">
+      <Stat label="Bounty" value={<RollingNumber value={bounty} />} delta="12,500 per roadblock" tone="good" />
+      <Button size="sm" className="justify-self-start" onClick={() => setBounty((b) => b + 12500)}>
+        Clear roadblock
+      </Button>
+    </div>
+  );
+}
+
 export default function RollingNumberPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<DeployTile />} tileByWorld={{ device: <TakesTile />, flat: <SubscribersTile /> }}>
+    <Page meta={meta} docs={docs} tile={<DeployTile />} tileByWorld={{ device: <TakesTile />, flat: <SubscribersTile />, heat: <BountyTile /> }}>
       <Stage
         title="Deploys and credits"
         tier="responsive"
@@ -231,6 +289,13 @@ export default function RollingNumberPage() {
             caption:
               "Press Slate a take. The take count rises and its last digit rolls up from below; the minutes left on the card fall and their changed digits roll down from above. Only the digits that change move, by half of the travel token, on the responsive tier. The Stat tiles themselves stay still.",
           },
+          heat: {
+            demo: <BountyDemo />,
+            title: "Bounty and roadblocks",
+            code: "BountyDemo",
+            caption:
+              "Press Clear roadblock. Changed digits roll up into place inside Heat's striped telemetry slabs while unchanged columns stay locked.",
+          },
         }}
         caption="Press Deploy. The deploy count rises and its last digit rolls up from below; the credits fall and their changed digits roll down from above. Only the digits that change move, by half of the travel token, on the responsive tier. The Stat tiles themselves stay still."
       >
@@ -242,7 +307,10 @@ export default function RollingNumberPage() {
         tier="responsive"
         align="start"
         code="RevenueDemo"
-        byWorld={{ device: { demo: <SalesDemo />, code: "SalesDemo" } }}
+        byWorld={{
+          device: { demo: <SalesDemo />, code: "SalesDemo" },
+          heat: { demo: <GarageCashDemo />, title: "Garage bankroll", code: "GarageCashDemo" },
+        }}
         caption="Any Intl format rolls: here euros with cents. Characters line up from the right, so when a figure grows a column, the new digit and its comma just appear and the rest roll."
       >
         <RevenueDemo />

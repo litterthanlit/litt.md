@@ -819,6 +819,85 @@ function TextSizeDemo() {
   );
 }
 
+/* ---------- Heat's own (proposals/heat.md): turbo boost and rear downforce tuning ---------- */
+
+const formatBar = (v: number) => `${v.toFixed(1)} bar`;
+
+function TurboBoostDemo() {
+  const [boost, setBoost] = useState(1.4);
+  const [saved, setSaved] = useState<string | null>(null);
+  return (
+    <div className="grid w-full max-w-sm gap-4">
+      <Slider
+        label="Turbo boost"
+        help="Target manifold pressure on the Skyline GT-R street tune."
+        min={0.6}
+        max={2.2}
+        step={0.1}
+        value={boost}
+        onValueChange={setBoost}
+        onValueCommit={(v) => setSaved(`Saved ${formatBar(v)} to street tune.`)}
+        marks={[0.6, 1.4, 2.2]}
+        home={1.4}
+        minLabel="Early spool"
+        maxLabel="Peak boost"
+        formatValue={formatBar}
+      />
+      <div className="flex flex-wrap items-center gap-4">
+        <Button
+          size="sm"
+          disabled={boost === 1.4}
+          onClick={() => {
+            setBoost(1.4);
+            setSaved(`Saved ${formatBar(1.4)} to street tune.`);
+          }}
+        >
+          Reset to 1.4 bar
+        </Button>
+        <p role="status" className="min-h-5 text-small text-fg-subtle">
+          {saved}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function DownforceFormDemo() {
+  const [status, setStatus] = useState<string | null>(null);
+  return (
+    <form
+      className="grid w-full max-w-sm gap-6"
+      onSubmit={(e) => {
+        e.preventDefault();
+        const downforce = new FormData(e.currentTarget).get("downforce");
+        setStatus(`Saved Camden Beach setup. The form sent downforce=${downforce}.`);
+      }}
+    >
+      <Slider
+        name="downforce"
+        label="Rear downforce"
+        help="More wing holds high-speed sweepers; less wing raises top speed."
+        min={40}
+        max={100}
+        step={5}
+        defaultValue={70}
+        marks={[40, 55, 70, 85, 100]}
+        minLabel="Top speed"
+        maxLabel="Corner grip"
+        formatValue={formatQuality}
+      />
+      <div className="grid gap-3">
+        <Button type="submit" className="justify-self-start">
+          Save setup
+        </Button>
+        <p role="status" className="min-h-10 text-small text-fg-subtle">
+          {status}
+        </p>
+      </div>
+    </form>
+  );
+}
+
 export default function SliderPage() {
   return (
     <Page meta={meta} docs={docs} study={study}>
@@ -841,6 +920,13 @@ export default function SliderPage() {
             caption:
               "How loud the headphones play, from −24 dB to +12 dB. Take the cap and push: it follows your hand 1:1 along the slot, and the slot lights in the ink up to it. Press the slot and the cap goes there on the responsive spring, as it does on the arrow keys. A notch marks −12 dB and the ends, and 0 dB, unity, holds the cap a little, so it is easy to find again. The label row says the level with a true minus, and a screen reader says the same. The save note appears on release, from onValueCommit.",
           },
+          heat: {
+            demo: <TurboBoostDemo />,
+            title: "Turbo boost",
+            code: "TurboBoostDemo",
+            caption:
+              "Sixteen crisp dashes in a flat square channel, lighting amber up to the boost pressure. Drag along the channel or step with arrow keys; amber corner brackets snap onto the channel while held or focused.",
+          },
         }}
         caption="Take the cap and push: it follows your hand 1:1, sinks half a pixel and its cast tightens, and pushed fast it leans into the move. Press the slot and the cap goes there on the responsive spring, as it does on the arrow keys. A notch marks each half step, and 1.0x, the default, holds the cap a little, so it is easy to find again. The label row says 1.0x, and a screen reader says the same. The save note appears on release, from onValueCommit."
       >
@@ -856,6 +942,11 @@ export default function SliderPage() {
             demo: <BitrateDemo />,
             code: "BitrateDemo",
             caption: "The slider steps by 32 kbps, snaps as you drag, and sends its name and value with the form, like a native field. Press Export to see what was sent.",
+          },
+          heat: {
+            demo: <DownforceFormDemo />,
+            code: "DownforceFormDemo",
+            caption: "Steps in fives across the 16-dash channel and posts downforce with the setup form like a native control.",
           },
         }}
         caption="The slider steps in fives, snaps as you drag, and sends its name and value with the form, like a native field. Press Export to see what was sent."

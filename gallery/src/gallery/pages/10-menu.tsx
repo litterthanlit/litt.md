@@ -357,6 +357,81 @@ function PostMenu() {
   );
 }
 
+/* ---------- Heat's own (proposals/heat.md): garage vehicle actions and HUD menu ---------- */
+
+const GARAGE_BAYS = ["Street", "Track", "Pursuit", "Storage"];
+
+function GarageCarMenu() {
+  const [last, setLast] = useState("Nothing picked yet");
+  const pick = (what: string) => () => setLast(what);
+  return (
+    <div className="grid w-full max-w-md gap-4">
+      <div className="flex items-center justify-between gap-4 border border-line-strong bg-canvas p-4 pl-5">
+        <div className="grid min-w-0 gap-1">
+          <span className="truncate text-body font-title text-fg">Skyline GT-R · Blacklist #4</span>
+          <span className="truncate text-small text-fg-subtle">Rosewood Garage · tuned 14 min ago</span>
+        </div>
+        <Menu
+          label="Vehicle actions"
+          align="end"
+          trigger={
+            <Button iconOnly variant="ghost" aria-label="Vehicle actions">
+              <MoreIcon />
+            </Button>
+          }
+        >
+          <MenuItem icon={<FileIcon />} shortcut="↵" onSelect={pick("Selected Skyline GT-R for free roam")}>Drive</MenuItem>
+          <MenuItem icon={<CopyIcon />} shortcut="D" onSelect={pick("Duplicated street tune preset")}>Duplicate tune</MenuItem>
+          <MenuItem icon={<ShareIcon />} shortcut="L" onSelect={pick("Copied tune share code")}>Copy tune code</MenuItem>
+          <MenuSub icon={<FolderIcon />} label="Move to bay">
+            {GARAGE_BAYS.map((b) => (
+              <MenuItem key={b} icon={<FolderIcon />} onSelect={pick(`Moved to ${b} bay`)}>{b}</MenuItem>
+            ))}
+          </MenuSub>
+          <MenuSeparator />
+          <MenuItem icon={<ArchiveIcon />} onSelect={pick("Moved Skyline GT-R to storage")}>Send to storage</MenuItem>
+          <MenuItem icon={<TrashIcon />} destructive onSelect={pick("Sold Skyline GT-R")}>Sell vehicle</MenuItem>
+        </Menu>
+      </div>
+      <p className="text-caption font-normal text-fg-subtle" role="status">{last}</p>
+    </div>
+  );
+}
+
+function HudOptionsMenu() {
+  const [layout, setLayout] = useState("minimal");
+  const [minimap, setMinimap] = useState(true);
+  const [splits, setSplits] = useState(true);
+  const [heatBar, setHeatBar] = useState(true);
+  const shown = [minimap && "minimap", splits && "sector splits", heatBar && "pursuit heat"].filter(Boolean).join(", ") || "HUD clear";
+  return (
+    <div className="grid justify-items-start gap-4">
+      <Menu
+        label="HUD options"
+        trigger={
+          <Button icon={<SlidersIcon />} iconRight={<ChevronDownIcon />}>
+            HUD
+          </Button>
+        }
+      >
+        <MenuLabel>Layout</MenuLabel>
+        <MenuRadioGroup value={layout} onValueChange={setLayout}>
+          <MenuRadioItem value="minimal">Minimal</MenuRadioItem>
+          <MenuRadioItem value="full">Full telemetry</MenuRadioItem>
+        </MenuRadioGroup>
+        <MenuSeparator />
+        <MenuLabel>Show on screen</MenuLabel>
+        <MenuCheckboxItem checked={minimap} onCheckedChange={setMinimap}>Minimap</MenuCheckboxItem>
+        <MenuCheckboxItem checked={splits} onCheckedChange={setSplits}>Sector splits</MenuCheckboxItem>
+        <MenuCheckboxItem checked={heatBar} onCheckedChange={setHeatBar}>Pursuit heat</MenuCheckboxItem>
+      </Menu>
+      <p className="text-caption font-normal text-fg-subtle" role="status">
+        {layout} · {shown}
+      </p>
+    </div>
+  );
+}
+
 export default function MenuPage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -366,7 +441,17 @@ export default function MenuPage() {
         size="lg"
         align="start"
         code="ProjectMenu"
-        byWorld={{ flat: { demo: <PostMenu />, title: "Post actions", code: "PostMenu" }, device: { demo: <TakeMenu />, title: "Take actions", code: "TakeMenu" } }}
+        byWorld={{
+          flat: { demo: <PostMenu />, title: "Post actions", code: "PostMenu" },
+          device: { demo: <TakeMenu />, title: "Take actions", code: "TakeMenu" },
+          heat: {
+            demo: <GarageCarMenu />,
+            title: "Garage actions",
+            code: "GarageCarMenu",
+            caption:
+              "Under Heat, the menu opens as an opaque square black slab in a 1px strong edge. Moving down the rows snaps four 8px amber corner brackets onto the active item and turns its label amber.",
+          },
+        }}
         caption="The panel fades and scales from 0.98 out of the trigger's corner, and slides a quarter of the travel. One highlight glides between rows on the responsive tier. Open it with the pointer and nothing is lit until you move; open it with Enter or ArrowDown and the first row lights with a focus ring. Hover Move to for the submenu: it is solid, because glass never sits on glass."
       >
         <ProjectMenu />
@@ -388,6 +473,14 @@ export default function MenuPage() {
             ),
             code: "TakeMenu",
           },
+          heat: {
+            demo: (
+              <DeviceProvider mode="phone">
+                <GarageCarMenu />
+              </DeviceProvider>
+            ),
+            code: "GarageCarMenu",
+          },
         }}
       >
         <DeviceProvider mode="phone">
@@ -400,7 +493,10 @@ export default function MenuPage() {
         tier="responsive"
         align="start"
         code="ViewMenu"
-        byWorld={{ device: { demo: <TakeListViewMenu />, code: "TakeListViewMenu" } }}
+        byWorld={{
+          device: { demo: <TakeListViewMenu />, code: "TakeListViewMenu" },
+          heat: { demo: <HudOptionsMenu />, code: "HudOptionsMenu" },
+        }}
         caption="The check lives in a fixed 16px cell, so toggling an option never shifts a label. The menu stays open while you change several options, and the highlight keeps gliding."
       >
         <ViewMenu />
