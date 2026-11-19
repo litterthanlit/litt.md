@@ -176,6 +176,27 @@ function FrontPageDemo() {
   );
 }
 
+/* ---------- Rack's own (proposals/rack.md): session tempo in BPM ---------- */
+
+function SessionTempoDemo() {
+  const [bpm, setBpm] = useState<number | null>(124);
+  const barSec = bpm ? ((60 / Math.max(1, bpm)) * 4).toFixed(2) : "—";
+  return (
+    <div className="grid w-full max-w-xs gap-3">
+      <NumberField
+        label="Session tempo"
+        unit="BPM"
+        value={bpm}
+        onValueChange={setBpm}
+        min={60}
+        max={180}
+        step={1}
+        help={`4/4 time · 1 bar = ${barSec} s`}
+      />
+    </div>
+  );
+}
+
 export default function NumberFieldPage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -198,6 +219,13 @@ export default function NumberFieldPage() {
             code: "PreRollDemo",
             caption:
               "How much the recorder keeps from before you press REC. Press + or −, hold one down to run, or use the arrow keys in the field. Each stepper is a key in the well beside the glass, and it sinks its 2px while you press it. At 0 and at 10 the key that would go past lies flat. Type a number and leave the field: it is kept between the bounds, put on a whole second and shown with its unit. The line under it says what the pre-roll costs on the card at 48 kHz · 24 bit.",
+          },
+          rack: {
+            demo: <SessionTempoDemo />,
+            title: "Session tempo",
+            code: "SessionTempoDemo",
+            caption:
+              "Under Rack, NumberField is a compact light value box in a 1px control line with square steppers — tap, hold, or type to set BPM from 60 to 180 while bar duration updates underneath.",
           },
         }}
         caption="Press + or −, hold one down to run, or use the arrow keys in the field. Each stepper is a block standing up out of the field, and it sinks while you press it. At 1 and at 50 the stepper that would go past is disabled and lies flat. Type a number and leave the field: it is kept between the bounds, put on a whole seat and shown with its unit. The total under it follows."

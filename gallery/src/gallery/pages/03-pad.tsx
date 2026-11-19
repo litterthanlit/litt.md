@@ -342,9 +342,86 @@ function LetterVoiceTile() {
   );
 }
 
+/* ---------- Rack's own (proposals/rack.md): Auto Filter XY pad and Reverb space ---------- */
+
+const FILTER_DEFAULT: PadValue = { x: 4200, y: 35 };
+const FILTER_X = { label: "Cutoff", min: 200, max: 12000, step: 200, minLabel: "200 Hz", maxLabel: "12 kHz" };
+const FILTER_Y = { label: "Resonance", min: 0, max: 100, step: 5, minLabel: "0%", maxLabel: "100%" };
+const formatFilterXy = ({ x, y }: PadValue) => `${x >= 1000 ? `${(x / 1000).toFixed(1)} kHz` : `${x} Hz`} · ${y}% res`;
+
+function FilterXyDemo() {
+  const [xy, setXy] = useState<PadValue>({ x: 3400, y: 45 });
+  const atDefault = xy.x === FILTER_DEFAULT.x && xy.y === FILTER_DEFAULT.y;
+  return (
+    <div className="grid w-full max-w-sm gap-4">
+      <Pad
+        label="Auto Filter · Synth track"
+        help="Sweep cutoff across X and resonance across Y."
+        x={FILTER_X}
+        y={FILTER_Y}
+        value={xy}
+        onValueChange={setXy}
+        defaultMark={FILTER_DEFAULT}
+        formatValue={formatFilterXy}
+      />
+      <div className="flex items-center justify-between gap-4">
+        <p className="font-mono text-small tabular-nums text-fg-muted">{formatFilterXy(xy)}</p>
+        <Button size="sm" variant="secondary" disabled={atDefault} onClick={() => setXy(FILTER_DEFAULT)}>
+          Reset
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+function FilterXyTile() {
+  const [xy, setXy] = useState<PadValue>({ x: 3400, y: 45 });
+  return (
+    <div className="w-full max-w-sm">
+      <Pad
+        label="Auto Filter · XY"
+        help={formatFilterXy(xy)}
+        x={FILTER_X}
+        y={FILTER_Y}
+        value={xy}
+        onValueChange={setXy}
+        defaultMark={FILTER_DEFAULT}
+        formatValue={formatFilterXy}
+      />
+    </div>
+  );
+}
+
+const REVERB_X = { label: "Decay", min: 1, max: 10, step: 1, minLabel: "1 s", maxLabel: "10 s" };
+const REVERB_Y = { label: "Damping", min: 0, max: 100, step: 5, minLabel: "Dark", maxLabel: "Bright" };
+const formatReverb = ({ x, y }: PadValue) => `${x} s decay · ${y}% bright`;
+
+function ReverbSpaceDemo() {
+  const [space, setSpace] = useState<PadValue>({ x: 4, y: 60 });
+  const [saved, setSaved] = useState<string | null>(null);
+  return (
+    <div className="grid w-full max-w-sm gap-4">
+      <Pad
+        label="Return B · Hall Reverb"
+        help="Decay time and high-frequency damping."
+        x={REVERB_X}
+        y={REVERB_Y}
+        value={space}
+        onValueChange={setSpace}
+        onValueCommit={(v) => setSaved(`Saved Return B: ${formatReverb(v)}.`)}
+        defaultMark={{ x: 3, y: 50 }}
+        formatValue={formatReverb}
+      />
+      <p role="status" className="min-h-5 text-small text-fg-subtle">
+        {saved}
+      </p>
+    </div>
+  );
+}
+
 export default function PadPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<VoiceTile />} tileByWorld={{ device: <AutoLevelTile />, flat: <LetterVoiceTile /> }}>
+    <Page meta={meta} docs={docs} tile={<VoiceTile />} tileByWorld={{ device: <AutoLevelTile />, flat: <LetterVoiceTile />, rack: <FilterXyTile /> }}>
       <Stage
         title="Your voice"
         tier="responsive"
@@ -366,6 +443,13 @@ export default function PadPage() {
             caption:
               "A recorder's auto level: how fast it rides the gain, and the level it aims the peaks at. Press anywhere, drag, or use the arrow keys. The cap and its crosshairs follow at once, with no easing. The tooltip says the value in dB and ms. The dashed circle is the default, and Reset takes the cap back to it. The words under the pad say what the ride does to a take. Only the tooltip fades, on the responsive tier.",
           },
+          rack: {
+            demo: <FilterXyDemo />,
+            title: "Auto Filter XY",
+            code: "FilterXyDemo",
+            caption:
+              "An Ableton-style XY filter pad on the Synth track: sweep cutoff from 200 Hz to 12 kHz horizontally and resonance vertically with 1:1 tracking and tabular readout.",
+          },
         }}
       >
         <VoiceDemo />
@@ -383,6 +467,13 @@ export default function PadPage() {
             code: "NoiseReductionDemo",
             caption:
               "The same pad for noise reduction on a take: how much comes out, from −18 dB to −3 dB, and the band it comes out of, from rumble to air. Tab once to reach it, then the arrows move the cap, and Shift makes them ten steps. The note under it is written on release, from onValueCommit. A screen reader gets two sliders, one for each axis.",
+          },
+          rack: {
+            demo: <ReverbSpaceDemo />,
+            title: "Hall Reverb space",
+            code: "ReverbSpaceDemo",
+            caption:
+              "Decay time against high-frequency damping on Return B. Release writes the committed values via onValueCommit.",
           },
         }}
       >

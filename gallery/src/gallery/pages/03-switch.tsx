@@ -384,6 +384,55 @@ function SiteLockedDemo() {
   );
 }
 
+/* ---------- Rack's own (proposals/rack.md): transport & track routing switches ---------- */
+
+function SessionSwitchesDemo() {
+  const [saved, setSaved] = useState("");
+  const note = (setting: string) => (on: boolean) => setSaved(`${setting} ${on ? "on" : "off"}.`);
+
+  return (
+    <div className="grid w-full max-w-lg gap-3">
+      <p className="text-small font-title text-fg">Session transport</p>
+      <ul className="divide-y divide-line border-y border-line">
+        <li>
+          <Switch align="end" label="Metronome click" defaultChecked onCheckedChange={note("Metronome")} />
+        </li>
+        <li>
+          <Switch align="end" label="Loop brace (Bars 25–33)" defaultChecked onCheckedChange={note("Loop brace")} />
+        </li>
+        <li>
+          <Switch
+            align="end"
+            label="Overdub MIDI"
+            description="Layers new notes onto the active clip without erasing previous takes."
+            onCheckedChange={note("MIDI overdub")}
+          />
+        </li>
+      </ul>
+      <p role="status" className="min-h-5 text-small text-fg-subtle">
+        {saved}
+      </p>
+    </div>
+  );
+}
+
+function TrackArmDemo() {
+  const [armed, setArmed] = useState(true);
+
+  return (
+    <div className="grid w-full max-w-sm gap-3">
+      <Switch
+        tone="accent"
+        align="end"
+        label="Device active · Dub Echo"
+        description={armed ? "Processing Return A in real time." : "Bypassed; signal passes dry."}
+        checked={armed}
+        onCheckedChange={setArmed}
+      />
+    </div>
+  );
+}
+
 export default function SwitchPage() {
   return (
     <Page meta={meta} docs={docs} study={study}>
@@ -406,6 +455,13 @@ export default function SwitchPage() {
             code: "RecordingSettingsDemo",
             caption:
               "Press anywhere on a row, press Space on the switch, or take the cap and drag it across. It snaps through where it stands, and a switch that is on lights its lamp. The switches sit at the row's end, so they line up in one column.",
+          },
+          rack: {
+            demo: <SessionSwitchesDemo />,
+            title: "Session transport",
+            code: "SessionSwitchesDemo",
+            caption:
+              "Under Rack, Switch is a compact flat toggle key that cuts on and off in place on the frame — Metronome, Loop brace, and MIDI overdub.",
           },
         }}
       >
@@ -447,6 +503,12 @@ export default function SwitchPage() {
             title: "Armed",
             code: "ArmDemo",
             caption: "The one switch that is the view's main choice, whether an input is armed. On Device its lamp lights orange when it is on: a hand set it.",
+          },
+          rack: {
+            demo: <TrackArmDemo />,
+            title: "Device active",
+            code: "TrackArmDemo",
+            caption: "Under Rack, the one main toggle lights in Live's warm yellow (--accent) inside its crisp 1px key outline.",
           },
         }}
       >

@@ -82,6 +82,10 @@
       "version": "2026.11.19",
       "hash": "7222ff7d39f40f70"
     },
+    "clip-launcher": {
+      "version": "2026.11.19",
+      "hash": "ac3b189145c28825"
+    },
     "code-block": {
       "version": "2026.11.06",
       "hash": "941606ce76eb027f"
@@ -393,6 +397,10 @@
     "device-progress": {
       "version": "2026.11.19",
       "hash": "031ec1bbc38610c7"
+    },
+    "device-rack": {
+      "version": "2026.11.19",
+      "hash": "1478e2c957d83cf1"
     },
     "device-range-chart": {
       "version": "2026.11.16",
@@ -2314,6 +2322,10 @@
       "version": "2026.11.16",
       "hash": "cebafadff0e0af77"
     },
+    "rack-clip-launcher": {
+      "version": "2026.11.19",
+      "hash": "ac3b189145c28825"
+    },
     "rack-code-block": {
       "version": "2026.11.16",
       "hash": "941606ce76eb027f"
@@ -2357,6 +2369,10 @@
     "rack-details": {
       "version": "2026.11.18",
       "hash": "2f60f5ceec568b06"
+    },
+    "rack-device-rack": {
+      "version": "2026.11.19",
+      "hash": "1478e2c957d83cf1"
     },
     "rack-dialog": {
       "version": "2026.11.16",
@@ -2574,6 +2590,10 @@
       "version": "2026.11.18",
       "hash": "e936fa049ab202dd"
     },
+    "rack-step-sequencer": {
+      "version": "2026.11.19",
+      "hash": "bf66c0859f703ac4"
+    },
     "rack-steps": {
       "version": "2026.11.16",
       "hash": "eb874003dc2c37b0"
@@ -2721,6 +2741,10 @@
     "states": {
       "version": "2026.11.18",
       "hash": "e936fa049ab202dd"
+    },
+    "step-sequencer": {
+      "version": "2026.11.19",
+      "hash": "bf66c0859f703ac4"
     },
     "steps": {
       "version": "2026.11.06",

@@ -898,6 +898,85 @@ function DownforceFormDemo() {
   );
 }
 
+/* ---------- Rack's own (proposals/rack.md): mixer track fader and reverb send ---------- */
+
+const formatRackDb = (v: number) => `${v < 0 ? "−" : v > 0 ? "+" : ""}${Math.abs(v).toFixed(1)} dB`;
+
+function TrackFaderDemo() {
+  const [gain, setGain] = useState(-3);
+  const [saved, setSaved] = useState<string | null>(null);
+  return (
+    <div className="grid w-full max-w-sm gap-4">
+      <Slider
+        label="Drums · Track gain"
+        help="Output level feeding the Master bus on Ghost town."
+        min={-24}
+        max={6}
+        step={0.5}
+        value={gain}
+        onValueChange={setGain}
+        onValueCommit={(v) => setSaved(`Set Drums gain to ${formatRackDb(v)}.`)}
+        marks={[-24, -12, 0, 6]}
+        home={0}
+        minLabel="−24 dB"
+        maxLabel="+6 dB"
+        formatValue={formatRackDb}
+      />
+      <div className="flex flex-wrap items-center gap-4">
+        <Button
+          size="sm"
+          disabled={gain === 0}
+          onClick={() => {
+            setGain(0);
+            setSaved("Reset Drums gain to 0.0 dB unity.");
+          }}
+        >
+          Unity 0.0 dB
+        </Button>
+        <p role="status" className="min-h-5 text-small text-fg-subtle">
+          {saved}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function SendMixFormDemo() {
+  const [status, setStatus] = useState<string | null>(null);
+  return (
+    <form
+      className="grid w-full max-w-sm gap-6"
+      onSubmit={(e) => {
+        e.preventDefault();
+        const send = new FormData(e.currentTarget).get("send");
+        setStatus(`Printed Keys stem with Dub Echo send=${send}%.`);
+      }}
+    >
+      <Slider
+        name="send"
+        label="Send A · Dub Echo"
+        help="Amount of Keys routed to Return A."
+        min={0}
+        max={100}
+        step={5}
+        defaultValue={35}
+        marks={[0, 25, 50, 75, 100]}
+        minLabel="Dry"
+        maxLabel="Wet"
+        formatValue={formatQuality}
+      />
+      <div className="grid gap-3">
+        <Button type="submit" className="justify-self-start">
+          Bounce stem
+        </Button>
+        <p role="status" className="min-h-10 text-small text-fg-subtle">
+          {status}
+        </p>
+      </div>
+    </form>
+  );
+}
+
 export default function SliderPage() {
   return (
     <Page meta={meta} docs={docs} study={study}>
@@ -919,6 +998,13 @@ export default function SliderPage() {
             code: "MonitorLevelDemo",
             caption:
               "How loud the headphones play, from −24 dB to +12 dB. Take the cap and push: it follows your hand 1:1 along the slot, and the slot lights in the ink up to it. Press the slot and the cap goes there on the responsive spring, as it does on the arrow keys. A notch marks −12 dB and the ends, and 0 dB, unity, holds the cap a little, so it is easy to find again. The label row says the level with a true minus, and a screen reader says the same. The save note appears on release, from onValueCommit.",
+          },
+          rack: {
+            demo: <TrackFaderDemo />,
+            title: "Track gain",
+            code: "TrackFaderDemo",
+            caption:
+              "Under Rack, the slider is a flat filled value bar inside a 1px outline: drag anywhere along the bar to set gain on the frame, with 0.0 dB unity marked as home.",
           },
           heat: {
             demo: <TurboBoostDemo />,
@@ -942,6 +1028,11 @@ export default function SliderPage() {
             demo: <BitrateDemo />,
             code: "BitrateDemo",
             caption: "The slider steps by 32 kbps, snaps as you drag, and sends its name and value with the form, like a native field. Press Export to see what was sent.",
+          },
+          rack: {
+            demo: <SendMixFormDemo />,
+            code: "SendMixFormDemo",
+            caption: "Steps in 5% increments across Rack's value bar and posts the Return A send level with the stem bounce form.",
           },
           heat: {
             demo: <DownforceFormDemo />,

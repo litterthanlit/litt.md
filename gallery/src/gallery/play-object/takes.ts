@@ -31,7 +31,7 @@ const SET: Record<Material, string[]> = {
   flat: ["progress", "poll", "streak", "kudos", "button", "gauge", "heatmap", "card", "carousel", "avatar", "popover", "toast"],
   device: ["composer", "agent-indicator", "tool-call", "message", "seven-segment", "tape-progress", "switch", "slider", "gauge", "copy-button", "button", "command-menu"],
   plain: ["form", "input", "select", "checkbox", "button", "table", "details", "callout", "breadcrumb", "pagination", "tabs", "dialog"],
-  rack: ["slider", "curve-editor", "spring-editor", "pad", "time-scrubber", "inspector", "number-field", "color-picker", "segmented", "switch", "button", "range-chart"],
+  rack: ["clip-launcher", "device-rack", "step-sequencer", "slider", "curve-editor", "pad", "time-scrubber", "inspector", "number-field", "segmented", "switch", "button"],
   heat: ["pursuit-meter", "tune-menu", "lap-timer", "menu", "tabs", "segmented", "button", "slider", "stat", "progress", "table", "toast"],
 };
 

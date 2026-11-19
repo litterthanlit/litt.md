@@ -345,6 +345,58 @@ function GarageIconsDemo() {
   );
 }
 
+/* ---------- Rack's own (proposals/rack.md): DAW transport, freeze, and stem export keys ---------- */
+
+function StudioActionDemo() {
+  return (
+    <div className="flex flex-wrap items-center gap-3">
+      <Button variant="primary">Export mix</Button>
+      <Button variant="secondary">Freeze track</Button>
+      <Button variant="ghost">Bypass</Button>
+      <Button disabled>Flatten</Button>
+    </div>
+  );
+}
+
+function DeleteTrackDemo() {
+  return (
+    <div className="flex flex-wrap items-center gap-3">
+      <Button variant="danger" icon={<TrashIcon />}>Delete track</Button>
+      <Button variant="danger" size="sm">Clear automation</Button>
+      <Button variant="danger" disabled>Delete track</Button>
+    </div>
+  );
+}
+
+function RenderMixDemo() {
+  const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    if (!loading) return;
+    const t = setTimeout(() => setLoading(false), 1600);
+    return () => clearTimeout(t);
+  }, [loading]);
+  return (
+    <div className="flex flex-wrap items-center gap-3">
+      <Button variant="primary" loading={loading} onClick={() => setLoading(true)}>Bounce master</Button>
+      <Button loading={loading} onClick={() => setLoading(true)}>Freeze stems</Button>
+    </div>
+  );
+}
+
+function TrackIconsDemo() {
+  return (
+    <div className="flex flex-wrap items-center gap-3">
+      <Button icon={<PlusIcon />}>Add track</Button>
+      <Button><CopyIcon /> Duplicate clip</Button>
+      <Button variant="ghost" iconRight={<ArrowUpRightIcon />}>Open in browser</Button>
+      <Button iconOnly aria-label="Duplicate clip"><CopyIcon /></Button>
+      <Button iconOnly variant="ghost" aria-label="Device settings"><SettingsIcon /></Button>
+      <Button iconOnly variant="ghost" aria-label="Track options"><MoreIcon /></Button>
+      <Button iconOnly variant="ghost" size="sm" aria-label="Delete track"><TrashIcon /></Button>
+    </div>
+  );
+}
+
 export default function ButtonPage() {
   return (
     <Page meta={meta} docs={docs} study={study}>
@@ -365,6 +417,12 @@ export default function ButtonPage() {
             code: "ExportTakeDemo",
             caption:
               "The keys of a recorder's export sheet. Export take is the primary, the ink key: on Device orange is a hand on it, never a key's fill. Add marker is a key in the body's grey, Cancel lies flat on the plate until a press sinks it into a well, and Arm track, disabled, lies flat with no skirt. A press sinks the whole face 2px onto its skirt at once.",
+          },
+          rack: {
+            demo: <StudioActionDemo />,
+            code: "StudioActionDemo",
+            caption:
+              "Ableton-style tool keys: Export mix takes Live's warm yellow inside a crisp 1px key outline; Freeze track is a flat outlined block; Bypass is quiet ghost text; Flatten is disabled until a track is frozen.",
           },
           heat: {
             demo: <RaceActionDemo />,
@@ -395,6 +453,12 @@ export default function ButtonPage() {
             caption:
               "A destructive action is the grey key with its words in red, so the word that names the loss is the only loud thing: Delete take, Erase card. It is never filled red. Disabled, it lies flat and loses the red. The one red key is the confirm of the dialog that asks.",
           },
+          rack: {
+            demo: <DeleteTrackDemo />,
+            code: "DeleteTrackDemo",
+            caption:
+              "A flat outlined Rack key with danger words: Delete track, Clear automation. Never filled red until confirmed inside a dialog.",
+          },
           heat: {
             demo: <SellCarDemo />,
             code: "SellCarDemo",
@@ -410,11 +474,11 @@ export default function ButtonPage() {
         <SizesDemo />
       </Stage>
 
-      <Stage title="Loading" tier="instant" caption="The label stays mounted at opacity 0 while the spinner shows, so the button keeps its exact width. Press either button." code="LoadingDemo" byWorld={{ flat: { demo: <SaveDraftDemo />, code: "SaveDraftDemo" }, device: { demo: <SaveSceneDemo />, code: "SaveSceneDemo" }, heat: { demo: <SaveTuneDemo />, code: "SaveTuneDemo" } }}>
+      <Stage title="Loading" tier="instant" caption="The label stays mounted at opacity 0 while the spinner shows, so the button keeps its exact width. Press either button." code="LoadingDemo" byWorld={{ flat: { demo: <SaveDraftDemo />, code: "SaveDraftDemo" }, device: { demo: <SaveSceneDemo />, code: "SaveSceneDemo" }, rack: { demo: <RenderMixDemo />, code: "RenderMixDemo" }, heat: { demo: <SaveTuneDemo />, code: "SaveTuneDemo" } }}>
         <LoadingDemo />
       </Stage>
 
-      <Stage title="Icons" tier="instant" caption="16px solid icons, 8px from the label. Pass one as the icon prop, or as a child before the label, as shadcn writes it: both sit the same. Icon-only buttons are round and labelled for screen readers. An arrow appears only when a button leaves the site." code="IconsDemo" byWorld={{ flat: { demo: <PostIconsDemo />, code: "PostIconsDemo" }, device: { demo: <TakeIconsDemo />, code: "TakeIconsDemo" }, heat: { demo: <GarageIconsDemo />, code: "GarageIconsDemo" } }}>
+      <Stage title="Icons" tier="instant" caption="16px solid icons, 8px from the label. Pass one as the icon prop, or as a child before the label, as shadcn writes it: both sit the same. Icon-only buttons are round and labelled for screen readers. An arrow appears only when a button leaves the site." code="IconsDemo" byWorld={{ flat: { demo: <PostIconsDemo />, code: "PostIconsDemo" }, device: { demo: <TakeIconsDemo />, code: "TakeIconsDemo" }, rack: { demo: <TrackIconsDemo />, code: "TrackIconsDemo" }, heat: { demo: <GarageIconsDemo />, code: "GarageIconsDemo" } }}>
         <IconsDemo />
       </Stage>
 
