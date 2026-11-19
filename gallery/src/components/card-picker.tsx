@@ -40,6 +40,7 @@ import { byWorld, useFun, useMaterial, useTransition } from "@/motion";
 import { CardPickerDeviceBody } from "@/worlds/device/card-picker";
 import { CardPickerFlatBody } from "@/worlds/flat/card-picker";
 import { CardPickerRackBody } from "@/worlds/rack/card-picker";
+import { CardPickerHeatBody } from "@/worlds/heat/card-picker";
 
 export type CardPickerSize = "sm" | "lg";
 
@@ -284,7 +285,7 @@ export function CardPicker<T extends string>({
   const value = valueProp !== undefined ? valueProp : inner;
   const note = error ?? help;
   const arrange = ARRANGE[Math.min(Math.max(options.length, 2), 6) as 2 | 3 | 4 | 5 | 6];
-  const Body = byWorld(useMaterial(), { press: PressBody, flat: CardPickerFlatBody, device: CardPickerDeviceBody, rack: CardPickerRackBody });
+  const Body = byWorld(useMaterial(), { press: PressBody, flat: CardPickerFlatBody, device: CardPickerDeviceBody, rack: CardPickerRackBody, heat: CardPickerHeatBody });
 
   const cards: CardPickerCard[] = options.map((o, i) => {
     const id = `${auto}-${i}`;

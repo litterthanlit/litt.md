@@ -44,6 +44,7 @@ import { byWorld, useFun, useMaterial } from "@/motion";
 import { SparklineFlatBody } from "@/worlds/flat/sparkline";
 import { SparklineDeviceBody } from "@/worlds/device/sparkline";
 import { SparklineRackBody } from "@/worlds/rack/sparkline";
+import { SparklineHeatBody } from "@/worlds/heat/sparkline";
 
 /** The data hues, in their fixed order (R7): the five, then slots six to eight, Flat's own (elsewhere its teal, rose and amber). */
 export type SparklineHue = "blue" | "amber" | "teal" | "violet" | "rose" | "sky" | "bubblegum" | "sun";
@@ -268,7 +269,7 @@ export function Sparkline({
         : `${label}: from ${fmt(data[0]!)} to ${fmt(data[n - 1]!)}, low ${fmt(Math.min(...data))}, high ${fmt(Math.max(...data))}` +
           (goal === undefined ? "" : `, baseline ${fmt(goal)}`));
 
-  const Body = byWorld(useMaterial(), { press: PressBody, flat: SparklineFlatBody, device: SparklineDeviceBody, rack: SparklineRackBody });
+  const Body = byWorld(useMaterial(), { press: PressBody, flat: SparklineFlatBody, device: SparklineDeviceBody, rack: SparklineRackBody, heat: SparklineHeatBody });
 
   return (
     <Body

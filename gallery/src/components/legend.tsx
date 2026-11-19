@@ -45,6 +45,7 @@ import { byWorld, useMaterial } from "@/motion";
 import { LegendFlatBody } from "@/worlds/flat/legend";
 import { LegendDeviceBody } from "@/worlds/device/legend";
 import { LegendRackBody } from "@/worlds/rack/legend";
+import { LegendHeatBody } from "@/worlds/heat/legend";
 
 /** The data hues, in their fixed order (R7): the five, then slots six to eight, Flat's own (elsewhere its teal, rose and amber). The same names as the Chart's and the Breakdown's. */
 export type LegendHue = "blue" | "amber" | "teal" | "violet" | "rose" | "sky" | "bubblegum" | "sun";
@@ -254,7 +255,7 @@ export function Legend({ label, items, hidden: hiddenProp, defaultHidden = [], o
     commit([...others, ...items.map((item) => item.name).filter((n) => n !== name)]);
   };
 
-  const Body = byWorld(material, { press: PressBody, flat: LegendFlatBody, device: LegendDeviceBody, rack: LegendRackBody });
+  const Body = byWorld(material, { press: PressBody, flat: LegendFlatBody, device: LegendDeviceBody, rack: LegendRackBody, heat: LegendHeatBody });
 
   return (
     <Body

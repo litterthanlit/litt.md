@@ -180,15 +180,29 @@ const FLAT_PANEL =
   "in-[[data-material=flat]]:[--glass-bg:var(--surface-1)] in-[[data-material=flat]]:[--glass-border:transparent] " +
   "in-[[data-material=flat]]:[--highlight:0_0_0_0_transparent] in-[[data-material=flat]]:[--glass-blur:0px]";
 
+/** Heat: a solid square black slab in a crisp 1px line, zero glass blur. */
+const HEAT_PANEL =
+  "in-[[data-material=heat]]:[--glass-bg:var(--canvas)] in-[[data-material=heat]]:[--glass-border:var(--line-strong)] " +
+  "in-[[data-material=heat]]:[--highlight:0_0_0_0_transparent] in-[[data-material=heat]]:[--glass-blur:0px]";
+
+/* Heat: four 8px amber corner brackets and a flat dark block on the highlighted menu row. */
+const HEAT_ROW =
+  "in-[[data-material=heat]]:rounded-none in-[[data-material=heat]]:font-title " +
+  "in-[[data-material=heat]]:data-[highlighted]:bg-block in-[[data-material=heat]]:data-[highlighted]:bg-no-repeat " +
+  "in-[[data-material=heat]]:data-[highlighted]:[background-image:linear-gradient(var(--accent-text),var(--accent-text)),linear-gradient(var(--accent-text),var(--accent-text)),linear-gradient(var(--accent-text),var(--accent-text)),linear-gradient(var(--accent-text),var(--accent-text)),linear-gradient(var(--accent-text),var(--accent-text)),linear-gradient(var(--accent-text),var(--accent-text)),linear-gradient(var(--accent-text),var(--accent-text)),linear-gradient(var(--accent-text),var(--accent-text))] " +
+  "in-[[data-material=heat]]:data-[highlighted]:[background-size:8px_2px,2px_8px,8px_2px,2px_8px,8px_2px,2px_8px,8px_2px,2px_8px] " +
+  "in-[[data-material=heat]]:data-[highlighted]:[background-position:left_top,left_top,right_top,right_top,left_bottom,left_bottom,right_bottom,right_bottom]";
+
 /* ------------------------------------------------------------------ rows */
 
 const row =
   "group/row relative flex h-control-md w-full scroll-my-1 cursor-pointer select-none items-center gap-3 rounded-control px-3 text-small outline-none in-[[data-material=flat]]:rounded-[calc(var(--radius-surface)-4px)] " +
+  HEAT_ROW + " " +
   "[-webkit-tap-highlight-color:transparent] " +
   "transition-colors duration-(--dur-instant) ease-litt data-[disabled]:pointer-events-none data-[disabled]:text-fg-disabled " +
   "pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_7%,transparent)] in-[[data-material=plain]]:pointer-coarse:active:bg-transparent forced-colors:data-[highlighted]:[forced-color-adjust:none] forced-colors:data-[highlighted]:text-[HighlightText] forced-colors:data-[highlighted]:**:text-[HighlightText]";
 const tone =
-  "text-fg-muted data-[highlighted]:text-fg pointer-coarse:active:text-fg in-[[data-material=plain]]:data-[state=checked]:text-fg";
+  "text-fg-muted data-[highlighted]:text-fg pointer-coarse:active:text-fg in-[[data-material=plain]]:data-[state=checked]:text-fg in-[[data-material=heat]]:data-[highlighted]:text-accent-text";
 const toneDanger = "text-danger";
 /** The group label row, and the caption that names a submenu's list. */
 const labelRow = "flex h-control-sm items-center px-3 text-caption text-fg-subtle litt-legend";
@@ -835,8 +849,9 @@ export function MenuPanel({
   };
   const surface =
     "relative z-50 min-w-60 rounded-surface outline-none in-[[data-material=flat]]:[&>[data-ring]]:rounded-[calc(var(--radius-surface)-4px)] " +
-    /* Plain: the glide draws no wash and no focus ring; the brackets on the row are the highlight (forced colors keeps its Highlight). */
+    /* Plain and Heat: the glide draws no wash and no focus ring; the brackets on the row are the highlight (forced colors keeps its Highlight). */
     "in-[[data-material=plain]]:[&>[data-ring]]:bg-transparent in-[[data-material=plain]]:[&>[data-ring]]:shadow-none in-[[data-material=plain]]:forced-colors:[&>[data-ring]]:bg-[Highlight] " +
+    "in-[[data-material=heat]]:[&>[data-ring]]:bg-transparent in-[[data-material=heat]]:[&>[data-ring]]:shadow-none in-[[data-material=heat]]:forced-colors:[&>[data-ring]]:bg-[Highlight] " +
     P.origin +
     " data-[state=closed]:pointer-events-none " +
     (drilling ? "" : "p-1 ");
@@ -849,7 +864,9 @@ export function MenuPanel({
       className={
         "relative " +
         P.fit +
-        " overflow-x-hidden overflow-y-auto overscroll-contain rounded-surface in-[[data-material=plain]]:[&>[data-ring]]:bg-transparent in-[[data-material=plain]]:[&>[data-ring]]:shadow-none in-[[data-material=plain]]:forced-colors:[&>[data-ring]]:bg-[Highlight]"
+        " overflow-x-hidden overflow-y-auto overscroll-contain rounded-surface " +
+        "in-[[data-material=plain]]:[&>[data-ring]]:bg-transparent in-[[data-material=plain]]:[&>[data-ring]]:shadow-none in-[[data-material=plain]]:forced-colors:[&>[data-ring]]:bg-[Highlight] " +
+        "in-[[data-material=heat]]:[&>[data-ring]]:bg-transparent in-[[data-material=heat]]:[&>[data-ring]]:shadow-none in-[[data-material=heat]]:forced-colors:[&>[data-ring]]:bg-[Highlight]"
       }
     >
       {glide.highlight}
@@ -880,7 +897,7 @@ export function MenuPanel({
           >
             <motion.div {...motionProps} className={
               surface +
-              "bg-surface-2 shadow-float in-[[data-material=flat]]:bg-surface-1 in-[[data-material=plain]]:bg-canvas in-[[data-material=plain]]:shadow-[0_0_0_1px_var(--line-control)]"
+              "bg-surface-2 shadow-float in-[[data-material=flat]]:bg-surface-1 in-[[data-material=plain]]:bg-canvas in-[[data-material=plain]]:shadow-[0_0_0_1px_var(--line-control)] in-[[data-material=heat]]:bg-canvas in-[[data-material=heat]]:shadow-[0_0_0_1px_var(--line-strong)]"
             }>
               {body}
             </motion.div>
@@ -904,7 +921,7 @@ export function MenuPanel({
             loop
             {...placedProp}
           >
-            <motion.div {...motionProps} className={surface + "litt-glass " + FLAT_PANEL}>
+            <motion.div {...motionProps} className={surface + "litt-glass " + FLAT_PANEL + " " + HEAT_PANEL}>
               {body}
             </motion.div>
           </P.Content>

@@ -32,6 +32,7 @@ import { CheckIcon } from "@/components/icons";
 import { OptionPickerDeviceBody } from "@/worlds/device/option-picker";
 import { OptionPickerFlatBody } from "@/worlds/flat/option-picker";
 import { OptionPickerRackBody } from "@/worlds/rack/option-picker";
+import { OptionPickerHeatBody } from "@/worlds/heat/option-picker";
 
 /** One value of an option, as a product lists it. */
 export type OptionValue = {
@@ -247,7 +248,7 @@ export function OptionPicker({
   const responsive = useTransition("responsive");
   const fun = useFun();
   const glide = fun ? fun.glide : responsive;
-  const Body = byWorld(useMaterial(), { press: PressBody, flat: OptionPickerFlatBody, device: OptionPickerDeviceBody, rack: OptionPickerRackBody });
+  const Body = byWorld(useMaterial(), { press: PressBody, flat: OptionPickerFlatBody, device: OptionPickerDeviceBody, rack: OptionPickerRackBody, heat: OptionPickerHeatBody });
   const [inner, setInner] = useState<string | undefined>(defaultValue ?? values[0]?.value);
   const value = valueProp ?? inner;
   const picked = values.find((v) => v.value === value);

@@ -47,6 +47,7 @@ import { MinusIcon, PlusIcon } from "@/components/icons";
 import { NumberFieldDeviceBody } from "@/worlds/device/number-field";
 import { NumberFieldFlatBody } from "@/worlds/flat/number-field";
 import { NumberFieldRackBody } from "@/worlds/rack/number-field";
+import { NumberFieldHeatBody } from "@/worlds/heat/number-field";
 
 export type NumberFieldSize = "sm" | "md" | "lg";
 
@@ -435,7 +436,7 @@ export function NumberField({
     };
   };
 
-  const Body = byWorld(useMaterial(), { press: PressBody, flat: NumberFieldFlatBody, device: NumberFieldDeviceBody, rack: NumberFieldRackBody });
+  const Body = byWorld(useMaterial(), { press: PressBody, flat: NumberFieldFlatBody, device: NumberFieldDeviceBody, rack: NumberFieldRackBody, heat: NumberFieldHeatBody });
   const valueText = value === null ? undefined : `${show(value)}${unit ? ` ${unit}` : ""}`;
 
   return (
