@@ -2592,7 +2592,7 @@
     },
     "rack-step-sequencer": {
       "version": "2026.11.19",
-      "hash": "bf66c0859f703ac4"
+      "hash": "da8c1f3d4a74af52"
     },
     "rack-steps": {
       "version": "2026.11.16",
@@ -2744,7 +2744,7 @@
     },
     "step-sequencer": {
       "version": "2026.11.19",
-      "hash": "bf66c0859f703ac4"
+      "hash": "da8c1f3d4a74af52"
     },
     "steps": {
       "version": "2026.11.06",
