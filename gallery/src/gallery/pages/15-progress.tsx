@@ -130,6 +130,52 @@ function PictureUploadDemo() {
   );
 }
 
+/* ---------- Flat heatwave (v1.21): how far along you are is warmth ---------- */
+
+const PICTURES = 12;
+
+/** A series filling up, a picture at a time: each one done lights its segment at its place on the sunset. */
+function SpringSeriesDemo() {
+  const [done, setDone] = useState(7);
+  const full = done >= PICTURES;
+  return (
+    <div className="grid w-full max-w-sm gap-6">
+      <Progress
+        label="Spring series"
+        value={done}
+        max={PICTURES}
+        segments={PICTURES}
+        valueText={`${done} of ${PICTURES} pictures`}
+        status={full ? "done" : "active"}
+        message={full ? "All twelve are in. The series is ready to post." : "Twelve pictures from the coast."}
+      />
+      <div className="flex gap-2">
+        <Button size="sm" variant="secondary" disabled={full} onClick={() => setDone((d) => Math.min(PICTURES, d + 1))}>
+          Add a picture
+        </Button>
+        <Button size="sm" variant="ghost" onClick={() => setDone(7)}>
+          Reset
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+/** Flat's states: a picture going up warms as it fills, a series lights segment by segment, failed keeps danger. */
+function FlatStatesDemo() {
+  return (
+    <div className="grid w-full max-w-sm gap-8">
+      <PictureUploadDemo />
+      <Progress label="Uploading dusk-tide.jpg" message="Waiting for the first bytes." />
+      <Progress label="Uploading sprig.jpg" value={2.4} max={8} valueText="2.4 of 8 MB" />
+      <Progress label="Uploading silk.jpg" value={6.8} max={8} valueText="6.8 of 8 MB" />
+      <Progress label="Spring series" value={3} max={12} segments={12} valueText="3 of 12 pictures" />
+      <Progress label="Spring series" value={12} max={12} segments={12} status="done" />
+      <Progress label="Uploading red-sun.jpg" value={3.1} max={8} status="failed" message="The connection dropped. Try it again." />
+    </div>
+  );
+}
+
 export default function ProgressPage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -138,7 +184,15 @@ export default function ProgressPage() {
         tier="instant"
         align="start"
         code="UploadDemo"
-        byWorld={{ flat: { demo: <PictureUploadDemo />, title: "A picture for a post", code: "PictureUploadDemo" } }}
+        byWorld={{
+          flat: {
+            demo: <SpringSeriesDemo />,
+            title: "A series, a picture at a time",
+            code: "SpringSeriesDemo",
+            caption:
+              "Press Add a picture. Each picture done lights its segment at its own place on Flat's sunset, gold to plum in light and plum to gold in dark, so the series warms as it nears the end: in Flat, how far along you are is warmth. A segment lights with a color fade on the instant tier, at once under reduced motion. The reading says the count in words, since the first steps stand only about 2:1 off the slot. At twelve it says Done.",
+          },
+        }}
         caption="Press Upload. For a moment nothing is known, so the slot is empty and the reading says Waiting; then it fills as the bytes go, a transform on the instant tier, and the reading counts in tabular figures. The fill sits down in the channel: the top wall's shade and the lit lower wall are drawn over it. At the end the slot is full, the reading says Done, and a screen reader hears it once."
       >
         <UploadDemo />
@@ -149,6 +203,15 @@ export default function ProgressPage() {
         tier="instant"
         align="start"
         code="StatesDemo"
+        byWorld={{
+          flat: {
+            demo: <FlatStatesDemo />,
+            title: "A picture going up, and every state",
+            code: "FlatStatesDemo",
+            caption:
+              "Press Upload: the fill is one color, the sunset's step at its value, so it warms as the bytes go and is the deepest step when done, never a gradient. A series lights segment by segment. Waiting is an empty slot and a word. Failed keeps the fill where it stopped in the danger color and says Failed.",
+          },
+        }}
         caption="Waiting, running, done and failed. Waiting is an empty slot and a word, with nothing moving. Failed keeps the fill where it stopped, in the danger color, says Failed, and the message says what to do."
       >
         <StatesDemo />

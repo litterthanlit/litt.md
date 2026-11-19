@@ -707,10 +707,12 @@ The frame around an app's pages: a sidebar for moving between them and a main ar
 
 ## Progress
 Work that is happening now, such as an upload or an import, with a known end. A quantity against a limit that stands still is a Meter (Chart).
-- **Anatomy:** the Meter's lockup: the label at the small size in `--fg`, the reading at the end in tabular figures at the caption size in `--fg-subtle`, and a slot cut into the page (R3: what fills), 8px tall at `--radius-control`: the floor `--slot`, the done part in it in `--fg`, and the walls (`--slot-shade`) drawn over the fill, so the fill sits down in the channel. Never the accent and never a data hue. The fill's end is square, since a radius squashes under its scale.
+- **Anatomy:** the Meter's lockup: the label at the small size in `--fg`, the reading at the end in tabular figures at the caption size in `--fg-subtle`, and a slot cut into the page (R3: what fills), 8px tall at `--radius-control`: the floor `--slot`, the done part in it in `--fg`, and the walls (`--slot-shade`) drawn over the fill, so the fill sits down in the channel. Never the accent, and never a data hue but under Flat (below). The fill's end is square, since a radius squashes under its scale.
+- **Segments:** work counted in whole things (twelve pictures, five steps) takes `segments`: the slot is cut into one slot per thing, 4px apart, and a segment lights in the fill once its share is done, never half.
+- **Flat heatwave (v1.21):** under Flat how far along you are is warmth. The fill walks the sunset ramp (`--data-seq-1` to `4`), read off its four steps as a ramped Gauge's ticks are, blended in OKLab: each done segment lights at its own place on the ramp, and a continuous fill is one colour, the step at its value, so it warms as it grows and done is the deepest step. Never a gradient (R1, R7). The first steps stand about 2:1 off the slot, so the reading says the value in words (R5). Failed keeps `--danger`. Every other world keeps the ink.
 - **Ending:** done fills the slot and the reading says Done; failed keeps the fill where it stopped in `--danger` (a status mark, R7) and says Failed, with a message under it that says what to do. The end is announced once in a polite status.
 - **Not known yet:** an empty slot and the reading in words ("Waiting"). Nothing sweeps, pulses or shimmers; a wait with no end in sight is the loading state of the button that started it.
-- **Motion:** the done part is a full-width band scaled from the left, a transform on the instant tier. Under reduced motion it jumps.
+- **Motion:** the done part is a full-width band scaled from the left, a transform on the instant tier; under Flat its colour fades to the new step on the same tier, and a segment lights with a colour fade on the instant tier. Under reduced motion it jumps.
 - **Accessibility:** `role="progressbar"`, named by the label, `aria-valuenow` while known and the reading as `aria-valuetext`.
 
 ## Tape progress

@@ -8,6 +8,11 @@ To update an item, read the entries since your version, then reinstall it with `
 
 Flat's leftovers (plans/024, Flat): a list's card can show a picture as its cover, so a site's posts show their pictures in place of drawn wireframes. Nothing changes for a card that passes `cover` or nothing.
 
+- **added** `progress`, `press-progress`, `flat-progress`, `device-progress`, `plain-progress`, `rack-progress`, `heat-progress`: `segments` cuts the slot into one segment per thing counted (twelve pictures), each its own slot, 4px apart; a segment lights once its share is done, with a color fade on the instant tier. Leave it out for one continuous slot, as before.
+- **changed** `progress`, `flat-progress`: Flat heatwave (Nick, on the canvas's option C: "C is amazing tho. Flat heatwave is the move"). Under Flat how far along you are is warmth: the fill walks the sunset ramp (`--litt-data-seq-1` to `4`), read off its four steps as a ramped Gauge's ticks are. A continuous fill is one color, the step at its value, so it warms as it grows; each done segment lights at its own place on the ramp. Failed keeps `--litt-danger`. Props are unchanged, and nothing changes outside Flat: `press-progress`, `device-progress`, `plain-progress`, `rack-progress` and `heat-progress` keep the ink.
+
+Earlier the same day, Flat's covers.
+
 - **added** `list`, `press-list`, `flat-list`, `device-list`, `plain-list`, `rack-list`, `heat-list`: a project's `image` (`src`, an optional `srcSet`, and `alt`) is its card's cover, in place of a drawn `cover`: it fills the cover's 8:5 box, cropped to it, and loads lazily. Existing projects are unchanged.
 
 ## 2026-11-18 · Flat's ground

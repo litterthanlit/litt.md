@@ -744,6 +744,25 @@ Phase 5's leftovers that need no call from Nick. R10 for each: easy first, then 
   tokens.css (`--flat-sheet`, through `evolve.md`), so a host's Flat can lift a panel the same way. Dark paper on the
   ground (1.1:1) is unchanged. Still left: the wall's order, a data part in the set, something moving on the first screen.
 
+### Flat heatwave (Progress) (done, 2026-11-19)
+
+Nick, on the feel canvas's option C: "C is amazing tho. Flat heatwave is the move". In Flat, how far along you are is
+warmth. A taste change through `evolve.md` (journal, profile v1.21, R6 and R7, Flat's colour table, `material.md`,
+`components.md`'s Progress), Flat and Progress only.
+
+- [x] `segments` on Progress's contract (every world): one slot per thing counted, a segment lit once its share is done.
+      Outside Flat it lights in the ink, as before.
+- [x] Under Flat the fill walks the sunset (`byWorld` in `progress.tsx`, as the Gauge's `ramp`, same mapping): each
+      done segment at its place on the ramp; a continuous fill one colour, the step at its value, never a gradient
+      (R1, R7). Failed keeps danger. A colour fade on the instant tier; at once under reduced motion.
+      *Easy: the reading says "7 of 12 pictures" in words, so the first steps' 2:1 never carries the value. Felt: the
+      series warms as it nears the end.*
+- [x] `#flat/progress`: the lead and its tile are Spring series, 7 of 12 pictures, with Add a picture; Variants hold
+      the picture upload (warming as it goes) and every state. Other worlds' demos unchanged. Option C stays on the
+      canvas, marked shipped.
+- Checked: `#press/progress`, `#device/progress`, `#heat/progress`, Variants open, light and dark, pixel-equal to
+  before but the docs table's new `segments` row.
+
 ## The order of work inside a world
 
 The same five phases for every world. A phase is not started until the one before it is committed.

@@ -267,9 +267,9 @@ const OPTIONS: { title: string; feel: string; bends: string; render: () => React
     render: () => <LikeHeart />,
   },
   {
-    title: "C · Progress that walks the sunset",
+    title: "C · Progress that walks the sunset (shipped: Flat heatwave)",
     feel: "Getting through a series feels warmer as it nears the end: each picture done lights its segment at its place on the sunset ramp, as the Gauge's ticks do.",
-    bends: "Progress's own rule (one quantity: the ink, never a data hue) and R6's 'what fills is the ink'.",
+    bends: "Progress's own rule (one quantity: the ink, never a data hue) and R6's 'what fills is the ink'. Shipped as Flat heatwave (v1.21; Nick: \"C is amazing tho. Flat heatwave is the move\"): #flat/progress, where a series lights segment by segment and a continuous fill takes the step at its value.",
     render: () => <SunsetProgress />,
   },
   {
@@ -310,7 +310,7 @@ export function FlatFeelIntro() {
     <section className="grid max-w-[72ch] gap-3">
       <h2 className="text-h3 font-title text-fg">Flat, full of feel: options for Nick</h2>
       <p className="text-small text-fg-muted">
-        Shipped inside the calls: the sunset ramp (v1.20) on the Heatmap, Cohort grid and Gauge, which now walks every step; slots six to eight on every data part; a live Subscribe on #flat/button where you join the readers on the 0.28 spring; and #flat/about in Flat's voice with Candy on its first screen. The six below would each bend an approved call, so they wait for you. Every colour is a shipping token; nothing moves without a hand.
+        Shipped inside the calls: the sunset ramp (v1.20) on the Heatmap, Cohort grid and Gauge, which now walks every step; slots six to eight on every data part; a live Subscribe on #flat/button where you join the readers on the 0.28 spring; and #flat/about in Flat's voice with Candy on its first screen. The six below would each bend an approved call, so they wait for you; C has shipped as Flat heatwave (v1.21), Flat's Progress. Every colour is a shipping token; nothing moves without a hand.
       </p>
     </section>
   );
