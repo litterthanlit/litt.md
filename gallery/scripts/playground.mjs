@@ -52,8 +52,8 @@ const get = (k, d) => { const i = args.indexOf(`--${k}`); return i >= 0 ? args[i
 const dist = path.resolve(get("dist", "dist"));
 const selfTest = args.includes("--self-test");
 const greyscale = get("greyscale", null);
-/* The worlds that have an object of their own: one more per object drawn (plans/018, phase 2). */
-const OBJECTS = ["flat", "device"];
+/* Every world has an object of its own (plans/018, phase 2 & 4). */
+const OBJECTS = ["press", "flat", "device", "plain", "rack", "heat"];
 /* A string only the recorder's body ships, so --self-test can keep that chunk from loading. */
 const RECORDER_MARK = "data-recorder-dial";
 
