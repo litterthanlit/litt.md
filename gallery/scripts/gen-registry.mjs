@@ -823,6 +823,22 @@ const COPY = {
     description: "A multi-tap reader cheer pill that pops on Flat's 0.28 bounce, warms a row of sunset heatwave dots and floats a +1 badge on each tap. A Flat part.",
     docs: "Needs data-material=\"flat\" on <html>. Pass count and subject; tapping again at the cap clears your taps. Under reduced motion nothing bounces or floats and the count updates at once.",
   },
+  /* Heat's own parts (proposals/heat.md; taste/litt-principles.md, Heat): each needs data-material="heat" on <html>; its page says so. */
+  "pursuit-meter": {
+    title: "Pursuit meter",
+    description: "Heat's pursuit condition and bounty readout on a striped black slab framed by corner brackets, with a 16-dash amber meter and status in words. A Heat part.",
+    docs: "Needs data-material=\"heat\" on <html>. Pass level from 1 to 5 and bounty; Cooldown and Raise heat step the condition and announce it once.",
+  },
+  "lap-timer": {
+    title: "Lap timer",
+    description: "A street-racing lap clock and sector split slab framed by corner brackets and hazard stripes, with amber-bracketed sector rows and Start, Record split and Reset keys. A Heat part.",
+    docs: "Needs data-material=\"heat\" on <html>. Starts paused with reference splits; press Start lap to run the clock or Record split to log the next sector.",
+  },
+  "tune-menu": {
+    title: "Tune menu",
+    description: "A keyboard-driven street-racing tuning and settings slab with hazard-stripe bands, amber corner brackets and chevrons on the active row, dashed balance bars and keycap hints. A Heat part.",
+    docs: "Needs data-material=\"heat\" on <html>. Drive rows with Up and Down arrows, tune levels or cycle presets with Left and Right arrows, or drag along any dash bar.",
+  },
   litt: {
     title: "litt tokens",
     description: "litt.md's colors, type, space, shape, depth and motion as CSS variables, Tailwind names and the litt-glass, litt-raised, litt-trim, litt-lit and litt-grain classes. Every name starts with litt, so none of it touches your own.",

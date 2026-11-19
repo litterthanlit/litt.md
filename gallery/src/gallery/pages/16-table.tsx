@@ -1416,6 +1416,62 @@ function IssuesDemo() {
   );
 }
 
+/* ---------- Heat's own (proposals/heat.md): street-racing standings scoreboard ---------- */
+
+type HeatDriver = {
+  id: string;
+  pos: string;
+  driver: string;
+  team: string;
+  hue: "blue" | "amber" | "teal" | "violet" | "rose";
+  status: Tone;
+  word: string;
+  gap: string;
+  best: string;
+};
+
+const HEAT_STANDINGS: HeatDriver[] = [
+  { id: "h1", pos: "1", driver: "Rin Vale", team: "Northline", hue: "blue", status: "success", word: "Leader", gap: "—", best: "1:11.402" },
+  { id: "h2", pos: "2", driver: "Kofi Osei", team: "Kestrel", hue: "amber", status: "neutral", word: "Track", gap: "+1.218 s", best: "1:11.655" },
+  { id: "h3", pos: "3", driver: "Ida Marr", team: "Halcyon", hue: "teal", status: "warning", word: "Pit", gap: "+3.904 s", best: "1:11.981" },
+  { id: "h4", pos: "4", driver: "Theo Dunn", team: "Vantage", hue: "violet", status: "neutral", word: "Track", gap: "+6.370 s", best: "1:12.118" },
+  { id: "h5", pos: "–", driver: "Mei Sato", team: "Redline", hue: "rose", status: "danger", word: "Out", gap: "—", best: "1:12.600" },
+];
+
+function RaceStandingsDemo() {
+  return (
+    <Table label="Standings, lap 14 of 20" entrance className="max-h-96 max-w-3xl">
+      <TableHeader>
+        <TableRow>
+          <TableHead numeric>Pos</TableHead>
+          <TableHead>Driver</TableHead>
+          <TableHead>Status</TableHead>
+          <TableHead numeric>Gap</TableHead>
+          <TableHead numeric>Best lap</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {HEAT_STANDINGS.map((d) => (
+          <TableRow key={d.id}>
+            <TableCell numeric>{d.pos}</TableCell>
+            <TableCell primary>
+              <span className="flex min-w-0 items-center gap-2">
+                <Tag hue={d.hue}>{d.team}</Tag>
+                <span className="truncate">{d.driver}</span>
+              </span>
+            </TableCell>
+            <TableCell>
+              <Status tone={d.status}>{d.word}</Status>
+            </TableCell>
+            <TableCell numeric>{d.gap}</TableCell>
+            <TableCell numeric>{d.best}</TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  );
+}
+
 export default function TablePage() {
   const [deployKey, replayDeploys] = useReplay();
   const [invoiceKey, resetInvoices] = useReplay();
@@ -1429,7 +1485,17 @@ export default function TablePage() {
         size="lg"
         align="start"
         code="DeployHistoryDemo"
-        byWorld={{ flat: { demo: <IssuesDemo key={deployKey} />, title: "Every issue", code: "IssuesDemo" }, device: { demo: <TakeLogDemo key={deployKey} />, title: "Take log", code: "TakeLogDemo" } }}
+        byWorld={{
+          flat: { demo: <IssuesDemo key={deployKey} />, title: "Every issue", code: "IssuesDemo" },
+          device: { demo: <TakeLogDemo key={deployKey} />, title: "Take log", code: "TakeLogDemo" },
+          heat: {
+            demo: <RaceStandingsDemo key={deployKey} />,
+            title: "Standings, lap 14",
+            code: "RaceStandingsDemo",
+            caption:
+              "Heat's scoreboard slab: square black rows under a diagonal hazard-stripe header band, team badges in data hues, tabular gaps and lap splits, and status words for Leader, Pit and Out.",
+          },
+        }}
         onReplay={replayDeploys}
         caption="Rows fade in and rise from the travel token's distance to rest, on the expressive tier. Row n waits n times the stagger token, and the cascade stops counting at six. It is this page's one expressive moment. The header is sticky inside the table's region, so scroll the rows and it stays. Hover fills a row and nothing moves; on a touch screen the row you hold fills instead. Press Replay to watch it again."
       >

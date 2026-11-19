@@ -35,6 +35,7 @@ import { Progress } from "@/components/progress";
 import { byWorld, useDevice, useMaterial } from "@/motion";
 import { FileDropDeviceBody, FileRowDeviceBody } from "@/worlds/device/file-drop";
 import { FileDropFlatBody, FileRowFlatBody } from "@/worlds/flat/file-drop";
+import { FileDropHeatBody, FileRowHeatBody } from "@/worlds/heat/file-drop";
 import { FileDropRackBody, FileRowRackBody } from "@/worlds/rack/file-drop";
 
 /** 2048 to "2.0 KB": the size in the units people read. */
@@ -126,7 +127,7 @@ export function FileDrop({ label, accept, maxSize, multiple = true, onFiles, onR
       if (!disabled && !(e.target as Element).closest("button")) input.current?.click();
     },
   };
-  const Body = byWorld(useMaterial(), { press: PressBody, flat: FileDropFlatBody, device: FileDropDeviceBody, rack: FileDropRackBody });
+  const Body = byWorld(useMaterial(), { press: PressBody, flat: FileDropFlatBody, device: FileDropDeviceBody, rack: FileDropRackBody, heat: FileDropHeatBody });
 
   return (
     <div className={"grid grid-cols-[minmax(0,1fr)] gap-3 " + className}>
@@ -254,6 +255,7 @@ const listLook = {
   flat: "gap-1 ",
   device: "gap-2 ",
   rack: "overflow-hidden rounded-surface border border-line-strong bg-surface-1 [&>li:last-child]:border-b-0 ",
+  heat: "overflow-hidden rounded-none border border-line-strong bg-canvas ",
 };
 
 /** The files that were added, one row each. Name it, so a screen reader knows whose files these are. */
@@ -284,7 +286,7 @@ export type FileRowBodyProps = FileRowProps & { uploading: boolean };
 /** One file in a FileList: its name and size, a Progress rail while it uploads, why it failed, Retry and Remove. */
 export function FileRow(props: FileRowProps) {
   const uploading = props.progress !== undefined && props.progress < 100 && !props.error;
-  const Body = byWorld(useMaterial(), { press: PressRowBody, flat: FileRowFlatBody, device: FileRowDeviceBody, rack: FileRowRackBody });
+  const Body = byWorld(useMaterial(), { press: PressRowBody, flat: FileRowFlatBody, device: FileRowDeviceBody, rack: FileRowRackBody, heat: FileRowHeatBody });
   return <Body {...props} uploading={uploading} />;
 }
 

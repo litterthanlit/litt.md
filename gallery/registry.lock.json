@@ -76,7 +76,7 @@
     },
     "chart": {
       "version": "2026.11.19",
-      "hash": "0e67a54970c6d268"
+      "hash": "30930e2edf495be3"
     },
     "checkbox": {
       "version": "2026.11.19",
@@ -111,8 +111,8 @@
       "hash": "6d1f903397f41ea1"
     },
     "composer": {
-      "version": "2026.11.15",
-      "hash": "d9c95476fe83c34d"
+      "version": "2026.11.19",
+      "hash": "06c030aa75ac1895"
     },
     "context-menu": {
       "version": "2026.11.12",
@@ -200,7 +200,7 @@
     },
     "device-chart": {
       "version": "2026.11.19",
-      "hash": "98219150978a6ad1"
+      "hash": "ee89fc94313e3362"
     },
     "device-checkbox": {
       "version": "2026.11.19",
@@ -231,7 +231,7 @@
       "hash": "6d1f903397f41ea1"
     },
     "device-composer": {
-      "version": "2026.11.16",
+      "version": "2026.11.19",
       "hash": "e4b85cad46f97337"
     },
     "device-context-menu": {
@@ -267,7 +267,7 @@
       "hash": "0052384ef7539aaa"
     },
     "device-file-drop": {
-      "version": "2026.11.17",
+      "version": "2026.11.19",
       "hash": "719ca2df3a76344c"
     },
     "device-form": {
@@ -519,7 +519,7 @@
       "hash": "b30bfa89cc3a2976"
     },
     "device-token-input": {
-      "version": "2026.11.17",
+      "version": "2026.11.19",
       "hash": "c025d568935d2d4c"
     },
     "device-tool-call": {
@@ -551,8 +551,8 @@
       "hash": "0052384ef7539aaa"
     },
     "file-drop": {
-      "version": "2026.11.17",
-      "hash": "af1b5dd3990009ce"
+      "version": "2026.11.19",
+      "hash": "6d43bce68359c08c"
     },
     "flat-accordion": {
       "version": "2026.11.18",
@@ -608,7 +608,7 @@
     },
     "flat-chart": {
       "version": "2026.11.19",
-      "hash": "1e06d27dd10716ef"
+      "hash": "b3a64e5ecee594d1"
     },
     "flat-checkbox": {
       "version": "2026.11.16",
@@ -639,7 +639,7 @@
       "hash": "6d1f903397f41ea1"
     },
     "flat-composer": {
-      "version": "2026.11.16",
+      "version": "2026.11.19",
       "hash": "512ee5ac9a9da5c0"
     },
     "flat-context-menu": {
@@ -671,7 +671,7 @@
       "hash": "0052384ef7539aaa"
     },
     "flat-file-drop": {
-      "version": "2026.11.16",
+      "version": "2026.11.19",
       "hash": "a1d82aaeb81222c4"
     },
     "flat-form": {
@@ -927,7 +927,7 @@
       "hash": "b30bfa89cc3a2976"
     },
     "flat-token-input": {
-      "version": "2026.11.16",
+      "version": "2026.11.19",
       "hash": "fd5550b03c6c06d6"
     },
     "flat-tool-call": {
@@ -1028,7 +1028,7 @@
     },
     "heat-chart": {
       "version": "2026.11.19",
-      "hash": "40f0868fcc5ba34f"
+      "hash": "5622d9191c0e7d3f"
     },
     "heat-checkbox": {
       "version": "2026.11.19",
@@ -1059,8 +1059,8 @@
       "hash": "6d1f903397f41ea1"
     },
     "heat-composer": {
-      "version": "2026.11.16",
-      "hash": "7881b8cb5db916cd"
+      "version": "2026.11.19",
+      "hash": "71d41b9f66c2ee1f"
     },
     "heat-context-menu": {
       "version": "2026.11.16",
@@ -1091,8 +1091,8 @@
       "hash": "0052384ef7539aaa"
     },
     "heat-file-drop": {
-      "version": "2026.11.16",
-      "hash": "eefddfc5e35fb70e"
+      "version": "2026.11.19",
+      "hash": "706f35afd13b60bf"
     },
     "heat-form": {
       "version": "2026.11.16",
@@ -1141,6 +1141,10 @@
     "heat-kbd": {
       "version": "2026.11.18",
       "hash": "17d1840b1643cf07"
+    },
+    "heat-lap-timer": {
+      "version": "2026.11.19",
+      "hash": "6e794316284a62d7"
     },
     "heat-legend": {
       "version": "2026.11.19",
@@ -1217,6 +1221,10 @@
     "heat-progress": {
       "version": "2026.11.19",
       "hash": "031ec1bbc38610c7"
+    },
+    "heat-pursuit-meter": {
+      "version": "2026.11.19",
+      "hash": "25086bfd97d01845"
     },
     "heat-range-chart": {
       "version": "2026.11.16",
@@ -1335,8 +1343,8 @@
       "hash": "b30bfa89cc3a2976"
     },
     "heat-token-input": {
-      "version": "2026.11.16",
-      "hash": "ae3aba43cb5d81c8"
+      "version": "2026.11.19",
+      "hash": "99a77cc4ff469884"
     },
     "heat-tool-call": {
       "version": "2026.11.18",
@@ -1353,6 +1361,10 @@
     "heat-tune": {
       "version": "2026.11.18",
       "hash": "033401331cff1fb6"
+    },
+    "heat-tune-menu": {
+      "version": "2026.11.19",
+      "hash": "d7d66c1d48e8cfe5"
     },
     "heatmap": {
       "version": "2026.11.18",
@@ -1385,6 +1397,10 @@
     "kudos": {
       "version": "2026.11.19",
       "hash": "4214c05bf4c630c3"
+    },
+    "lap-timer": {
+      "version": "2026.11.19",
+      "hash": "6e794316284a62d7"
     },
     "legend": {
       "version": "2026.11.19",
@@ -1496,7 +1512,7 @@
     },
     "plain-chart": {
       "version": "2026.11.19",
-      "hash": "40f0868fcc5ba34f"
+      "hash": "985b4ada30461f22"
     },
     "plain-checkbox": {
       "version": "2026.11.16",
@@ -1527,7 +1543,7 @@
       "hash": "6d1f903397f41ea1"
     },
     "plain-composer": {
-      "version": "2026.11.16",
+      "version": "2026.11.19",
       "hash": "7881b8cb5db916cd"
     },
     "plain-context-menu": {
@@ -1559,7 +1575,7 @@
       "hash": "0052384ef7539aaa"
     },
     "plain-file-drop": {
-      "version": "2026.11.16",
+      "version": "2026.11.19",
       "hash": "eefddfc5e35fb70e"
     },
     "plain-form": {
@@ -1803,7 +1819,7 @@
       "hash": "b30bfa89cc3a2976"
     },
     "plain-token-input": {
-      "version": "2026.11.16",
+      "version": "2026.11.19",
       "hash": "ae3aba43cb5d81c8"
     },
     "plain-tool-call": {
@@ -1888,7 +1904,7 @@
     },
     "press-chart": {
       "version": "2026.11.19",
-      "hash": "40f0868fcc5ba34f"
+      "hash": "985b4ada30461f22"
     },
     "press-checkbox": {
       "version": "2026.11.16",
@@ -1919,7 +1935,7 @@
       "hash": "6d1f903397f41ea1"
     },
     "press-composer": {
-      "version": "2026.11.16",
+      "version": "2026.11.19",
       "hash": "7881b8cb5db916cd"
     },
     "press-context-menu": {
@@ -1951,7 +1967,7 @@
       "hash": "0052384ef7539aaa"
     },
     "press-file-drop": {
-      "version": "2026.11.16",
+      "version": "2026.11.19",
       "hash": "eefddfc5e35fb70e"
     },
     "press-form": {
@@ -2195,7 +2211,7 @@
       "hash": "b30bfa89cc3a2976"
     },
     "press-token-input": {
-      "version": "2026.11.16",
+      "version": "2026.11.19",
       "hash": "ae3aba43cb5d81c8"
     },
     "press-tool-call": {
@@ -2233,6 +2249,10 @@
     "projects": {
       "version": "2026.11.03",
       "hash": "ba0d61f1ea516b76"
+    },
+    "pursuit-meter": {
+      "version": "2026.11.19",
+      "hash": "25086bfd97d01845"
     },
     "rack-accordion": {
       "version": "2026.11.18",
@@ -2288,7 +2308,7 @@
     },
     "rack-chart": {
       "version": "2026.11.19",
-      "hash": "80df678ab09a1637"
+      "hash": "6d9d709798ad8eee"
     },
     "rack-checkbox": {
       "version": "2026.11.16",
@@ -2319,7 +2339,7 @@
       "hash": "6d1f903397f41ea1"
     },
     "rack-composer": {
-      "version": "2026.11.16",
+      "version": "2026.11.19",
       "hash": "70a14d9b989f94a3"
     },
     "rack-context-menu": {
@@ -2351,7 +2371,7 @@
       "hash": "0052384ef7539aaa"
     },
     "rack-file-drop": {
-      "version": "2026.11.16",
+      "version": "2026.11.19",
       "hash": "e1edaab907311be6"
     },
     "rack-form": {
@@ -2595,7 +2615,7 @@
       "hash": "b30bfa89cc3a2976"
     },
     "rack-token-input": {
-      "version": "2026.11.16",
+      "version": "2026.11.19",
       "hash": "44f9de14d607ece5"
     },
     "rack-tool-call": {
@@ -2755,8 +2775,8 @@
       "hash": "b30bfa89cc3a2976"
     },
     "token-input": {
-      "version": "2026.11.17",
-      "hash": "ca4b8c65fa185647"
+      "version": "2026.11.19",
+      "hash": "cfbf73cf8f793c8e"
     },
     "tool-call": {
       "version": "2026.11.18",
@@ -2773,6 +2793,10 @@
     "tune": {
       "version": "2026.11.18",
       "hash": "033401331cff1fb6"
+    },
+    "tune-menu": {
+      "version": "2026.11.19",
+      "hash": "d7d66c1d48e8cfe5"
     },
     "usage": {
       "version": "2026.10.26",

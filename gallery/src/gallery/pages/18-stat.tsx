@@ -301,9 +301,87 @@ function LetterNewsDemo() {
   );
 }
 
+/* ---------- Heat's own (proposals/heat.md): session telemetry, speed trap, and bounty figures ---------- */
+
+const HEAT_SPEEDS = [294, 298, 301, 305, 303, 309, 307, 311, 310, 314, 312, 316, 315, 318];
+const HEAT_LAPS = [73.4, 73.1, 72.8, 72.9, 72.5, 72.2, 72.3, 72.0, 71.9, 71.8, 71.7, 71.6, 71.5, 71.4];
+const HEAT_INFRACTIONS = [1, 0, 1, 2, 1, 0, 1, 2, 1, 0, 1, 1, 2, 1];
+
+function RaceStatTile() {
+  return (
+    <div className="w-full max-w-xs">
+      <Stat
+        label="Top speed"
+        value={318}
+        unit="km/h"
+        delta="Up 9 km/h on last run"
+        tone="good"
+        trend={<Sparkline label="Top speed per run, last 14 runs" values={HEAT_SPEEDS} formatValue={(v) => `${v} km/h`} />}
+      />
+    </div>
+  );
+}
+
+function RaceStatsDemo() {
+  return (
+    <div className="w-full max-w-3xl">
+      <StatGroup>
+        <Stat label="Best lap" value="1:11.4" delta="Down 0.25 s on session" tone="good" />
+        <Stat label="Top speed" value={318} unit="km/h" delta="Up 9 km/h on last run" tone="good" />
+        <Stat label="Bounty" value="142,500" delta="Up 24,000 tonight" tone="good" />
+        <Stat label="Heat level" value="×3" />
+      </StatGroup>
+    </div>
+  );
+}
+
+function RaceNewsDemo() {
+  return (
+    <div className="w-full max-w-3xl">
+      <StatGroup>
+        <Stat label="Best lap" value="1:11.4" delta="Down 0.25 s on session" tone="good" />
+        <Stat label="Infractions" value={6} delta="Up 2 in pursuit" tone="bad" />
+        <Stat label="Clean laps" value={14} delta="Same as last night" />
+        <Stat label="Blacklist rank" value="#4" />
+      </StatGroup>
+    </div>
+  );
+}
+
+function RaceTrendDemo() {
+  return (
+    <div className="w-full max-w-3xl">
+      <StatGroup>
+        <Stat
+          label="Top speed"
+          value={318}
+          unit="km/h"
+          delta="Up 9 km/h on last run"
+          tone="good"
+          trend={<Sparkline label="Top speed per run, last 14 runs" values={HEAT_SPEEDS} formatValue={(v) => `${v} km/h`} />}
+        />
+        <Stat
+          label="Lap pace"
+          value="71.4"
+          unit="s"
+          trend={<Sparkline label="Lap time, last 14 laps" values={HEAT_LAPS} formatValue={(v) => `${v} s`} baseline={72} />}
+        />
+        <Stat
+          label="Infractions"
+          value={6}
+          delta="Up 2 in pursuit"
+          tone="bad"
+          trend={<Sparkline label="Infractions per pursuit, last 14 pursuits" values={HEAT_INFRACTIONS} />}
+        />
+        <Stat label="Blacklist rank" value="#4" />
+      </StatGroup>
+    </div>
+  );
+}
+
 export default function StatPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<StatTile />} tileByWorld={{ device: <TakesTile />, flat: <ReadersTile /> }}>
+    <Page meta={meta} docs={docs} tile={<StatTile />} tileByWorld={{ device: <TakesTile />, flat: <ReadersTile />, heat: <RaceStatTile /> }}>
       <Stage
         title="The studio this week"
         code="StudioStatsDemo"
@@ -315,6 +393,13 @@ export default function StatPage() {
             code: "ShootStatsDemo",
             caption:
               "Four tiles in a group. The label is engraved and quiet, the value is the largest thing on the tile, in seven segments on its LCD, and a delta says what changed in words. The tiles in a row share its height, so the one without a delta stays level with the others. Nothing here moves, and a tile has no hover because it links nowhere.",
+          },
+          heat: {
+            demo: <RaceStatsDemo />,
+            title: "Session telemetry",
+            code: "RaceStatsDemo",
+            caption:
+              "Four Heat telemetry slabs framed by corner marks and a diagonal hazard-stripe header band. Best lap, Top speed, Bounty and Heat level share one height across the row.",
           },
         }}
         caption="Four tiles in a group. The label is small and quiet, the value is the largest thing on the tile, and a delta says what changed in words. The tiles in a row share its height, so the one without a delta stays level with the others. Nothing here moves, and a tile has no hover because it links nowhere."
@@ -338,6 +423,12 @@ export default function StatPage() {
             caption:
               "Device has no green: a change that is good news is the ink, and one that is bad, here takes that clipped, is red, the colour it keeps for a fault, whichever way the number went. A take length that fell is good news, and clipped takes that rose are bad. A change that is neither stays in the subtle grey. The words carry the direction, and a screen reader also hears whether it was good or bad.",
           },
+          heat: {
+            demo: <RaceNewsDemo />,
+            code: "RaceNewsDemo",
+            caption:
+              "Green marks a faster lap and red marks extra infractions, while clean laps and rank stay neutral. Words always carry the direction.",
+          },
         }}
         caption="Green is for a change that is good news and red for one that is bad, whichever way the number went. A build time that fell is green, and failed deploys that rose are red. A change that is neither stays in the subtle gray. The words carry the direction, and a screen reader also hears whether it was good or bad."
       >
@@ -353,6 +444,12 @@ export default function StatPage() {
             code: "TakesTrendDemo",
             caption:
               "A tile can hold a trend: pass a Sparkline as the trend prop. It sits at the very bottom of the tile, under the delta, and fills the tile's width. The median take tile has no delta and the cards tile has no trend, and the lines that exist still sit level, because every tile in a row shares its height and the trend takes the foot. The figure stays above it, since the line shows shape and not values.",
+          },
+          heat: {
+            demo: <RaceTrendDemo />,
+            code: "RaceTrendDemo",
+            caption:
+              "Each slab pairs its figure with Heat's floor-rising telemetry bar Sparkline at the foot, the latest bar lit in amber.",
           },
         }}
         caption="A tile can hold a trend: pass a Sparkline as the trend prop. It sits at the very bottom of the tile, under the delta, and fills the tile's width. The median build tile has no delta and the clients tile has no trend, and the lines that exist still sit level, because every tile in a row shares its height and the trend takes the foot. The figure stays above it, since the line shows shape and not values."

@@ -176,6 +176,46 @@ function FlatStatesDemo() {
   );
 }
 
+/* ---------- Heat's own (proposals/heat.md): pursuit cooldown and race milestones ---------- */
+
+const COOLDOWN_STEPS = 16;
+
+function PursuitCooldownDemo() {
+  const [done, setDone] = useState(10);
+  const full = done >= COOLDOWN_STEPS;
+  return (
+    <div className="grid w-full max-w-sm gap-6">
+      <Progress
+        label="Pursuit cooldown"
+        value={done}
+        max={COOLDOWN_STEPS}
+        valueText={`${Math.round((done / COOLDOWN_STEPS) * 100)}%`}
+        status={full ? "done" : "active"}
+        message={full ? "Pursuit evaded. 142,500 bounty banked." : "Stay hidden in the cooldown zone."}
+      />
+      <div className="flex gap-2">
+        <Button size="sm" variant="secondary" disabled={full} onClick={() => setDone((d) => Math.min(COOLDOWN_STEPS, d + 2))}>
+          Hold cover
+        </Button>
+        <Button size="sm" variant="ghost" onClick={() => setDone(10)}>
+          Reset
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+function HeatStatesDemo() {
+  return (
+    <div className="grid w-full max-w-sm gap-8">
+      <Progress label="Searching for lobby" message="Waiting for drivers on the grid." />
+      <Progress label="Nitrous recharge" value={11} max={16} valueText="69%" />
+      <Progress label="Blacklist #4 milestones" value={16} max={16} status="done" />
+      <Progress label="Pursuit evade" value={7} max={16} status="failed" message="Boxed in by federal units. Condition ×4 busted." />
+    </div>
+  );
+}
+
 export default function ProgressPage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -191,6 +231,13 @@ export default function ProgressPage() {
             code: "SpringSeriesDemo",
             caption:
               "Press Add a picture. Each picture done lights its segment at its own place on Flat's sunset, gold to plum in light and plum to gold in dark, so the series warms as it nears the end: in Flat, how far along you are is warmth. A segment lights with a color fade on the instant tier, at once under reduced motion. The reading says the count in words, since the first steps stand only about 2:1 off the slot. At twelve it says Done.",
+          },
+          heat: {
+            demo: <PursuitCooldownDemo />,
+            title: "Pursuit cooldown",
+            code: "PursuitCooldownDemo",
+            caption:
+              "Under Heat, Progress draws sixteen crisp dashes in a flat square channel, lighting amber as cooldown fills to 100% and cutting to Done once evaded.",
           },
         }}
         caption="Press Upload. For a moment nothing is known, so the slot is empty and the reading says Waiting; then it fills as the bytes go, a transform on the instant tier, and the reading counts in tabular figures. The fill sits down in the channel: the top wall's shade and the lit lower wall are drawn over it. At the end the slot is full, the reading says Done, and a screen reader hears it once."
@@ -210,6 +257,13 @@ export default function ProgressPage() {
             code: "FlatStatesDemo",
             caption:
               "Press Upload: the fill is one color, the sunset's step at its value, so it warms as the bytes go and is the deepest step when done, never a gradient. A series lights segment by segment. Waiting is an empty slot and a word. Failed keeps the fill where it stopped in the danger color and says Failed.",
+          },
+          heat: {
+            demo: <HeatStatesDemo />,
+            title: "Lobby, nitrous, milestones and busted",
+            code: "HeatStatesDemo",
+            caption:
+              "Waiting keeps all sixteen dashes unlit. Active and done light amber across the dark channel; failed switches the filled dashes to brake-red danger and says Failed in words.",
           },
         }}
         caption="Waiting, running, done and failed. Waiting is an empty slot and a word, with nothing moving. Failed keeps the fill where it stopped, in the danger color, says Failed, and the message says what to do."

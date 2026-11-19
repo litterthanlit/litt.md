@@ -42,6 +42,7 @@ import { byWorld, useDevice, useExit, useMaterial, useTransition } from "@/motio
 import { useOverlayMotion } from "@/motion/deal";
 import { TokenInputDeviceBody } from "@/worlds/device/token-input";
 import { TokenInputFlatBody } from "@/worlds/flat/token-input";
+import { TokenInputHeatBody } from "@/worlds/heat/token-input";
 import { TokenInputRackBody } from "@/worlds/rack/token-input";
 
 export type TokenInputProps = {
@@ -406,7 +407,7 @@ export function TokenInput({
   const switches = (material === "device" || material === "rack") && om.switches;
   const itemEnter = switches ? om.switchIn : enter;
   const itemExit = switches ? om.switchOut : exit;
-  const Body = byWorld(material, { press: PressBody, flat: TokenInputFlatBody, device: TokenInputDeviceBody, rack: TokenInputRackBody });
+  const Body = byWorld(material, { press: PressBody, flat: TokenInputFlatBody, device: TokenInputDeviceBody, rack: TokenInputRackBody, heat: TokenInputHeatBody });
 
   const list = (skin: TokenSkin) => (
     <ul role="list" aria-labelledby={labelId} className="contents">

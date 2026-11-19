@@ -392,6 +392,86 @@ function PictureTooLargeDemo() {
   );
 }
 
+/* ---------- Heat's own (proposals/heat.md): tune saves, lap records, pursuit dispatches ---------- */
+
+function TuneSavedDemo() {
+  const { toast } = useToast();
+  return (
+    <Launcher>
+      <Button onClick={() => toast({ title: "Tune saved", description: "Street setup written to Skyline GT-R.", tone: "success" })}>
+        Save tune
+      </Button>
+    </Launcher>
+  );
+}
+
+function LapRecordToastDemo() {
+  const { toast } = useToast();
+  const [opened, setOpened] = useState<string | null>(null);
+  return (
+    <Launcher note={opened}>
+      <Button
+        onClick={() => {
+          setOpened(null);
+          toast({
+            title: "New lap record",
+            description: "Camden Beach · 1:11.402 (−0.248 s).",
+            tone: "success",
+            action: { label: "Splits", onClick: () => setOpened("Opened sector splits for lap 3.") },
+          });
+        }}
+      >
+        Log fast lap
+      </Button>
+    </Launcher>
+  );
+}
+
+const PURSUIT_BURST = [
+  { title: "Roadblock cleared", description: "+12,500 bounty added.", tone: "success" as const },
+  { title: "Speed trap clocked", description: "318 km/h past Rosewood Bridge.", tone: "success" as const },
+  { title: "Condition ×4 active", description: "Federal units joining pursuit." },
+];
+
+function PursuitBurstDemo({ note = "Hover or tap the stack, or press F8 and Tab through it." }: { note?: ReactNode }) {
+  const { toast, dismissAll } = useToast();
+  const timers = useRef<number[]>([]);
+  useEffect(() => () => timers.current.forEach((t) => window.clearTimeout(t)), []);
+
+  const fire = () => {
+    timers.current.forEach((t) => window.clearTimeout(t));
+    timers.current = PURSUIT_BURST.map((b, i) => window.setTimeout(() => toast(b), i * 180));
+  };
+
+  return (
+    <Launcher note={note}>
+      <Button onClick={fire}>Fire dispatch</Button>
+      <Button variant="ghost" onClick={dismissAll}>
+        Clear all
+      </Button>
+    </Launcher>
+  );
+}
+
+function EngineFaultDemo() {
+  const { toast } = useToast();
+  return (
+    <Launcher>
+      <Button
+        onClick={() =>
+          toast({
+            title: "Missed shift at 8,500 RPM",
+            description: "Ease off the throttle before shifting into 5th.",
+            tone: "error",
+          })
+        }
+      >
+        Overrev engine
+      </Button>
+    </Launcher>
+  );
+}
+
 export default function ToastPage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -410,6 +490,13 @@ export default function ToastPage() {
               caption:
                 "A recorder's app says a scene is saved. The toast rises from the travel token's distance below its place while it fades in and settles from 0.98, on the expressive tier. It dismisses itself after about five seconds.",
             },
+            heat: {
+              demo: <TuneSavedDemo />,
+              title: "Tune saved",
+              code: "TuneSavedDemo",
+              caption:
+                "A garage confirmation cutting in from the corner: square black slab, clear words, and a quick sideways exit.",
+            },
           }}
         >
           <SavedDemo />
@@ -420,7 +507,11 @@ export default function ToastPage() {
           tier="expressive"
           code="DeployDemo"
           caption="The action is a small ghost button next to the round close button. Using it dismisses the toast. Hover pauses the clock, and so does keyboard focus or a hidden tab."
-          byWorld={{ flat: { demo: <PublishedDemo />, code: "PublishedDemo" }, device: { demo: <ExportedDemo />, code: "ExportedDemo" } }}
+          byWorld={{
+            flat: { demo: <PublishedDemo />, code: "PublishedDemo" },
+            device: { demo: <ExportedDemo />, code: "ExportedDemo" },
+            heat: { demo: <LapRecordToastDemo />, code: "LapRecordToastDemo" },
+          }}
         >
           <DeployDemo />
         </Stage>
@@ -443,6 +534,12 @@ export default function ToastPage() {
               caption:
                 "Stopping a take says three things at once: the take, its safety track and the backup. The newest sits in front, the others fall back 8px and 16px, smaller and fainter. Hover or tab in and they open into a list with gaps. That is transform only, on the responsive tier. More than three wait out of sight.",
             },
+            heat: {
+              demo: <PursuitBurstDemo />,
+              code: "PursuitBurstDemo",
+              caption:
+                "Three pursuit dispatches stacked in order: roadblock bounty, speed trap, and condition escalation.",
+            },
           }}
         >
           <BurstDemo />
@@ -453,7 +550,11 @@ export default function ToastPage() {
           tier="expressive"
           code="ErrorDemo"
           caption="Errors stay until you dismiss them, and they are announced assertively. Escape dismisses the toast that has focus. The exit slides right by the travel distance and fades, with no bounce. On a phone it drops down instead."
-          byWorld={{ flat: { demo: <PictureTooLargeDemo />, code: "PictureTooLargeDemo" }, device: { demo: <CardFullDemo />, code: "CardFullDemo" } }}
+          byWorld={{
+            flat: { demo: <PictureTooLargeDemo />, code: "PictureTooLargeDemo" },
+            device: { demo: <CardFullDemo />, code: "CardFullDemo" },
+            heat: { demo: <EngineFaultDemo />, code: "EngineFaultDemo" },
+          }}
         >
           <ErrorDemo />
         </Stage>

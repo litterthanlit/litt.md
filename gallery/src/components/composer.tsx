@@ -77,6 +77,7 @@ import { ArrowUpIcon, FileIcon, PaperclipIcon, StopIcon, XIcon } from "@/compone
 import { byWorld, useDevice, useExit, useMaterial, useTransition } from "@/motion";
 import { useOverlayMotion } from "@/motion/deal";
 import { ComposerFlatBody, FileChipFlatBody } from "@/worlds/flat/composer";
+import { ComposerHeatBody, FileChipHeatBody } from "@/worlds/heat/composer";
 import { ComposerDeviceBody, FileChipDeviceBody } from "@/worlds/device/composer";
 import { ComposerRackBody, FileChipRackBody } from "@/worlds/rack/composer";
 
@@ -193,7 +194,7 @@ function ChipPressBody({ name, sizeText, uploading, percent, onRemove, coarse, c
  */
 export function FileChip({ name, size, progress, onRemove, className = "" }: FileChipProps) {
   const { coarse } = useDevice();
-  const Body = byWorld(useMaterial(), { press: ChipPressBody, flat: FileChipFlatBody, device: FileChipDeviceBody, rack: FileChipRackBody });
+  const Body = byWorld(useMaterial(), { press: ChipPressBody, flat: FileChipFlatBody, device: FileChipDeviceBody, rack: FileChipRackBody, heat: FileChipHeatBody });
   const percent = Math.round(Math.min(100, Math.max(0, progress ?? 100)));
   return (
     <Body
@@ -639,7 +640,7 @@ export function Composer({
 
   const shown = (suggestions ?? []).slice(0, MAX_SUGGESTIONS);
   const describedBy = [hint ? hintId : "", near ? countId : ""].filter(Boolean).join(" ") || undefined;
-  const Body = byWorld(useMaterial(), { press: PressBody, flat: ComposerFlatBody, device: ComposerDeviceBody, rack: ComposerRackBody });
+  const Body = byWorld(useMaterial(), { press: PressBody, flat: ComposerFlatBody, device: ComposerDeviceBody, rack: ComposerRackBody, heat: ComposerHeatBody });
 
   return (
     <Body

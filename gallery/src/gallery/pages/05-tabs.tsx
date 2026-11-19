@@ -756,9 +756,150 @@ function SiteTabsTile() {
   );
 }
 
+/* ---------- Heat's own (proposals/heat.md): a garage car sheet and race session views ---------- */
+
+const GARAGE_STATS: [string, string][] = [
+  ["Best lap", "1:11.402"],
+  ["Top speed", "318 km/h"],
+  ["Bounty", "142,500"],
+  ["Heat level", "×3"],
+];
+
+const GARAGE_SPLITS: [string, string][] = [
+  ["Camden Beach · S1", "24.118 s"],
+  ["Camden Beach · S2", "26.804 s"],
+  ["Camden Beach · S3", "23.460 s"],
+  ["Rosewood circuit · Best", "1:12.348"],
+];
+
+const GARAGE_RUNS: { code: string; event: string; time: string; tone: "success" | "danger" | "muted" }[] = [
+  { code: "R-14", event: "Camden Beach sprint", time: "1:14.382", tone: "success" },
+  { code: "R-13", event: "Rockport tollbooth", time: "2:08.910", tone: "muted" },
+  { code: "R-12", event: "Downtown pursuit", time: "0:49.200", tone: "danger" },
+  { code: "R-11", event: "Rosewood circuit", time: "1:12.348", tone: "success" },
+];
+
+const GARAGE_SETUP: [string, string][] = [
+  ["Chassis", "Skyline GT-R"],
+  ["Transmission", "Manual · 6-speed"],
+  ["Nitrous", "Power"],
+  ["Tire compound", "Soft"],
+];
+
+function GarageTabs() {
+  return (
+    <Tabs defaultValue="overview" className="w-full max-w-xl">
+      <TabsList aria-label="Skyline GT-R">
+        <TabsTrigger value="overview">Overview</TabsTrigger>
+        <TabsTrigger value="splits">Splits</TabsTrigger>
+        <TabsTrigger value="runs">Runs</TabsTrigger>
+        <TabsTrigger value="setup">Setup</TabsTrigger>
+      </TabsList>
+      <TabsPanels className="min-h-72 px-control-pad-md pt-6">
+        <TabsPanel value="overview">
+          <dl className="grid grid-cols-2 gap-x-6 gap-y-8">
+            {GARAGE_STATS.map(([label, value]) => (
+              <div key={label} className="grid gap-1">
+                <dt className="text-small text-fg-subtle">{label}</dt>
+                <dd className="font-mono text-h3 tabular-nums text-fg">{value}</dd>
+              </div>
+            ))}
+          </dl>
+        </TabsPanel>
+        <TabsPanel value="splits">
+          <Rows>
+            {GARAGE_SPLITS.map(([what, when]) => (
+              <li key={what} className="flex min-h-control-md items-center justify-between gap-4 py-2 text-small">
+                <span className="text-fg">{what}</span>
+                <span className="shrink-0 font-mono tabular-nums text-accent-text">{when}</span>
+              </li>
+            ))}
+          </Rows>
+        </TabsPanel>
+        <TabsPanel value="runs">
+          <Rows>
+            {GARAGE_RUNS.map((r) => (
+              <li key={r.code} className="flex min-h-control-md items-center gap-3 py-2 text-small">
+                <span className="flex w-20 shrink-0">
+                  {r.tone === "success" ? <Tag status="success">Win</Tag> : r.tone === "danger" ? <Tag status="danger">Busted</Tag> : <Tag status="neutral">Clean</Tag>}
+                </span>
+                <span className="font-mono text-caption font-normal text-fg-subtle">{r.code}</span>
+                <span className="min-w-0 flex-1 truncate text-fg">{r.event}</span>
+                <span className="shrink-0 font-mono tabular-nums text-caption font-normal text-fg-subtle">{r.time}</span>
+              </li>
+            ))}
+          </Rows>
+        </TabsPanel>
+        <TabsPanel value="setup">
+          <Rows>
+            {GARAGE_SETUP.map(([label, value]) => (
+              <li key={label} className="flex min-h-control-md items-center justify-between gap-4 py-2 text-small">
+                <span className="text-fg-subtle">{label}</span>
+                <span className="text-fg">{value}</span>
+              </li>
+            ))}
+          </Rows>
+        </TabsPanel>
+      </TabsPanels>
+    </Tabs>
+  );
+}
+
+const HEAT_VIEWS: [string, string][] = [
+  ["standings", "Five drivers on the grid. Rin Vale leads by 1.218 s on lap 14."],
+  ["splits", "Sector 1 and Sector 2 set personal bests on soft compound tires."],
+  ["telemetry", "Turbo boost holding 1.6 bar with 72% nitrous reserve remaining."],
+];
+
+function GarageViewSwitch() {
+  return (
+    <Tabs defaultValue="standings" variant="segmented" className="w-full max-w-md">
+      <TabsList aria-label="Race view">
+        <TabsTrigger value="standings">Standings</TabsTrigger>
+        <TabsTrigger value="splits">Splits</TabsTrigger>
+        <TabsTrigger value="telemetry">Telemetry</TabsTrigger>
+      </TabsList>
+      <TabsPanels className="min-h-20 pt-4">
+        {HEAT_VIEWS.map(([id, text]) => (
+          <TabsPanel key={id} value={id}>
+            <p className="text-small text-fg-muted">{text}</p>
+          </TabsPanel>
+        ))}
+      </TabsPanels>
+    </Tabs>
+  );
+}
+
+const HEAT_TILE_TABS = ["Garage", "Splits", "Heat"];
+const HEAT_TILE_TEXT = ["Skyline GT-R · 318 km/h top speed.", "Best lap 1:11.402 · −0.248 s delta.", "Condition ×3 · 142,500 bounty."];
+
+function GarageTabsTile() {
+  const [ref, step] = useLoop<HTMLDivElement>(HEAT_TILE_TABS.length, 2200, 0);
+  const [own, setOwn] = useState<string | null>(null);
+  const value = own ?? HEAT_TILE_TABS[step]!;
+  return (
+    <div ref={ref} className="w-full max-w-sm">
+      <Tabs value={value} onValueChange={setOwn}>
+        <TabsList aria-label="Garage">
+          {HEAT_TILE_TABS.map((t) => (
+            <TabsTrigger key={t} value={t}>{t}</TabsTrigger>
+          ))}
+        </TabsList>
+        <TabsPanels className="min-h-16 px-control-pad-md pt-4">
+          {HEAT_TILE_TABS.map((t, i) => (
+            <TabsPanel key={t} value={t}>
+              <p className="text-small text-fg-muted">{HEAT_TILE_TEXT[i]}</p>
+            </TabsPanel>
+          ))}
+        </TabsPanels>
+      </Tabs>
+    </div>
+  );
+}
+
 export default function TabsPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<TabsTile />} tileByWorld={{ device: <TakeTabsTile />, flat: <SiteTabsTile /> }}>
+    <Page meta={meta} docs={docs} tile={<TabsTile />} tileByWorld={{ device: <TakeTabsTile />, flat: <SiteTabsTile />, heat: <GarageTabsTile /> }}>
       <Stage
         title="Project tabs"
         tier="responsive"
@@ -780,6 +921,13 @@ export default function TabsPage() {
             caption:
               "A take's page in a recorder's app: its overview, its markers, its exports and its settings. Pick a tab. The chosen face slides to it on the responsive tier while the label only changes colour, on the instant tier. The new panel fades in from the side you chose, about half the travel distance, and the old one fades out the other way.",
           },
+          heat: {
+            demo: <GarageTabs />,
+            title: "Garage tabs",
+            code: "GarageTabs",
+            caption:
+              "A street-racing garage sheet: Overview, Splits, Runs and Setup. The active tab snaps into four amber corner brackets with ‹ › chevrons, and the panel cuts in sideways at speed.",
+          },
         }}
       >
         <ProjectTabs />
@@ -790,7 +938,11 @@ export default function TabsPage() {
         tier="responsive"
         caption="The segmented style uses the same sliding face as a raised block in a tray (Press) or a bubble behind the word (Flat). Pick a view and the preview crossfades. Labels never change weight or size, so the group keeps its exact box. On a touch screen a tab you hold fills."
         code="ViewSwitch"
-        byWorld={{ flat: { demo: <PostViewSwitch />, code: "PostViewSwitch" }, device: { demo: <TakesViewSwitch />, code: "TakesViewSwitch" } }}
+        byWorld={{
+          flat: { demo: <PostViewSwitch />, code: "PostViewSwitch" },
+          device: { demo: <TakesViewSwitch />, code: "TakesViewSwitch" },
+          heat: { demo: <GarageViewSwitch />, code: "GarageViewSwitch" },
+        }}
       >
         <ViewSwitch />
       </Stage>
