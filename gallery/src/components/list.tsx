@@ -53,8 +53,11 @@ export type Project = {
   description?: string;
   /** Short labels on the card. */
   tags?: string[];
-  /** Which drawn cover the card shows. Without one, the card has no cover. */
+  /** Which drawn cover the card shows. Without one (and no `image`), the card has no cover. */
   cover?: CoverName;
+  /** A picture as the card's cover, in place of a drawn one: it fills the cover and is cropped to it, loaded lazily.
+      `alt` says what it shows; pass `""` when the card's name already says it all. */
+  image?: { src: string; srcSet?: string; alt: string };
   /** When set, the row is a link; otherwise it is a button. */
   href?: string;
 };
@@ -265,9 +268,21 @@ export function ProjectCard({ project, selected = false, onSelectedChange, onOpe
         }
       />
 
-      {project.cover ? (
+      {project.image || project.cover ? (
         <div className="relative aspect-[8/5] shrink-0 overflow-hidden rounded-[calc(var(--radius-surface)-4px)] bg-surface-2 transition-[background-color] duration-(--dur-instant) ease-litt group-hover:bg-surface-3 pointer-coarse:group-active:bg-surface-3">
-          <ProjectCover name={project.cover} />
+          {project.image ? (
+            <img
+              src={project.image.src}
+              srcSet={project.image.srcSet}
+              sizes="(min-width: 640px) 20rem, 100vw"
+              alt={project.image.alt}
+              loading="lazy"
+              decoding="async"
+              className="absolute inset-0 size-full object-cover"
+            />
+          ) : (
+            <ProjectCover name={project.cover!} />
+          )}
           {select}
         </div>
       ) : (
@@ -275,7 +290,7 @@ export function ProjectCard({ project, selected = false, onSelectedChange, onOpe
       )}
 
       {/* Without a cover the select box sits in the card's corner, so the title keeps clear of it. */}
-      <div className={"grid gap-1 px-3 pt-4 " + (project.cover ? "" : "pr-12")}>
+      <div className={"grid gap-1 px-3 pt-4 " + (project.image || project.cover ? "" : "pr-12")}>
         <h3 className="truncate text-body font-title text-fg">{project.name}</h3>
         {project.description && <p className="truncate text-small text-fg-subtle">{project.description}</p>}
       </div>

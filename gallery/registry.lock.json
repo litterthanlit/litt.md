@@ -1,6 +1,6 @@
 {
   "$comment": "Written by scripts/gen-registry.mjs. What each registry item installs, hashed, and the release that last changed it. Commit it with the change.",
-  "latest": "2026.11.18",
+  "latest": "2026.11.19",
   "items": {
     "accordion": {
       "version": "2026.11.18",
@@ -327,8 +327,8 @@
       "hash": "aff81fa2348884dc"
     },
     "device-list": {
-      "version": "2026.11.18",
-      "hash": "d479e2493fa8ddfc"
+      "version": "2026.11.19",
+      "hash": "44177b5685e0d35b"
     },
     "device-list-cover": {
       "version": "2026.11.18",
@@ -731,8 +731,8 @@
       "hash": "aff81fa2348884dc"
     },
     "flat-list": {
-      "version": "2026.11.18",
-      "hash": "d479e2493fa8ddfc"
+      "version": "2026.11.19",
+      "hash": "44177b5685e0d35b"
     },
     "flat-list-cover": {
       "version": "2026.11.18",
@@ -1139,8 +1139,8 @@
       "hash": "aff81fa2348884dc"
     },
     "heat-list": {
-      "version": "2026.11.18",
-      "hash": "d479e2493fa8ddfc"
+      "version": "2026.11.19",
+      "hash": "44177b5685e0d35b"
     },
     "heat-list-cover": {
       "version": "2026.11.18",
@@ -1379,8 +1379,8 @@
       "hash": "aff81fa2348884dc"
     },
     "list": {
-      "version": "2026.11.18",
-      "hash": "d479e2493fa8ddfc"
+      "version": "2026.11.19",
+      "hash": "44177b5685e0d35b"
     },
     "list-cover": {
       "version": "2026.11.18",
@@ -1603,8 +1603,8 @@
       "hash": "aff81fa2348884dc"
     },
     "plain-list": {
-      "version": "2026.11.18",
-      "hash": "d479e2493fa8ddfc"
+      "version": "2026.11.19",
+      "hash": "44177b5685e0d35b"
     },
     "plain-list-cover": {
       "version": "2026.11.18",
@@ -1991,8 +1991,8 @@
       "hash": "aff81fa2348884dc"
     },
     "press-list": {
-      "version": "2026.11.18",
-      "hash": "d479e2493fa8ddfc"
+      "version": "2026.11.19",
+      "hash": "44177b5685e0d35b"
     },
     "press-list-cover": {
       "version": "2026.11.18",
@@ -2391,8 +2391,8 @@
       "hash": "aff81fa2348884dc"
     },
     "rack-list": {
-      "version": "2026.11.18",
-      "hash": "d479e2493fa8ddfc"
+      "version": "2026.11.19",
+      "hash": "44177b5685e0d35b"
     },
     "rack-list-cover": {
       "version": "2026.11.18",

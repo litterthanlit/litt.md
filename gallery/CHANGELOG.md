@@ -4,6 +4,12 @@ Every change to the litt registry at https://littmd.vercel.app/r/, newest first.
 
 To update an item, read the entries since your version, then reinstall it with `--overwrite`. A **breaking** entry says what to change in your code.
 
+## 2026-11-19 · Flat's covers
+
+Flat's leftovers (plans/024, Flat): a list's card can show a picture as its cover, so a site's posts show their pictures in place of drawn wireframes. Nothing changes for a card that passes `cover` or nothing.
+
+- **added** `list`, `press-list`, `flat-list`, `device-list`, `plain-list`, `rack-list`, `heat-list`: a project's `image` (`src`, an optional `srcSet`, and `alt`) is its card's cover, in place of a drawn `cover`: it fills the cover's 8:5 box, cropped to it, and loads lazily. Existing projects are unchanged.
+
 ## 2026-11-18 · Flat's ground
 
 Later the same day, Flat's sunset ramp (plans/024, Flat; Nick, on the Spectrum palette's ramp on a Heatmap and a Gauge: "this was also cool"). Nothing changes outside Flat.
