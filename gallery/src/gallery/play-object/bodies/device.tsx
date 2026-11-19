@@ -25,7 +25,7 @@
  * - Taken out, as repeats (the components repo's subtraction): the rail inside the screen (Home and the dial hold the
  *   set), the readout's group caption (Details says it) and the ring beside the count (the chip says it).
  * - Voice (plan 021): the dial ticks per detent (`notch`), the tape ticks on scrub and arrow keys (`notch`), and the
- *   keys (Play, Mute and the dial's four edges) click down and up (`key-down` / `key-up`). A hardware Mute key sits on
+ *   keys (Play and the dial's four edges) click down and up (`key-down` / `key-up`). A silent hardware Mute key sits on
  *   the deck beside the dial, sharing `litt-gallery:sound` with the `M` shortcut and other Device pages. Play's timer
  *   never sounds.
  * - Left out, as the plan says: the player's Find and Options screens, and playing on load (Decision 6 is Nick's).
@@ -191,7 +191,6 @@ function PlayKey({ play, className, onDial = false }: { play: PlayObjectBodyProp
 
 function RecorderMute({ compact = false, className = "" }: { compact?: boolean; className?: string }) {
   const [muted, setMuted] = useMuted();
-  const { play: sound } = useSound();
   const button = (
     <button
       type="button"
@@ -200,7 +199,6 @@ function RecorderMute({ compact = false, className = "" }: { compact?: boolean; 
       aria-keyshortcuts="M"
       title={muted ? "Unmute (M)" : "Mute (M)"}
       onClick={() => setMuted(!muted)}
-      {...keyVoice(sound)}
       data-part="key"
       style={STEP}
       className={
