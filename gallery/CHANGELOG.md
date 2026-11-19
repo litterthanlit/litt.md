@@ -6,7 +6,12 @@ To update an item, read the entries since your version, then reinstall it with `
 
 ## 2026-11-19 · Flat's covers
 
-Heat Wave 3 (proposals/heat.md): finishes replacing the remaining Press copies in Heat (`checkbox`, `input`) and adds Heat's scoreboard `table`, dashed amber `progress`, square `tag`, amber-bracketed `pagination`, and `code-input`. Nothing changes outside Heat.
+Heat Wave 4 (proposals/heat.md): adds Heat's racing-menu dropdown styling (`menu`) plus six more dedicated Heat bodies (`card-picker`, `option-picker`, `number-field`, `slide-confirm`, `sparkline`, `legend`), bringing Heat to 19 dedicated world bodies. Nothing changes outside Heat.
+
+- **added** `card-picker`, `heat-card-picker`, `option-picker`, `heat-option-picker`, `number-field`, `heat-number-field`, `slide-confirm`, `heat-slide-confirm`, `sparkline`, `heat-sparkline`, `legend`, `heat-legend`: dedicated Heat bodies — flat square cards and option cells framed in amber corner brackets when picked, flat square number field with amber focus brackets and square step keys, hazard-striped slide-to-confirm channel with amber-bracketed handle, floor-rising telemetry bar Sparkline, and square Legend keys with amber hover brackets. Props are unchanged and nothing changes outside Heat.
+- **changed** `menu`, `press-menu`, `flat-menu`, `device-menu`, `plain-menu`, `rack-menu`, `heat-menu`: under Heat, Menu and ContextMenu panels draw as opaque square slabs in a 1px `--litt-line-strong` edge, and highlighted rows frame themselves in four 8px amber corner brackets with `--litt-accent-text` words instead of the glide wash. Props are unchanged and nothing changes outside Heat.
+
+Earlier the same day, Heat Wave 3 (proposals/heat.md): finishes replacing the remaining Press copies in Heat (`checkbox`, `input`) and adds Heat's scoreboard `table`, dashed amber `progress`, square `tag`, amber-bracketed `pagination`, and `code-input`. Nothing changes outside Heat.
 
 - **changed** `checkbox`, `heat-checkbox`, `input`, `heat-input`: Heat bodies drop Press's rounded cup, raised bead and deep sunken inset shadows for flat square fields and checkboxes framed in four 5px amber corner brackets when checked (and flat circular radios with an amber dot). Props are unchanged and nothing changes outside Heat.
 - **added** `table`, `heat-table`, `tag`, `heat-tag`, `pagination`, `heat-pagination`, `code-input`, `heat-code-input`: dedicated Heat bodies — Table draws a square black standings slab with a diagonal hazard-striped header band; Tag draws a sharp square telemetry chip; Pagination and Code input draw flat square cells framed in amber corner brackets on the active page/cell. Props are unchanged and nothing changes outside Heat.

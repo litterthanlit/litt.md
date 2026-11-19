@@ -53,6 +53,7 @@ import { Button } from "@/components/button";
 import { SlideConfirmDeviceBody } from "@/worlds/device/slide-confirm";
 import { SlideConfirmFlatBody } from "@/worlds/flat/slide-confirm";
 import { SlideConfirmRackBody } from "@/worlds/rack/slide-confirm";
+import { SlideConfirmHeatBody } from "@/worlds/heat/slide-confirm";
 
 export type SlideConfirmSize = "md" | "lg";
 
@@ -190,7 +191,7 @@ const SLACK = 4;
 /** A track with a thumb to slide to the end. The thumb is also a button: Enter, Space or a screen reader confirms. */
 export function SlideConfirm({ label, confirmedLabel = "Done", onConfirm, confirmText, size = "md", disabled = false, className = "" }: SlideConfirmProps) {
   const material = useMaterial();
-  const Body = byWorld(material, { press: PressBody, flat: SlideConfirmFlatBody, device: SlideConfirmDeviceBody, rack: SlideConfirmRackBody });
+  const Body = byWorld(material, { press: PressBody, flat: SlideConfirmFlatBody, device: SlideConfirmDeviceBody, rack: SlideConfirmRackBody, heat: SlideConfirmHeatBody });
   const springHome = useTransition("responsive");
   /* Device's key goes home in three steps on the instant tier, as the Switch's detent does: no spring. */
   const instant = useTransition("instant");
