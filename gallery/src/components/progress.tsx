@@ -77,11 +77,13 @@ export function Progress({ label, value, max = 100, valueText, status = "active"
   const reading =
     status === "done" ? "Done" : status === "failed" ? "Failed" : value === undefined ? (valueText ?? "Waiting") : (valueText ?? `${Math.round(share * 100)}%`);
   const tone = status === "failed" ? "text-danger" : "text-fg-subtle";
-  /* Under Flat the fill walks the sunset (Flat heatwave, v1.21); failed keeps danger, and every other world the ink. */
-  const worldRamp = byWorld<Ramp | null>(useMaterial(), { press: null, flat: RAMP });
+  const material = useMaterial();
+  const isHeat = material === "heat";
+  /* Under Flat the fill walks the sunset (Flat heatwave, v1.21); under Heat it lights amber dashes in a square channel; failed keeps danger. */
+  const worldRamp = byWorld<Ramp | null>(material, { press: null, flat: RAMP });
   const ramp = status === "failed" ? null : worldRamp;
-  const fill = status === "failed" ? "bg-danger" : "bg-fg";
-  const count = segments !== undefined ? Math.max(1, Math.round(segments)) : 0;
+  const fill = status === "failed" ? "bg-danger" : isHeat ? "bg-accent-text" : "bg-fg";
+  const count = segments !== undefined ? Math.max(1, Math.round(segments)) : isHeat ? 16 : 0;
   /* A segment lights only once its whole share is done. */
   const lit = count ? Math.floor(share * count + 1e-6) : 0;
 
@@ -101,19 +103,31 @@ export function Progress({ label, value, max = 100, valueText, status = "active"
         aria-valuemax={max}
         aria-valuenow={known ? Math.round(share * max) : undefined}
         aria-valuetext={reading}
-        className={count ? "grid gap-1" : "relative h-2 overflow-hidden rounded-control bg-slot forced-colors:border"}
+        className={
+          count
+            ? isHeat
+              ? "grid gap-1 border border-line bg-tray p-1 forced-colors:border"
+              : "grid gap-1"
+            : "relative h-2 overflow-hidden rounded-control bg-slot forced-colors:border"
+        }
         style={count ? { gridTemplateColumns: `repeat(${count}, minmax(0, 1fr))` } : undefined}
       >
         {count ? (
           /* One slot per thing counted: a done one lights in the fill, at its own place on the ramp under Flat. */
           Array.from({ length: count }, (_, i) => (
-            <span key={i} className="relative h-2 overflow-hidden rounded-control bg-slot forced-colors:border">
+            <span
+              key={i}
+              className={
+                "relative h-2 overflow-hidden forced-colors:border " +
+                (isHeat ? "rounded-none bg-line-strong" : "rounded-control bg-slot")
+              }
+            >
               {/* Always there, so lighting is a color fade on the instant tier (a jump under reduced motion). */}
               <span
                 className={"absolute inset-0 transition-colors duration-(--dur-instant) ease-litt " + (i < lit ? "forced-colors:bg-[CanvasText]! " + fill : "")}
                 style={i < lit && ramp ? { backgroundColor: ramp(i / Math.max(1, count - 1)) } : undefined}
               />
-              <span aria-hidden="true" className="pointer-events-none absolute inset-0 rounded-control shadow-(--slot-shade) in-[[data-material=flat]]:shadow-none" />
+              {!isHeat && <span aria-hidden="true" className="pointer-events-none absolute inset-0 rounded-control shadow-(--slot-shade) in-[[data-material=flat]]:shadow-none" />}
             </span>
           ))
         ) : (

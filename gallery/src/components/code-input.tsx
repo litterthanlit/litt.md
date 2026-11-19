@@ -39,6 +39,7 @@ import { useId, useRef, useState, type ChangeEvent, type ReactNode } from "react
 import { byWorld, useMaterial } from "@/motion";
 import { CodeInputDeviceBody } from "@/worlds/device/code-input";
 import { CodeInputFlatBody } from "@/worlds/flat/code-input";
+import { CodeInputHeatBody } from "@/worlds/heat/code-input";
 import { CodeInputRackBody } from "@/worlds/rack/code-input";
 
 export type CodeInputSize = "md" | "lg";
@@ -163,7 +164,7 @@ export function CodeInput({
   autoFocus,
   className = "",
 }: CodeInputProps) {
-  const Body = byWorld(useMaterial(), { press: PressBody, flat: CodeInputFlatBody, device: CodeInputDeviceBody, rack: CodeInputRackBody });
+  const Body = byWorld(useMaterial(), { press: PressBody, flat: CodeInputFlatBody, device: CodeInputDeviceBody, rack: CodeInputRackBody, heat: CodeInputHeatBody });
   const id = useId();
   const noteId = useId();
   const input = useRef<HTMLInputElement>(null);

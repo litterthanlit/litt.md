@@ -102,6 +102,7 @@ import { Button } from "@/components/button";
 import { Checkbox } from "@/components/checkbox";
 import { AlertIcon, RetryIcon } from "@/components/icons";
 import { tableDeviceDress } from "@/worlds/device/table";
+import { tableHeatDress } from "@/worlds/heat/table";
 import { tableRackDress } from "@/worlds/rack/table";
 import { tableFlatDress } from "@/worlds/flat/table";
 
@@ -291,7 +292,7 @@ export function Table({
   const [stickyStart, setStickyStart] = useState(0);
   const [loadingMore, setLoadingMore] = useState(false);
   const material = useMaterial();
-  const dress = byWorld(material, { press: pressDress, flat: tableFlatDress, device: tableDeviceDress, rack: tableRackDress });
+  const dress = byWorld(material, { press: pressDress, flat: tableFlatDress, device: tableDeviceDress, rack: tableRackDress, heat: tableHeatDress });
 
   /* The widths the header cells have now, to freeze before the first resize. */
   const measureColumns = useCallback(() => {

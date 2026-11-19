@@ -1,26 +1,23 @@
 /**
- * Input, Heat's body: the cut with the slot's walls and a deeper floor, as Press drew it until 2026-11-16 (plans/022).
- * Press went back to its first boards, the cut inside the 3:1 control line (--line-control, --cut-shade); Heat keeps
- * the deeper cut (--slot-shade with --field-shade stacked on it), so nothing in Heat changed.
+ * Input, Heat's body (proposals/heat.md; taste/litt-principles.md, Heat): a flat square dark field in a crisp 1px
+ * control line, with zero inset shadows and a sharp amber focus outline.
  *
- * - The bare input and the textarea are Heat's; the labelled field around them is Press's (input.tsx).
+ * - Square corners (`rounded-none`), `--field` fill, `--line-control` border, `--field-ink` text.
+ * - Hover steps the border to `--fg`; focus takes the 2px `--focus` outline; invalid takes `--danger`; disabled lies
+ *   flat on `--surface-2` with `--line` and `--fg-disabled`.
  * - The contract (props, aria-invalid, aria-describedby, the label) is input.tsx's.
  */
 import type { InputBodyProps, InputSize, TextareaBodyProps } from "@/components/input";
 
-/* The cut every field shares: floor, line, shade, focus, error, disabled. */
 const field =
-  "w-full min-w-0 rounded-control bg-field font-normal text-field-ink placeholder:text-field-ink-subtle " +
+  "w-full min-w-0 rounded-none border border-line-control bg-field font-normal text-field-ink placeholder:text-field-ink-subtle " +
   "pointer-coarse:text-(length:--control-text-lg) " +
-  "shadow-[var(--slot-shade),var(--field-shade)] " +
-  "transition-[box-shadow] duration-(--dur-instant) ease-litt " +
-  "focus-visible:outline-none focus-visible:shadow-[var(--slot-shade),var(--field-shade),var(--focus-ring)] " +
-  "aria-invalid:shadow-[inset_0_0_0_1px_var(--danger),var(--slot-shade),var(--field-shade)] " +
-  "aria-invalid:focus-visible:shadow-[inset_0_0_0_1px_var(--danger),var(--slot-shade),var(--field-shade),var(--focus-ring)] " +
-  "disabled:cursor-not-allowed disabled:bg-surface-2 disabled:text-fg-disabled disabled:placeholder:text-fg-disabled " +
-  "disabled:shadow-[inset_0_0_0_1px_var(--line)] " +
-  /* Forced colors (Windows high contrast) drops box-shadow, so the edge becomes a real border and focus gets an outline. */
-  "forced-colors:border forced-colors:focus-visible:outline-2 forced-colors:focus-visible:outline-solid forced-colors:focus-visible:outline-offset-2";
+  "transition-[border-color,background-color] duration-(--dur-instant) ease-litt " +
+  "enabled:hover:border-fg " +
+  "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus " +
+  "aria-invalid:border-danger " +
+  "disabled:cursor-not-allowed disabled:border-line disabled:bg-surface-2 disabled:text-fg-disabled disabled:placeholder:text-fg-disabled " +
+  "forced-colors:border";
 
 const inputSizes: Record<InputSize, string> = {
   sm: "h-control-sm px-control-pad-sm text-small pointer-coarse:h-control-md",
@@ -28,14 +25,13 @@ const inputSizes: Record<InputSize, string> = {
   lg: "h-control-lg px-control-pad-lg text-(length:--control-text-lg)",
 };
 
-/* A textarea has no fixed height, so its size sets the air above and below the text instead. */
 const textareaSizes: Record<InputSize, string> = {
   sm: "px-control-pad-sm py-2 text-small",
   md: "px-control-pad-md py-3 text-body",
   lg: "px-control-pad-lg py-4 text-(length:--control-text-lg)",
 };
 
-/* Heat's input: the deeper cut. */
+/** Heat's input: flat square dark field in a crisp 1px control line. */
 export function InputHeatBody({ size, invalid, mono, className, control }: InputBodyProps) {
   return (
     <input
@@ -47,7 +43,7 @@ export function InputHeatBody({ size, invalid, mono, className, control }: Input
   );
 }
 
-/* Heat's textarea: the same deeper cut. */
+/** Heat's textarea: the same flat square field, vertically resizable. */
 export function TextareaHeatBody({ size, invalid, mono, className, control }: TextareaBodyProps) {
   return (
     <textarea
