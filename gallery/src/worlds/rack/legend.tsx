@@ -52,7 +52,7 @@ export function LegendRackBody({ label, items, lines, className, noteId, note, p
             aria-describedby={last ? noteId : undefined}
             aria-keyshortcuts="Alt+Enter"
             className={
-              "litt-target inline-flex h-control-sm shrink-0 items-center gap-2 rounded-control px-2.5 whitespace-nowrap select-none " +
+              "litt-target relative inline-flex h-control-sm shrink-0 items-center gap-2 rounded-control px-2.5 whitespace-nowrap select-none " +
               "transition-colors duration-(--dur-instant) ease-litt [-webkit-tap-highlight-color:transparent] pointer-coarse:h-control-md " +
               "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus " +
               (last

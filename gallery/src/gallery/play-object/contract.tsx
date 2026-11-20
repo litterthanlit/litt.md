@@ -242,7 +242,7 @@ function Loaded({ material, dark, lead, actions }: Props) {
       : null;
 
   const LINK =
-    "litt-target inline-flex h-control-sm items-center rounded-control px-control-pad-sm text-small font-title text-fg-muted hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus pointer-coarse:h-control-md";
+    "litt-target relative inline-flex h-control-sm items-center rounded-control px-control-pad-sm text-small font-title text-fg-muted hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus pointer-coarse:h-control-md";
 
   return (
     <div {...lookAttributes({ accent: look.accent, material }, dark)} data-play-object={body.name} className="grid min-w-0 gap-4 bg-transparent">
@@ -304,7 +304,7 @@ function Loaded({ material, dark, lead, actions }: Props) {
 }
 
 const RAIL_ROW =
-  "litt-target flex h-control-sm w-full cursor-pointer items-center rounded-control px-2 text-left text-small " +
+  "litt-target relative flex h-control-sm w-full cursor-pointer items-center rounded-control px-2 text-left text-small " +
   "hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] hover:text-fg focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus pointer-coarse:h-control-md";
 
 /**
@@ -338,7 +338,7 @@ function Rail({ material, takes, total, at, open }: { material: Material; takes:
 }
 
 const ROW =
-  "litt-target grid w-full cursor-pointer content-start gap-0.5 rounded-control px-3 py-2 text-left in-[[data-material=flat]]:gap-1 in-[[data-material=flat]]:py-3 " +
+  "litt-target relative grid w-full cursor-pointer content-start gap-0.5 rounded-control px-3 py-2 text-left in-[[data-material=flat]]:gap-1 in-[[data-material=flat]]:py-3 " +
   "hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus";
 
 /**

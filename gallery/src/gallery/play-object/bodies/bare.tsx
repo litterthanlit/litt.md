@@ -8,7 +8,7 @@ import { COMPACT_BOX, COMPACT_SCREEN, SCREEN_HEIGHT } from "../body";
 import { useScrub } from "../scrub";
 
 const word =
-  "litt-target inline-flex h-control-sm shrink-0 cursor-pointer items-center rounded-control px-2 text-small text-fg-muted " +
+  "litt-target relative inline-flex h-control-sm shrink-0 cursor-pointer items-center rounded-control px-2 text-small text-fg-muted " +
   "hover:text-fg aria-pressed:text-fg aria-pressed:underline aria-pressed:underline-offset-4 pointer-coarse:h-control-md " +
   "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus";
 

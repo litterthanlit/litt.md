@@ -18,7 +18,7 @@ import { COMPACT_BOX, COMPACT_SCREEN, SCREEN_HEIGHT } from "../body";
 import { useScrub } from "../scrub";
 
 const keyBase =
-  "litt-target inline-flex shrink-0 cursor-pointer items-center justify-center rounded-control bg-block text-fg " +
+  "litt-target relative inline-flex shrink-0 cursor-pointer items-center justify-center rounded-control bg-block text-fg " +
   "shadow-[var(--highlight),var(--block-lift)] transition-[background-color,box-shadow,transform] duration-(--dur-instant) ease-litt " +
   "hover:bg-(--block-hover) active:shadow-(--block-press) active:[transform:translateY(var(--press-depth))] " +
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus forced-colors:border";

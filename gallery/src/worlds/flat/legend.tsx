@@ -51,7 +51,7 @@ export function LegendFlatBody({ label, items, lines, className, noteId, note, p
             aria-describedby={last ? noteId : undefined}
             aria-keyshortcuts="Alt+Enter"
             className={
-              "litt-target inline-flex h-control-sm shrink-0 items-center gap-2 rounded-pill px-3 whitespace-nowrap select-none font-title " +
+              "litt-target relative inline-flex h-control-sm shrink-0 items-center gap-2 rounded-pill px-3 whitespace-nowrap select-none font-title " +
               "transition-colors duration-(--dur-instant) ease-litt [-webkit-tap-highlight-color:transparent] pointer-coarse:h-control-md " +
               "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus " +
               (last

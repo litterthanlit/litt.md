@@ -29,6 +29,7 @@
     "test:motion": "node scripts/reduced-motion.mjs",
     "test:reflow": "node scripts/reflow.mjs",
     "test:jump": "node scripts/jump.mjs",
+    "test:targets": "node scripts/targets.mjs",
     "test:text-zoom": "node scripts/text-zoom.mjs",
     "test:forced-colors": "node scripts/forced-colors.mjs",
     "test:focus": "node scripts/focus.mjs",

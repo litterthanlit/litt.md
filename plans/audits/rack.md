@@ -1,6 +1,6 @@
 # Rack, audited: where it is weak to use and where it fails to land
 
-The audit plan 026 asks for, done for Rack on 2026-11-20, against the build served locally from `main` at `de2db3e`. It reads one world as a visitor would, with each weakness measured, ranked and given a test that says when it is fixed. It follows `plans/audits/heat.md` in shape.
+The audit plan 026 asks for, done for Rack on 2026-11-20, against the build served locally from the branch of pull request 150 at `de2db3e` (`main` plus the fixes for Heat). It reads one world as a visitor would, with each weakness measured, ranked and given a test that says when it is fixed. It follows `plans/audits/heat.md` in shape.
 
 Nothing was changed. Every fix below is a proposal, and the calls that are Nick's are marked **Nick**.
 

@@ -134,12 +134,14 @@ jobs:
               npm run test:sound --prefix gallery -- --self-test
           # Jump (every part's page links to Install in its first screen at 390, about 200s in all) rides in halves on the
           # two lightest jobs, since the matrix is full.
-          - name: Corners and jump 2/2
+          - name: Corners, jump 2/2 and targets
             run: |
               set -e
               npm run test:corners --prefix gallery
               npm run test:corners --prefix gallery -- --self-test
               npm run test:jump --prefix gallery -- --shard 2/2
+              npm run test:targets --prefix gallery
+              npm run test:targets --prefix gallery -- --self-test
           - name: Gaps, home, words and jump 1/2
             run: |
               set -e

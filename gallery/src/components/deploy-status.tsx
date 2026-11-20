@@ -46,7 +46,7 @@ export const DEFAULT_STAGES: DeployStage[] = [
 ];
 
 const keyCls =
-  "litt-target inline-flex h-control-sm cursor-pointer items-center justify-center rounded-control bg-block px-3 text-caption font-title text-fg select-none " +
+  "litt-target relative inline-flex h-control-sm cursor-pointer items-center justify-center rounded-control bg-block px-3 text-caption font-title text-fg select-none " +
   "shadow-[var(--highlight),var(--block-lift)] transition-[background-color,box-shadow,transform] duration-(--dur-instant) ease-litt " +
   "hover:bg-(--block-hover) active:shadow-(--block-press) active:[transform:translateY(var(--press-depth))] " +
   "disabled:cursor-not-allowed disabled:bg-surface-2 disabled:text-fg-disabled disabled:shadow-none " +
@@ -118,7 +118,7 @@ export function DeployStatus({
               aria-label={`${st.label}, ${st.duration}${current ? ", current stage" : raised ? ", completed" : ", pending"}`}
               onClick={() => go(i)}
               className={
-                "litt-target flex h-control-sm min-w-0 cursor-pointer items-center justify-center rounded-[calc(var(--radius-control)-2px)] px-2 text-caption select-none " +
+                "litt-target relative flex h-control-sm min-w-0 cursor-pointer items-center justify-center rounded-[calc(var(--radius-control)-2px)] px-2 text-caption select-none " +
                 "transition-[background-color,color,box-shadow,transform] duration-(--dur-instant) ease-litt " +
                 "active:[transform:translateY(var(--press-depth))] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus forced-colors:border " +
                 (raised

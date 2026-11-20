@@ -31,7 +31,7 @@ import { SoundPage } from "./sound-page";
 export const HOME = "https://www.litt.design/systems/";
 
 const LINK =
-  "litt-target inline-flex h-control-sm items-center rounded-control px-2 text-small font-title text-fg-muted hover:text-fg " +
+  "litt-target relative inline-flex h-control-sm items-center rounded-control px-2 text-small font-title text-fg-muted hover:text-fg " +
   "aria-[current=page]:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus pointer-coarse:h-control-md";
 
 /** A world's pages of the gallery's own beside about and components: Device's voices (plans/021). No page id may be one. */
