@@ -825,18 +825,18 @@ const COPY = {
   },
   "reaction-bar": {
     title: "Reaction bar",
-    description: "A playful reader reaction pill cluster whose pills flip from Flat's 1.5px outline to white paper with Candy data dots and a floating +1 badge on Flat's 0.28 bounce. A Flat part.",
-    docs: "Needs data-material=\"flat\" on <html>. Pass subject and optional items; toggling any pill updates its Candy dot and count and announces the change once. Under reduced motion nothing bounces or floats.",
+    description: "Minimal cotton-candy reader reaction pills carrying only glyph and count, washing in soft Candy tints with a floating +1 pop on Flat's 0.28 bounce. A Flat part.",
+    docs: "Needs data-material=\"flat\" on <html>. Pass subject and optional items; toggling any pill washes it in its Candy tint and announces the updated count once. Under reduced motion nothing bounces or floats.",
   },
   "reading-progress": {
     title: "Reading progress",
-    description: "An editorial reading progress card pairing Flat's 40px standing completion percent and remaining read time with a sunset heatwave bar and interactive chapter pills. A Flat part.",
-    docs: "Needs data-material=\"flat\" on <html>. Pass title and chapters; clicking a chapter or Previous and Next springs the heatwave bar forward on Flat's 0.28 bounce.",
+    description: "A minimal editorial reading progress card pairing Flat's 40px completion figure with directly-clickable cotton-candy chapter segments. A Flat part.",
+    docs: "Needs data-material=\"flat\" on <html>. Pass title and chapters; clicking any bar segment jumps directly to that chapter on Flat's 0.28 bounce.",
   },
   "goal-ring": {
     title: "Goal ring",
-    description: "A radial sunset heatwave goal tracker with Flat's 40px standing figure and tactile pill controls that spring the arc forward on Flat's 0.28 bounce. A Flat part.",
-    docs: "Needs data-material=\"flat\" on <html>. Pass title, target and unit; Log +1, +5 and Reset update the ring and announce the new progress once.",
+    description: "A minimal radial cotton-candy goal tracker with Flat's 40px standing figure and Braun-style circular − / + stepper keys on Flat's 0.28 bounce. A Flat part.",
+    docs: "Needs data-material=\"flat\" on <html>. Pass title, target and unit; the circular − and + keys step the ring and announce progress once.",
   },
   /* Heat's own parts (proposals/heat.md; taste/litt-principles.md, Heat): each needs data-material="heat" on <html>; its page says so. */
   "pursuit-meter": {

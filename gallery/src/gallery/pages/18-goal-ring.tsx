@@ -6,16 +6,16 @@ import { Page, Stage, TryIt, type PageDocs, type PageMeta, type PageStudy } from
 export const meta: PageMeta = {
   id: "goal-ring",
   title: "Goal ring",
-  lede: "A radial sunset heatwave goal tracker with Flat's 40px standing figure.",
+  lede: "A minimal cotton-candy radial goal tracker with circular stepper keys.",
   order: 1.06,
   group: "Data",
   verbs: ["press"],
   worlds: ["flat"],
   summary:
-    "A playful radial milestone tracker for personal reading goals, newsletter targets and creative streaks. Its SVG arc warms across Flat's four-stop sunset heatwave gradient, pairs with a 40px standing figure on white paper, and springs on Flat's 0.28 expressive bounce as you log progress. It belongs to Flat.",
+    "A minimal radial milestone tracker built with Dieter Rams restraint: one open cotton-candy SVG arc (sky through violet to bubblegum), one 40px standing figure beside its target, and two round − / + keys on borderless paper. Nothing extra competes for attention. It belongs to Flat.",
   tiers: ["instant", "expressive"],
   mechanism:
-    "An SVG ring maps current over target to strokeDashoffset across a four-stop sunset heatwave gradient (--data-seq-1 to --data-seq-4). Pill controls (+1, +5, Reset) update the figure and ring on Flat's expressive spring (350ms, bounce 0.28) without taking an accent fill, and announce each step once.",
+    "An open SVG ring maps current over target to strokeDashoffset across Flat's vivid cotton-candy gradient (--data-sky, --data-violet, --data-bubblegum). Two circular keys step the count on Flat's expressive spring (350ms, bounce 0.28) without taking an accent fill, announcing each step once.",
 };
 
 export const docs: PageDocs = {
@@ -31,20 +31,20 @@ export const docs: PageDocs = {
 />`,
   use: [
     "Personal sites, portfolios, creator dashboards and reading logs under Flat.",
-    "Celebrating progress toward a clear, countable target with tactile pill increments.",
+    "Tracking a single countable goal with minimal geometry and quiet circular controls.",
   ],
   skip: [
-    "Another world's page. GoalRing uses Flat's paper card, 40px figure, sunset heatwave arc and 0.28 bounce; it needs data-material=\"flat\" on <html>.",
+    "Another world's page. GoalRing uses Flat's paper card, 40px figure, cotton-candy arc and 0.28 bounce; it needs data-material=\"flat\" on <html>.",
     "A live hardware or telemetry meter. Use Gauge.",
     "A multi-series comparison. Use Chart.",
   ],
   keyboard: [
-    [["Tab"], "Moves focus across Log +1, +5 and Reset pills."],
-    [["Enter", "Space"], "Activates the focused pill to update the goal."],
+    [["Tab"], "Moves focus between the circular − and + keys."],
+    [["Enter", "Space"], "Steps the goal down or up by one."],
   ],
   a11y: [
     "The radial ring exposes role=\"progressbar\" with aria-valuemin, aria-valuemax, aria-valuenow and readable aria-valuetext.",
-    "The SVG graphic is hidden from assistive tech; the standing figure, percentage and polite live region say everything in words.",
+    "The SVG graphic is hidden from assistive tech; the standing figure, circular key labels and polite live region say everything in words.",
     "Under reduced motion the ring and figure jump immediately with no spring overshoot.",
   ],
 };
@@ -54,7 +54,7 @@ function ReadingGoalDemo() {
 }
 
 function NewsletterGoalDemo() {
-  return <GoalRing title="Spring issue subscribers" target={500} unit="readers" defaultValue={420} />;
+  return <GoalRing title="Spring issue" target={500} unit="readers" defaultValue={420} />;
 }
 
 function ReplayGoal() {
@@ -75,9 +75,9 @@ function ReplayGoal() {
 export const study: PageStudy = {
   object: <GoalRing title="2026 Reading goal" target={24} unit="books" defaultValue={18} />,
   parts: [
-    { name: "The paper card", selector: "[data-part=paper]" },
-    { name: "The heatwave ring", selector: "[role=progressbar]" },
+    { name: "The cotton-candy ring", selector: "[role=progressbar]" },
     { name: "The figure", selector: "[data-part=figure]" },
+    { name: "The circular keys", selector: "[data-part=circle]" },
   ],
   states: {
     empty: <GoalRing title="2026 Reading goal" target={24} unit="books" defaultValue={5} />,
@@ -86,7 +86,7 @@ export const study: PageStudy = {
   },
   replay: {
     label: "Replay logging books",
-    caption: "Watch the sunset heatwave ring spring forward on Flat's 0.28 bounce.",
+    caption: "Watch the cotton-candy ring spring forward on Flat's 0.28 bounce.",
     run: () => <ReplayGoal />,
   },
 };
@@ -103,7 +103,7 @@ export default function GoalRingPage() {
         title="Reading goal"
         tier="expressive"
         code="ReadingGoalDemo"
-        caption="Sunset heatwave ring paired with Flat's 40px standing figure. Log +1 or +5 to spring the arc forward, or Reset to start over."
+        caption="Open cotton-candy arc, single 40px figure, and round − / + keys. Everything redundant stripped away."
       >
         <ReadingGoalDemo />
       </Stage>
@@ -111,7 +111,7 @@ export default function GoalRingPage() {
         title="Newsletter milestone"
         tier="expressive"
         code="NewsletterGoalDemo"
-        caption="Works for any countable creator milestone: books, issues, subscribers or runs."
+        caption="Works for any countable creator milestone: books, issues, readers or runs."
       >
         <NewsletterGoalDemo />
       </Stage>

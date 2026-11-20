@@ -6,16 +6,16 @@ import { Page, Stage, TryIt, type PageDocs, type PageMeta, type PageStudy } from
 export const meta: PageMeta = {
   id: "reaction-bar",
   title: "Reaction bar",
-  lede: "Reader reaction pills that pop on Flat's bounce with Candy hue dots.",
+  lede: "Minimal cotton-candy reaction pills that pop on Flat's bounce.",
   order: 1.04,
   group: "Actions",
   verbs: ["press"],
   worlds: ["flat"],
   summary:
-    "A playful reader reaction pill cluster for essays, newsletters and portfolio notes. Untouched pills rest in Flat's 1.5px outline; toggling any pill flips it to crisp white paper, lights its Candy data dot and glyph, pops on Flat's 0.28 expressive bounce, and floats a tiny +1 badge upward. It belongs to Flat.",
+    "Minimal reader reaction pills for essays, newsletters and portfolio notes. Each pill carries only its glyph and count — zero redundant dots or word clutter. Untouched pills rest in Flat's 1.5px outline; toggling any pill washes it in its soft Candy tint (bubblegum, sky, violet, teal), pops on Flat's 0.28 bounce, and floats a tiny +1 badge upward. It belongs to Flat.",
   tiers: ["instant", "expressive"],
   mechanism:
-    "Each reaction is a native button with aria-pressed. Toggling switches between Flat's outline-off and paper-on materials without taking an accent fill, paints the dot and glyph in its Candy data hue, pops on the expressive spring (350ms, bounce 0.28), and announces the updated count in a polite status region.",
+    "Each reaction is a native button with aria-pressed. Toggling switches between Flat's outline-off and soft Candy tint-on without taking an accent fill, lights the glyph in its vivid Candy hue, pops on the expressive spring (350ms, bounce 0.28), and announces the updated count in a polite status region.",
 };
 
 export const docs: PageDocs = {
@@ -28,11 +28,11 @@ export const docs: PageDocs = {
 // With Flat's standing 40px combined reaction total.
 <ReactionBar subject="Issue 18" prominent />`,
   use: [
-    "At the foot of an essay, portfolio case study or newsletter issue under Flat, where readers want quick multi-choice reactions.",
-    "Lightweight editorial feedback that stays playful and airy without taking an accent fill.",
+    "At the foot of an essay, portfolio case study or newsletter issue under Flat, where readers want minimal multi-choice reactions.",
+    "Lightweight editorial feedback that stays playful, uncluttered and free of accent fills.",
   ],
   skip: [
-    "Another world's page. ReactionBar uses Flat's 0.28 bounce, outline-means-off pills and Candy dots; it needs data-material=\"flat\" on <html>.",
+    "Another world's page. ReactionBar uses Flat's 0.28 bounce, outline-means-off pills and Candy hues; it needs data-material=\"flat\" on <html>.",
     "A single multi-tap cheer counter. Use Kudos.",
     "A formal mutually exclusive vote with share bars. Use Poll.",
   ],
@@ -42,8 +42,8 @@ export const docs: PageDocs = {
   ],
   a11y: [
     "Grouped in role=\"group\" with an accessible name carrying the subject.",
-    "Each pill is a native button with aria-pressed and a readable label with reaction name and count.",
-    "Every toggle announces once in a polite live status region; decorative dots and floating +1 badges are hidden from assistive tech.",
+    "Each pill is a native button with aria-pressed, title and an accessible label carrying the full reaction name and count.",
+    "Every toggle announces once in a polite live status region; decorative floating +1 badges are hidden from assistive tech.",
     "Under reduced motion nothing bounces or floats; pill state and count update immediately.",
   ],
 };
@@ -53,7 +53,7 @@ function EssayReactionsDemo() {
     <div className="grid gap-4">
       <div className="grid gap-1">
         <p className="text-body font-title text-fg">Issue 18 · Motion that stays out of the way</p>
-        <p className="text-small text-fg-subtle">Toggle any pill to pop its Candy dot and add your reaction.</p>
+        <p className="text-small text-fg-subtle">Glyph and count only — toggle any pill for a soft cotton-candy wash.</p>
       </div>
       <ReactionBar subject="Issue 18" defaultValue={["love", "spark"]} prominent />
     </div>

@@ -704,7 +704,7 @@
     },
     "flat-goal-ring": {
       "version": "2026.11.19",
-      "hash": "01a7581b39a67723"
+      "hash": "18e84a3b5a27d94f"
     },
     "flat-header": {
       "version": "2026.11.16",
@@ -824,11 +824,11 @@
     },
     "flat-reaction-bar": {
       "version": "2026.11.19",
-      "hash": "62efddcc4c317979"
+      "hash": "50271056ce700abc"
     },
     "flat-reading-progress": {
       "version": "2026.11.19",
-      "hash": "acdfc56ab429ef0c"
+      "hash": "6bdaa8473d214978"
     },
     "flat-resizable": {
       "version": "2026.11.16",
@@ -988,7 +988,7 @@
     },
     "goal-ring": {
       "version": "2026.11.19",
-      "hash": "01a7581b39a67723"
+      "hash": "18e84a3b5a27d94f"
     },
     "growth": {
       "version": "2026.10.26",
@@ -2676,11 +2676,11 @@
     },
     "reaction-bar": {
       "version": "2026.11.19",
-      "hash": "62efddcc4c317979"
+      "hash": "50271056ce700abc"
     },
     "reading-progress": {
       "version": "2026.11.19",
-      "hash": "acdfc56ab429ef0c"
+      "hash": "6bdaa8473d214978"
     },
     "resizable": {
       "version": "2026.11.06",

@@ -6,16 +6,16 @@ import { Page, Stage, TryIt, type PageDocs, type PageMeta, type PageStudy } from
 export const meta: PageMeta = {
   id: "reading-progress",
   title: "Reading progress",
-  lede: "An airy chapter progress card warming along Flat's sunset heatwave.",
+  lede: "A minimal chapter progress bar stepping through Flat's cotton-candy palette.",
   order: 1.05,
   group: "Data",
   verbs: ["select", "press"],
   worlds: ["flat"],
   summary:
-    "An editorial reading progress card for long-form essays, guides and portfolio stories. It pairs Flat's 40px standing completion percentage and remaining read time with a continuous sunset heatwave capsule bar and interactive chapter pills that spring forward on Flat's 0.28 bounce. It belongs to Flat.",
+    "A minimal reading progress instrument for essays, guides and portfolio stories. One borderless paper card holds the title, a 40px standing completion percentage, and directly-clickable chapter segments stepping from sky through blue and violet to bubblegum — with zero extra pill rows or stepper buttons. It belongs to Flat.",
   tiers: ["instant", "expressive"],
   mechanism:
-    "The paper card computes read percentage and remaining minutes from the active chapter index. Jumping chapters or stepping with Previous and Next animates the sunset heatwave bar (--data-seq-1 to --data-seq-4) on Flat's expressive spring (350ms, bounce 0.28) and updates a polite live status region.",
+    "Each chapter is a single clickable capsule segment. Clicking any segment steps the cotton-candy ramp (--data-sky, --data-blue, --data-violet, --data-bubblegum) to that chapter, pops the active segment and 40px figure on Flat's expressive spring (350ms, bounce 0.28), and announces progress in a polite live region.",
 };
 
 export const docs: PageDocs = {
@@ -29,22 +29,22 @@ export const docs: PageDocs = {
 />`,
   use: [
     "Beside or atop long-form essays, multi-part guides and portfolio stories under Flat.",
-    "Where readers benefit from seeing remaining read time and jumping directly between chapters.",
+    "Where readers benefit from seeing remaining read time and clicking directly into any chapter.",
   ],
   skip: [
-    "Another world's page. ReadingProgress uses Flat's paper-on-grey card, 40px figure, sunset heatwave bar and 0.28 bounce; it needs data-material=\"flat\" on <html>.",
+    "Another world's page. ReadingProgress uses Flat's paper-on-grey card, 40px figure, cotton-candy segments and 0.28 bounce; it needs data-material=\"flat\" on <html>.",
     "A background upload or task meter. Use Progress.",
     "A multi-step form wizard with validation. Use Tabs or Breadcrumb.",
   ],
   keyboard: [
-    [["Tab"], "Moves focus across chapter pills and Previous / Next controls."],
-    [["Enter", "Space"], "Jumps to the focused chapter or steps forward and back."],
+    [["Tab"], "Moves focus across the chapter segments."],
+    [["Enter", "Space"], "Jumps directly to the focused chapter."],
   ],
   a11y: [
-    "The heatwave bar exposes role=\"progressbar\" with aria-valuemin, aria-valuemax and aria-valuenow.",
-    "The active chapter pill carries aria-current=\"step\".",
-    "Every chapter jump announces the chapter title, percentage and remaining read time once in a polite status region.",
-    "Under reduced motion the bar and figure update immediately without spring overshoot.",
+    "Chapter segments sit inside role=\"group\" named Chapters; the active segment carries aria-current=\"step\".",
+    "Each segment exposes the chapter number, title and reading minutes in aria-label.",
+    "Every jump announces the chapter title, percentage and remaining read time once in a polite status region.",
+    "Under reduced motion the segment and figure update immediately without spring overshoot.",
   ],
 };
 
@@ -86,7 +86,7 @@ export const study: PageStudy = {
   parts: [
     { name: "The paper card", selector: "[data-part=paper]" },
     { name: "The figure", selector: "[data-part=figure]" },
-    { name: "The heatwave bar", selector: "[role=progressbar]" },
+    { name: "The chapter segments", selector: "[data-part=bubble]" },
   ],
   states: {
     empty: <ReadingProgress title="Field notes on motion" defaultChapterIndex={0} />,
@@ -95,7 +95,7 @@ export const study: PageStudy = {
   },
   replay: {
     label: "Replay chapter advance",
-    caption: "Watch the sunset heatwave capsule spring across chapters on Flat's 0.28 bounce.",
+    caption: "Watch the cotton-candy segments step forward on Flat's 0.28 bounce.",
     run: () => <ReplayReading />,
   },
 };
@@ -112,7 +112,7 @@ export default function ReadingProgressPage() {
         title="Long-form essay tracker"
         tier="expressive"
         code="EssayProgressDemo"
-        caption="Standing 40px completion percent, heatwave capsule bar, and chapter pills. Click any chapter or step with Previous and Next."
+        caption="Title, 40px standing percent, and directly-clickable cotton-candy segments — click any bar segment to jump."
       >
         <EssayProgressDemo />
       </Stage>
@@ -120,7 +120,7 @@ export default function ReadingProgressPage() {
         title="Finished state"
         tier="expressive"
         code="FinishedProgressDemo"
-        caption="At 100%, the heatwave bar reaches full plum/gold warmth and reads Finished reading."
+        caption="At 100%, every segment lights across sky, violet and bubblegum and reads Finished."
       >
         <FinishedProgressDemo />
       </Stage>

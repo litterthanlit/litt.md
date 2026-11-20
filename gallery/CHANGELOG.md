@@ -6,11 +6,11 @@ To update an item, read the entries since your version, then reinstall it with `
 
 ## 2026-11-19 · Flat expansion, Rack Ableton identity & Heat complete
 
-Flat expansion (skills/litt-md/taste/litt-principles.md, Flat): adds three more playful Flat-only editorial and personal-site components (`reaction-bar`, `reading-progress`, `goal-ring`) built on Flat's 0.28 expressive bounce, 40px standing figures, Candy data dots and sunset heatwave ramp, and refreshes Flat's front-door player set. Nothing changes outside Flat.
+Flat expansion (skills/litt-md/taste/litt-principles.md, Flat): adds three minimal Flat-only editorial and personal-site components (`reaction-bar`, `reading-progress`, `goal-ring`) guided by Dieter Rams restraint and Flat's vivid cotton-candy hues (`sky`, `blue`, `violet`, `bubblegum`) on Flat's 0.28 expressive bounce, and refreshes Flat's front-door player set. Nothing changes outside Flat.
 
-- **added** `reaction-bar`, `flat-reaction-bar`: Reaction bar, a multi-choice reader reaction pill cluster whose pills flip from Flat's 1.5px outline to white paper with Candy data dots, a floating `+1` pop and optional 40px standing total. Needs `data-material="flat"` on `<html>`.
-- **added** `reading-progress`, `flat-reading-progress`: Reading progress, an airy editorial reading progress card pairing Flat's 40px completion percentage and remaining read time with a continuous sunset heatwave bar and interactive chapter pills. Needs `data-material="flat"` on `<html>`.
-- **added** `goal-ring`, `flat-goal-ring`: Goal ring, a radial sunset heatwave goal tracker with Flat's 40px standing figure and tactile `Log +1`, `+5` and `Reset` pill controls. Needs `data-material="flat"` on `<html>`.
+- **added** `reaction-bar`, `flat-reaction-bar`: Reaction bar, minimal cotton-candy reader reaction pills showing only glyph and count, washing in soft Candy tints with a floating `+1` pop and optional 40px standing total. Needs `data-material="flat"` on `<html>`.
+- **added** `reading-progress`, `flat-reading-progress`: Reading progress, a minimal reading progress card pairing Flat's 40px completion figure with directly-clickable cotton-candy chapter segments (`sky` → `blue` → `violet` → `bubblegum`) and a single-line chapter footer. Needs `data-material="flat"` on `<html>`.
+- **added** `goal-ring`, `flat-goal-ring`: Goal ring, a minimal radial cotton-candy goal tracker with an open SVG arc, Flat's 40px standing figure and Braun-style circular `−` / `+` stepper keys. Needs `data-material="flat"` on `<html>`.
 
 Earlier the same day, Rack Ableton Live identity (proposals/rack.md; taste/litt-principles.md, Rack): adds three Rack-only colorful music-studio components (`clip-launcher`, `device-rack`, `step-sequencer`) built on Rack's five clip colors and instant-cut grey module chrome, and brings Ableton Live voice demos across Rack's set. Nothing changes outside Rack.
 

@@ -1,12 +1,13 @@
 /**
- * ReactionBar, a Flat part (skills/litt-md/taste/litt-principles.md, Flat): a playful reader reaction pill cluster
- * powered by Flat's 0.28 expressive spring and Candy data hues.
+ * ReactionBar, a Flat part (skills/litt-md/taste/litt-principles.md, Flat): minimal reader reaction pills in Flat's
+ * vivid Candy palette (cotton candy: bubblegum, sky, violet, teal) on Flat's 0.28 expressive spring.
  *
- * - Untouched reactions rest in Flat's 1.5px outline ("an outline means off", Flat rule 2). Toggling a reaction flips
- *   it to crisp white paper (never an accent fill, R6), lights its Candy data dot, pops the pill on Flat's 0.28
- *   expressive bounce, increments the count, and floats a tiny "+1" pill upward.
- * - Clicking an active reaction removes your reaction cleanly so every press stays reversible ("a hand always wins").
- * - Optional prominent mode displays the combined reaction count at Flat's 40px standing figure size above the pills.
+ * - Dieter Rams economy: each pill carries only its glyph and tabular count (no redundant dot next to an icon, no
+ *   noisy word clutter). Full reaction names live in `aria-label` and `title`.
+ * - Untouched reactions rest in Flat's 1.5px outline ("an outline means off", Flat rule 2). Toggling a reaction fills
+ *   the pill with its soft Candy tint (never an accent fill, R6), lights its glyph in the vivid Candy hue, pops on
+ *   Flat's 0.28 bounce, and floats a tiny "+1" upward.
+ * - Clicking an active reaction removes it cleanly so every press stays reversible.
  * - Reduced motion removes all bounce and floating badges and updates the pills and counts at once.
  */
 import { useState } from "react";
@@ -14,16 +15,16 @@ import { AnimatePresence, motion } from "motion/react";
 import { useExit, useMotionDial, useTransition } from "@/motion";
 
 export type ReactionIcon = "heart" | "sparkles" | "flame" | "bookmark";
-export type ReactionHue = "rose" | "amber" | "blue" | "teal" | "violet";
+export type ReactionHue = "bubblegum" | "sky" | "violet" | "teal" | "blue" | "amber" | "rose";
 
 export type ReactionItem = {
   /** Stable id for this reaction. */
   id: string;
-  /** Short plain label, e.g. "Love", "Insightful", "Fire", "Save". */
+  /** Accessible name for this reaction, e.g. "Love", "Insightful", "Sharp", "Save". */
   label: string;
   /** Icon glyph inside the pill. */
   icon: ReactionIcon;
-  /** Candy data hue painted on the active dot and icon. */
+  /** Candy data hue painted on the active tint and glyph. */
   hue: ReactionHue;
   /** Baseline count from other readers. */
   count: number;
@@ -47,19 +48,21 @@ export type ReactionBarProps = {
 };
 
 export const DEFAULT_REACTIONS: ReactionItem[] = [
-  { id: "love", label: "Love", icon: "heart", hue: "rose", count: 42 },
-  { id: "spark", label: "Insightful", icon: "sparkles", hue: "amber", count: 19 },
-  { id: "fire", label: "Sharp", icon: "flame", hue: "blue", count: 14 },
+  { id: "love", label: "Love", icon: "heart", hue: "bubblegum", count: 42 },
+  { id: "spark", label: "Insightful", icon: "sparkles", hue: "sky", count: 19 },
+  { id: "fire", label: "Sharp", icon: "flame", hue: "violet", count: 14 },
   { id: "save", label: "Save", icon: "bookmark", hue: "teal", count: 9 },
 ];
 
-/* Literal CSS variable strings so gen-registry renames every data token for host installs. */
-const HUE_VAR: Record<ReactionHue, string> = {
-  rose: "var(--data-rose)",
-  amber: "var(--data-amber)",
-  blue: "var(--data-blue)",
-  teal: "var(--data-teal)",
-  violet: "var(--data-violet)",
+/* Literal CSS variable & utility strings so gen-registry renames every data token for host installs. */
+const HUE: Record<ReactionHue, { mark: string; tint: string }> = {
+  bubblegum: { mark: "var(--data-bubblegum)", tint: "bg-data-bubblegum-tint" },
+  sky: { mark: "var(--data-sky)", tint: "bg-data-sky-tint" },
+  violet: { mark: "var(--data-violet)", tint: "bg-data-violet-tint" },
+  teal: { mark: "var(--data-teal)", tint: "bg-data-teal-tint" },
+  blue: { mark: "var(--data-blue)", tint: "bg-data-blue-tint" },
+  amber: { mark: "var(--data-amber)", tint: "bg-data-amber-tint" },
+  rose: { mark: "var(--data-rose)", tint: "bg-data-rose-tint" },
 };
 
 function Glyph({ icon, color }: { icon: ReactionIcon; color?: string }) {
@@ -92,7 +95,7 @@ function Glyph({ icon, color }: { icon: ReactionIcon; color?: string }) {
   );
 }
 
-/** A playful Flat reader reaction pill cluster with Candy data dots and Flat's 0.28 expressive bounce. */
+/** Minimal Flat reader reaction pills in vivid cotton-candy hues on Flat's 0.28 expressive spring. */
 export function ReactionBar({
   subject = "this essay",
   items = DEFAULT_REACTIONS,
@@ -151,39 +154,33 @@ export function ReactionBar({
         {items.map((item) => {
           const isOn = active.includes(item.id);
           const count = item.count + (isOn ? 1 : 0);
-          const hueColor = HUE_VAR[item.hue];
+          const tone = HUE[item.hue];
           const showPop = !reduced && burst?.id === item.id && isOn;
 
           return (
             <div key={item.id} className="relative inline-flex">
               <motion.button
                 type="button"
+                title={item.label}
                 data-part={isOn ? "pill" : "outline"}
                 aria-pressed={isOn}
                 aria-label={`${item.label}, ${count} ${count === 1 ? "reaction" : "reactions"}${isOn ? ", selected" : ""}`}
                 onClick={() => toggle(item)}
-                whileTap={reduced ? undefined : { scale: 0.93 }}
-                animate={reduced ? undefined : isOn ? { scale: [0.94, 1] } : { scale: 1 }}
+                whileTap={reduced ? undefined : { scale: 0.92 }}
+                animate={reduced ? undefined : isOn ? { scale: [0.92, 1] } : { scale: 1 }}
                 transition={spring}
                 className={
                   "litt-target relative inline-flex h-control-md cursor-pointer items-center gap-2 rounded-control px-3.5 text-small font-title select-none [-webkit-tap-highlight-color:transparent] " +
                   "transition-colors duration-(--dur-instant) ease-litt focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus forced-colors:border " +
                   (isOn
-                    ? "bg-surface-1 text-fg"
+                    ? `${tone.tint} text-fg`
                     : "bg-transparent text-fg-muted shadow-[inset_0_0_0_1.5px_var(--line-control)] hover:text-fg")
                 }
               >
-                <span
-                  aria-hidden="true"
-                  data-part="circle"
-                  className="size-2 shrink-0 rounded-pill transition-transform duration-(--dur-instant) ease-litt"
-                  style={{ backgroundColor: isOn ? hueColor : "var(--line-strong)" }}
-                />
                 <span data-part="mark" className="inline-flex items-center">
-                  <Glyph icon={item.icon} color={isOn ? hueColor : undefined} />
+                  <Glyph icon={item.icon} color={isOn ? tone.mark : undefined} />
                 </span>
-                <span>{item.label}</span>
-                <span className="tabular-nums text-fg-subtle">{count}</span>
+                <span className="tabular-nums">{count}</span>
               </motion.button>
 
               <AnimatePresence>
@@ -196,8 +193,8 @@ export function ReactionBar({
                     animate={{ opacity: 1, y: -22, scale: 1 }}
                     exit={{ opacity: 0, y: -32, scale: 0.85 }}
                     transition={flight}
-                    className="pointer-events-none absolute -top-1 right-3 rounded-pill bg-surface-1 px-1.5 py-0.5 text-caption font-title tabular-nums text-fg shadow-float"
-                    style={{ color: hueColor }}
+                    className="pointer-events-none absolute -top-1 right-2.5 rounded-pill bg-surface-1 px-1.5 py-0.5 text-caption font-title tabular-nums shadow-float"
+                    style={{ color: tone.mark }}
                   >
                     +1
                   </motion.span>
