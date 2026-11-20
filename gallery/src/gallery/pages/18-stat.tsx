@@ -11,6 +11,9 @@ export const meta: PageMeta = {
   order: 9.03, group: "Data",
   summary:
     "A number tile for one figure: a small label, the value large in the sans with tabular numbers, an optional delta in words and an optional trend at the foot. Green and red are for news only. A group of tiles measures itself, and nothing about a tile moves.",
+  summaryByWorld: {
+    heat: "A telemetry slab for one figure: the label on a striped band, the value in its own square cell with tabular numbers, an optional delta in words and an optional trend at the foot. Green and red are for news only. A group of tiles measures itself, and nothing about a tile moves.",
+  },
   fun: "The figure counts up with the same pen as the sparkline under it.",
   tiers: [],
 };

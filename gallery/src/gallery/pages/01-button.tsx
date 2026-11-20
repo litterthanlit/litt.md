@@ -14,6 +14,9 @@ export const meta: PageMeta = {
   order: 1.01, group: "Actions",
   verbs: ["press"],
   summary: "Roomy and slightly rounded, with the label at the title weight. Under Press, secondary is a block raised once by its cast, with no outline, and danger is the same block with red words. Hover changes the fill on the instant tier, and a press sinks the block half a pixel, so the button answers without ever changing its size.",
+  summaryByWorld: {
+    heat: "A square key with the label at the title weight. Primary is the one accent fill; secondary is a flat cell in a 1px line, and danger the same cell with red words. Hover steps the fill and four corner brackets snap on, on the instant tier, and a press draws the key in a touch on the frame, so the button answers without ever changing its size.",
+  },
   fun: "Press and let go: the button goes deeper and springs back with a little life.",
   tiers: ["instant"],
   mechanism:

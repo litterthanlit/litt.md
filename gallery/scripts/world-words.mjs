@@ -66,7 +66,7 @@ const CONTENT = 'pre, code, section[aria-labelledby="props"]';
  * Pages whose words are not yet the world's: the page, the word and why. Each prints; one that stops happening fails,
  * so take it out when the words are fixed.
  */
-const ABOUT = "About is the shared summary, written for Press, and meta has no summary by world";
+const ABOUT = "About is the shared summary, written for Press, with no summaryByWorld for Heat";
 const DOCS = "the docs (Use when, Skip when, Accessibility) are shared and written for Press";
 const STUDY = "the study's How it moves or Anatomy is shared, with no movesByWorld for Heat";
 const NAME = "the part is called Glass header";
@@ -76,11 +76,10 @@ const KNOWN = [
   k("app-shell", ["glass"], ABOUT),
   k("avatar", ["pill"], DOCS),
   k("breadcrumb", ["glass"], NAME),
-  k("button", ["cast", "raised", "sinks"], ABOUT, DOCS),
+  k("button", ["cast", "sinks"], DOCS),
   k("callout", ["raised"], ABOUT, DOCS),
   k("card", ["glass", "raised"], ABOUT, DOCS),
   k("card-picker", ["raised"], DOCS),
-  k("checkbox", ["raised"], ABOUT),
   k("code-input", ["glass", "pill", "raised"], STUDY),
   k("combobox", ["glass", "raised"], ABOUT, DOCS),
   k("components", ["glass"], NAME),
@@ -91,7 +90,6 @@ const KNOWN = [
   k("inspector", ["glass"], ABOUT),
   k("kbd", ["cast", "raised"], ABOUT, DOCS),
   k("list", ["raised"], ABOUT),
-  k("menu", ["glass"], ABOUT),
   k("message", ["raised"], ABOUT),
   k("number-field", ["raised", "sinks"], ABOUT),
   k("option-picker", ["pill", "raised"], ABOUT),
@@ -105,9 +103,8 @@ const KNOWN = [
   k("run-card", ["raised"], ABOUT),
   k("run-list", ["raised"], ABOUT, DOCS),
   k("segmented", ["raised"], DOCS),
-  k("select", ["glass", "raised"], ABOUT, DOCS),
+  k("select", ["glass"], DOCS),
   k("slide-confirm", ["pill", "raised"], STUDY),
-  k("slider", ["raised"], ABOUT),
   k("switch", ["cast", "pill", "raised", "sinks"], ABOUT, STUDY),
   k("tag", ["pill", "raised"], ABOUT, DOCS),
   k("token-input", ["pill"], ABOUT),

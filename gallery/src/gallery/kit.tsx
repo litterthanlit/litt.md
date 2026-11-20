@@ -55,6 +55,8 @@ export type PageMeta = {
   verbs?: Verb[];
   /** One sentence: what the component is and what its motion does. */
   summary: string;
+  /** The summary in a world's own words, by world, as `ledeByWorld` is for the lede: About on a part's page reads it through `lineIn`. */
+  summaryByWorld?: Partial<Record<Material, string>>;
   /**
    * What fun mode changes here, as something to try: "Throw the thumb: it coasts to the end and confirms." Set it on
    * every page whose component moves differently in fun mode. With fun mode on, the gallery leads with these pages:
@@ -168,14 +170,16 @@ export type PageDocs = {
 export const WorldContext = createContext<Material | null>(null);
 
 /**
- * A page's line in a world: its lede, or How it moves (`mechanism`), in that world's own words where meta gives them
- * (`ledeByWorld`, `movesByWorld`), and the shared line where it does not or where there is no world.
+ * A page's line in a world: its lede, its summary, or How it moves (`mechanism`), in that world's own words where meta
+ * gives them (`ledeByWorld`, `summaryByWorld`, `movesByWorld`), and the shared line where it does not or where there is
+ * no world.
  */
-type Lines = Pick<PageMeta, "lede" | "ledeByWorld" | "mechanism" | "movesByWorld">;
-export function lineIn(meta: Lines, line: "lede", world: Material | null): string;
+type Lines = Pick<PageMeta, "lede" | "ledeByWorld" | "summary" | "summaryByWorld" | "mechanism" | "movesByWorld">;
+export function lineIn(meta: Lines, line: "lede" | "summary", world: Material | null): string;
 export function lineIn(meta: Lines, line: "moves", world: Material | null): string | undefined;
-export function lineIn(meta: Lines, line: "lede" | "moves", world: Material | null): string | undefined {
+export function lineIn(meta: Lines, line: "lede" | "summary" | "moves", world: Material | null): string | undefined {
   if (line === "lede") return (world && meta.ledeByWorld?.[world]) || meta.lede;
+  if (line === "summary") return (world && meta.summaryByWorld?.[world]) || meta.summary;
   return (world && meta.movesByWorld?.[world]) || meta.mechanism;
 }
 
@@ -362,7 +366,7 @@ export function Page({
             <h2 id={`about-${meta.id}`} className={QUIET_HEADING}>
               About
             </h2>
-            <p className="max-w-(--measure) text-small text-fg-muted">{meta.summary}</p>
+            <p className="max-w-(--measure) text-small text-fg-muted">{lineIn(meta, "summary", world)}</p>
             {(docs || meta.block) && (
               <div className="flex flex-wrap items-center gap-x-6 gap-y-4">
                 {docs && (

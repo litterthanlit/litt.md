@@ -16,6 +16,9 @@ export const meta: PageMeta = {
   verbs: ["select", "open"],
   summary:
     "One value from a short list. You press the trigger, so it is a raised block, the secondary Button's, and it stays pressed while its list is open. The list is a tray of slats in glass, 44px each, with one gliding highlight, and the current slat lifted with a check. The list grows from the trigger and leaves again, and on a phone it stays anchored beside it.",
+  summaryByWorld: {
+    heat: "One value from a short list. The trigger is a square cell in a 1px line, and corner brackets snap onto it while it is hovered, focused or open. The list is a square slab banded with stripes at its top and foot. The row under the keys or the pointer takes a darker cell, brackets and lit words, and the current value carries a check.",
+  },
   fun: "Move through the options: the highlight reaches for the next row, then gathers itself there.",
   tiers: ["instant", "responsive"],
 };

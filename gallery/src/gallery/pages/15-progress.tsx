@@ -13,6 +13,9 @@ export const meta: PageMeta = {
   verbs: ["watch"],
   summary:
     "A slot cut into the page for work that is happening now, such as an upload or an import: the label and a reading above it, the done part in the foreground, filling the channel under its walls on the instant tier. It ends done or failed, said in words and announced once. With no value yet the slot stays empty: nothing sweeps, pulses or shimmers.",
+  summaryByWorld: {
+    heat: "A row of dashes in a flat channel for work that is happening now, such as an upload or an import: the label and a reading above it, and each dash lighting once its share is done, on the instant tier. It ends done or failed, said in words and announced once. With no value yet no dash is lit: nothing sweeps, pulses or shimmers.",
+  },
   tiers: ["instant"],
 };
 

@@ -12,6 +12,9 @@ export const meta: PageMeta = {
   verbs: ["select"],
   summary:
     "A short choice in one track. The selected surface glides to your pick on the responsive tier, and color changes are instant, so the control answers without ever resizing.",
+  summaryByWorld: {
+    heat: "A short choice in a row of square cells divided by 1px rules. The chosen cell takes a darker fill, corner brackets and ‹ › around its label at once, and colors change on the instant tier, so the control answers without ever resizing.",
+  },
   fun: "Pick another option: the surface springs to it and settles a hair past its mark.",
   tiers: ["instant", "responsive"],
 };
