@@ -278,7 +278,7 @@ function HeatHome({ world, takes, current, list, row, everything, part, compact 
       <div className="flex min-h-0 min-w-0 flex-col gap-3">
         <h2 className="px-3 text-caption text-fg-muted">{world.name}</h2>
         <nav {...list}>
-          <ul className="grid gap-0.5">
+          <ul className="grid">
             {takes.map((t, i) => {
               const on = i === current;
               return (
