@@ -1,6 +1,6 @@
 {
   "$comment": "Written by scripts/gen-registry.mjs. What each registry item installs, hashed, and the release that last changed it. Commit it with the change.",
-  "latest": "2026.11.19",
+  "latest": "2026.11.20",
   "items": {
     "accordion": {
       "version": "2026.11.18",
@@ -137,6 +137,10 @@
     "date-picker": {
       "version": "2026.11.17",
       "hash": "bbb0a9c7e30a528b"
+    },
+    "deploy-status": {
+      "version": "2026.11.20",
+      "hash": "47de99ccd816119d"
     },
     "deployment": {
       "version": "2026.11.03",
@@ -553,6 +557,10 @@
     "dot-plot": {
       "version": "2026.11.18",
       "hash": "5348914944485c67"
+    },
+    "env-switch": {
+      "version": "2026.11.20",
+      "hash": "f66ab7c0e40cf0ce"
     },
     "file-changes": {
       "version": "2026.11.18",
@@ -1974,6 +1982,10 @@
       "version": "2026.11.17",
       "hash": "bbb0a9c7e30a528b"
     },
+    "press-deploy-status": {
+      "version": "2026.11.20",
+      "hash": "47de99ccd816119d"
+    },
     "press-details": {
       "version": "2026.11.18",
       "hash": "2f60f5ceec568b06"
@@ -1985,6 +1997,10 @@
     "press-dot-plot": {
       "version": "2026.11.18",
       "hash": "5348914944485c67"
+    },
+    "press-env-switch": {
+      "version": "2026.11.20",
+      "hash": "f66ab7c0e40cf0ce"
     },
     "press-file-changes": {
       "version": "2026.11.18",
@@ -2121,6 +2137,10 @@
     "press-range-chart": {
       "version": "2026.11.16",
       "hash": "3b510b0be4606ccd"
+    },
+    "press-release-rail": {
+      "version": "2026.11.20",
+      "hash": "f8a779ef93d69dc9"
     },
     "press-resizable": {
       "version": "2026.11.16",
@@ -2681,6 +2701,10 @@
     "reading-progress": {
       "version": "2026.11.19",
       "hash": "8094c653906bf3d9"
+    },
+    "release-rail": {
+      "version": "2026.11.20",
+      "hash": "f8a779ef93d69dc9"
     },
     "resizable": {
       "version": "2026.11.06",

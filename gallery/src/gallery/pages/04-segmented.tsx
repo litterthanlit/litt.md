@@ -535,6 +535,38 @@ function TrackMonitorDemo() {
   );
 }
 
+/* ---------- Press's own (plans/024, Press): deploy telemetry window ---------- */
+
+type DeployWindow = "24h" | "7d" | "30d";
+
+const DEPLOY_WINDOW_NOTES: Record<DeployWindow, string> = {
+  "24h": "6 deploys · 1m 21s median build · 0 rollbacks",
+  "7d": "38 deploys · 1m 25s median build · fra1",
+  "30d": "142 deploys · 1m 29s median build · 99.98% up",
+};
+
+function DeployWindowDemo() {
+  const [windowVal, setWindowVal] = useState<DeployWindow>("7d");
+  return (
+    <div className="grid justify-items-center gap-4">
+      <Segmented
+        legend="Deploy window"
+        size="sm"
+        value={windowVal}
+        onValueChange={setWindowVal}
+        options={[
+          { value: "24h", label: "24h" },
+          { value: "7d", label: "7 days" },
+          { value: "30d", label: "30 days" },
+        ]}
+      />
+      <p role="status" className="font-mono text-caption tabular-nums text-fg-subtle">
+        {DEPLOY_WINDOW_NOTES[windowVal]}
+      </p>
+    </div>
+  );
+}
+
 export default function SegmentedPage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -544,6 +576,13 @@ export default function SegmentedPage() {
         caption="The small size, as in a header. The legend is hidden, because the options name the control. The selected surface glides to your pick through transform on the responsive tier, and the text color fades on the instant tier. On a touch screen the segment you hold fills."
         code="ThemeDemo"
         byWorld={{
+          press: {
+            demo: <DeployWindowDemo />,
+            title: "Deploy window",
+            code: "DeployWindowDemo",
+            caption:
+              "A compact range switcher in a deploy header: the selected range stands up as a raised stone block inside the recessed tray and glides cleanly to your pick.",
+          },
           device: {
             demo: <InputTypeDemo />,
             title: "An input's type",

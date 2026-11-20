@@ -4,6 +4,14 @@ Every change to the litt registry at https://littmd.vercel.app/r/, newest first.
 
 To update an item, read the entries since your version, then reinstall it with `--overwrite`. A **breaking** entry says what to change in your code.
 
+## 2026-11-20 · Press deploy-dashboard identity
+
+Press identity (plans/024, Press; taste/litt-principles.md, Press): adds three minimal Press-only product/deploy components (`deploy-status`, `env-switch`, `release-rail`) built strictly from Press's warm stone recessed trays, cut-in slots and raised blocks with zero button outlines, brings deploy-dashboard voice demos across `SET.press`, and adds Press to `test:materials`. Nothing changes outside Press.
+
+- **added** `deploy-status`, `press-deploy-status`: Deploy status, a tactile deployment pipeline where reached stages rise as stone blocks out of a recessed tray and pending stages stay flush, with Rebuild and Promote keys.
+- **added** `env-switch`, `press-env-switch`: Environment switch, a tactile Production / Preview / Development selector lifting the active target out of a recessed stone tray above its host readout and cut-in load slot.
+- **added** `release-rail`, `press-release-rail`: Release rail, a selectable release history resting inside one recessed stone tray where only the selected commit lifts as a raised block, with Promote to live when inspecting an older deploy.
+
 ## 2026-11-19 · Flat expansion, Rack Ableton identity & Heat complete
 
 Flat expansion (skills/litt-md/taste/litt-principles.md, Flat): adds three minimal Flat-only editorial and personal-site components (`reaction-bar`, `reading-progress`, `goal-ring`) guided by Dieter Rams restraint and Flat's vivid cotton-candy hues (`sky`, `blue`, `violet`, `bubblegum`) on Flat's 0.28 expressive bounce, and refreshes Flat's front-door player set. Nothing changes outside Flat.

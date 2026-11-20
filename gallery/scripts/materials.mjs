@@ -77,12 +77,15 @@ export const KINDS = ["frame", "plate", "well", "slot", "collar", "key", "cap", 
 /** Flat's data-part kinds (plans/024, Flat, phase 1; taste/litt-principles.md, Flat's materials). */
 export const FLAT_KINDS = ["ground", "paper", "pill", "circle", "bubble", "ink", "ink-card", "outline", "float", "mark", "figure", "lettering"];
 
+/** Press's data-part kinds (plans/024, Press, phase 1). */
+export const PRESS_KINDS = ["surface", "tray", "cut", "block", "plate", "slot", "fill", "cap", "notch", "mark", "glass", "lettering"];
+
 /** Breaks not fixed yet, as "page · theme · rule · what": printed, never failing, and failing once gone. */
 const KNOWN = [];
 
-const only = (get("pages", selfTest ? "device/button,flat,heat,rack" : "") || "").split(",").filter(Boolean);
+const only = (get("pages", selfTest ? "device/button,flat,heat,rack,press" : "") || "").split(",").filter(Boolean);
 /* #device is the player: the recorder and what its screen shows, read since plan 024's phase 4 drew it in Device's materials.
-   Flat, Heat, and Rack are read on their players and their gallery views, which between them draw every world body. */
+   Flat, Heat, Rack, and Press are read on their players and their gallery views, which between them draw every world body. */
 const PAGES = only.length
   ? only
   : [
@@ -93,6 +96,8 @@ const PAGES = only.length
       "heat/components",
       "rack",
       "rack/components",
+      "press",
+      "press/components",
     ];
 /** The world a route is in, which picks the rules it is read by. */
 const worldOf = (route) => route.split("/")[0];
@@ -311,7 +316,8 @@ async function check(route, theme, mutate) {
     await pg.mouse.move(0, 0);
     await pg.waitForTimeout(150);
     if (mutate) await pg.evaluate(mutate);
-    const rules = [worldOf(route) === "flat" ? FLAT_KINDS : KINDS, worldOf(route), route];
+    const w = worldOf(route);
+    const rules = [w === "flat" ? FLAT_KINDS : w === "press" ? PRESS_KINDS : KINDS, w, route];
     const found = (await pg.evaluate(read, rules)).map(([rule, what]) => `${route} · ${theme} · ${rule} · ${what}`);
     /* The player: Home, then every take on its screen, stepped with the tape's keys as a person would. */
     const slider = pg.locator("[data-play-object] [role=slider][aria-label=Components]");
@@ -334,9 +340,9 @@ async function check(route, theme, mutate) {
 }
 
 if (selfTest) {
-  /* Nine breaks: Device's 4 checks on #device/button, Flat's 2 checks on #flat, Heat's 2 checks (radius & shadow)
-     on #heat, and Rack's cast-shadow check on #rack. */
-  const [DEVICE, FLAT, HEAT, RACK] = PAGES;
+  /* Eleven breaks: Device's 4 checks on #device/button, Flat's 2 checks on #flat, Heat's 2 checks (radius & shadow)
+     on #heat, Rack's cast-shadow check on #rack, and Press's 2 checks (outline & kind) on #press. */
+  const [DEVICE, FLAT, HEAT, RACK, PRESS] = PAGES;
   const breaks = [
     ["an orange primary key", "orange", () => {
       const b = document.createElement("button");
@@ -380,8 +386,16 @@ if (selfTest) {
     ["a drop shadow on Rack's player", "shadow", () => {
       document.querySelector('[data-play-object="rack"] > :nth-child(2)').style.boxShadow = "0 4px 12px rgba(0, 0, 0, 0.35)";
     }, RACK],
+    ["an outlined button on Press's player", "outline", () => {
+      document.querySelector('[data-play-object="press"] button[data-body="press"]').style.border = "1px solid var(--line-strong)";
+    }, PRESS],
+    ["a Device kind on Press's player", "kind", () => {
+      const d = document.createElement("div");
+      d.setAttribute("data-part", "lcd");
+      document.querySelector('[data-play-object="press"]').append(d);
+    }, PRESS],
   ].map(([label, rule, mutate, page = DEVICE]) => [label, rule, mutate, page]);
-  for (const page of [DEVICE, FLAT, HEAT, RACK]) {
+  for (const page of [DEVICE, FLAT, HEAT, RACK, PRESS]) {
     const clean = await check(page, "light");
     if (clean.length) { console.error(`materials --self-test: ${page} is not clean to start with:\n  ${clean.join("\n  ")}`); process.exit(1); }
   }
@@ -424,5 +438,6 @@ if (fails.length || gone.length) {
 const flat = PAGES.filter((r) => worldOf(r) === "flat").length;
 const heat = PAGES.filter((r) => worldOf(r) === "heat").length;
 const rack = PAGES.filter((r) => worldOf(r) === "rack").length;
-const device = PAGES.length - flat - heat - rack;
-console.log(`materials: ${device} Device, ${flat} Flat, ${heat} Heat, and ${rack} Rack pages, light and dark, keep their material rules${known.length ? ` (${known.length} known)` : ""}.`);
+const press = PAGES.filter((r) => worldOf(r) === "press").length;
+const device = PAGES.length - flat - heat - rack - press;
+console.log(`materials: ${device} Device, ${flat} Flat, ${heat} Heat, ${rack} Rack, and ${press} Press pages, light and dark, keep their material rules${known.length ? ` (${known.length} known)` : ""}.`);

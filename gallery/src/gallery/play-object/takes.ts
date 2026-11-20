@@ -27,7 +27,7 @@ export type Take = {
  * starts. Every id must be a part in its world: playground.mjs fails when one is not, so a set never shrinks unseen.
  */
 const SET: Record<Material, string[]> = {
-  press: ["button", "switch", "segmented", "slider", "input", "select", "dialog", "menu", "toast", "stat", "chart", "table"],
+  press: ["deploy-status", "env-switch", "release-rail", "button", "switch", "segmented", "slider", "input", "select", "menu", "stat", "table"],
   flat: ["progress", "poll", "streak", "kudos", "reaction-bar", "reading-progress", "goal-ring", "button", "gauge", "heatmap", "card", "toast"],
   device: ["composer", "agent-indicator", "tool-call", "message", "seven-segment", "tape-progress", "switch", "slider", "gauge", "copy-button", "button", "command-menu"],
   plain: ["form", "input", "select", "checkbox", "button", "table", "details", "callout", "breadcrumb", "pagination", "tabs", "dialog"],
