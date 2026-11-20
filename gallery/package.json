@@ -37,6 +37,7 @@
     "test:wall": "node scripts/wall.mjs",
     "test:home": "node scripts/home.mjs",
     "test:worlds": "node scripts/worlds.mjs",
+    "test:words": "node scripts/world-words.mjs",
     "test:materials": "node scripts/materials.mjs",
     "test:sound": "node scripts/sound.mjs",
     "test:playground": "node scripts/playground.mjs",
