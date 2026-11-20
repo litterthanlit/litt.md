@@ -4,7 +4,7 @@
  * litt.design/systems/.
  *
  * - #device: the player alone (play-object/contract.tsx), its screen running the world's set. Its top row is Home, the
- *   world's name, Components and About, then Index, Details and Source.
+ *   world's name, Components and About, then Index, Details and Page.
  * - #device/components: the world's gallery view (world-gallery.tsx), every component in the world as a live tile.
  * - #device/<component>: that component's page, drawn in the world, with a row back to the player.
  * - #device/about: the world's system page (world.tsx): its scenes, foundations, Only here and Install.

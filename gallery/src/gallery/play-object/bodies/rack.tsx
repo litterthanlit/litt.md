@@ -105,7 +105,7 @@ function ClipLane({ takes, at, selector, pick, index }: Pick<PlayObjectBodyProps
             : "bg-block text-fg-subtle hover:bg-(--block-hover) hover:text-fg forced-colors:border")
         }
       >
-        Home
+        Index
       </button>
       <div
         {...selector}

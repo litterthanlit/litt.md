@@ -14,7 +14,7 @@
  *   reads as a CD player's display: the chip (`chip`: a red lamp and PLAY while the set plays, the stop's square and STOP
  *   when not), the take's name, and the take as a track number, 05 / 12. And the dial: a cap (`cap`) in a collar
  *   (`collar`) that turns in 15° detents under the hand, a take a detent, with Previous and Next on its sides, Index on
- *   top (Home, as an iPod's Menu), Every component below (the world's gallery view) and Play at its centre, a key (`key`)
+ *   top (Index, as an iPod's Menu), Every component below (the world's gallery view) and Play at its centre, a key (`key`)
  *   in a well cut through the cap, that latches down while it plays. Keys, a pick and Play turn it too, so it always
  *   stands at the take showing. Radii nest: the well at --radius-well, the glass 4px in, the chip at --radius-chip.
  * - Orange is nowhere at rest; red is the playhead and the chip's lamp while Play runs.

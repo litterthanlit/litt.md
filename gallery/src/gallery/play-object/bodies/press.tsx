@@ -6,7 +6,7 @@
  *   a subtle cut bay (`bg-tray`, `--tray-shade`) at concentric radius, with no rail inside the screen (`rail: false`).
  * - Under the screen, the instrument deck:
  *   - Readout: a raised nameplate (`bg-block`, `--block-lift`) carrying the tabular count and the take's title.
- *   - Selector: a recessed tray (`bg-tray`, `--tray-shade`) holding Home and the 12 takes as stepped blocks; the
+ *   - Selector: a recessed tray (`bg-tray`, `--tray-shade`) holding Index and the 12 takes as stepped blocks; the
  *     current take stands up as a raised block (`bg-block`, `--block-lift`), and dragging along the tray scrubs takes.
  *   - Transport: tactile raised blocks for Previous, Play (sinks into the tray while running) and Next.
  * - No accent fill in the body (R6): the take on the screen holds the view's one primary fill.
@@ -52,7 +52,7 @@ function TraySelector({ takes, at, selector, pick, index, compact = false }: Pic
       <button
         {...index}
         aria-label={undefined}
-        title="Home"
+        title="Index"
         className={
           "inline-flex h-7 shrink-0 cursor-pointer items-center justify-center rounded-[calc(var(--radius-control)-2px)] px-2 text-caption font-title select-none " +
           "transition-[background-color,color,box-shadow] duration-(--dur-instant) ease-litt " +
@@ -61,7 +61,7 @@ function TraySelector({ takes, at, selector, pick, index, compact = false }: Pic
             : "text-fg-muted hover:text-fg")
         }
       >
-        Home
+        Index
       </button>
       <div
         {...selector}

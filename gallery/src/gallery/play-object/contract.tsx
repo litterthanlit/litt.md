@@ -3,19 +3,22 @@
  * runs the world's set, the dozen parts that show it best, one take at a time, each its own tile drawn in that world's
  * body. Every other part is in the world's gallery view (#<world>/components), one link away. One contract, a body per
  * world, as the parts have (proposals/worlds.md, decisions 13 and 15): the contract owns the takes, the roles and keys,
- * Play, Index, Details and Source, and the state. A body (bodies/<world>.tsx) only draws. A world with no body yet, or
+ * Play, Index, Details and Page, and the state. A body (bodies/<world>.tsx) only draws. A world with no body yet, or
  * whose body fails to load, draws bodies/bare.tsx.
  *
- * - The screen opens on Home: the world's introduction, the set to pick from, and a link to every component. Beside a
- *   take, a rail of the set, unless the body's screen holds the take alone (body.rail false: Device's recorder).
- * - The selector is a slider over Home and the set, as the player's tape is. One tab stop. Right and Down go to the
- *   next take, Left and Up to the previous, wrapping through Home. Home goes Home and End to the last take. A hand's
- *   change is said once in a polite live region.
+ * - The screen opens on Index: the world's introduction, the set to pick from, and a link to every component. A body
+ *   may draw that list in its own grammar (body.Home: Heat's, a column of rows with the current row's part live beside
+ *   it), handed the list, its keys, the pick and the link; the contract still owns all four. Beside a take, a rail of
+ *   the set, unless the body's screen holds the take alone (body.rail false: Device's recorder).
+ * - The selector is a slider over Index and the set, as the player's tape is. One tab stop. Right and Down go to the
+ *   next take, Left and Up to the previous, wrapping through Index. The Home key goes to Index, End to the last take. A
+ *   hand's change is said once in a polite live region.
  * - Play is a key the viewer presses (R4: nothing moves on load). Pressed, it runs the set, a take every 4s, wrapping.
  *   A press, key, wheel or drag on the screen, or any take picked by hand, stops it. A take change is instant in every
  *   motion.
- * - Index goes back to Home (a part is called Menu, so the key is not). Details says what the take (or the world) is.
- *   Source opens its page.
+ * - Index goes back to the list (a part is called Menu, so the key is not). Inside the object the list is called Index
+ *   everywhere: the readout, the selector's first cell and the key; Home is only the top row's way out of the world
+ *   (plans/audits/heat-fixes.md, finding 3). Details says what the take (or the world) is. Page opens its page.
  * - The screen is rendered once, into a host element the body's slot adopts, so a body that comes or goes never
  *   remounts what is on the screen. Nothing makes a sound (decision 2).
  */
@@ -27,11 +30,11 @@ import { useCustomize } from "../customize-state";
 import { PreviewContext } from "../kit";
 import { lookAttributes, materialOf, MATERIALS, type Material } from "../look";
 import { bare } from "./bodies/bare";
-import type { PlayObjectBody, PlayObjectBodyProps } from "./body";
+import type { PlayObjectBody, PlayObjectBodyProps, PlayObjectHomeProps } from "./body";
 import { PlayScreen } from "./screen";
 import { shelvesOf, takesOf, type Take } from "./takes";
 
-export type { PlayObjectBody, PlayObjectBodyProps } from "./body";
+export type { PlayObjectBody, PlayObjectBodyProps, PlayObjectHomeProps } from "./body";
 
 /** How long Play holds each take. */
 export const TAKE_MS = 4000;
@@ -69,9 +72,9 @@ function ScreenSlot({ host }: { host: HTMLElement }) {
 type Props = {
   material: Material;
   dark: boolean;
-  /** What leads the object's top row, before Index, Details and Source: the world's own nav. */
+  /** What leads the object's top row, before Index, Details and Page: the world's own nav. */
   lead?: ReactNode;
-  /** World-level controls placed before Index, Details and Source (so Source stays last before the selector). */
+  /** World-level controls placed before Index, Details and Page (so Page stays last before the selector). */
   actions?: ReactNode;
 };
 
@@ -93,16 +96,19 @@ function Loaded({ material, dark, lead, actions }: Props) {
   const { look } = useCustomize();
   const { compact } = useDevice();
   const id = useId();
-  /* null is Home: the world's introduction and its set, inside the screen. A world opens there. */
+  /* null is Index: the world's introduction and its set, inside the screen. A world opens there. */
   const [at, setAt] = useState<number | null>(null);
   const [playing, setPlaying] = useState(false);
   const [said, setSaid] = useState("");
   const [details, setDetails] = useState(false);
+  /* On a body's own Index (body.Home), the row under the keys or the pointer, whose part is live beside the list. */
+  const [cue, setCue] = useState(0);
+  const rows = useRef<(HTMLButtonElement | null)[]>([]);
   const [host] = useState(() => Object.assign(document.createElement("div"), { className: "contents" }));
   const n = takes.length;
   const take = at === null ? null : takes[at]!;
   const pad = (i: number) => String(i).padStart(Math.max(2, String(n).length), "0");
-  const homeText = `Home, ${n} in the set`;
+  const homeText = `Index, ${n} in the set`;
 
   /* Every world's body loads in the background, so the next world finds its body ready. */
   useEffect(() => {
@@ -133,14 +139,16 @@ function Loaded({ material, dark, lead, actions }: Props) {
     };
   }, [playing, host]);
 
-  /** A place picked by hand, a take or Home: Play stops, and the change is said. */
+  /** A place picked by hand, a take or Index: Play stops, and the change is said. */
   const go = (to: number | null) => {
     setPlaying(false);
     if (to === at) return;
+    /* Back to Index, the list's current row is the take just shown. */
+    if (to === null && at !== null) setCue(at);
     setAt(to);
     setSaid(to === null ? homeText : `${takes[to]!.title}, ${to + 1} of ${n}`);
   };
-  /** The place `by` along the cycle Home, take 0 … take n-1, wrapping. */
+  /** The place `by` along the cycle Index, take 0 … take n-1, wrapping. */
   const along = (by: number) => {
     const k = ((((at === null ? 0 : at + 1) + by) % (n + 1)) + n + 1) % (n + 1);
     return k === 0 ? null : k - 1;
@@ -187,12 +195,51 @@ function Loaded({ material, dark, lead, actions }: Props) {
     readout: {
       count: `${pad(at === null ? 0 : at + 1)} / ${pad(n)}`,
       group: take ? take.group : null,
-      title: take ? take.title : "Home",
+      title: take ? take.title : "Index",
       props: { "data-play-readout": "", "aria-hidden": true },
     },
     screen: <ScreenSlot host={host} />,
     compact,
   };
+
+  /* A body's own Index: the contract owns the list, its order, its keys and what each row opens; the body only draws. */
+  const cued = takes[Math.min(cue, n - 1)];
+  const homeProps: PlayObjectHomeProps | null =
+    body.Home && cued
+      ? {
+          world,
+          takes,
+          current: cue,
+          list: { "aria-label": `The set in ${world.name}`, "data-play-index": "" },
+          row: (i) => ({
+            type: "button",
+            ref: (el: HTMLButtonElement | null) => void (rows.current[i] = el),
+            tabIndex: i === cue ? 0 : -1,
+            "data-current": i === cue ? "" : undefined,
+            onClick: () => go(i),
+            onFocus: () => setCue(i),
+            onPointerEnter: () => setCue(i),
+            onKeyDown: (e) => {
+              const to = ({ ArrowDown: (i + 1) % n, ArrowUp: (i - 1 + n) % n, Home: 0, End: n - 1 } as Record<string, number>)[e.key];
+              if (to === undefined) return;
+              e.preventDefault();
+              setCue(to);
+              rows.current[to]?.focus();
+            },
+          }),
+          everything: { href: `#${material}/components`, "data-play-everything": "", children: `Every component, ${total} in ${shelves.length} groups` },
+          part: (
+            <div key={cued.id} data-play-live={cued.id} aria-label={`${cued.title}, live`} role="group" className="grid w-full min-w-0 justify-items-center">
+              <PreviewContext.Provider value="tile">
+                <Suspense fallback={null}>
+                  <cued.Component />
+                </Suspense>
+              </PreviewContext.Provider>
+            </div>
+          ),
+          compact,
+        }
+      : null;
 
   const LINK =
     "litt-target inline-flex h-control-sm items-center rounded-control px-control-pad-sm text-small font-title text-fg-muted hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus pointer-coarse:h-control-md";
@@ -210,13 +257,13 @@ function Loaded({ material, dark, lead, actions }: Props) {
             Details
           </Button>
           <a href={here} className={LINK}>
-            Source
+            Page
           </a>
         </div>
       </div>
       <body.Body {...bodyProps} />
       {createPortal(
-        <PlayScreen material={material} dark={dark} shape={body.shape(compact)} label={`${take ? take.title : "Home"} ${where}`}>
+        <PlayScreen material={material} dark={dark} shape={body.shape(compact)} label={`${take ? take.title : "Index"} ${where}`}>
           {take ? (
             <div className="flex h-full min-h-0">
               {!compact && body.rail && <Rail material={material} takes={takes} total={total} at={at!} open={go} />}
@@ -229,6 +276,10 @@ function Loaded({ material, dark, lead, actions }: Props) {
                   </PreviewContext.Provider>
                 </div>
               </div>
+            </div>
+          ) : body.Home && homeProps ? (
+            <div data-play-take="home" className="h-full min-h-0">
+              <body.Home {...homeProps} />
             </div>
           ) : (
             <HomeView material={material} takes={takes} total={total} groups={shelves.length} open={go} />
@@ -287,12 +338,14 @@ function Rail({ material, takes, total, at, open }: { material: Material; takes:
 }
 
 const ROW =
-  "litt-target grid w-full cursor-pointer content-center gap-0.5 rounded-control px-3 py-2 text-left in-[[data-material=flat]]:gap-1 in-[[data-material=flat]]:py-3 " +
+  "litt-target grid w-full cursor-pointer content-start gap-0.5 rounded-control px-3 py-2 text-left in-[[data-material=flat]]:gap-1 in-[[data-material=flat]]:py-3 " +
   "hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus";
 
 /**
  * Home, inside the screen (Nick, 2026-11-15, after design.how's systems): the world's name and line, then the set to
- * pick from, each part with its one line, then the way to every component in the world.
+ * pick from, each part with its one line, then the way to every component in the world. A row's name is the thing to
+ * press, so it takes the title weight in the ink, and its line the reading weight in the muted ink; rows hold to their
+ * tops, so a line that wraps never lifts its name above its neighbours' (plans/audits/heat-fixes.md, finding 6).
  *
  * Under Flat (plans/024, Flat, leftovers) nothing on Home is under body size, and Home fills the screen: the set gets
  * room to breathe and the way to every component sits at its foot. Every other world draws it as it was.
@@ -320,8 +373,8 @@ function HomeView({ material, takes, total, groups, open }: { material: Material
           {takes.map((t, i) => (
             <li key={t.id} className="grid min-w-0">
               <button type="button" aria-describedby={`set-${material}-${t.id}`} className={ROW} onClick={() => open(i)}>
-                <span className={"text-small text-fg " + FLAT_HOME.title}>{t.title}</span>
-                <span id={`set-${material}-${t.id}`} aria-hidden="true" className={"line-clamp-2 text-caption text-fg-subtle " + FLAT_HOME.lede}>
+                <span className={"text-small font-title text-fg " + FLAT_HOME.title}>{t.title}</span>
+                <span id={`set-${material}-${t.id}`} aria-hidden="true" className={"line-clamp-2 text-caption font-normal text-fg-muted " + FLAT_HOME.lede}>
                   {t.lede}
                 </span>
               </button>
