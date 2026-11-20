@@ -164,6 +164,29 @@ function read([KINDS, world, route]) {
   const seen = new Set();
   const add = (rule, what) => { const k = rule + what; if (!seen.has(k)) { seen.add(k); out.push([rule, what]); } };
 
+  /* Press material invariants (default data-material, mounted PlayObject, PRESS_KINDS, zero button border outline). */
+  if (world === "press") {
+    const mat = document.documentElement.getAttribute("data-material");
+    if (mat !== null) add("material", `expected no data-material attribute on <html> for Press, got "${mat}"`);
+    const player = document.querySelector('[data-play-object="press"]');
+    if (route === "press" && !player) add("object", `missing [data-play-object="press"] on #${route}`);
+    for (const el of document.querySelectorAll("[data-part]")) {
+      const k = el.getAttribute("data-part");
+      if (!KINDS.includes(k)) add("kind", `data-part="${k}" is not a Press kind: ${name(el)}`);
+    }
+    for (const el of document.querySelectorAll('button[data-body="press"], [data-body="press"] button[data-part="block"]')) {
+      const r = el.getBoundingClientRect();
+      if (r.width < 1 || r.height < 1) continue;
+      const cs = getComputedStyle(el);
+      if (cs.visibility === "hidden" || cs.display === "none") continue;
+      const hasBorder = ["Top", "Right", "Bottom", "Left"].some(
+        (side) => parseFloat(cs[`border${side}Width`]) > 0 && cs[`border${side}Style`] !== "none",
+      );
+      if (hasBorder) add("outline", `a Press button has a border outline (${cs.borderWidth}): ${name(el)}`);
+    }
+    return out;
+  }
+
   /* Heat and Rack material invariants (zero cast shadows; square corners on Heat; mounted PlayObject). */
   if (world === "heat" || world === "rack") {
     const mat = document.documentElement.getAttribute("data-material");
