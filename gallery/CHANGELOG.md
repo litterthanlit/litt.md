@@ -4,6 +4,13 @@ Every change to the litt registry at https://littmd.vercel.app/r/, newest first.
 
 To update an item, read the entries since your version, then reinstall it with `--overwrite`. A **breaking** entry says what to change in your code.
 
+## 2026-11-20 · Heat's keycaps are keys
+
+Heat's audit, finding 11 (plans/audits/heat.md): a keycap under a Heat part named a button, not a key. Now each part answers real keys while focus is inside it, and its foot row shows those keys with the action in words. The buttons stay, and nothing changes outside Heat.
+
+- **changed** `pursuit-meter`, `heat-pursuit-meter`: `-` cools down one condition and `+` or `=` raises it, while focus is inside the part and no Ctrl, Alt or Meta is held, doing what Cooldown and Raise heat do, stopping at ×1 and ×5 and announcing each step. The foot row's keycaps read `-` and `+`, the buttons carry `aria-keyshortcuts`, and when a step disables the focused button focus moves to the other one. Props are unchanged.
+- **changed** `lap-timer`, `heat-lap-timer`: `S` starts or pauses the lap, `L` records a split and `R` resets, while focus is inside the part, doing what the three buttons do. The foot row's keycaps read `S`, `L` and `R`, and the buttons carry `aria-keyshortcuts`. Props are unchanged.
+
 ## 2026-11-19 · Flat expansion, Rack Ableton identity & Heat complete
 
 Flat expansion (skills/litt-md/taste/litt-principles.md, Flat): adds three minimal Flat-only editorial and personal-site components (`reaction-bar`, `reading-progress`, `goal-ring`) guided by Dieter Rams restraint and Flat's vivid cotton-candy hues (`sky`, `blue`, `violet`, `bubblegum`) on Flat's 0.28 expressive bounce, and refreshes Flat's front-door player set. Nothing changes outside Flat.

@@ -1,6 +1,6 @@
 {
   "$comment": "Written by scripts/gen-registry.mjs. What each registry item installs, hashed, and the release that last changed it. Commit it with the change.",
-  "latest": "2026.11.19",
+  "latest": "2026.11.20",
   "items": {
     "accordion": {
       "version": "2026.11.18",
@@ -1167,8 +1167,8 @@
       "hash": "17d1840b1643cf07"
     },
     "heat-lap-timer": {
-      "version": "2026.11.19",
-      "hash": "6e794316284a62d7"
+      "version": "2026.11.20",
+      "hash": "87cf20f372a65e6a"
     },
     "heat-legend": {
       "version": "2026.11.19",
@@ -1247,8 +1247,8 @@
       "hash": "031ec1bbc38610c7"
     },
     "heat-pursuit-meter": {
-      "version": "2026.11.19",
-      "hash": "25086bfd97d01845"
+      "version": "2026.11.20",
+      "hash": "56c4ba87dc4b6e8a"
     },
     "heat-range-chart": {
       "version": "2026.11.16",
@@ -1423,8 +1423,8 @@
       "hash": "4214c05bf4c630c3"
     },
     "lap-timer": {
-      "version": "2026.11.19",
-      "hash": "6e794316284a62d7"
+      "version": "2026.11.20",
+      "hash": "87cf20f372a65e6a"
     },
     "legend": {
       "version": "2026.11.19",
@@ -2275,8 +2275,8 @@
       "hash": "ba0d61f1ea516b76"
     },
     "pursuit-meter": {
-      "version": "2026.11.19",
-      "hash": "25086bfd97d01845"
+      "version": "2026.11.20",
+      "hash": "56c4ba87dc4b6e8a"
     },
     "rack-accordion": {
       "version": "2026.11.18",
