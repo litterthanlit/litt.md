@@ -2,7 +2,28 @@
 
 A sample of the audit plan 026 asks for, written for Nick on 2026-11-20 against `main` at `e21cf90`. Plan 026 counts what is built. This file reads what is there: one world, walked through as a visitor, with each weakness measured, ranked and given a test that says when it is fixed. If the shape works, the other five worlds get one each.
 
-Nothing here is changed. Every fix below is a proposal, and three of them are Nick's calls (marked **Nick**).
+When this was written nothing was changed: every fix below was a proposal, and three are Nick's calls (marked **Nick**). The table that follows says what has been built since.
+
+## Where each finding stands
+
+Updated 2026-11-20, after `plans/audits/heat-fixes.md` was built. The findings below are kept as they were written, so the reason for each fix stays readable.
+
+| # | Finding | Now | Held by |
+|---|---|---|---|
+| 1 | The front door is a list of words | Fixed. Heat's Index is a column of rows with brackets on the current one and its part live beside it | `test:playground` |
+| 2 | Heat's pages describe Press | Fixed on Index, How it moves and About for the set of twelve and four more pages. Open on 37 pages: shared docs bullets, pages outside the sixteen, and the name "Glass header" (**Nick**) | `test:words`, with those 37 in its `KNOWN` |
+| 3 | "Home" means two places | Fixed. Inside the object the list is Index; one control on a player is named Home | `test:playground` |
+| 4 | Focus runs against the eye | Fixed. The strip is above the screen at every width | `test:playground` |
+| 5 | Focus and selection are the same amber | Fixed. Focus closes the chosen cell's brackets into a box | by eye |
+| 6 | The line outweighs the name | Fixed. Names lead, rows align to their tops | `test:playground` |
+| 7 | A take fills a tenth of its screen | **Open.** 13.8% of the screen, from 13.0%: the Menu take needs the height. A real gain means top-aligning takes, a call for Nick | floor at 13% in `test:playground` |
+| 8 | By day the pick is not amber | Open (**Nick**) | |
+| 9 | A part's page is 15 screens on a phone | Fixed in every world. A jump row under the name, Props closed below 640px; `#heat/slider` is 7,164px, from 13,162 | `test:jump` |
+| 10 | "Source" opens the part's page | Fixed. It reads Page | `test:playground` |
+| 11 | Keycaps that are not keys | Fixed on Pursuit meter and Lap timer, which had the same fault | the changelog, by hand |
+| 12 | The game's own place names | Open (**Nick**) | |
+| 13 | The phone's strip has no edge | Fixed. A fade on each side that has more | by eye |
+| 14 | Nearly every word is 12 or 13px | Open (**Nick**) | |
 
 ## The feeling Heat is for
 
