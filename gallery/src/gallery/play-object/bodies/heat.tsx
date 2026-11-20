@@ -11,12 +11,13 @@
  * - Menu strip: a horizontal strip of square cells where the active item takes four 8px amber corner brackets and
  *   `‹ Title ›` chevrons (never an accent fill, R6), then Previous, Play and Next.
  * - Screen: flush square stage between 1px rules, holding the take alone (`rail: false`), then the closing striped band.
+ *   Shorter than the other worlds' at desktop widths (SHORT_SCREEN_HEIGHT), so a take reads larger in it (finding 7).
  * - Keycap hints along the foot, under the slab, as in the references.
  */
 import { useEffect, useRef, useState } from "react";
 import { Kbd } from "@/components/kbd";
 import type { PlayObjectBody, PlayObjectBodyProps } from "../body";
-import { COMPACT_BOX, COMPACT_SCREEN, SCREEN_HEIGHT } from "../body";
+import { COMPACT_BOX, COMPACT_SCREEN, SHORT_SCREEN_HEIGHT } from "../body";
 
 /* Four corner marks, each two 2px bars, in currentColor (after systems/heat.tsx). */
 const MARKS =
@@ -254,7 +255,7 @@ function HeatBody({ takes, at, selector, pick, step, index, play, readout, scree
 
 export const heat: PlayObjectBody = {
   name: "heat",
-  shape: (compact) => (compact ? COMPACT_SCREEN : SCREEN_HEIGHT + " w-full rounded-none"),
+  shape: (compact) => (compact ? COMPACT_SCREEN : SHORT_SCREEN_HEIGHT + " w-full rounded-none"),
   rail: false,
   Body: HeatBody,
 };

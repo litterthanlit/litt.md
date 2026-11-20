@@ -45,7 +45,9 @@ export type PlayObjectBodyProps = {
 export type PlayObjectBody = {
   /** What the object's root says in data-play-object: the world's id, or "bare". */
   name: string;
-  /** The screen's size, corners and edge on this body. Compact, it fills what the strip leaves. */
+  /** The screen's size, corners and edge on this body. Compact, it fills what the strip leaves. At desktop widths its
+      height is the body's to say: SCREEN_HEIGHT, which fits every world's tallest take, or SHORT_SCREEN_HEIGHT where the
+      body's set allows it, so a take reads larger in the screen (Heat; plans/audits/heat-fixes.md, finding 7). */
   shape: (compact: boolean) => string;
   /** Whether the contract draws its rail of the set inside the screen beside a take. A body whose screen holds the take
       alone (Device's recorder: plans/024, breach 17) says false, and the set stays on Index, behind its key and the dial. */
@@ -56,6 +58,11 @@ export type PlayObjectBody = {
 /** How tall a landscape screen stands: the window less the top row, the tape and the deck, so the whole object fits the
     window as the components player does, and never under 30rem, where a take's command menu still fits. */
 export const SCREEN_HEIGHT = "h-[clamp(30rem,calc(100dvh-22rem),46rem)]";
+/** A shorter landscape screen, fixed, so a take covers more of it and a tall window does not shrink the take back to a
+    corner of a big screen. For a body whose set has no command menu. Its floor is what a take opens: a take sits in the
+    middle of the screen, so Heat's Menu take (its trigger, then a 281px list below it) needs 37rem to keep its list on
+    the screen; 38rem leaves it a few pixels. */
+export const SHORT_SCREEN_HEIGHT = "h-[38rem]";
 /** Below sm the object is the page under the header: the strip, then the screen. */
 export const COMPACT_BOX = "-mx-gutter flex h-[calc(100dvh-var(--header-h))] flex-col";
 /** Below sm the screen fills what the strip leaves, edge to edge. */
