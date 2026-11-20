@@ -3,19 +3,20 @@
  * runs the world's set, the dozen parts that show it best, one take at a time, each its own tile drawn in that world's
  * body. Every other part is in the world's gallery view (#<world>/components), one link away. One contract, a body per
  * world, as the parts have (proposals/worlds.md, decisions 13 and 15): the contract owns the takes, the roles and keys,
- * Play, Index, Details and Source, and the state. A body (bodies/<world>.tsx) only draws. A world with no body yet, or
+ * Play, Index, Details and Page, and the state. A body (bodies/<world>.tsx) only draws. A world with no body yet, or
  * whose body fails to load, draws bodies/bare.tsx.
  *
- * - The screen opens on Home: the world's introduction, the set to pick from, and a link to every component. Beside a
+ * - The screen opens on Index: the world's introduction, the set to pick from, and a link to every component. Beside a
  *   take, a rail of the set, unless the body's screen holds the take alone (body.rail false: Device's recorder).
- * - The selector is a slider over Home and the set, as the player's tape is. One tab stop. Right and Down go to the
- *   next take, Left and Up to the previous, wrapping through Home. Home goes Home and End to the last take. A hand's
- *   change is said once in a polite live region.
+ * - The selector is a slider over Index and the set, as the player's tape is. One tab stop. Right and Down go to the
+ *   next take, Left and Up to the previous, wrapping through Index. The Home key goes to Index, End to the last take. A
+ *   hand's change is said once in a polite live region.
  * - Play is a key the viewer presses (R4: nothing moves on load). Pressed, it runs the set, a take every 4s, wrapping.
  *   A press, key, wheel or drag on the screen, or any take picked by hand, stops it. A take change is instant in every
  *   motion.
- * - Index goes back to Home (a part is called Menu, so the key is not). Details says what the take (or the world) is.
- *   Source opens its page.
+ * - Index goes back to the list (a part is called Menu, so the key is not). Inside the object the list is called Index
+ *   everywhere: the readout, the selector's first cell and the key; Home is only the top row's way out of the world
+ *   (plans/audits/heat-fixes.md, finding 3). Details says what the take (or the world) is. Page opens its page.
  * - The screen is rendered once, into a host element the body's slot adopts, so a body that comes or goes never
  *   remounts what is on the screen. Nothing makes a sound (decision 2).
  */
@@ -69,9 +70,9 @@ function ScreenSlot({ host }: { host: HTMLElement }) {
 type Props = {
   material: Material;
   dark: boolean;
-  /** What leads the object's top row, before Index, Details and Source: the world's own nav. */
+  /** What leads the object's top row, before Index, Details and Page: the world's own nav. */
   lead?: ReactNode;
-  /** World-level controls placed before Index, Details and Source (so Source stays last before the selector). */
+  /** World-level controls placed before Index, Details and Page (so Page stays last before the selector). */
   actions?: ReactNode;
 };
 
@@ -93,7 +94,7 @@ function Loaded({ material, dark, lead, actions }: Props) {
   const { look } = useCustomize();
   const { compact } = useDevice();
   const id = useId();
-  /* null is Home: the world's introduction and its set, inside the screen. A world opens there. */
+  /* null is Index: the world's introduction and its set, inside the screen. A world opens there. */
   const [at, setAt] = useState<number | null>(null);
   const [playing, setPlaying] = useState(false);
   const [said, setSaid] = useState("");
@@ -102,7 +103,7 @@ function Loaded({ material, dark, lead, actions }: Props) {
   const n = takes.length;
   const take = at === null ? null : takes[at]!;
   const pad = (i: number) => String(i).padStart(Math.max(2, String(n).length), "0");
-  const homeText = `Home, ${n} in the set`;
+  const homeText = `Index, ${n} in the set`;
 
   /* Every world's body loads in the background, so the next world finds its body ready. */
   useEffect(() => {
@@ -133,14 +134,14 @@ function Loaded({ material, dark, lead, actions }: Props) {
     };
   }, [playing, host]);
 
-  /** A place picked by hand, a take or Home: Play stops, and the change is said. */
+  /** A place picked by hand, a take or Index: Play stops, and the change is said. */
   const go = (to: number | null) => {
     setPlaying(false);
     if (to === at) return;
     setAt(to);
     setSaid(to === null ? homeText : `${takes[to]!.title}, ${to + 1} of ${n}`);
   };
-  /** The place `by` along the cycle Home, take 0 … take n-1, wrapping. */
+  /** The place `by` along the cycle Index, take 0 … take n-1, wrapping. */
   const along = (by: number) => {
     const k = ((((at === null ? 0 : at + 1) + by) % (n + 1)) + n + 1) % (n + 1);
     return k === 0 ? null : k - 1;
@@ -187,7 +188,7 @@ function Loaded({ material, dark, lead, actions }: Props) {
     readout: {
       count: `${pad(at === null ? 0 : at + 1)} / ${pad(n)}`,
       group: take ? take.group : null,
-      title: take ? take.title : "Home",
+      title: take ? take.title : "Index",
       props: { "data-play-readout": "", "aria-hidden": true },
     },
     screen: <ScreenSlot host={host} />,
@@ -210,13 +211,13 @@ function Loaded({ material, dark, lead, actions }: Props) {
             Details
           </Button>
           <a href={here} className={LINK}>
-            Source
+            Page
           </a>
         </div>
       </div>
       <body.Body {...bodyProps} />
       {createPortal(
-        <PlayScreen material={material} dark={dark} shape={body.shape(compact)} label={`${take ? take.title : "Home"} ${where}`}>
+        <PlayScreen material={material} dark={dark} shape={body.shape(compact)} label={`${take ? take.title : "Index"} ${where}`}>
           {take ? (
             <div className="flex h-full min-h-0">
               {!compact && body.rail && <Rail material={material} takes={takes} total={total} at={at!} open={go} />}

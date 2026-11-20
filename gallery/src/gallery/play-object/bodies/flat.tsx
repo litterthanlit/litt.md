@@ -9,7 +9,7 @@
  *   holds the take alone: no rail (body.rail is false). The set is on Home, behind Index and on the pills.
  * - Under the screen, the caption (`lettering`), in the ink: the take's place as the one figure that stands up (call 8),
  *   over the size of the set, and the take's name.
- * - Under the caption, the selector: a row of pills, Home and then the set. On the ground, chosen is white (the bubble
+ * - Under the caption, the selector: a row of pills, Index and then the set. On the ground, chosen is white (the bubble
  *   on the ground), so the current pill is paper with its name in the ink, and the paper travels from pill to pill on
  *   the expressive spring, Flat's 0.28 bounce: the view's one moment. Under reduced motion it lands at once. The rest
  *   are words in the quiet ink, with no pill drawn until a hand is on one. Each is a `pill`, the travelling paper `paper`,
@@ -58,10 +58,10 @@ function Pills({ takes, at, selector, pick, index, className }: Pick<PlayObjectB
   return (
     <LayoutGroup id={id}>
       <div ref={row} className={"flex min-w-0 items-center gap-1 overflow-x-auto overscroll-x-contain [scrollbar-width:none] " + className}>
-        {/* Home, the first place on the selector: Index's key, out of the tab order like the take pills. */}
+        {/* Index, the first place on the selector: its key, out of the tab order like the take pills. */}
         <button {...index} aria-label={undefined} data-part="pill" data-chosen={at === null ? "" : undefined} className={PILL + " " + (at === null ? "text-fg" : QUIET)}>
           {at === null && <Chosen id={id} />}
-          Home
+          Index
         </button>
         <div
           {...selector}

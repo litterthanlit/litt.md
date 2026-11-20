@@ -99,7 +99,7 @@ function MenuStrip({ takes, at, selector, pick, index }: Pick<PlayObjectBodyProp
       >
         {at === null && <span aria-hidden="true" className={SELECTED} />}
         {at === null && <span aria-hidden="true">‹</span>}
-        <span>Home</span>
+        <span>Index</span>
         {at === null && <span aria-hidden="true">›</span>}
       </button>
       <div

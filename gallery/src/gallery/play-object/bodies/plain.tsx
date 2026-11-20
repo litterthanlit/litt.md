@@ -4,7 +4,7 @@
  *
  * - Above the page: a single quiet running header line with the tabular count and the take's title.
  * - The page: one crisp square 1px line around the screen (`border-line-control`), holding the take alone (`rail: false`).
- * - Below the page: a row of quiet words (Home, then the set); only the current word takes the ink inside four 4px
+ * - Below the page: a row of quiet words (Index, then the set); only the current word takes the ink inside four 4px
  *   corner marks, matching Plain's Tabs and Segmented bodies. Play sits at the row's end as a word, bracketed while on.
  * - DOM puts the controls (selector, then Play) before the screen, and the non-focusable header last, so Tab reaches
  *   slider -> play -> screen while flex order stacks header -> page -> controls.
@@ -49,7 +49,7 @@ function WordRow({ takes, at, selector, pick, index, className = "" }: Pick<Play
       >
         <span className="litt-trim relative">
           {at === null && <span aria-hidden="true" className={BRACKETS} />}
-          Home
+          Index
         </span>
       </button>
       <div

@@ -11,18 +11,19 @@ export type PlayObjectBodyProps = {
   world: MaterialInfo;
   /** The world's set, in order. */
   takes: Take[];
-  /** The take showing, or null on Home: the world's introduction and its index, inside the screen. */
+  /** The take showing, or null on Index: the world's introduction and its set, inside the screen. */
   at: number | null;
   /** Spread on the element that picks the take, the tape or its stand-in: role="slider" over Home (0) and the takes,
-      its name, value and keys (Right and Down to the next, Left and Up to the previous, wrapping through Home; Home
-      for Home, End for the last). One tab stop. */
+      its name, value and keys (Right and Down to the next, Left and Up to the previous, wrapping through Index; the
+      Home key for Index, End for the last). One tab stop. */
   selector: HTMLAttributes<HTMLElement>;
   /** Take the hand to take i, as a press or drag along the selector does. Stops Play. */
   pick: (i: number) => void;
   /** Spread on a Previous or Next key, where a body draws one. Out of the tab order: the selector's arrows do this. */
   step: (by: 1 | -1) => ButtonHTMLAttributes<HTMLButtonElement>;
-  /** Spread on a key that goes Home, where a body draws one, as an iPod's Menu does. Out of the tab order: the top row's
-      Index and the selector's Home key do this. */
+  /** Spread on a key that goes to Index, where a body draws one, as an iPod's Menu does. Its visible word is Index (the
+      top row's Home is the way out of the world, and no other control may share that name). Out of the tab order: the
+      top row's Index and the selector's Home key do this. */
   index: ButtonHTMLAttributes<HTMLButtonElement>;
   /** Spread on a link to the world's gallery view (#<world>/components), where a body draws one. Out of the tab order:
       Home and the rail link there too. */
@@ -31,7 +32,7 @@ export type PlayObjectBodyProps = {
   turn: (by: number) => void;
   /** Spread on the Play key: its name, aria-pressed and onClick. Pressed, the object steps a take every 4s; any hand stops it. */
   play: ButtonHTMLAttributes<HTMLButtonElement> & { "aria-pressed": boolean };
-  /** What the readout says: "03 / 12", the take's group and title ("Home" and no group on Home). Spread `props` on the
+  /** What the readout says: "03 / 12", the take's group and title ("Index" and no group on Index). Spread `props` on the
       readout: it marks it for the checks and hides it from screen readers, since the contract says a hand's change
       once, in a polite live region. */
   readout: { count: string; group: string | null; title: string; props: HTMLAttributes<HTMLElement> & { "data-play-readout": "" } };
@@ -47,7 +48,7 @@ export type PlayObjectBody = {
   /** The screen's size, corners and edge on this body. Compact, it fills what the strip leaves. */
   shape: (compact: boolean) => string;
   /** Whether the contract draws its rail of the set inside the screen beside a take. A body whose screen holds the take
-      alone (Device's recorder: plans/024, breach 17) says false, and the set stays on Home, behind Index and the dial. */
+      alone (Device's recorder: plans/024, breach 17) says false, and the set stays on Index, behind its key and the dial. */
   rail: boolean;
   Body: ComponentType<PlayObjectBodyProps>;
 };
