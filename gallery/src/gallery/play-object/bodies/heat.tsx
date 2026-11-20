@@ -28,6 +28,12 @@ const MARKS =
 const FRAME = MARKS + "[background-size:16px_2px,2px_16px,16px_2px,2px_16px,16px_2px,2px_16px,16px_2px,2px_16px] -inset-2 text-fg";
 /* The active item's brackets: 8px marks in amber (or ink in light, via --accent-text). */
 const SELECTED = MARKS + "[background-size:8px_2px,2px_8px,8px_2px,2px_8px,8px_2px,2px_8px,8px_2px,2px_8px] inset-0 text-accent-text";
+/* Focus on the strip (finding 5): no ring round the strip; the chosen cell's brackets close into a full box in the focus
+   colour while the selector has the keys, so focus shows where the eye already is. Under forced colours the cell keeps
+   its outline and the box stands 2px outside it, so focused and not still differ. */
+const FOCUSED =
+  "pointer-events-none absolute inset-0 hidden border-2 border-focus group-has-[[role=slider]:focus-visible]/strip:block " +
+  "forced-colors:-inset-0.5 forced-colors:border-[CanvasText]";
 /* Diagonal hazard stripes along the top and bottom bands. */
 const STRIPES = "[background-image:repeating-linear-gradient(135deg,var(--surface-3)_0_6px,transparent_6px_12px)]";
 
@@ -86,7 +92,7 @@ function MenuStrip({ takes, at, selector, pick, index }: Pick<PlayObjectBodyProp
     "transition-colors duration-(--dur-instant) ease-litt pointer-coarse:h-control-md";
 
   return (
-    <div ref={row} className="flex min-w-0 flex-1 items-center gap-1 overflow-x-auto overscroll-x-contain py-1 [scrollbar-width:none]">
+    <div ref={row} className="group/strip flex min-w-0 flex-1 items-center gap-1 overflow-x-auto overscroll-x-contain py-1 [scrollbar-width:none]">
       <button
         {...index}
         aria-label={undefined}
@@ -100,13 +106,14 @@ function MenuStrip({ takes, at, selector, pick, index }: Pick<PlayObjectBodyProp
         }
       >
         {at === null && <span aria-hidden="true" className={SELECTED} />}
+        {at === null && <span aria-hidden="true" className={FOCUSED} />}
         {at === null && <span aria-hidden="true">‹</span>}
         <span>Index</span>
         {at === null && <span aria-hidden="true">›</span>}
       </button>
       <div
         {...selector}
-        className="flex shrink-0 items-center gap-1 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus"
+        className="flex shrink-0 items-center gap-1 outline-none"
       >
         {takes.map((t, i) => {
           const active = i === at;
@@ -125,6 +132,7 @@ function MenuStrip({ takes, at, selector, pick, index }: Pick<PlayObjectBodyProp
               }
             >
               {active && <span aria-hidden="true" className={SELECTED} />}
+              {active && <span aria-hidden="true" className={FOCUSED} />}
               {active ? `‹ ${t.title} ›` : t.title}
             </span>
           );
