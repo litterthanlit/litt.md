@@ -1,13 +1,11 @@
 /**
  * ReadingProgress, a Flat part (skills/litt-md/taste/litt-principles.md, Flat): a minimal Dieter Rams reading
- * progress instrument in Flat's cotton-candy palette (sky -> blue -> violet -> bubblegum) on Flat's 0.28 bounce.
+ * progress instrument sitting directly on Flat's ground — no outer card box, zero extra chrome.
  *
- * - As little design as possible: one borderless paper card (`data-part="paper"`), one quiet title, one 40px standing
- *   percentage, one directly-clickable segmented capsule bar where each chapter IS its segment, and one quiet footer
- *   line naming the active chapter and remaining time. Zero redundant chapter pill rows or Prev/Next chrome.
- * - Completed segments step smoothly along Flat's vivid cotton-candy hues (`--data-sky`, `--data-blue`, `--data-violet`,
- *   `--data-bubblegum`); unread segments rest in Flat's quiet grey bubble (`--surface-3`).
- * - Zero `--accent` fills (R6) and zero auto-animation on mount (R2/R4).
+ * - Matches `Poll` and `Streak`'s exact Flat layout rhythm: quiet label above the 40px standing percentage and
+ *   remaining read time, followed by directly-clickable cotton-candy chapter segments (`sky` -> `blue` -> `violet`
+ *   -> `bubblegum`), and one quiet line naming the active chapter.
+ * - Zero outer card wrapper, zero `--accent` fills (R6), and zero auto-animation on mount (R2/R4).
  */
 import { useId, useState, type ReactNode } from "react";
 import { motion } from "motion/react";
@@ -33,7 +31,7 @@ export type ReadingProgressProps = {
   defaultChapterIndex?: number;
   /** Called with the next 0-based chapter index when the reader clicks a segment. */
   onChapterChange?: (index: number) => void;
-  /** Extra classes on the root paper card. */
+  /** Extra classes on the root wrapper. */
   className?: string;
 };
 
@@ -53,7 +51,7 @@ function candyAt(t: number) {
   return `color-mix(in oklab, ${CANDY_RAMP[k + 1]} ${u}%, ${CANDY_RAMP[k]})`;
 }
 
-/** A minimal Flat reading progress card with directly-clickable cotton-candy segments and a 40px standing figure. */
+/** A minimal Flat reading progress bar sitting directly on the ground with clickable cotton-candy segments. */
 export function ReadingProgress({
   title = "Field notes on motion",
   chapters = DEFAULT_CHAPTERS,
@@ -90,30 +88,37 @@ export function ReadingProgress({
   }
 
   return (
-    <section
-      aria-labelledby={headingId}
-      data-part="paper"
-      className={"grid w-full max-w-sm min-w-0 gap-4 rounded-surface bg-surface-1 p-5 text-fg forced-colors:border " + className}
-    >
-      {/* Top row: quiet title + single 40px standing figure */}
-      <div className="flex items-baseline justify-between gap-4">
-        <h3 id={headingId} data-part="lettering" className="truncate text-small font-title text-fg-muted">
+    <div className={"grid w-full max-w-sm min-w-0 gap-3 text-fg " + className}>
+      {/* Streak-matched typographic header: quiet title over standing 40px figure */}
+      <header className="grid gap-1">
+        <span id={headingId} data-part="lettering" className="truncate text-small text-fg-subtle">
           {title}
-        </h3>
-        <motion.span
-          key={pct}
-          data-part="figure"
-          initial={reduced ? false : { scale: 0.94 }}
-          animate={{ scale: 1 }}
-          transition={spring}
-          className="shrink-0 origin-right text-figure leading-none tabular-nums text-fg"
-        >
-          {pct}%
-        </motion.span>
-      </div>
+        </span>
+        <p className="flex items-baseline gap-2.5 text-fg">
+          <motion.span
+            key={pct}
+            data-part="figure"
+            initial={reduced ? false : { scale: 0.92 }}
+            animate={{ scale: 1 }}
+            transition={spring}
+            className="inline-block origin-left text-figure leading-none tabular-nums"
+          >
+            {pct}%
+          </motion.span>
+          <span data-part="lettering" className="text-small tabular-nums text-fg-subtle">
+            {remainingMinutes === 0 ? "Finished" : `${remainingMinutes} min left`}
+          </span>
+        </p>
+      </header>
 
       {/* Directly-clickable segmented cotton-candy capsule bar */}
-      <div role="group" aria-label="Chapters" data-part="bubble" className="grid gap-1.5" style={{ gridTemplateColumns: `repeat(${safeCount}, minmax(0, 1fr))` }}>
+      <div
+        role="group"
+        aria-labelledby={headingId}
+        data-part="bubble"
+        className="grid gap-1.5"
+        style={{ gridTemplateColumns: `repeat(${safeCount}, minmax(0, 1fr))` }}
+      >
         {chapters.map((ch, i) => {
           const isLit = i <= index;
           const isCurrent = i === index;
@@ -126,34 +131,33 @@ export function ReadingProgress({
               aria-current={isCurrent ? "step" : undefined}
               aria-label={`Chapter ${i + 1}: ${ch.title}, ${ch.minutes} min${isCurrent ? ", current" : ""}`}
               onClick={() => go(i)}
-              className="litt-target group flex h-7 cursor-pointer items-center rounded-pill focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+              className="litt-target group flex h-6 cursor-pointer items-center rounded-pill focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
             >
               <motion.span
                 aria-hidden="true"
                 initial={false}
                 animate={reduced ? undefined : { scaleY: isCurrent ? 1.25 : 1 }}
                 transition={spring}
-                className="block h-2.5 w-full rounded-pill transition-colors duration-(--dur-instant) ease-litt forced-colors:border"
-                style={{ backgroundColor: isLit ? color : "var(--surface-3)" }}
+                className="block h-2 w-full rounded-pill transition-colors duration-(--dur-instant) ease-litt forced-colors:border"
+                style={{ backgroundColor: isLit ? color : "color-mix(in oklab, var(--fg) 10%, transparent)" }}
               />
             </button>
           );
         })}
       </div>
 
-      {/* Quiet single-line caption: active chapter + remaining read time */}
-      <div className="flex items-baseline justify-between gap-3">
-        <span data-part="lettering" className="truncate text-small font-title text-fg">
-          {activeChapter?.title ?? `Chapter ${index + 1}`}
+      {/* Single quiet line naming the active chapter */}
+      <p data-part="lettering" className="text-caption text-fg-subtle">
+        <span className="font-title text-fg">{activeChapter?.title ?? `Chapter ${index + 1}`}</span>
+        {" · "}
+        <span className="tabular-nums">
+          {index + 1} of {safeCount}
         </span>
-        <span data-part="lettering" className="shrink-0 text-caption tabular-nums text-fg-subtle">
-          {remainingMinutes === 0 ? "Finished" : `${remainingMinutes} min left`}
-        </span>
-      </div>
+      </p>
 
       <span role="status" aria-live="polite" className="sr-only">
         {live}
       </span>
-    </section>
+    </div>
   );
 }

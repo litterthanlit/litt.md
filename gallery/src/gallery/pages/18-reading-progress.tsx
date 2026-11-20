@@ -12,7 +12,7 @@ export const meta: PageMeta = {
   verbs: ["select", "press"],
   worlds: ["flat"],
   summary:
-    "A minimal reading progress instrument for essays, guides and portfolio stories. One borderless paper card holds the title, a 40px standing completion percentage, and directly-clickable chapter segments stepping from sky through blue and violet to bubblegum — with zero extra pill rows or stepper buttons. It belongs to Flat.",
+    "A minimal reading progress instrument sitting directly on Flat's ground — no outer card box, zero extra chrome. It pairs a quiet title and Flat's 40px standing completion percentage with directly-clickable cotton-candy chapter segments (sky through blue and violet to bubblegum) and a single-line chapter footer. It belongs to Flat.",
   tiers: ["instant", "expressive"],
   mechanism:
     "Each chapter is a single clickable capsule segment. Clicking any segment steps the cotton-candy ramp (--data-sky, --data-blue, --data-violet, --data-bubblegum) to that chapter, pops the active segment and 40px figure on Flat's expressive spring (350ms, bounce 0.28), and announces progress in a polite live region.",
@@ -32,7 +32,7 @@ export const docs: PageDocs = {
     "Where readers benefit from seeing remaining read time and clicking directly into any chapter.",
   ],
   skip: [
-    "Another world's page. ReadingProgress uses Flat's paper-on-grey card, 40px figure, cotton-candy segments and 0.28 bounce; it needs data-material=\"flat\" on <html>.",
+    "Another world's page. ReadingProgress uses Flat's 40px figure, cotton-candy segments and 0.28 bounce; it needs data-material=\"flat\" on <html>.",
     "A background upload or task meter. Use Progress.",
     "A multi-step form wizard with validation. Use Tabs or Breadcrumb.",
   ],
@@ -84,9 +84,9 @@ function ReplayReading() {
 export const study: PageStudy = {
   object: <ReadingProgress title="Field notes on motion" defaultChapterIndex={2} />,
   parts: [
-    { name: "The paper card", selector: "[data-part=paper]" },
     { name: "The figure", selector: "[data-part=figure]" },
     { name: "The chapter segments", selector: "[data-part=bubble]" },
+    { name: "The active chapter", selector: "p[data-part=lettering]" },
   ],
   states: {
     empty: <ReadingProgress title="Field notes on motion" defaultChapterIndex={0} />,

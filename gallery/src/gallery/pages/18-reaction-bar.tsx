@@ -49,15 +49,7 @@ export const docs: PageDocs = {
 };
 
 function EssayReactionsDemo() {
-  return (
-    <div className="grid gap-4">
-      <div className="grid gap-1">
-        <p className="text-body font-title text-fg">Issue 18 · Motion that stays out of the way</p>
-        <p className="text-small text-fg-subtle">Glyph and count only — toggle any pill for a soft cotton-candy wash.</p>
-      </div>
-      <ReactionBar subject="Issue 18" defaultValue={["love", "spark"]} prominent />
-    </div>
-  );
+  return <ReactionBar subject="Issue 18" defaultValue={["love", "spark"]} prominent />;
 }
 
 function CompactReactionsDemo() {

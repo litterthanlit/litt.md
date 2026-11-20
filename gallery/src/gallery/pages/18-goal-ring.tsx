@@ -12,10 +12,10 @@ export const meta: PageMeta = {
   verbs: ["press"],
   worlds: ["flat"],
   summary:
-    "A minimal radial milestone tracker built with Dieter Rams restraint: one open cotton-candy SVG arc (sky through violet to bubblegum), one 40px standing figure beside its target, and two round − / + keys on borderless paper. Nothing extra competes for attention. It belongs to Flat.",
+    "A minimal centered radial milestone tracker built with Dieter Rams restraint: one cotton-candy SVG ring (sky through violet to bubblegum) holding Flat's 40px standing figure inside, the quiet title beneath, and two balanced circular − / + keys directly on Flat's ground. It belongs to Flat.",
   tiers: ["instant", "expressive"],
   mechanism:
-    "An open SVG ring maps current over target to strokeDashoffset across Flat's vivid cotton-candy gradient (--data-sky, --data-violet, --data-bubblegum). Two circular keys step the count on Flat's expressive spring (350ms, bounce 0.28) without taking an accent fill, announcing each step once.",
+    "An SVG ring maps current over target to strokeDashoffset across Flat's vivid cotton-candy gradient (--data-sky, --data-violet, --data-bubblegum). Two circular keys beneath step the count on Flat's expressive spring (350ms, bounce 0.28) without taking an accent fill, announcing each step once.",
 };
 
 export const docs: PageDocs = {
@@ -31,10 +31,10 @@ export const docs: PageDocs = {
 />`,
   use: [
     "Personal sites, portfolios, creator dashboards and reading logs under Flat.",
-    "Tracking a single countable goal with minimal geometry and quiet circular controls.",
+    "Tracking a single countable goal with centered geometry and quiet circular controls.",
   ],
   skip: [
-    "Another world's page. GoalRing uses Flat's paper card, 40px figure, cotton-candy arc and 0.28 bounce; it needs data-material=\"flat\" on <html>.",
+    "Another world's page. GoalRing uses Flat's 40px figure, cotton-candy arc, circular keys and 0.28 bounce; it needs data-material=\"flat\" on <html>.",
     "A live hardware or telemetry meter. Use Gauge.",
     "A multi-series comparison. Use Chart.",
   ],

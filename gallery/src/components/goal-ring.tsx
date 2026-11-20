@@ -1,18 +1,20 @@
 /**
- * GoalRing, a Flat part (skills/litt-md/taste/litt-principles.md, Flat): a minimal Dieter Rams radial goal tracker in
- * Flat's vivid cotton-candy palette (sky -> violet -> bubblegum) on Flat's 0.28 expressive spring.
+ * GoalRing, a Flat part (skills/litt-md/taste/litt-principles.md, Flat): a centered, Dieter Rams radial goal
+ * tracker sitting directly on Flat's ground — no outer box, no redundant labels, pure geometry.
  *
- * - As little design as possible: one borderless paper card (`data-part="paper"`) holding three honest parts in a
- *   single balanced row — the open cotton-candy SVG ring (no redundant percent crammed inside), the single 40px
- *   standing figure beside its target, and two silent Braun-style circular `−` / `+` keys (`data-part="circle"`).
- * - Zero `--accent` fills (R6) and zero auto-animation on mount (R2/R4).
+ * - One 136px SVG ring stepping through Flat's vivid cotton-candy hues (`--data-sky`, `--data-violet`,
+ *   `--data-bubblegum`), with Flat's single 40px standing figure and `/ target` centered cleanly inside.
+ * - Directly beneath: the quiet goal title and two balanced circular `−` / `+` keys (`bg-block` / `outline`) that
+ *   spring the arc on Flat's 0.28 expressive bounce.
+ * - Zero outer card wrapper (matches `Poll`, `Streak`, and `Kudos`), zero `--accent` fills (R6), and zero
+ *   auto-animation on mount (R2/R4).
  */
 import { useId, useState, type ReactNode } from "react";
 import { motion } from "motion/react";
 import { useMotionDial, useTransition } from "@/motion";
 
 export type GoalRingProps = {
-  /** Short title for the goal, e.g. "2026 Reading goal" or "Spring subscribers". */
+  /** Short title printed quietly beneath the ring, e.g. "2026 Reading goal". */
   title?: ReactNode;
   /** Target value to reach. Defaults to 24. */
   target?: number;
@@ -24,16 +26,16 @@ export type GoalRingProps = {
   defaultValue?: number;
   /** Called with the updated value when stepped down or up. */
   onChange?: (next: number) => void;
-  /** Extra classes on the root paper card. */
+  /** Extra classes on the root wrapper. */
   className?: string;
 };
 
-const SIZE = 84;
-const STROKE = 9;
+const SIZE = 136;
+const STROKE = 8;
 const RADIUS = (SIZE - STROKE) / 2;
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
-/** A minimal Flat radial goal card: cotton-candy SVG ring, 40px standing figure, and circular − / + keys. */
+/** A minimal centered Flat radial goal tracker: cotton-candy ring with the 40px figure inside and − / + circles below. */
 export function GoalRing({
   title = "2026 Reading goal",
   target = 24,
@@ -70,12 +72,8 @@ export function GoalRing({
   }
 
   return (
-    <section
-      aria-labelledby={headingId}
-      data-part="paper"
-      className={"flex w-full max-w-sm min-w-0 items-center gap-4 rounded-surface bg-surface-1 p-5 text-fg forced-colors:border sm:gap-5 " + className}
-    >
-      {/* Open cotton-candy SVG ring */}
+    <div className={"inline-grid justify-items-center gap-4 text-fg " + className}>
+      {/* Centered cotton-candy ring holding the single 40px standing figure */}
       <div
         role="progressbar"
         aria-labelledby={headingId}
@@ -83,7 +81,7 @@ export function GoalRing({
         aria-valuemax={safeTarget}
         aria-valuenow={current}
         aria-valuetext={`${current} of ${safeTarget} ${unit} (${pct}%)`}
-        className="relative grid size-[76px] shrink-0 place-items-center sm:size-[84px]"
+        className="relative grid size-[136px] place-items-center"
       >
         <svg width={SIZE} height={SIZE} viewBox={`0 0 ${SIZE} ${SIZE}`} className="size-full -rotate-90" aria-hidden="true">
           <defs>
@@ -98,7 +96,7 @@ export function GoalRing({
             cy={SIZE / 2}
             r={RADIUS}
             fill="none"
-            stroke="var(--surface-3)"
+            stroke="color-mix(in oklab, var(--fg) 10%, transparent)"
             strokeWidth={STROKE}
           />
           <motion.circle
@@ -115,57 +113,56 @@ export function GoalRing({
             transition={spring}
           />
         </svg>
-      </div>
 
-      {/* Standing 40px figure + quiet title */}
-      <div className="grid min-w-0 flex-1 gap-1">
-        <h3 id={headingId} data-part="lettering" className="truncate text-caption text-fg-subtle">
-          {title}
-        </h3>
-        <div className="flex flex-wrap items-baseline gap-x-1.5">
+        <div className="absolute grid justify-items-center gap-0.5">
           <motion.span
             key={current}
             data-part="figure"
             initial={reduced ? false : { scale: 0.92 }}
             animate={{ scale: 1 }}
             transition={spring}
-            className="inline-block origin-left text-figure leading-none tabular-nums text-fg"
+            className="text-figure leading-none tabular-nums text-fg"
           >
             {current}
           </motion.span>
-          <span data-part="lettering" className="truncate text-small tabular-nums text-fg-subtle">
+          <span data-part="lettering" className="text-caption tabular-nums text-fg-subtle">
             / {safeTarget} {unit}
           </span>
         </div>
       </div>
 
-      {/* Quiet Braun-style circular stepper keys */}
-      <div className="flex shrink-0 flex-col-reverse items-center gap-1.5 sm:flex-row">
-        <button
-          type="button"
-          data-part="outline"
-          aria-label={`Decrease ${unit} by 1`}
-          disabled={current === 0}
-          onClick={() => update(current - 1)}
-          className="litt-target grid size-8 cursor-pointer place-items-center rounded-pill text-body font-title text-fg-muted shadow-[inset_0_0_0_1.5px_var(--line-control)] transition-colors duration-(--dur-instant) ease-litt hover:text-fg disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus forced-colors:border sm:size-9"
-        >
-          <span aria-hidden="true">−</span>
-        </button>
-        <button
-          type="button"
-          data-part="circle"
-          aria-label={`Add 1 to ${unit}`}
-          disabled={current >= safeTarget}
-          onClick={() => update(current + 1)}
-          className="litt-target grid size-8 cursor-pointer place-items-center rounded-pill bg-surface-3 text-body font-title text-fg transition-colors duration-(--dur-instant) ease-litt hover:bg-surface-2 disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus forced-colors:border sm:size-9"
-        >
-          <span aria-hidden="true">+</span>
-        </button>
+      {/* Quiet label + balanced circular stepper keys */}
+      <div className="grid justify-items-center gap-2.5">
+        <span id={headingId} data-part="lettering" className="text-small text-fg-subtle">
+          {title}
+        </span>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            data-part="outline"
+            aria-label={`Decrease ${unit} by 1`}
+            disabled={current === 0}
+            onClick={() => update(current - 1)}
+            className="litt-target grid size-9 cursor-pointer place-items-center rounded-pill text-body font-title text-fg-muted shadow-[inset_0_0_0_1.5px_var(--line-control)] transition-colors duration-(--dur-instant) ease-litt hover:text-fg disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus forced-colors:border"
+          >
+            <span aria-hidden="true">−</span>
+          </button>
+          <button
+            type="button"
+            data-part="circle"
+            aria-label={`Add 1 to ${unit}`}
+            disabled={current >= safeTarget}
+            onClick={() => update(current + 1)}
+            className="litt-target grid size-9 cursor-pointer place-items-center rounded-pill bg-block text-body font-title text-fg transition-colors duration-(--dur-instant) ease-litt hover:bg-(--block-hover) disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus forced-colors:border"
+          >
+            <span aria-hidden="true">+</span>
+          </button>
+        </div>
       </div>
 
       <span role="status" aria-live="polite" className="sr-only">
         {live}
       </span>
-    </section>
+    </div>
   );
 }
