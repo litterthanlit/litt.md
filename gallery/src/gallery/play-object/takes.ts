@@ -32,7 +32,7 @@ const SET: Record<Material, string[]> = {
   device: ["composer", "agent-indicator", "tool-call", "message", "seven-segment", "tape-progress", "switch", "slider", "gauge", "copy-button", "button", "command-menu"],
   plain: ["form", "input", "select", "checkbox", "button", "table", "details", "callout", "breadcrumb", "pagination", "tabs", "dialog"],
   rack: ["clip-launcher", "device-rack", "step-sequencer", "slider", "curve-editor", "pad", "time-scrubber", "inspector", "number-field", "segmented", "switch", "button"],
-  heat: ["pursuit-meter", "tune-menu", "lap-timer", "menu", "tabs", "segmented", "button", "slider", "stat", "progress", "table", "toast"],
+  heat: ["pursuit-meter", "lap-timer", "tune-menu", "menu", "tabs", "segmented", "button", "slider", "stat", "progress", "table", "toast"],
 };
 
 /** Every component page in the world, in the sidebar's order. */
