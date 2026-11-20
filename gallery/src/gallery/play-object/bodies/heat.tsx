@@ -4,12 +4,14 @@
  *
  * - Outer frame: four 16px corner brackets in the ink (`--fg`), seated inside a 2px-padded outer wrapper so they never
  *   cause sideways scroll.
- * - Header band (`order-1`, non-focusable): striped top band with the take's title, tabular count and a dashed level
- *   bar (amber dashes up to the current take, as in Heat's Audio scene).
- * - Screen (`order-2`): flush square stage between 1px rules, holding the take alone (`rail: false`).
- * - Menu selector & foot (`order-3`, DOM child 1): a horizontal strip of square cells where the active item takes four
- *   8px amber corner brackets and `‹ Title ›` chevrons (never an accent fill, R6), with Play and keycap hints along the
- *   foot above the closing striped band.
+ *
+ * Top to bottom, in the order read and the order tabbed, at every width (plans/audits/heat-fixes.md, finding 4):
+ * - Header band (non-focusable): striped top band with the take's title, tabular count and a dashed level bar (amber
+ *   dashes up to the current take, as in Heat's Audio scene).
+ * - Menu strip: a horizontal strip of square cells where the active item takes four 8px amber corner brackets and
+ *   `‹ Title ›` chevrons (never an accent fill, R6), then Previous, Play and Next.
+ * - Screen: flush square stage between 1px rules, holding the take alone (`rail: false`), then the closing striped band.
+ * - Keycap hints along the foot, under the slab, as in the references.
  */
 import { useEffect, useRef } from "react";
 import { Kbd } from "@/components/kbd";
@@ -174,26 +176,23 @@ function HeatBody({ takes, at, selector, pick, step, index, play, readout, scree
       <div className="relative min-w-0">
         <span aria-hidden="true" className={FRAME} />
         <div className="flex min-w-0 flex-col border border-line bg-canvas forced-colors:border">
-          {/* DOM order: menu deck (selector -> Play) first, then screen, then non-focusable header band. */}
-          <div className="order-3 flex min-w-0 flex-col">
-            <div className="flex min-w-0 items-center gap-3 border-t border-line px-3 py-2">
-              <MenuStrip takes={takes} at={at} selector={selector} pick={pick} index={index} />
-              <div className="flex shrink-0 items-center gap-1.5">
-                <button {...step(-1)} className={heatBtn + " px-2.5 text-fg"}>
-                  <span aria-hidden="true">‹</span>
-                </button>
-                <PlayHeatKey play={play} />
-                <button {...step(1)} className={heatBtn + " px-2.5 text-fg"}>
-                  <span aria-hidden="true">›</span>
-                </button>
-              </div>
+          {/* Top to bottom, as the order read and the order tabbed: the striped band with the readout, the menu strip
+              (selector, then Play), the screen, and the closing band. */}
+          <HeaderBand readout={readout} at={at} n={takes.length} />
+          <div data-heat-strip="" className="flex min-w-0 items-center gap-3 border-t border-line px-3 py-2">
+            <MenuStrip takes={takes} at={at} selector={selector} pick={pick} index={index} />
+            <div className="flex shrink-0 items-center gap-1.5">
+              <button {...step(-1)} className={heatBtn + " px-2.5 text-fg"}>
+                <span aria-hidden="true">‹</span>
+              </button>
+              <PlayHeatKey play={play} />
+              <button {...step(1)} className={heatBtn + " px-2.5 text-fg"}>
+                <span aria-hidden="true">›</span>
+              </button>
             </div>
-            <div aria-hidden="true" className={"h-3 bg-surface-1 " + STRIPES} />
           </div>
-          <div className="order-2 flex border-y border-line bg-canvas">
-            {screen}
-          </div>
-          <HeaderBand readout={readout} at={at} n={takes.length} className="order-1" />
+          <div className="flex border-y border-line bg-canvas">{screen}</div>
+          <div aria-hidden="true" className={"h-3 bg-surface-1 " + STRIPES} />
         </div>
       </div>
       {/* Keycap hints along the foot, as in Heat's street-racing menus. */}
