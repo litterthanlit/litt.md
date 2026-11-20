@@ -15,6 +15,7 @@ import { Framed } from "@/components/framed";
 import { ChevronDownIcon, SparkleIcon } from "@/components/icons";
 import type { Material } from "./look";
 import { Tabs, TabsList, TabsPanel, TabsPanels, TabsTrigger } from "@/components/tabs";
+import { JumpRow } from "./jump-row";
 
 /** The sidebar's groups, in the order they appear. */
 /** Blocks come last: whole screens built from the components in the groups above them. */
@@ -356,6 +357,8 @@ export function Page({
             </h1>
             <FunHint text={meta.fun} />
           </header>
+          {/* A jump to each docs section, so a phone is not fifteen screens with no way down (jump-row.tsx). */}
+          {docs && <JumpRow docs={docs} />}
           {slotted}
           {study && (
             <Suspense fallback={<div aria-hidden="true" className="min-h-[40svh]" />}>
