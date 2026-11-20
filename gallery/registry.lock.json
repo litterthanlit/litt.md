@@ -702,6 +702,10 @@
       "version": "2026.11.17",
       "hash": "f50a1e82889db283"
     },
+    "flat-goal-ring": {
+      "version": "2026.11.19",
+      "hash": "6ee28d877850640a"
+    },
     "flat-header": {
       "version": "2026.11.16",
       "hash": "36890aac1240c896"
@@ -817,6 +821,14 @@
     "flat-range-chart": {
       "version": "2026.11.16",
       "hash": "3b510b0be4606ccd"
+    },
+    "flat-reaction-bar": {
+      "version": "2026.11.19",
+      "hash": "50271056ce700abc"
+    },
+    "flat-reading-progress": {
+      "version": "2026.11.19",
+      "hash": "8094c653906bf3d9"
     },
     "flat-resizable": {
       "version": "2026.11.16",
@@ -973,6 +985,10 @@
     "glide": {
       "version": "2026.11.17",
       "hash": "f50a1e82889db283"
+    },
+    "goal-ring": {
+      "version": "2026.11.19",
+      "hash": "6ee28d877850640a"
     },
     "growth": {
       "version": "2026.10.26",
@@ -2657,6 +2673,14 @@
     "range-chart": {
       "version": "2026.11.06",
       "hash": "3b510b0be4606ccd"
+    },
+    "reaction-bar": {
+      "version": "2026.11.19",
+      "hash": "50271056ce700abc"
+    },
+    "reading-progress": {
+      "version": "2026.11.19",
+      "hash": "8094c653906bf3d9"
     },
     "resizable": {
       "version": "2026.11.06",
