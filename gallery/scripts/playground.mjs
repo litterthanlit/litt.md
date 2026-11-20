@@ -20,6 +20,7 @@
  * - a world's set in play-object/takes.ts is not twelve parts, each a component page in that world, or a page's id is
  *   components or about, which would hide behind the world's own addresses,
  * - the screen does not open on Index, the world's set (a row each, as many as the slider runs to and takes.ts lists),
+ *   or a name in a row of Index's grid sits above or below another name in that row (rows hold to their tops),
  * - Right and Down do not go to the next take, Left and Up to the previous, wrapping through Index, or End and Home do
  *   not go to the last take and to Index, with aria-valuenow and the readout's count following,
  * - a take (each in the set) draws nothing inside the screen's box, or anything in the body (the object outside its
@@ -38,7 +39,8 @@
  * --self-test moves the Dialog take's open dialog out to <body>, as a portal that missed the screen's OverlayRoot would,
  * so it leaves the screen and its world, keeps the recorder's body from loading, so Device draws bare, and takes a tile
  * out of Device's gallery view, adds a part Heat does not have to Heat's set, and on Device puts back a second control
- * named Home and a Source link into the gallery; it fails if the check misses any.
+ * named Home and a Source link into the gallery, and centres Index's rows again with one line wrapping; it fails if
+ * the check misses any.
  *
  * Needs Playwright, found as worlds.mjs finds it.
  */
@@ -339,6 +341,33 @@ for (const [world, id, attribute] of RUN) {
     home.id === "home" && (await readout(pg))?.includes("Index") && set.length === n && n === (SETS[id] ?? []).length ? null : `${world}: showing ${home.id}, readout "${await readout(pg)}", ${set.length} in the set on Index, the slider runs to ${n}`,
   );
 
+  /* Index's rows hold to their tops (finding 6): every name in a row of the grid shares a top, so a line that wraps
+     never lifts its name above its neighbours'. The break, on Device: the rows centred again, as they were, and the
+     first row's line made long enough to wrap. */
+  if (selfTest && id === "device")
+    await pg.evaluate((F) => {
+      const rows = [...document.querySelectorAll(`${F} [data-play-index] li > button`)];
+      for (const b of rows) b.style.alignContent = "center";
+      const line = rows[0]?.querySelector("[aria-hidden=true]");
+      if (line) (line.dataset.was = line.textContent), (line.textContent = `${line.textContent} ${line.textContent} ${line.textContent}`);
+    }, FRAME);
+  const tops = await pg.evaluate((F) => {
+    const rows = new Map();
+    for (const li of document.querySelectorAll(`${F} [data-play-index] li`)) {
+      const name = li.querySelector("button > span");
+      if (!name) continue;
+      const y = Math.round(li.getBoundingClientRect().top);
+      rows.set(y, [...(rows.get(y) ?? []), [name.textContent.trim(), Math.round(name.getBoundingClientRect().top)]]);
+    }
+    return [...rows.values()].filter((r) => new Set(r.map(([, t]) => t)).size > 1).map((r) => r.map(([n, t]) => `${n} at ${t}`).join(", "));
+  }, FRAME);
+  claim("every name in a row of Index's grid shares a top", tops.length === 0 ? null : `${world}: ${tops.join("; ")}`);
+  if (selfTest && id === "device")
+    await pg.evaluate((F) => {
+      for (const b of document.querySelectorAll(`${F} [data-play-index] li > button`)) b.style.alignContent = "";
+      for (const l of document.querySelectorAll(`${F} [data-was]`)) (l.textContent = l.dataset.was), delete l.dataset.was;
+    }, FRAME);
+
   /* One level: Right and Down go on, Left and Up go back, wrapping through Index; End and Home go to the ends. */
   await pg.locator(SLIDER).focus();
   for (const [key, to] of [["ArrowRight", 1], ["ArrowDown", 2], ["ArrowUp", 1], ["ArrowLeft", 0], ["ArrowLeft", n], ["ArrowRight", 0], ["End", n], ["Home", 0]]) {
@@ -495,8 +524,10 @@ if (selfTest) {
   if (!homeCaught) console.error("playground --self-test: a second control named Home on Device's player, and the check missed it.");
   const sourceCaught = (claims.get("no link named Source points inside the gallery") ?? []).some((f) => f.startsWith("Device:"));
   if (!sourceCaught) console.error("playground --self-test: a Source link to #device/button on Device's player, and the check missed it.");
-  if (!caught || !bareCaught || !tileCaught || !setCaught || !homeCaught || !sourceCaught) process.exit(1);
-  console.log("playground --self-test: a dialog escaped to <body> leaves the screen, with the recorder kept from loading Device draws bare, a tile missing from Device's gallery view is seen, a set naming a part outside its world is seen, and a second Home and a Source link into the gallery are seen; the check catches all six.");
+  const topsCaught = (claims.get("every name in a row of Index's grid shares a top") ?? []).some((f) => f.startsWith("Device:"));
+  if (!topsCaught) console.error("playground --self-test: Index's rows centred with a wrapping line on Device, and the check missed it.");
+  if (!caught || !bareCaught || !tileCaught || !setCaught || !homeCaught || !sourceCaught || !topsCaught) process.exit(1);
+  console.log("playground --self-test: a dialog escaped to <body> leaves the screen, with the recorder kept from loading Device draws bare, a tile missing from Device's gallery view is seen, a set naming a part outside its world is seen, a second Home and a Source link into the gallery are seen, and Index's rows centred off their tops are seen; the check catches all seven.");
   process.exit(0);
 }
 if (bad) {

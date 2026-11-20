@@ -288,12 +288,14 @@ function Rail({ material, takes, total, at, open }: { material: Material; takes:
 }
 
 const ROW =
-  "litt-target grid w-full cursor-pointer content-center gap-0.5 rounded-control px-3 py-2 text-left in-[[data-material=flat]]:gap-1 in-[[data-material=flat]]:py-3 " +
+  "litt-target grid w-full cursor-pointer content-start gap-0.5 rounded-control px-3 py-2 text-left in-[[data-material=flat]]:gap-1 in-[[data-material=flat]]:py-3 " +
   "hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus";
 
 /**
  * Home, inside the screen (Nick, 2026-11-15, after design.how's systems): the world's name and line, then the set to
- * pick from, each part with its one line, then the way to every component in the world.
+ * pick from, each part with its one line, then the way to every component in the world. A row's name is the thing to
+ * press, so it takes the title weight in the ink, and its line the reading weight in the muted ink; rows hold to their
+ * tops, so a line that wraps never lifts its name above its neighbours' (plans/audits/heat-fixes.md, finding 6).
  *
  * Under Flat (plans/024, Flat, leftovers) nothing on Home is under body size, and Home fills the screen: the set gets
  * room to breathe and the way to every component sits at its foot. Every other world draws it as it was.
@@ -321,8 +323,8 @@ function HomeView({ material, takes, total, groups, open }: { material: Material
           {takes.map((t, i) => (
             <li key={t.id} className="grid min-w-0">
               <button type="button" aria-describedby={`set-${material}-${t.id}`} className={ROW} onClick={() => open(i)}>
-                <span className={"text-small text-fg " + FLAT_HOME.title}>{t.title}</span>
-                <span id={`set-${material}-${t.id}`} aria-hidden="true" className={"line-clamp-2 text-caption text-fg-subtle " + FLAT_HOME.lede}>
+                <span className={"text-small font-title text-fg " + FLAT_HOME.title}>{t.title}</span>
+                <span id={`set-${material}-${t.id}`} aria-hidden="true" className={"line-clamp-2 text-caption font-normal text-fg-muted " + FLAT_HOME.lede}>
                   {t.lede}
                 </span>
               </button>
