@@ -11,6 +11,7 @@ Press identity (plans/024, Press; taste/litt-principles.md, Press): adds three m
 - **added** `deploy-status`, `press-deploy-status`: Deploy status, a tactile deployment pipeline where reached stages rise as stone blocks out of a recessed tray and pending stages stay flush, with Rebuild and Promote keys.
 - **added** `env-switch`, `press-env-switch`: Environment switch, a tactile Production / Preview / Development selector lifting the active target out of a recessed stone tray above its host readout and cut-in load slot.
 - **added** `release-rail`, `press-release-rail`: Release rail, a selectable release history resting inside one recessed stone tray where only the selected commit lifts as a raised block, with Promote to live when inspecting an older deploy.
+- **changed** `stat`, `press-stat`, `flat-stat`, `device-stat`, `plain-stat`, `rack-stat`, `heat-stat`: replaces Press's double-raised fake button box on `Stat` (`PressBody` in `stat.tsx`) with a calm warm-stone surface (`.litt-raised`, zero outer cast), standing `text-figure` (18px) value directly on the stone, and `font-normal` delta caption. Props are unchanged and Flat, Device, Rack and Heat bodies are unchanged.
 
 ## 2026-11-19 · Flat expansion, Rack Ableton identity & Heat complete
 
