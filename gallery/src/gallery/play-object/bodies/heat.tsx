@@ -13,10 +13,14 @@
  * - Screen: flush square stage between 1px rules, holding the take alone (`rail: false`), then the closing striped band.
  *   Shorter than the other worlds' at desktop widths (SHORT_SCREEN_HEIGHT), so a take reads larger in it (finding 7).
  * - Keycap hints along the foot, under the slab, as in the references.
+ *
+ * Index, inside the screen, is Heat's menu (finding 1): a column of rows, the current one (under the keys or the
+ * pointer) in amber inside the brackets, Up and Down to move and Enter to open, with that row's part live beside it and
+ * its line under it. The contract owns the list, its keys and what a row opens (HeatHome only draws).
  */
 import { useEffect, useRef, useState } from "react";
 import { Kbd } from "@/components/kbd";
-import type { PlayObjectBody, PlayObjectBodyProps } from "../body";
+import type { PlayObjectBody, PlayObjectBodyProps, PlayObjectHomeProps } from "../body";
 import { COMPACT_BOX, COMPACT_SCREEN, SHORT_SCREEN_HEIGHT } from "../body";
 
 /* Four corner marks, each two 2px bars, in currentColor (after systems/heat.tsx). */
@@ -253,9 +257,77 @@ function HeatBody({ takes, at, selector, pick, step, index, play, readout, scree
   );
 }
 
+/* A row of Index's menu: a cell like the strip's, the full width of the column. */
+const HOME_ROW =
+  "group/row litt-target relative flex h-control-sm w-full min-w-0 cursor-pointer items-center gap-2 px-3 text-left text-small font-title outline-none select-none " +
+  "transition-colors duration-(--dur-instant) ease-litt pointer-coarse:h-control-md";
+/* A row's focus: its brackets close into a full box in the focus colour, as on the strip (finding 5). */
+const ROW_FOCUSED =
+  "pointer-events-none absolute inset-0 hidden border-2 border-focus group-focus-visible/row:block " +
+  "forced-colors:-inset-0.5 forced-colors:border-[CanvasText]";
+
+function HeatHome({ world, takes, current, list, row, everything, part, compact }: PlayObjectHomeProps) {
+  const { children: words, ...link } = everything;
+  return (
+    <div
+      className={
+        "grid h-full min-h-0 overflow-auto overscroll-contain p-6 " +
+        (compact ? "content-start gap-6" : "grid-cols-[minmax(0,16rem)_minmax(0,1fr)] gap-10")
+      }
+    >
+      <div className="flex min-h-0 min-w-0 flex-col gap-3">
+        <h2 className="px-3 text-caption text-fg-muted">{world.name}</h2>
+        <nav {...list}>
+          <ul className="grid gap-0.5">
+            {takes.map((t, i) => {
+              const on = i === current;
+              return (
+                <li key={t.id} className="grid min-w-0">
+                  <button
+                    {...row(i)}
+                    className={
+                      HOME_ROW +
+                      " " +
+                      (on
+                        ? "bg-surface-1 text-accent-text forced-colors:outline-2 forced-colors:-outline-offset-2 forced-colors:outline-[Highlight]"
+                        : "text-fg-muted")
+                    }
+                  >
+                    <span className="min-w-0 truncate">{t.title}</span>
+                    {on && <span aria-hidden="true" className={SELECTED} />}
+                    <span aria-hidden="true" className={ROW_FOCUSED} />
+                    {on && (
+                      <span aria-hidden="true" className="ms-auto">
+                        ›
+                      </span>
+                    )}
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
+        <a
+          {...link}
+          className="mt-auto self-start px-3 text-small text-fg underline decoration-line-strong underline-offset-4 hover:decoration-current focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+        >
+          {words}
+        </a>
+      </div>
+      {!compact && (
+        <div className="grid min-h-0 min-w-0 content-center justify-items-center gap-4">
+          {part}
+          <p className="max-w-[48ch] text-center text-small text-fg-muted">{takes[current]?.lede}</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export const heat: PlayObjectBody = {
   name: "heat",
   shape: (compact) => (compact ? COMPACT_SCREEN : SHORT_SCREEN_HEIGHT + " w-full rounded-none"),
   rail: false,
   Body: HeatBody,
+  Home: HeatHome,
 };

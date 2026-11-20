@@ -21,7 +21,9 @@
  * - a world's set in play-object/takes.ts is not twelve parts, each a component page in that world, or a page's id is
  *   components or about, which would hide behind the world's own addresses,
  * - the screen does not open on Index, the world's set (a row each, as many as the slider runs to and takes.ts lists),
- *   or a name in a row of Index's grid sits above or below another name in that row (rows hold to their tops),
+ *   or a name in a row of Index's grid sits above or below another name in that row (rows hold to their tops), or, on
+ *   Heat, Index (its own menu, body.Home) does not show the current row's part live on the screen with exactly one row
+ *   current, Down moving both,
  * - Right and Down do not go to the next take, Left and Up to the previous, wrapping through Index, or End and Home do
  *   not go to the last take and to Index, with aria-valuenow and the readout's count following,
  * - a take (each in the set) draws nothing inside the screen's box, or anything in the body (the object outside its
@@ -42,7 +44,8 @@
  * so it leaves the screen and its world, keeps the recorder's body from loading, so Device draws bare, and takes a tile
  * out of Device's gallery view, adds a part Heat does not have to Heat's set, and on Device puts back a second control
  * named Home and a Source link into the gallery, centres Index's rows again with one line wrapping, draws Heat's
- * menu strip under its screen again, and sets Heat's screen to the other worlds' height; it fails if the check misses
+ * menu strip under its screen again, takes Heat's live part off its Index and marks a second row current, and sets
+ * Heat's screen to the other worlds' height; it fails if the check misses
  * any.
  *
  * Needs Playwright, found as worlds.mjs finds it.
@@ -383,6 +386,45 @@ for (const [world, id, attribute] of RUN) {
     home.id === "home" && (await readout(pg))?.includes("Index") && set.length === n && n === (SETS[id] ?? []).length ? null : `${world}: showing ${home.id}, readout "${await readout(pg)}", ${set.length} in the set on Index, the slider runs to ${n}`,
   );
 
+  /* Heat's Index is its menu (finding 1): the current row's part is live on the screen beside the list, and exactly one
+     row is current. Down makes the next row current and brings its part. The break: the live part taken away and a
+     second row marked current. */
+  if (id === "heat") {
+    if (selfTest)
+      await pg.evaluate((F) => {
+        document.querySelector(`${F} [data-play-live]`)?.remove();
+        document.querySelectorAll(`${F} [data-play-index] button`)[3]?.setAttribute("data-current", "");
+      }, FRAME);
+    const menu = () =>
+      pg.evaluate((F) => {
+        const f = document.querySelector(F).getBoundingClientRect();
+        const live = document.querySelector(`${F} [data-play-take=home] [data-play-live]`);
+        const draws = !!live && [...live.querySelectorAll("*")].some((el) => {
+          const b = el.getBoundingClientRect();
+          return b.width > 0 && b.height > 0 && b.left >= f.left - 1 && b.right <= f.right + 1 && b.top >= f.top - 1 && b.bottom <= f.bottom + 1;
+        });
+        const current = [...document.querySelectorAll(`${F} [data-play-index] button[data-current]`)].map((b) => b.textContent.trim());
+        return { live: live?.dataset.playLive ?? null, draws, current };
+      }, FRAME);
+    const atRest = await menu();
+    let moved = null;
+    if (!selfTest) {
+      await pg.locator(`${FRAME} [data-play-index] button[data-current]`).focus();
+      await pg.keyboard.press("ArrowDown");
+      await pg.waitForTimeout(300);
+      moved = await menu();
+      await pg.keyboard.press("ArrowUp");
+      await pg.waitForTimeout(200);
+    }
+    claim(
+      "on Heat's Index a live part is on the screen and exactly one row is current, and Down moves both",
+      atRest.draws && atRest.current.length === 1 && atRest.live === SETS.heat?.[0] && (!moved || (moved.current.length === 1 && moved.live === SETS.heat?.[1] && moved.draws))
+        ? null
+        : `${world}: at rest ${JSON.stringify(atRest)}${moved ? `, after Down ${JSON.stringify(moved)}` : ""}`,
+    );
+    if (selfTest) await pg.reload({ waitUntil: "networkidle" }).then(() => pg.waitForTimeout(300)).then(() => inView(pg));
+  }
+
   /* Index's rows hold to their tops (finding 6): every name in a row of the grid shares a top, so a line that wraps
      never lifts its name above its neighbours'. The break, on Device: the rows centred again, as they were, and the
      first row's line made long enough to wrap. */
@@ -599,10 +641,12 @@ if (selfTest) {
   if (!topsCaught) console.error("playground --self-test: Index's rows centred with a wrapping line on Device, and the check missed it.");
   const orderCaught = (claims.get("on Heat's player each tab stop is at or below the one before it, or to its right") ?? []).some((f) => f.startsWith("Heat:"));
   if (!orderCaught) console.error("playground --self-test: Heat's menu strip drawn under its screen again, and the check missed it.");
+  const menuCaught = (claims.get("on Heat's Index a live part is on the screen and exactly one row is current, and Down moves both") ?? []).some((f) => f.startsWith("Heat:"));
+  if (!menuCaught) console.error("playground --self-test: Heat's Index lost its live part and gained a second current row, and the check missed it.");
   const sizeCaught = [...claims].some(([name, fails]) => name.startsWith("on Heat's player the pursuit meter covers") && fails.some((f) => f.startsWith("Heat:")));
   if (!sizeCaught) console.error("playground --self-test: Heat's screen at the other worlds' height, and the check missed the take's size.");
-  if (!caught || !bareCaught || !tileCaught || !setCaught || !homeCaught || !sourceCaught || !topsCaught || !orderCaught || !sizeCaught) process.exit(1);
-  console.log("playground --self-test: a dialog escaped to <body> leaves the screen, with the recorder kept from loading Device draws bare, a tile missing from Device's gallery view is seen, a set naming a part outside its world is seen, a second Home and a Source link into the gallery are seen, Index's rows centred off their tops are seen, Heat's strip under its screen is seen, and a small take on Heat's screen is seen; the check catches all nine.");
+  if (!caught || !bareCaught || !tileCaught || !setCaught || !homeCaught || !sourceCaught || !topsCaught || !orderCaught || !sizeCaught || !menuCaught) process.exit(1);
+  console.log("playground --self-test: a dialog escaped to <body> leaves the screen, with the recorder kept from loading Device draws bare, a tile missing from Device's gallery view is seen, a set naming a part outside its world is seen, a second Home and a Source link into the gallery are seen, Index's rows centred off their tops are seen, Heat's strip under its screen is seen, a small take on Heat's screen is seen, and Heat's Index with no live part and two current rows is seen; the check catches all ten.");
   process.exit(0);
 }
 if (bad) {

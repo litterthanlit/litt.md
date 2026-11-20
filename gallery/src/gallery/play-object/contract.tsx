@@ -6,8 +6,10 @@
  * Play, Index, Details and Page, and the state. A body (bodies/<world>.tsx) only draws. A world with no body yet, or
  * whose body fails to load, draws bodies/bare.tsx.
  *
- * - The screen opens on Index: the world's introduction, the set to pick from, and a link to every component. Beside a
- *   take, a rail of the set, unless the body's screen holds the take alone (body.rail false: Device's recorder).
+ * - The screen opens on Index: the world's introduction, the set to pick from, and a link to every component. A body
+ *   may draw that list in its own grammar (body.Home: Heat's, a column of rows with the current row's part live beside
+ *   it), handed the list, its keys, the pick and the link; the contract still owns all four. Beside a take, a rail of
+ *   the set, unless the body's screen holds the take alone (body.rail false: Device's recorder).
  * - The selector is a slider over Index and the set, as the player's tape is. One tab stop. Right and Down go to the
  *   next take, Left and Up to the previous, wrapping through Index. The Home key goes to Index, End to the last take. A
  *   hand's change is said once in a polite live region.
@@ -28,11 +30,11 @@ import { useCustomize } from "../customize-state";
 import { PreviewContext } from "../kit";
 import { lookAttributes, materialOf, MATERIALS, type Material } from "../look";
 import { bare } from "./bodies/bare";
-import type { PlayObjectBody, PlayObjectBodyProps } from "./body";
+import type { PlayObjectBody, PlayObjectBodyProps, PlayObjectHomeProps } from "./body";
 import { PlayScreen } from "./screen";
 import { shelvesOf, takesOf, type Take } from "./takes";
 
-export type { PlayObjectBody, PlayObjectBodyProps } from "./body";
+export type { PlayObjectBody, PlayObjectBodyProps, PlayObjectHomeProps } from "./body";
 
 /** How long Play holds each take. */
 export const TAKE_MS = 4000;
@@ -99,6 +101,9 @@ function Loaded({ material, dark, lead, actions }: Props) {
   const [playing, setPlaying] = useState(false);
   const [said, setSaid] = useState("");
   const [details, setDetails] = useState(false);
+  /* On a body's own Index (body.Home), the row under the keys or the pointer, whose part is live beside the list. */
+  const [cue, setCue] = useState(0);
+  const rows = useRef<(HTMLButtonElement | null)[]>([]);
   const [host] = useState(() => Object.assign(document.createElement("div"), { className: "contents" }));
   const n = takes.length;
   const take = at === null ? null : takes[at]!;
@@ -138,6 +143,8 @@ function Loaded({ material, dark, lead, actions }: Props) {
   const go = (to: number | null) => {
     setPlaying(false);
     if (to === at) return;
+    /* Back to Index, the list's current row is the take just shown. */
+    if (to === null && at !== null) setCue(at);
     setAt(to);
     setSaid(to === null ? homeText : `${takes[to]!.title}, ${to + 1} of ${n}`);
   };
@@ -195,6 +202,45 @@ function Loaded({ material, dark, lead, actions }: Props) {
     compact,
   };
 
+  /* A body's own Index: the contract owns the list, its order, its keys and what each row opens; the body only draws. */
+  const cued = takes[Math.min(cue, n - 1)];
+  const homeProps: PlayObjectHomeProps | null =
+    body.Home && cued
+      ? {
+          world,
+          takes,
+          current: cue,
+          list: { "aria-label": `The set in ${world.name}`, "data-play-index": "" },
+          row: (i) => ({
+            type: "button",
+            ref: (el: HTMLButtonElement | null) => void (rows.current[i] = el),
+            tabIndex: i === cue ? 0 : -1,
+            "data-current": i === cue ? "" : undefined,
+            onClick: () => go(i),
+            onFocus: () => setCue(i),
+            onPointerEnter: () => setCue(i),
+            onKeyDown: (e) => {
+              const to = ({ ArrowDown: (i + 1) % n, ArrowUp: (i - 1 + n) % n, Home: 0, End: n - 1 } as Record<string, number>)[e.key];
+              if (to === undefined) return;
+              e.preventDefault();
+              setCue(to);
+              rows.current[to]?.focus();
+            },
+          }),
+          everything: { href: `#${material}/components`, "data-play-everything": "", children: `Every component, ${total} in ${shelves.length} groups` },
+          part: (
+            <div key={cued.id} data-play-live={cued.id} aria-label={`${cued.title}, live`} role="group" className="grid w-full min-w-0 justify-items-center">
+              <PreviewContext.Provider value="tile">
+                <Suspense fallback={null}>
+                  <cued.Component />
+                </Suspense>
+              </PreviewContext.Provider>
+            </div>
+          ),
+          compact,
+        }
+      : null;
+
   const LINK =
     "litt-target inline-flex h-control-sm items-center rounded-control px-control-pad-sm text-small font-title text-fg-muted hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus pointer-coarse:h-control-md";
 
@@ -230,6 +276,10 @@ function Loaded({ material, dark, lead, actions }: Props) {
                   </PreviewContext.Provider>
                 </div>
               </div>
+            </div>
+          ) : body.Home && homeProps ? (
+            <div data-play-take="home" className="h-full min-h-0">
+              <body.Home {...homeProps} />
             </div>
           ) : (
             <HomeView material={material} takes={takes} total={total} groups={shelves.length} open={go} />

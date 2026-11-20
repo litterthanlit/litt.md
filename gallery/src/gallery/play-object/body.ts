@@ -3,7 +3,7 @@
  * what it is handed and adds no role, key or state of its own (plans/018, Constraints; litt-principles.md, Where a
  * world is free).
  */
-import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ComponentType, HTMLAttributes, ReactNode } from "react";
+import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ComponentType, HTMLAttributes, ReactNode, Ref } from "react";
 import type { MaterialInfo } from "../look";
 import type { Take } from "./takes";
 
@@ -42,6 +42,31 @@ export type PlayObjectBodyProps = {
   compact: boolean;
 };
 
+/**
+ * What a body that draws Index's list itself gets (plans/audits/heat-fixes.md, finding 1). The contract still owns the
+ * list, its order, its keys and what it opens; the body draws the rows in its own grammar and places the live part.
+ */
+export type PlayObjectHomeProps = {
+  world: MaterialInfo;
+  /** The world's set, in order: a row each. */
+  takes: Take[];
+  /** The row under the keys or the pointer: its part is the one live beside the list. */
+  current: number;
+  /** Spread on the list's element (a nav): its name, and the mark the checks read. */
+  list: HTMLAttributes<HTMLElement> & { "data-play-index": "" };
+  /** Spread on row i's button: one tab stop for the list (the current row), Up and Down to move (wrapping), Home and
+      End to the ends, Enter or a press to open the take, and the pointer or focus making it current. Its name is the
+      take's title, so the row holds the title as its text and draws everything else aria-hidden. */
+  row: (i: number) => ButtonHTMLAttributes<HTMLButtonElement> & { ref: Ref<HTMLButtonElement>; "data-current"?: "" };
+  /** Spread on the link to the world's gallery view, with its words. */
+  everything: AnchorHTMLAttributes<HTMLAnchorElement> & { href: string; "data-play-everything": ""; children: string };
+  /** The current row's part, live, drawn as its wall tile (PreviewContext "tile"). Place it once; the contract marks it
+      data-play-live. */
+  part: ReactNode;
+  /** Below sm: the screen is a phone's, and a body may leave the live part out, since a row opens its take at a touch. */
+  compact: boolean;
+};
+
 export type PlayObjectBody = {
   /** What the object's root says in data-play-object: the world's id, or "bare". */
   name: string;
@@ -53,6 +78,9 @@ export type PlayObjectBody = {
       alone (Device's recorder: plans/024, breach 17) says false, and the set stays on Index, behind its key and the dial. */
   rail: boolean;
   Body: ComponentType<PlayObjectBodyProps>;
+  /** Index's list in the body's own grammar, drawn inside the screen in place of the contract's. A body without one
+      keeps the contract's (every world but Heat). */
+  Home?: ComponentType<PlayObjectHomeProps>;
 };
 
 /** How tall a landscape screen stands: the window less the top row, the tape and the deck, so the whole object fits the
