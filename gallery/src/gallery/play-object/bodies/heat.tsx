@@ -13,7 +13,7 @@
  * - Screen: flush square stage between 1px rules, holding the take alone (`rail: false`), then the closing striped band.
  * - Keycap hints along the foot, under the slab, as in the references.
  */
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Kbd } from "@/components/kbd";
 import type { PlayObjectBody, PlayObjectBodyProps } from "../body";
 import { COMPACT_BOX, COMPACT_SCREEN, SCREEN_HEIGHT } from "../body";
@@ -34,6 +34,10 @@ const SELECTED = MARKS + "[background-size:8px_2px,2px_8px,8px_2px,2px_8px,8px_2
 const FOCUSED =
   "pointer-events-none absolute inset-0 hidden border-2 border-focus group-has-[[role=slider]:focus-visible]/strip:block " +
   "forced-colors:-inset-0.5 forced-colors:border-[CanvasText]";
+/* The strip's cut edges (finding 13): where the strip has more to scroll, its edge fades out of the canvas, so a phone
+   shows that the set goes on. Drawn over the scroller, never in it; gone under forced colours, where the gradient would
+   not hold. */
+const CUT = "pointer-events-none absolute inset-y-0 w-8 from-canvas to-transparent forced-colors:hidden";
 /* Diagonal hazard stripes along the top and bottom bands. */
 const STRIPES = "[background-image:repeating-linear-gradient(135deg,var(--surface-3)_0_6px,transparent_6px_12px)]";
 
@@ -80,64 +84,89 @@ function HeaderBand({
 
 function MenuStrip({ takes, at, selector, pick, index }: Pick<PlayObjectBodyProps, "takes" | "at" | "selector" | "pick" | "index">) {
   const row = useRef<HTMLDivElement>(null);
+  /* Which ends have more to scroll to. */
+  const [more, setMore] = useState({ start: false, end: false });
+  const measure = () => {
+    const r = row.current;
+    if (!r) return;
+    const start = r.scrollLeft > 1;
+    const end = r.scrollLeft + r.clientWidth < r.scrollWidth - 1;
+    setMore((m) => (m.start === start && m.end === end ? m : { start, end }));
+  };
   useEffect(() => {
     const r = row.current;
     const on = r?.querySelector<HTMLElement>("[data-chosen]");
-    if (!r || !on || r.scrollWidth <= r.clientWidth) return;
-    r.scrollTo({ left: on.offsetLeft - (r.clientWidth - on.offsetWidth) / 2 });
+    if (r && on && r.scrollWidth > r.clientWidth) r.scrollTo({ left: on.offsetLeft - (r.clientWidth - on.offsetWidth) / 2 });
+    measure();
   }, [at]);
+  useEffect(() => {
+    const r = row.current;
+    if (!r) return;
+    const seen = new ResizeObserver(measure);
+    seen.observe(r);
+    return () => seen.disconnect();
+  }, []);
 
   const itemBase =
     "relative inline-flex h-control-sm shrink-0 cursor-pointer items-center gap-1.5 px-3 text-small font-title whitespace-nowrap select-none " +
     "transition-colors duration-(--dur-instant) ease-litt pointer-coarse:h-control-md";
 
   return (
-    <div ref={row} className="group/strip flex min-w-0 flex-1 items-center gap-1 overflow-x-auto overscroll-x-contain py-1 [scrollbar-width:none]">
-      <button
-        {...index}
-        aria-label={undefined}
-        data-chosen={at === null ? "" : undefined}
-        className={
-          itemBase +
-          " " +
-          (at === null
-            ? "bg-surface-1 text-accent-text forced-colors:outline-2 forced-colors:-outline-offset-2 forced-colors:outline-[Highlight]"
-            : "text-fg-muted hover:text-fg")
-        }
-      >
-        {at === null && <span aria-hidden="true" className={SELECTED} />}
-        {at === null && <span aria-hidden="true" className={FOCUSED} />}
-        {at === null && <span aria-hidden="true">‹</span>}
-        <span>Index</span>
-        {at === null && <span aria-hidden="true">›</span>}
-      </button>
+    <div className="group/strip relative flex min-w-0 flex-1">
       <div
-        {...selector}
-        className="flex shrink-0 items-center gap-1 outline-none"
+        ref={row}
+        onScroll={measure}
+        data-heat-scroller=""
+        className="flex min-w-0 flex-1 items-center gap-1 overflow-x-auto overscroll-x-contain py-1 [scrollbar-width:none]"
       >
-        {takes.map((t, i) => {
-          const active = i === at;
-          return (
-            <span
-              key={t.id}
-              aria-hidden="true"
-              data-chosen={active ? "" : undefined}
-              onClick={() => pick(i)}
-              className={
-                itemBase +
-                " " +
-                (active
-                  ? "bg-surface-1 text-accent-text forced-colors:outline-2 forced-colors:-outline-offset-2 forced-colors:outline-[Highlight]"
-                  : "text-fg-muted hover:text-fg")
-              }
-            >
-              {active && <span aria-hidden="true" className={SELECTED} />}
-              {active && <span aria-hidden="true" className={FOCUSED} />}
-              {active ? `‹ ${t.title} ›` : t.title}
-            </span>
-          );
-        })}
+        <button
+          {...index}
+          aria-label={undefined}
+          data-chosen={at === null ? "" : undefined}
+          className={
+            itemBase +
+            " " +
+            (at === null
+              ? "bg-surface-1 text-accent-text forced-colors:outline-2 forced-colors:-outline-offset-2 forced-colors:outline-[Highlight]"
+              : "text-fg-muted hover:text-fg")
+          }
+        >
+          {at === null && <span aria-hidden="true" className={SELECTED} />}
+          {at === null && <span aria-hidden="true" className={FOCUSED} />}
+          {at === null && <span aria-hidden="true">‹</span>}
+          <span>Index</span>
+          {at === null && <span aria-hidden="true">›</span>}
+        </button>
+        <div
+          {...selector}
+          className="flex shrink-0 items-center gap-1 outline-none"
+        >
+          {takes.map((t, i) => {
+            const active = i === at;
+            return (
+              <span
+                key={t.id}
+                aria-hidden="true"
+                data-chosen={active ? "" : undefined}
+                onClick={() => pick(i)}
+                className={
+                  itemBase +
+                  " " +
+                  (active
+                    ? "bg-surface-1 text-accent-text forced-colors:outline-2 forced-colors:-outline-offset-2 forced-colors:outline-[Highlight]"
+                    : "text-fg-muted hover:text-fg")
+                }
+              >
+                {active && <span aria-hidden="true" className={SELECTED} />}
+                {active && <span aria-hidden="true" className={FOCUSED} />}
+                {active ? `‹ ${t.title} ›` : t.title}
+              </span>
+            );
+          })}
+        </div>
       </div>
+      {more.start && <span aria-hidden="true" data-heat-cut="start" className={CUT + " left-0 bg-linear-to-r"} />}
+      {more.end && <span aria-hidden="true" data-heat-cut="end" className={CUT + " right-0 bg-linear-to-l"} />}
     </div>
   );
 }
