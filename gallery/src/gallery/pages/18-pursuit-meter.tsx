@@ -37,11 +37,14 @@ export const docs: PageDocs = {
   keyboard: [
     [["Tab"], "Moves focus to Cooldown and Raise heat buttons."],
     [["Enter", "Space"], "Steps the pursuit condition down or up by one level."],
+    [["-"], "Cools down one condition while focus is inside the part, like Cooldown; stops at ×1."],
+    [["+", "="], "Raises the condition one level while focus is inside the part, like Raise heat; stops at ×5."],
   ],
   a11y: [
     "The 16-dash bar exposes role=\"meter\" with aria-valuemin, aria-valuemax, aria-valuenow and a full aria-valuetext naming the condition and status.",
     "Status is always stated in words in the header Tag (Cooldown, Active, Evade, Busted), never by the amber or red dash fill alone.",
-    "Stepping the level announces the new condition once in a polite status region.",
+    "Stepping the level, by a button or a key, announces the new condition once in a polite status region.",
+    "Each button names its key in aria-keyshortcuts. When a step disables the focused button, focus moves to the other one.",
   ],
 };
 
@@ -70,7 +73,7 @@ export default function PursuitMeterPage() {
         title="Pursuit condition"
         tier="instant"
         code="ActivePursuitDemo"
-        caption="Condition ×3 in progress: sixteen crisp dashes light in amber across the dark channel. Press Raise heat or Cooldown to step from Local patrol up to Blacklist dispatch."
+        caption="Condition ×3 in progress: sixteen crisp dashes light in amber across the dark channel. Press Raise heat or Cooldown, or + and - with focus inside, to step from Local patrol up to Blacklist dispatch."
       >
         <ActivePursuitDemo />
       </Stage>

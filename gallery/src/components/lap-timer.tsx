@@ -11,8 +11,12 @@
  * - Never runs on its own on mount (R2/R4): starts ready with reference splits so the viewer can inspect sectors or
  *   press Start / Record split / Reset to step a live run. All controls use secondary/ghost Heat keys (zero accent
  *   fills, R6).
+ * - Keys (heat-fixes, Track D): while focus is inside the part, `S` starts or pauses the lap, `L` records a split and
+ *   `R` resets, doing exactly what the three buttons do and announcing the same way. The handler sits on the part, not
+ *   the window; it ignores a held Ctrl, Alt or Meta, a key held down, and a key typed into a text field. The foot row
+ *   shows those real keys with the action in words, and each button names its key in aria-keyshortcuts.
  */
-import { useEffect, useId, useRef, useState, type ReactNode } from "react";
+import { useEffect, useId, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import { Button } from "@/components/button";
 import { Kbd } from "@/components/kbd";
 import { Tag, type TagStatus } from "@/components/tag";
@@ -80,7 +84,11 @@ function formatDelta(delta: number): string {
   return `${delta < 0 ? "−" : "+"}${Math.abs(delta).toFixed(3)} s`;
 }
 
-/** Heat's street-racing lap and sector timer slab with amber-bracketed sector rows. */
+/** A key typed into a text field is the field's, never the part's. */
+const isTyping = (t: EventTarget) =>
+  t instanceof HTMLElement && (t.isContentEditable || t.matches("input, textarea, select"));
+
+/** Heat's street-racing lap and sector timer slab with amber-bracketed sector rows. While focus is inside it, `S` starts or pauses, `L` records a split and `R` resets. */
 export function LapTimer({
   track = "Camden Beach sprint",
   lap = 3,
@@ -155,6 +163,14 @@ export function LapTimer({
     setLive(`${base.id} recorded: ${formatSector(nextSeconds)}, ${formatDelta(delta)}.`);
   }
 
+  function onKey(e: KeyboardEvent<HTMLDivElement>) {
+    if (e.ctrlKey || e.altKey || e.metaKey || e.repeat || e.nativeEvent.isComposing || isTyping(e.target)) return;
+    const act = { s: toggleRun, l: recordSplit, r: reset }[e.key.toLowerCase()];
+    if (!act) return;
+    e.preventDefault();
+    act();
+  }
+
   function reset() {
     setRunning(false);
     setSectors(initialSectors);
@@ -165,7 +181,7 @@ export function LapTimer({
   }
 
   return (
-    <div data-body="heat" className={"grid w-full min-w-0 gap-3 p-2 " + className}>
+    <div data-body="heat" onKeyDown={onKey} className={"grid w-full min-w-0 gap-3 p-2 " + className}>
       <div className="relative min-w-0">
         <span aria-hidden="true" className={FRAME} />
         <div className="grid min-w-0 border border-line-strong bg-canvas forced-colors:border">
@@ -240,14 +256,14 @@ export function LapTimer({
           {/* Controls */}
           <div className="flex flex-wrap items-center justify-between gap-2 border-t border-line px-3 py-2.5">
             <div className="flex flex-wrap items-center gap-1.5">
-              <Button size="sm" variant="secondary" onClick={toggleRun}>
+              <Button size="sm" variant="secondary" aria-keyshortcuts="S" onClick={toggleRun}>
                 {running ? "Pause" : "Start lap"}
               </Button>
-              <Button size="sm" variant="secondary" onClick={recordSplit}>
+              <Button size="sm" variant="secondary" aria-keyshortcuts="L" onClick={recordSplit}>
                 Record split
               </Button>
             </div>
-            <Button size="sm" variant="ghost" onClick={reset}>
+            <Button size="sm" variant="ghost" aria-keyshortcuts="R" onClick={reset}>
               Reset
             </Button>
           </div>
@@ -258,16 +274,16 @@ export function LapTimer({
 
       <div aria-hidden="true" className="flex flex-wrap items-center gap-x-4 gap-y-1 text-caption text-fg-muted">
         <span className="inline-flex items-center gap-1.5">
-          <Kbd>Start</Kbd>
-          <span>Run clock</span>
+          <Kbd>S</Kbd>
+          <span>{running ? "Pause" : "Start lap"}</span>
         </span>
         <span className="inline-flex items-center gap-1.5">
-          <Kbd>Split</Kbd>
-          <span>Log sector</span>
+          <Kbd>L</Kbd>
+          <span>Record split</span>
         </span>
         <span className="inline-flex items-center gap-1.5">
-          <Kbd>Reset</Kbd>
-          <span>Reference</span>
+          <Kbd>R</Kbd>
+          <span>Reset</span>
         </span>
       </div>
 
