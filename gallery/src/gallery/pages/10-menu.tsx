@@ -432,6 +432,35 @@ function HudOptionsMenu() {
   );
 }
 
+/* ---------- Press's own (plans/024, Press): deploy row actions ---------- */
+
+function DeployRowMenu() {
+  const [said, setSaid] = useState("harbor-web · main · 4f9c2e1");
+  return (
+    <div className="flex flex-wrap items-center gap-4">
+      <Menu
+        trigger={
+          <Button variant="secondary" iconRight={<MoreIcon />}>
+            Release actions
+          </Button>
+        }
+      >
+        <MenuLabel>harbor-web · 4f9c2e1</MenuLabel>
+        <MenuItem onSelect={() => setSaid("Opened build log for 4f9c2e1.")}>Inspect build</MenuItem>
+        <MenuItem onSelect={() => setSaid("Promoted 4f9c2e1 to production.")}>Promote to live</MenuItem>
+        <MenuItem onSelect={() => setSaid("Copied preview URL for 4f9c2e1.")}>Copy preview URL</MenuItem>
+        <MenuSeparator />
+        <MenuItem destructive onSelect={() => setSaid("Queued rollback to 9a2b810.")}>
+          Rollback release
+        </MenuItem>
+      </Menu>
+      <p role="status" className="font-mono text-caption text-fg-subtle">
+        {said}
+      </p>
+    </div>
+  );
+}
+
 export default function MenuPage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -442,6 +471,13 @@ export default function MenuPage() {
         align="start"
         code="ProjectMenu"
         byWorld={{
+          press: {
+            demo: <DeployRowMenu />,
+            title: "Release actions",
+            code: "DeployRowMenu",
+            caption:
+              "Deploy actions for harbor-web · 4f9c2e1. The trigger stands raised on warm stone; the menu opens on Press's glass surface with a single gliding highlight.",
+          },
           flat: { demo: <PostMenu />, title: "Post actions", code: "PostMenu" },
           device: { demo: <TakeMenu />, title: "Take actions", code: "TakeMenu" },
           heat: {
