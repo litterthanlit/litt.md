@@ -112,7 +112,8 @@ jobs:
           # The WCAG regressions and the page checks, each with its self-test, paired to about five minutes a job.
           # One command a line under set -e, so any failure fails the job (a failure inside `a && b` in a loop does not).
           # Seconds of each check on 2026-11-18, with its self-test, to pair them: reflow and forced colors 245, text zoom
-          # and focus 278, corners 317, gaps 276, home 13, worlds 74, materials 115, sound 61, studies 253 and 171.
+          # and focus 278, corners 317, gaps 276, home 13, worlds 74, materials 115, sound 61, studies 253 and 171, and
+          # (2026-11-20, locally) words 75.
           - name: Reflow, forced colors and worlds
             run: |
               set -e
@@ -132,12 +133,14 @@ jobs:
               npm run test:sound --prefix gallery
               npm run test:sound --prefix gallery -- --self-test
           - { name: "Corners", run: "npm run test:corners --prefix gallery && npm run test:corners --prefix gallery -- --self-test" }
-          - name: Gaps and home
+          - name: Gaps, home and words
             run: |
               set -e
               npm run test:gaps --prefix gallery
               npm run test:gaps --prefix gallery -- --self-test
               npm run test:home --prefix gallery
+              npm run test:words --prefix gallery
+              npm run test:words --prefix gallery -- --self-test
           # Each world's player; the self-test opens only the worlds its breaks land in.
           - { name: "Playground", run: "npm run test:playground --prefix gallery && npm run test:playground --prefix gallery -- --self-test" }
           # The wall: every material, size and theme with every tile mounted, one accent fill, nothing sideways or empty.

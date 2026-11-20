@@ -28,10 +28,14 @@ export const meta: PageMeta = {
   id: "menu",
   title: "Menu",
   lede: "A glass dropdown with one gliding highlight.",
+  ledeByWorld: { heat: "A slab of actions, with brackets on the row under the keys or the pointer." },
   order: 5.04, group: "Overlays",
   verbs: ["open", "select"],
   summary:
     "A glass dropdown with one highlight that glides from row to row. It grows from its trigger and travels from the side it really opens on. On a phone a submenu replaces the list in the same panel.",
+  summaryByWorld: {
+    heat: "A square slab of actions in a 1px line. The row under the keys or the pointer takes a darker cell, corner brackets and lit words, and nothing glides between rows. It slides out from the side it really opens on and never grows. On a phone a submenu replaces the list in the same slab.",
+  },
   fun: "Move down the rows: the highlight reaches for each one, then gathers itself there.",
   tiers: ["instant", "responsive"],
 };
