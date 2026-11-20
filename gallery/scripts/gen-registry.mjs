@@ -823,6 +823,21 @@ const COPY = {
     description: "A multi-tap reader cheer pill that pops on Flat's 0.28 bounce, warms a row of sunset heatwave dots and floats a +1 badge on each tap. A Flat part.",
     docs: "Needs data-material=\"flat\" on <html>. Pass count and subject; tapping again at the cap clears your taps. Under reduced motion nothing bounces or floats and the count updates at once.",
   },
+  "reaction-bar": {
+    title: "Reaction bar",
+    description: "Minimal cotton-candy reader reaction pills carrying only glyph and count, washing in soft Candy tints with a floating +1 pop on Flat's 0.28 bounce. A Flat part.",
+    docs: "Needs data-material=\"flat\" on <html>. Pass subject and optional items; toggling any pill washes it in its Candy tint and announces the updated count once. Under reduced motion nothing bounces or floats.",
+  },
+  "reading-progress": {
+    title: "Reading progress",
+    description: "A minimal editorial reading progress card pairing Flat's 40px completion figure with directly-clickable cotton-candy chapter segments. A Flat part.",
+    docs: "Needs data-material=\"flat\" on <html>. Pass title and chapters; clicking any bar segment jumps directly to that chapter on Flat's 0.28 bounce.",
+  },
+  "goal-ring": {
+    title: "Goal ring",
+    description: "A minimal radial cotton-candy goal tracker with Flat's 40px standing figure and Braun-style circular − / + stepper keys on Flat's 0.28 bounce. A Flat part.",
+    docs: "Needs data-material=\"flat\" on <html>. Pass title, target and unit; the circular − and + keys step the ring and announce progress once.",
+  },
   /* Heat's own parts (proposals/heat.md; taste/litt-principles.md, Heat): each needs data-material="heat" on <html>; its page says so. */
   "pursuit-meter": {
     title: "Pursuit meter",
