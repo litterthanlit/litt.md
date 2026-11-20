@@ -66,6 +66,9 @@ export async function openVariants(pg) {
 export async function openProps(pg) {
   const button = pg.locator('main button[data-props][aria-expanded="false"]');
   if (!(await button.count()) || !(await button.first().isVisible())) return;
-  await button.first().click({ timeout: 2000 });
+  /* Pressed in the page, not by a pointer: the button sits under the lazy docs sections, which are still taking their
+     heights on a slow runner, and a pointer click waits for it to hold still (a 2s timeout on press/carousel in CI). */
+  await button.first().evaluate((b) => b.click());
+  await pg.waitForSelector('main button[data-props][aria-expanded="true"]', { state: "attached", timeout: 5000 }).catch(() => {});
   await pg.waitForTimeout(100);
 }
