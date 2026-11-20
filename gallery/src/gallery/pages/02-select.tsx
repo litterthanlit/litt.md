@@ -622,9 +622,59 @@ function TrackSelectTile() {
   );
 }
 
+/* ---------- Press's own (plans/024, Press): primary deploy region ---------- */
+
+const PRESS_REGIONS = [
+  { value: "fra1", label: "Frankfurt · fra1", detail: "18 ms median" },
+  { value: "iad1", label: "Washington · iad1", detail: "31 ms median" },
+  { value: "hnd1", label: "Tokyo · hnd1", detail: "44 ms median" },
+  { value: "sfo1", label: "San Francisco · sfo1", detail: "39 ms median" },
+];
+
+function RegionSelectTile() {
+  return (
+    <div className="w-full max-w-xs">
+      <SelectField label="Primary region" options={PRESS_REGIONS} defaultValue="fra1" help="Serves harbor.app edge compute." />
+    </div>
+  );
+}
+
+function DeployRegionFormDemo() {
+  const [region, setRegion] = useState("fra1");
+  const [saved, setSaved] = useState("Serving harbor-web from Frankfurt (fra1).");
+
+  return (
+    <form
+      className="grid w-full max-w-md gap-4"
+      onSubmit={(e) => {
+        e.preventDefault();
+        const found = PRESS_REGIONS.find((r) => r.value === region);
+        setSaved(`Saved primary region: ${found?.label ?? region}.`);
+      }}
+    >
+      <SelectField
+        label="Primary region"
+        name="region"
+        options={PRESS_REGIONS}
+        value={region}
+        onValueChange={setRegion}
+        help="Edge requests route here before falling back across regions."
+      />
+      <div className="flex flex-wrap items-center gap-3">
+        <Button type="submit" variant="primary">
+          Save region
+        </Button>
+        <p role="status" className="text-small text-fg-subtle">
+          {saved}
+        </p>
+      </div>
+    </form>
+  );
+}
+
 export default function SelectPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<RoleTile />} tileByWorld={{ device: <SampleRateTile />, flat: <EveryTile />, heat: <TrackSelectTile /> }}>
+    <Page meta={meta} docs={docs} tile={<RoleTile />} tileByWorld={{ press: <RegionSelectTile />, device: <SampleRateTile />, flat: <EveryTile />, heat: <TrackSelectTile /> }}>
       <Stage
         title="A role in an account form"
         tier="responsive"
@@ -632,6 +682,13 @@ export default function SelectPage() {
         align="start"
         code="AccountFormDemo"
         byWorld={{
+          press: {
+            demo: <DeployRegionFormDemo />,
+            title: "Primary region in project settings",
+            code: "DeployRegionFormDemo",
+            caption:
+              "Select a deploy region for harbor-web. Because you press a select rather than type into it, its trigger stands raised like a warm stone block while the list opens as a floating glass sheet.",
+          },
           flat: {
             demo: <LetterFormDemo />,
             title: "How often the letter goes out",

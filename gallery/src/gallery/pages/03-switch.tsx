@@ -433,6 +433,40 @@ function TrackArmDemo() {
   );
 }
 
+/* ---------- Press's own (plans/024, Press): deploy settings ---------- */
+
+function DeploySettingsDemo() {
+  const [autoDeploy, setAutoDeploy] = useState(true);
+  const [previews, setPreviews] = useState(true);
+  const [purge, setPurge] = useState(false);
+
+  return (
+    <div className="grid w-full max-w-md gap-4">
+      <Switch
+        align="end"
+        label="Auto-deploy main"
+        description="Build and promote every commit pushed to harbor-web main."
+        checked={autoDeploy}
+        onCheckedChange={setAutoDeploy}
+      />
+      <Switch
+        align="end"
+        label="Preview URLs"
+        description="Spin up an isolated fra1 preview for each open pull request."
+        checked={previews}
+        onCheckedChange={setPreviews}
+      />
+      <Switch
+        align="end"
+        label="Purge edge cache on release"
+        description="Invalidate static assets across every edge region after promote."
+        checked={purge}
+        onCheckedChange={setPurge}
+      />
+    </div>
+  );
+}
+
 export default function SwitchPage() {
   return (
     <Page meta={meta} docs={docs} study={study}>
@@ -442,6 +476,13 @@ export default function SwitchPage() {
         caption="Click anywhere on a row, press Space on the switch, or take a block and drag it across. Pressing presses the block down, and it crosses on the responsive tier. The switches sit at the row's end, so they line up in one column, and every one is neutral: a list never takes the accent."
         code="SettingsListDemo"
         byWorld={{
+          press: {
+            demo: <DeploySettingsDemo />,
+            title: "Deploy settings",
+            code: "DeploySettingsDemo",
+            caption:
+              "Project settings for harbor-web. Each switch is a raised stone block crossing a recessed tray — neutral in a list, never taking the accent.",
+          },
           flat: {
             demo: <LetterSettingsDemo />,
             title: "Letter settings",

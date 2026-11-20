@@ -984,6 +984,33 @@ function SendMixFormDemo() {
   );
 }
 
+/* ---------- Press's own (plans/024, Press): canary traffic split ---------- */
+
+function CanaryTrafficDemo() {
+  const [pct, setPct] = useState(25);
+  const [note, setNote] = useState("25% of harbor.app traffic routed to 4f9c2e1.");
+
+  return (
+    <div className="grid w-full max-w-md gap-3">
+      <Slider
+        label="Canary traffic"
+        min={0}
+        max={100}
+        step={5}
+        value={pct}
+        home={25}
+        marks={[0, 25, 50, 75, 100]}
+        formatValue={(v) => `${v}%`}
+        onValueChange={setPct}
+        onValueCommit={(v) => setNote(`${v}% of harbor.app traffic routed to 4f9c2e1.`)}
+      />
+      <p role="status" className="min-h-5 text-small text-fg-subtle">
+        {note}
+      </p>
+    </div>
+  );
+}
+
 export default function SliderPage() {
   return (
     <Page meta={meta} docs={docs} study={study}>
@@ -992,6 +1019,13 @@ export default function SliderPage() {
         tier="responsive"
         code="SpeedDemo"
         byWorld={{
+          press: {
+            demo: <CanaryTrafficDemo />,
+            title: "Canary traffic",
+            code: "CanaryTrafficDemo",
+            caption:
+              "Route production traffic to 4f9c2e1 in 5% steps. Press's cap rides inside a cut-in stone slot with a home detent at 25%.",
+          },
           flat: {
             demo: <TextSizeDemo />,
             title: "Text size",

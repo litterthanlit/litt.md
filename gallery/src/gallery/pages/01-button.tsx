@@ -404,6 +404,30 @@ function TrackIconsDemo() {
   );
 }
 
+/* ---------- Press's own (plans/024, Press): deploy dashboard actions ---------- */
+
+function DeployActionDemo() {
+  return (
+    <div className="flex flex-wrap items-center gap-3">
+      <Button variant="primary">Deploy to production</Button>
+      <Button variant="secondary">View logs</Button>
+      <Button variant="ghost">Cancel</Button>
+      <Button disabled>Promote</Button>
+    </div>
+  );
+}
+
+function RollbackDangerDemo() {
+  return (
+    <div className="flex flex-wrap items-center gap-3">
+      <Button variant="danger">Rollback release</Button>
+      <Button variant="danger" disabled>
+        Delete project
+      </Button>
+    </div>
+  );
+}
+
 export default function ButtonPage() {
   return (
     <Page meta={meta} docs={docs} study={study}>
@@ -413,6 +437,12 @@ export default function ButtonPage() {
         caption="Primary is the one accent fill in a view and carries the glow. Secondary is a block raised once by its cast, with no outline. Ghost and a disabled button lie flat: nothing to push. Hover swaps the fill over the instant duration; a press sinks the block at once: the cast tightens and the label drops half a pixel. To feel other durations, open the Playground."
         code="VariantsDemo"
         byWorld={{
+          press: {
+            demo: <DeployActionDemo />,
+            code: "DeployActionDemo",
+            caption:
+              "Deploy-dashboard actions under Press. Deploy to production is the one Blue 4 fill in the view. View logs is a warm stone block raised once by its cast with no outline. Cancel and Promote (disabled) lie flat until ready.",
+          },
           flat: {
             demo: <SubscribeDemo />,
             code: "SubscribeDemo",
@@ -448,6 +478,12 @@ export default function ButtonPage() {
         caption="A destructive action is the secondary block with its words in the danger color, so the red word is the only loud thing. It is not filled red and has no glow. Disabled, it lies flat and loses the red. The one red fill is the confirm of the dialog that asks: the same variant, in the dialog's footer. Open the Dialog page to see it light up."
         code="DangerDemo"
         byWorld={{
+          press: {
+            demo: <RollbackDangerDemo />,
+            code: "RollbackDangerDemo",
+            caption:
+              "A destructive deploy action is a raised stone block with red words — Rollback release, Delete project — never filled red outside a confirm dialog footer.",
+          },
           flat: {
             demo: <DeletePostDemo />,
             code: "DeletePostDemo",

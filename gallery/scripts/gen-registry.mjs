@@ -870,6 +870,22 @@ const COPY = {
     description: "A colorful 8-step drum and bass pattern grid with four color-coded instrument lanes, pattern presets, and a Play / Stop playhead. A Rack part.",
     docs: "Needs data-material=\"rack\" on <html>. Starts stopped; click any step to toggle a hit on the frame, cycle patterns, or press Play to step across all 8 beats.",
   },
+  /* Press's own parts (plans/024, Press; taste/litt-principles.md, Press): tactile warm-stone product/deploy controls. */
+  "deploy-status": {
+    title: "Deploy status",
+    description: "A tactile deployment pipeline where reached stages rise as stone blocks out of a recessed tray and pending stages stay flush, with Rebuild and Promote keys. A Press part.",
+    docs: "Uses Press's default warm-stone materials (no data-material attribute needed). Click any stage or use Rebuild and Next stage to step the pipeline.",
+  },
+  "env-switch": {
+    title: "Environment switch",
+    description: "A tactile environment selector lifting Production, Preview or Development out of a recessed stone tray beside its host readout and cut-in load slot. A Press part.",
+    docs: "Uses Press's default warm-stone materials. Select an environment to update the host, region, latency and cut-in load slot.",
+  },
+  "release-rail": {
+    title: "Release rail",
+    description: "Recent deploys resting quietly inside one recessed stone tray where only the selected release lifts up as a raised block, with a Promote to live key. A Press part.",
+    docs: "Uses Press's default warm-stone materials. Select any older release to inspect its build duration and promote it to live.",
+  },
   litt: {
     title: "litt tokens",
     description: "litt.md's colors, type, space, shape, depth and motion as CSS variables, Tailwind names and the litt-glass, litt-raised, litt-trim, litt-lit and litt-grain classes. Every name starts with litt, so none of it touches your own.",

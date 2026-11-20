@@ -412,15 +412,42 @@ function SubscribeFormDemo() {
   );
 }
 
+/* ---------- Press's own (plans/024, Press): deploy project fields ---------- */
+
+function DeployNameTile() {
+  return (
+    <div className="w-full max-w-xs">
+      <TextField label="Project slug" defaultValue="harbor-web" help="Serves harbor.app from fra1." />
+    </div>
+  );
+}
+
+function DeployFieldsDemo() {
+  return (
+    <div className="grid w-full max-w-md gap-5">
+      <TextField label="Project slug" defaultValue="harbor-web" help="Used in preview URLs and deploy logs." />
+      <TextField label="Production domain" defaultValue="harbor.app" error="Verify the TXT record before routing live traffic." />
+      <TextField label="Region" defaultValue="fra1 · Frankfurt" disabled help="Set at project creation." />
+    </div>
+  );
+}
+
 export default function InputPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<ProjectNameTile />} tileByWorld={{ device: <TakeNameTile />, flat: <SiteNameTile /> }}>
+    <Page meta={meta} docs={docs} tile={<ProjectNameTile />} tileByWorld={{ press: <DeployNameTile />, device: <TakeNameTile />, flat: <SiteNameTile /> }}>
       <Stage
         title="Fields"
         tier="instant"
         caption="Label above, hint below. Each field is the cut: a floor a hair below the page, the control line around it and the shade of its top wall, never a grey floor. Click into a field and the line turns to the focus color with a ring. The error turns the line to danger and says how to fix it. The disabled field lies flat on surface-2, muted and skipped by Tab. Each change fades on the instant tier, and the box never moves."
         code="StatesDemo"
         byWorld={{
+          press: {
+            demo: <DeployFieldsDemo />,
+            title: "Project settings fields",
+            code: "DeployFieldsDemo",
+            caption:
+              "Cut-in fields for harbor-web: shallow recess below warm stone with a 3:1 edge, focus ring in Blue 4, and read-only region lying flat on surface-2.",
+          },
           flat: {
             demo: <SiteFieldsDemo />,
             title: "A site's fields",
