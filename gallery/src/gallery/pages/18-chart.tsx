@@ -5,6 +5,7 @@ export const meta: PageMeta = {
   id: "chart",
   title: "Chart",
   lede: "Bars, lines and a meter in plain SVG.",
+  ledeByWorld: { heat: "Bars and lines on a square slab with dashed gridlines, the active reading marked." },
   order: 10.01, group: "Charts",
   verbs: ["hover"],
   summary:

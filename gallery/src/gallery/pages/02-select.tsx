@@ -10,6 +10,7 @@ export const meta: PageMeta = {
   id: "select",
   title: "Select",
   lede: "One value from a short list.",
+  ledeByWorld: { heat: "One value from a striped slab, the row under the keys in brackets." },
   order: 2.06,
   group: "Inputs",
   verbs: ["select", "open"],

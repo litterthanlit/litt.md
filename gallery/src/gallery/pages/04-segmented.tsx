@@ -6,6 +6,7 @@ export const meta: PageMeta = {
   id: "segmented",
   title: "Segmented control",
   lede: "A short choice in one track.",
+  ledeByWorld: { heat: "A short choice in a row of square cells, the chosen one in brackets." },
   order: 3.05,
   group: "Selection",
   verbs: ["select"],

@@ -7,6 +7,7 @@ export const meta: PageMeta = {
   id: "stat",
   title: "Stat",
   lede: "One figure, in a tile.",
+  ledeByWorld: { heat: "One figure in a cell, under a striped label band." },
   order: 9.03, group: "Data",
   summary:
     "A number tile for one figure: a small label, the value large in the sans with tabular numbers, an optional delta in words and an optional trend at the foot. Green and red are for news only. A group of tiles measures itself, and nothing about a tile moves.",

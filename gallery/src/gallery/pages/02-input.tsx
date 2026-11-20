@@ -7,6 +7,7 @@ export const meta: PageMeta = {
   id: "input",
   title: "Input",
   lede: "A roomy field that answers in color, not motion.",
+  ledeByWorld: { heat: "A square field cut into the slab, in a 1px line." },
   order: 2.01,
   group: "Inputs",
   verbs: ["type"],

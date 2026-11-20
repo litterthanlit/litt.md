@@ -25,6 +25,7 @@ export const meta: PageMeta = {
   id: "table",
   title: "Table",
   lede: "Rows and columns, with real table semantics.",
+  ledeByWorld: { heat: "Rows and columns on a slab, under a striped header band." },
   order: 9.01, group: "Data",
   verbs: ["press"],
   summary:

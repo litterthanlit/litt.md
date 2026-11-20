@@ -41,6 +41,12 @@ export type PageMeta = {
    * agents and the About section under the demos.
    */
   lede: string;
+  /**
+   * The lede in a world's own words, by world: what the part is in that world's body, where the shared line names
+   * another world's material (plans/audits/heat-fixes.md, Track B). The player's Home and Details read it through
+   * `lineIn`; a world without one reads `lede`. The generators read only `lede`.
+   */
+  ledeByWorld?: Partial<Record<Material, string>>;
   /** Sidebar order. 0 is the overview. */
   order: number;
   /** The sidebar group. Overview and Playground have none, so they sit above and below the groups. */
@@ -84,6 +90,8 @@ export type PageMeta = {
    * gen-llms.mjs ships it to agents. Set it with `study`.
    */
   mechanism?: string;
+  /** How it moves in a world's own body, by world, as `ledeByWorld` is for the lede: a study's How it moves reads it through `lineIn`. */
+  movesByWorld?: Partial<Record<Material, string>>;
   /**
    * The page may override the locked tokens with the motion dial. Every page
    * leaves this off except the Playground; the dial's CSS variables exist only
@@ -158,6 +166,18 @@ export type PageDocs = {
  * overview's wall), which draw the shared demos.
  */
 export const WorldContext = createContext<Material | null>(null);
+
+/**
+ * A page's line in a world: its lede, or How it moves (`mechanism`), in that world's own words where meta gives them
+ * (`ledeByWorld`, `movesByWorld`), and the shared line where it does not or where there is no world.
+ */
+type Lines = Pick<PageMeta, "lede" | "ledeByWorld" | "mechanism" | "movesByWorld">;
+export function lineIn(meta: Lines, line: "lede", world: Material | null): string;
+export function lineIn(meta: Lines, line: "moves", world: Material | null): string | undefined;
+export function lineIn(meta: Lines, line: "lede" | "moves", world: Material | null): string | undefined {
+  if (line === "lede") return (world && meta.ledeByWorld?.[world]) || meta.lede;
+  return (world && meta.movesByWorld?.[world]) || meta.mechanism;
+}
 
 /**
  * Device's plate (plans/024, phase 2): under Device a stage and a wall tile are a part's plate, not a dark screen and

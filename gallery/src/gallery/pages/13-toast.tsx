@@ -8,6 +8,7 @@ export const meta: PageMeta = {
   id: "toast",
   title: "Toast",
   lede: "News from the corner that leaves sideways.",
+  ledeByWorld: { heat: "News on a square slab in the corner, which leaves sideways." },
   order: 5.09, group: "Overlays",
   verbs: ["press", "watch"],
   summary:

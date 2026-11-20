@@ -7,6 +7,7 @@ export const meta: PageMeta = {
   id: "progress",
   title: "Progress",
   lede: "How far along the work is, while it happens.",
+  ledeByWorld: { heat: "How far along the work is, as dashes that light as it goes." },
   order: 8.02,
   group: "Feedback",
   verbs: ["watch"],

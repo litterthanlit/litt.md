@@ -9,6 +9,7 @@ export const meta: PageMeta = {
   id: "tabs",
   title: "Tabs",
   lede: "Views that slide into place.",
+  ledeByWorld: { heat: "Views in a strip of square cells, the open one in brackets." },
   order: 3.07, group: "Selection",
   verbs: ["select"],
   summary:
