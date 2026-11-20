@@ -1,0 +1,71 @@
+name: Claude PR Review
+
+on:
+  pull_request:
+    types: [opened, ready_for_review, reopened]
+
+concurrency:
+  group: claude-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    # Skip drafts (reviewed once marked ready) and fork PRs (no access to secrets).
+    if: >-
+      github.event.pull_request.draft == false &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+
+      - uses: anthropics/claude-code-action@v1
+        with:
+          # Set ONE of these repo secrets:
+          #   CLAUDE_CODE_OAUTH_TOKEN — uses your Claude subscription (run `claude setup-token` locally)
+          #   ANTHROPIC_API_KEY       — pay-per-use API key from console.anthropic.com
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt: |
+            REPO: ${{ github.repository }}
+            PR NUMBER: ${{ github.event.pull_request.number }}
+
+            The PR branch is already checked out in the working directory.
+            Review this pull request. Read the diff with `gh pr diff`, then read the
+            surrounding code (callers, types, related components) before judging a change.
+
+            Look for, in priority order:
+            1. Correctness bugs and unhandled edge cases
+            2. Security issues (leaked secrets, injection, auth, unsafe input handling)
+            3. Breaking changes to code that other files depend on
+            4. TypeScript type-safety holes (any, unsafe casts, non-exhaustive unions)
+            5. React / Next.js issues (effects, server/client boundaries, hydration, keys, re-renders)
+            6. Performance (bundle size, wasted work, WebGL / animation cost)
+            7. Accessibility (semantic HTML, ARIA, focus handling, contrast)
+            8. Missing tests for risky logic
+
+            Verify every finding against the actual code. Drop anything you can't back up.
+            Skip formatting nits a linter would catch. No praise, just findings.
+
+            Post line-level issues with `mcp__github_inline_comment__create_inline_comment`
+            (confirmed: true). Then post ONE summary comment with `gh pr comment`:
+
+            ## Claude review
+            **Verdict:** Looks good to merge / Merge after fixes / Needs rework — one line why.
+            ### Must fix
+            ### Should fix
+            ### Nice to have
+            ### Plain-English summary
+            (2–4 sentences: what the PR does and its main risk, for a non-specialist reader)
+
+            Omit empty sections. Only post GitHub comments — don't submit review text as messages.
+          claude_args: |
+            --model claude-opus-5-5
+            --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*),Read,Glob,Grep"
