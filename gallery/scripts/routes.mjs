@@ -51,8 +51,21 @@ export function routes({ only = [] } = {}) {
  */
 export async function openVariants(pg) {
   const button = pg.locator('main button[data-variants][aria-expanded="false"]');
-  if (!(await button.count())) return;
+  if (await button.count()) {
+    await button.first().click({ timeout: 2000 });
+    await pg.waitForLoadState("networkidle");
+    await pg.waitForTimeout(100);
+  }
+  await openProps(pg);
+}
+
+/**
+ * Below 640px a part's Props start closed behind a button (docs/sections.tsx, plans/audits/heat-fixes.md, Track C);
+ * from 640px up the button is hidden and Props lie open. openVariants calls this, so a check on a phone reads Props.
+ */
+export async function openProps(pg) {
+  const button = pg.locator('main button[data-props][aria-expanded="false"]');
+  if (!(await button.count()) || !(await button.first().isVisible())) return;
   await button.first().click({ timeout: 2000 });
-  await pg.waitForLoadState("networkidle");
   await pg.waitForTimeout(100);
 }
