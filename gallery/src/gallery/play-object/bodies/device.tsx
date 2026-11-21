@@ -22,8 +22,10 @@
  *   switches on and off where it stands, as the chip does, and is hidden from screen readers, which hear the edge's own
  *   name from the contract. A chip, not the Tooltip part: a tooltip is a panel that floats over the page, and Device's
  *   words for a state are the chip's.
- * - At a short window (a laptop's 768 or 800) the screen gives up height, down to 25rem, so the frame and the whole dial
- *   stay in the first screen (finding 6; `shape`).
+ * - At a short window (a laptop's 768 or 800) the screen keeps SCREEN_HEIGHT's 30rem floor and the deck gives up height
+ *   instead: a lower tape, a smaller dial and tighter margins, so the frame and the whole dial stay in the first screen
+ *   (finding 6). At 1366 by 768 the frame ends at the window's foot. The command menu's list is capped there so its
+ *   panel stays on the 30rem screen (`shape`).
  * - Orange is nowhere at rest; red is the playhead and the chip's lamp while Play runs.
  * - Things are mechanisms: the take, the playhead and the readout switch where they stand; only the dial travels, on the
  *   responsive spring (useSettle), and lands at once under reduced motion.
@@ -357,7 +359,7 @@ function Dial({
   const edgeSound = keyVoice(sound);
 
   return (
-    <div data-part="collar" data-recorder-dial="" className={"group/dial relative size-36 shrink-0 rounded-pill bg-tray p-2 shadow-(--tray-shade) " + className}>
+    <div data-part="collar" data-recorder-dial="" className={"group/dial relative size-36 [@media(max-height:52rem)]:size-28 shrink-0 rounded-pill bg-tray p-2 shadow-(--tray-shade) " + className}>
       <div
         ref={cap}
         data-part="cap"
@@ -447,15 +449,15 @@ function DeviceBody({ takes, at, selector, pick, step, index, everything, turn, 
   return (
     <div data-part="frame" className="mx-auto flex w-full max-w-6xl min-w-0 flex-col rounded-[var(--object-radius)] p-1 [background:var(--frame)] shadow-[var(--frame-edge),var(--object-cast)] forced-colors:border">
       <div data-part="plate" className="litt-grain relative isolate grid min-w-0 grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-x-6 rounded-[calc(var(--object-radius)-4px)] bg-canvas p-3 shadow-(--plate-edge) [--grain-opacity:var(--object-grain)]">
-        <Tape takes={takes} at={at} selector={selector} pick={pick} className="col-span-full row-start-2 mx-3 mt-3 h-10" />
-        <Readout readout={readout} playing={playing} className="col-start-1 row-start-3 mt-3 mb-4 ml-6 w-full max-w-xl" />
-        <Dial at={at} n={takes.length} step={step} index={index} everything={everything} turn={turn} play={play} className="col-start-3 row-start-3 mt-3 mr-6 mb-4" />
+        <Tape takes={takes} at={at} selector={selector} pick={pick} className="col-span-full row-start-2 mx-3 mt-3 h-10 [@media(max-height:52rem)]:mt-1 [@media(max-height:52rem)]:h-9" />
+        <Readout readout={readout} playing={playing} className="col-start-1 row-start-3 mt-3 mb-4 ml-6 w-full max-w-xl [@media(max-height:52rem)]:mt-1 [@media(max-height:52rem)]:mb-3" />
+        <Dial at={at} n={takes.length} step={step} index={index} everything={everything} turn={turn} play={play} className="col-start-3 row-start-3 mt-3 mr-6 mb-4 [@media(max-height:52rem)]:mt-1 [@media(max-height:52rem)]:mb-3" />
         <div data-part="bezel" className="relative col-span-full row-start-1 flex rounded-[calc(var(--object-radius)-16px)] bg-bezel p-2 shadow-(--bezel-edge) forced-colors:border">
           {screen}
           {/* The glass over the screen: a sheen where the light catches it. It takes no hand. */}
           <span aria-hidden="true" data-part="glass" className="pointer-events-none absolute inset-2 rounded-[calc(var(--object-radius)-24px)] [background:var(--glass-sheen)]" />
         </div>
-        <RecorderMute className="col-start-2 row-start-3 mt-3 mb-4 justify-self-end" />
+        <RecorderMute className="col-start-2 row-start-3 mt-3 mb-4 justify-self-end [@media(max-height:52rem)]:mt-1 [@media(max-height:52rem)]:mb-3" />
       </div>
     </div>
   );
@@ -463,10 +465,15 @@ function DeviceBody({ takes, at, selector, pick, step, index, everything, turn, 
 
 export const device: PlayObjectBody = {
   name: "device",
-  /* Below 52rem of window, where SCREEN_HEIGHT stops at its 30rem floor and pushes the dial under the fold, the screen
-     gives the deck its room instead, down to 25rem: at 1366 by 768 and 1280 by 800 the whole frame is in view. */
+  /* SCREEN_HEIGHT alone, never under its 30rem floor. Below 52rem of window, where that floor would push the dial under
+     the fold, the deck gives up its height instead (DeviceBody): at 1366 by 768 and 1280 by 800 the whole frame is in
+     view. There the screen is the floor, 30rem, and the command menu's panel, set 15dvh down it with a list up to 22rem
+     (command-menu.tsx), would run 80px past its foot at 768; so the screen caps the list at what is left of its 30rem
+     under the panel's top, its field and its footer (7rem), as a window that short caps it. The list scrolls inside. */
   shape: (compact) =>
-    compact ? COMPACT_SCREEN : SCREEN_HEIGHT + " [@media(max-height:52rem)]:h-[max(25rem,calc(100dvh-23rem))] w-full rounded-[calc(var(--object-radius)-24px)]",
+    compact
+      ? COMPACT_SCREEN
+      : SCREEN_HEIGHT + " [@media(max-height:52rem)]:[--cmd-list-max:min(22rem,calc(30rem-15dvh-7rem))] w-full rounded-[calc(var(--object-radius)-24px)]",
   rail: false,
   Body: DeviceBody,
 };
