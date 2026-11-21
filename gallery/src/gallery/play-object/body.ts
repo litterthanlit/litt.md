@@ -51,7 +51,8 @@ export type PlayObjectBodyProps = {
  *
  * Who owns what:
  * - The contract owns the list (the set, in order), which row is current, which is under the pointer, every key (one
- *   tab stop for the list; Up and Down move, wrapping; Home and End go to the ends; Enter or a press opens the take),
+ *   tab stop for the list; Up and Down move, wrapping; Home and End go to the ends; Left and Right a column over when
+ *   the body draws the rows in columns, `homeColumns`; Enter or a press opens the take),
  *   what a row opens, the live part (which part, its preview context, its mark and name), the link to every component
  *   and its words, and whether the live part exists on a phone (`phonePart` on the body). It also wraps what the body
  *   draws in `data-play-take="home" data-play-home="body"`, which the checks read.
@@ -106,7 +107,8 @@ export type PlayObjectHomeProps = {
   /** Spread on the list's element (a nav): its name ("The set in <world>"), and data-play-index, the mark the checks read. */
   list: HTMLAttributes<HTMLElement> & { "data-play-index": "" };
   /** Spread on row i's button: type, ref, the roving tab stop (tabIndex 0 on the current row, -1 on the rest), the
-      keys (Up and Down move, wrapping; Home and End go to the ends), onClick (opens the take), onFocus, onPointerEnter
+      keys (Up and Down move, wrapping; Home and End go to the ends; with homeColumns over 1, Left and Right go a
+      column over), onClick (opens the take), onFocus, onPointerEnter
       and onPointerLeave (current and pointer), data-current on the current row and data-pointer on the row under the
       pointer. Put the className after the spread; never override its handlers. */
   row: (i: number) => ButtonHTMLAttributes<HTMLButtonElement> & { ref: Ref<HTMLButtonElement>; "data-current"?: ""; "data-pointer"?: "" };
@@ -141,6 +143,12 @@ export type PlayObjectBody = {
   /** Index's list in the body's own grammar, drawn inside the screen in place of the contract's (see
       PlayObjectHomeProps). A body without one keeps the contract's (HomeView in contract.tsx). */
   Home?: ComponentType<PlayObjectHomeProps>;
+  /** With its own Home: how many columns the body draws Index's rows in, filled top to bottom (CSS grid-flow-col, each
+      column ceil(takes / homeColumns) rows tall). Over 1, the contract's row keys add Left and Right: a column back or
+      on (minus or plus the rows per column), clamped to the first and last row, never wrapping. Up and Down still run
+      the set in order, wrapping. 1, the default, is one column, and Left and Right do nothing. At desktop widths only:
+      on a phone (`compact`) the contract keys Index as one column, so draw it as one there. */
+  homeColumns?: number;
   /** On a phone, with its own Home: "none" (the default) leaves the live part out, so the list starts at the top of the
       screen; "above" mounts it, and the body draws it above the list. */
   phonePart?: "none" | "above";

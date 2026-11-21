@@ -248,6 +248,9 @@ function Loaded({ material, dark, lead, actions }: Props) {
   const cued = takes[Math.min(cue, n - 1)];
   /* On a phone the live part is drawn above the list only where the body asks for it (body.phonePart). */
   const livePart = !compact || body.phonePart === "above";
+  /* Index's rows in columns that run top to bottom (body.homeColumns, at desktop widths): how many rows each holds. */
+  const columns = compact ? 1 : Math.max(1, Math.floor(body.homeColumns ?? 1));
+  const perColumn = Math.ceil(n / columns);
   const homeProps: PlayObjectHomeProps | null =
     body.Home && cued
       ? {
@@ -267,7 +270,9 @@ function Loaded({ material, dark, lead, actions }: Props) {
             onPointerEnter: () => (setCue(i), setPointer(i)),
             onPointerLeave: () => setPointer((p) => (p === i ? null : p)),
             onKeyDown: (e) => {
-              const to = ({ ArrowDown: (i + 1) % n, ArrowUp: (i - 1 + n) % n, Home: 0, End: n - 1 } as Record<string, number>)[e.key];
+              /* In columns (body.homeColumns), Left and Right go a column over, to the ends at the edges. */
+              const across = columns > 1 ? { ArrowRight: Math.min(n - 1, i + perColumn), ArrowLeft: Math.max(0, i - perColumn) } : {};
+              const to = ({ ArrowDown: (i + 1) % n, ArrowUp: (i - 1 + n) % n, Home: 0, End: n - 1, ...across } as Record<string, number>)[e.key];
               if (to === undefined) return;
               e.preventDefault();
               setCue(to);
