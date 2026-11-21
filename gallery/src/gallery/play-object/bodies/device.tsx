@@ -488,7 +488,9 @@ const FILE_ROW_OFF = "text-fg-muted data-pointer:bg-[color-mix(in_oklab,var(--fg
 
 /** How large the cued part stands in its window: as large as the window holds it at 1440 by 1000, so it is the main
     thing on the glass. A small part (a key, a figure, a gauge) stands half again its size; a conversation, which runs
-    tall, a little under its own; the rest a quarter over. Where a short window cannot hold a part, its window scrolls. */
+    tall, a little under its own; the rest a quarter over. Where a short window cannot hold a part, its window scrolls.
+    The command menu's tile is a key, its Search trigger (126px tall at 1.5); the panel it opens goes to the screen's
+    OverlayRoot, outside the zoom, at its own size. */
 const LIVE_SCALE: Record<string, PartScale> = {
   "agent-indicator": 1.5,
   "seven-segment": 1.5,
