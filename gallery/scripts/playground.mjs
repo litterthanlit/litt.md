@@ -14,8 +14,8 @@
  * - the screen (data-play-frame) does not wear the world (data-material, none for Press), or the page's <html> material
  *   changed,
  * - the object's root (data-play-object) is not the world's id for a world in OBJECTS, or not "bare" for one that is not,
- * - from Page, Tab does not reach the selector (a slider), then Play, then the screen, or, on Heat's player, a tab stop
- *   sits above the one before it and not to its right (focus runs with the eye),
+ * - from Page, Tab does not reach the selector (a slider), then Play, then the screen, or, on Heat's or Rack's player, a
+ *   tab stop sits above the one before it and not to its right (focus runs with the eye; plans/audits/rack.md, finding 7),
  * - more than one control on the page is named Home (the top row's way out of the world; inside the object the list is
  *   Index everywhere), or a link named Source points inside the gallery (the top row's link to a part's page is Page),
  * - on Index or on a take, two controls of the player share a name but go to different places (not the same href or
@@ -305,12 +305,13 @@ for (const [from, to] of [["playground/device", "#device"], ["playground", "#fla
 }
 
 /* The players this run opens. --shard deals the worlds round-robin. --self-test opens only the worlds its breaks land
-   in (Device's bare object and missing tile, and a world whose set holds the Dialog take), since the set claim above
+   in (Device's bare object and missing tile, Heat's and Rack's strips under their screens, and a world whose set holds
+   the Dialog take), since the set claim above
    reads every world without a browser. */
 const [shard, shards] = get("shard", "1/1").split("/").map(Number);
 const dialogWorld = WORLDS.find(([, id]) => id === "device" && SETS.device?.includes("dialog")) ?? WORLDS.find(([, id]) => SETS[id]?.includes("dialog"));
 const RUN = selfTest
-  ? WORLDS.filter((w) => w[1] === "device" || w[1] === "heat" || w === dialogWorld)
+  ? WORLDS.filter((w) => w[1] === "device" || w[1] === "heat" || w[1] === "rack" || w === dialogWorld)
   : WORLDS.filter((_, i) => i % shards === shard - 1);
 for (const [world, id, attribute] of RUN) {
   const { ctx, pg, errors } = await open(id);
@@ -373,14 +374,16 @@ for (const [world, id, attribute] of RUN) {
   }
   claim("from Page, Tab reaches the selector, then Play, then the screen", stops.join(",") === "slider,play,screen" ? null : `${world}: ${stops.join(", ")}`);
 
-  /* Heat's order (finding 4): focus runs with the eye. From the object's first stop to its last, each tab stop is at or
-     below the one before it, or to its right. The break: the menu strip drawn under the screen again, as it was. */
-  if (id === "heat") {
+  /* Heat's order (finding 4) and Rack's (plans/audits/rack.md, finding 7): focus runs with the eye. From the object's
+     first stop to its last, each tab stop is at or below the one before it, or to its right. The break: the menu strip
+     (Heat) or the clip lane (Rack) drawn under the screen again, as it was. */
+  if (id === "heat" || id === "rack") {
+    const STRIP = id === "heat" ? "[data-heat-strip]" : "[data-rack-lane]";
     if (selfTest)
-      await pg.evaluate(() => {
-        const strip = document.querySelector("[data-heat-strip]");
+      await pg.evaluate((S) => {
+        const strip = document.querySelector(S);
         if (strip) strip.style.order = "3";
-      });
+      }, STRIP);
     await pg.locator("[data-play-object] a[href], [data-play-object] button").first().focus();
     const path = [];
     for (let i = 0; i < 48; i++) {
@@ -399,12 +402,12 @@ for (const [world, id, attribute] of RUN) {
       const a = path[k - 1];
       return a && b.top < a.top - 1 && b.left <= a.left + 1 ? [`${a.name} (${a.left},${a.top}) then ${b.name} (${b.left},${b.top})`] : [];
     });
-    claim("on Heat's player each tab stop is at or below the one before it, or to its right", path.length > 3 && !against.length ? null : `${world}: ${against.length ? against.join("; ") : `${path.length} stops`}`);
+    claim("on Heat's and Rack's players each tab stop is at or below the one before it, or to its right", path.length > 3 && !against.length ? null : `${world}: ${against.length ? against.join("; ") : `${path.length} stops`}`);
     if (selfTest)
-      await pg.evaluate(() => {
-        const strip = document.querySelector("[data-heat-strip]");
+      await pg.evaluate((S) => {
+        const strip = document.querySelector(S);
         if (strip) strip.style.order = "";
-      });
+      }, STRIP);
   }
 
   const n = Number(await pg.locator(SLIDER).getAttribute("aria-valuemax"));
@@ -718,8 +721,8 @@ if (selfTest) {
   if (!sourceCaught) console.error("playground --self-test: a Source link to #device/button on Device's player, and the check missed it.");
   const topsCaught = (claims.get("every name in a row of Index's grid shares a top") ?? []).some((f) => f.startsWith("Device:"));
   if (!topsCaught) console.error("playground --self-test: Index's rows centred with a wrapping line on Device, and the check missed it.");
-  const orderCaught = (claims.get("on Heat's player each tab stop is at or below the one before it, or to its right") ?? []).some((f) => f.startsWith("Heat:"));
-  if (!orderCaught) console.error("playground --self-test: Heat's menu strip drawn under its screen again, and the check missed it.");
+  const orderCaught = ["Heat:", "Rack:"].every((w) => (claims.get("on Heat's and Rack's players each tab stop is at or below the one before it, or to its right") ?? []).some((f) => f.startsWith(w)));
+  if (!orderCaught) console.error("playground --self-test: Heat's menu strip or Rack's clip lane drawn under its screen again, and the check missed it.");
   const menuCaught = (claims.get(OWN_INDEX_CLAIM) ?? []).some((f) => f.startsWith("Heat:"));
   if (!menuCaught) console.error("playground --self-test: Heat's Index lost its live part and gained a second current row, and the check missed it.");
   const sizeCaught = [...claims].some(([name, fails]) => name.startsWith("on Heat's player the pursuit meter covers") && fails.some((f) => f.startsWith("Heat:")));
@@ -729,7 +732,7 @@ if (selfTest) {
   const namesCaught = (claims.get(NAMES_CLAIM) ?? []).some((f) => f.startsWith("Device"));
   if (!namesCaught) console.error("playground --self-test: Device's selector named Components, like the link beside it, and the check missed it.");
   if (!namesCaught || !addressCaught || !caught || !bareCaught || !tileCaught || !setCaught || !homeCaught || !sourceCaught || !topsCaught || !orderCaught || !sizeCaught || !menuCaught) process.exit(1);
-  console.log("playground --self-test: a dialog escaped to <body> leaves the screen, with the recorder kept from loading Device draws bare, a tile missing from Device's gallery view is seen, a set naming a part outside its world is seen, a second Home and a Source link into the gallery are seen, Index's rows centred off their tops are seen, Heat's strip under its screen is seen, a small take on Heat's screen is seen, Heat's Index with no live part and two current rows is seen, a take kept out of the address is seen, and a selector sharing the Components link's name is seen; the check catches all twelve.");
+  console.log("playground --self-test: a dialog escaped to <body> leaves the screen, with the recorder kept from loading Device draws bare, a tile missing from Device's gallery view is seen, a set naming a part outside its world is seen, a second Home and a Source link into the gallery are seen, Index's rows centred off their tops are seen, Heat's strip and Rack's lane under their screens are seen, a small take on Heat's screen is seen, Heat's Index with no live part and two current rows is seen, a take kept out of the address is seen, and a selector sharing the Components link's name is seen; the check catches all twelve.");
   process.exit(0);
 }
 if (bad) {

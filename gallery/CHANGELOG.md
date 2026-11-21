@@ -4,6 +4,21 @@ Every change to the litt registry at https://littmd.vercel.app/r/, newest first.
 
 To update an item, read the entries since your version, then reinstall it with `--overwrite`. A **breaking** entry says what to change in your code.
 
+## 2026-11-21 · Rack
+
+Rack's audit, fixed (plans/audits/rack-fixes.md, Buildable now): the grids take the arrows, small controls keep a finger's target, color is owned, and nothing eases. Nothing changes outside Rack unless a line says so.
+
+- **changed** `clip-launcher`, `rack-clip-launcher`: the session is a grid (`role="grid"`, the tracks and Master as column headers, a row per scene) and one tab stop instead of one per cell. The arrows move a cell at a time without wrapping, Home and End go to the row's ends (with Ctrl or ⌘, the grid's), and Enter or Space launches, stops or fires the scene as before. Tab leaves the grid. Every launch is still announced. Props are unchanged.
+- **changed** `step-sequencer`, `rack-step-sequencer`: the steps are a grid (`role="grid"`, a row per lane with its name as the row header) and one tab stop instead of 32. The arrows move a step at a time without wrapping, Home and End go to the lane's ends (with Ctrl or ⌘, the grid's), and Enter or Space toggles the step. Tab leaves the grid. The beat ruler is hidden from screen readers, since each step's name says its number. Props are unchanged.
+- **changed** `motion`, `press-motion`, `flat-motion`, `device-motion`, `plain-motion`, `rack-motion`, `heat-motion`: adds `useSettles()`, which says whether something let go of settles on its tier (every material) or stops where it lands on the frame (Rack: things cut in and stop at once). Nothing else changes.
+- **changed** `time-scrubber`, `press-time-scrubber`, `flat-time-scrubber`, `device-time-scrubber`, `plain-time-scrubber`, `rack-time-scrubber`, `heat-time-scrubber`: under Rack the ruler stops on its step or event on the frame it is let go, and a key or a press puts it there at once, instead of settling for 400ms on the responsive tier; fun mode's throw and rubber band are off there. Every other world settles as before. Props are unchanged.
+- **changed** `device-rack`, `rack-device-rack`: names in sentence case, as litt writes everywhere. The default `title` is "Dub echo rack" and the default presets are Dub tape, Warm wash, Acid ping and Init. Pass your own `title` and `presets` to keep the old names.
+- **changed** `step-sequencer`, `rack-step-sequencer`: the default `title` is "Drum rack · Pattern A", in sentence case. Pass your own `title` to keep the old one.
+- **fixed** `clip-launcher`, `rack-clip-launcher`: in a narrow panel a clip's name wraps to a second line instead of being cut ("Hat p…"), and the scene's row grows to hold it. Slots are at least 32px tall (44px under a finger) rather than exactly that. Props are unchanged.
+- **fixed** `step-sequencer`, `rack-step-sequencer`: under a finger (`pointer: coarse`) each step is 44 by 44 instead of 22 wide, and the grid scrolls sideways inside its panel rather than shrink a step. Nothing changes under a mouse.
+- **fixed** `device-rack`, `rack-device-rack`: the 24px bypass keeps a 44px touch target (`litt-target relative`). Nothing looks different.
+- **changed** `device-rack`, `rack-device-rack`: each default macro has a color of its own. Cutoff and Dry/Wet both drew orange, so one color meant two things; the default device is now five macros (Cutoff, Resonance, Feedback, Drive, Dry/Wet), one per clip color, with Dry/Wet in violet, and Width is gone from `DEFAULT_MACROS` and the default presets. Five macros lay out in five columns from `md` up. Pass your own `macros` to keep a sixth.
+
 ## 2026-11-20 · Press deploy-dashboard identity, and Heat's keycaps are keys
 
 Press identity (plans/024, Press; taste/litt-principles.md, Press): adds three minimal Press-only product/deploy components (`deploy-status`, `env-switch`, `release-rail`) built strictly from Press's warm stone recessed trays, cut-in slots and raised blocks with zero button outlines, brings deploy-dashboard voice demos across `SET.press`, and adds Press to `test:materials`. Nothing changes outside Press.
