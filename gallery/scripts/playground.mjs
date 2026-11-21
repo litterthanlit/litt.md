@@ -49,8 +49,8 @@
  * so it leaves the screen and its world, keeps the recorder's body from loading, so Device draws bare, and takes a tile
  * out of Device's gallery view, adds a part Heat does not have to Heat's set, and on Device puts back a second control
  * named Home and a Source link into the gallery, centres Index's rows again with one line wrapping, draws Heat's
- * menu strip under its screen again, takes Heat's live part off its Index and marks a second row current, pushes Flat's
- * live part off its screen and marks a second pill current, and sets
+ * menu strip under its screen again and Flat's controls under its screen, takes Heat's live part off its Index and
+ * marks a second row current, pushes Flat's live part off its screen and marks a second pill current, and sets
  * Heat's screen to the other worlds' height, puts Device's address back to the bare player after a step, and names
  * Device's selector Components again; it fails
  * if the check misses any.
@@ -306,7 +306,7 @@ for (const [from, to] of [["playground/device", "#device"], ["playground", "#fla
 }
 
 /* The players this run opens. --shard deals the worlds round-robin. --self-test opens only the worlds its breaks land
-   in (Device's bare object and missing tile, Heat's and Flat's own Index, and a world whose set holds the Dialog take), since the set claim above
+   in (Device's bare object and missing tile, Heat's and Flat's own Index and tab order, and a world whose set holds the Dialog take), since the set claim above
    reads every world without a browser. */
 const [shard, shards] = get("shard", "1/1").split("/").map(Number);
 const dialogWorld = WORLDS.find(([, id]) => id === "device" && SETS.device?.includes("dialog")) ?? WORLDS.find(([, id]) => SETS[id]?.includes("dialog"));
@@ -375,13 +375,15 @@ for (const [world, id, attribute] of RUN) {
   claim("from Page, Tab reaches the selector, then Play, then the screen", stops.join(",") === "slider,play,screen" ? null : `${world}: ${stops.join(", ")}`);
 
   /* Heat's order (finding 4) and Flat's (plans/audits/flat.md, finding 6): focus runs with the eye. From the object's
-     first stop to its last, each tab stop is at or below the one before it, or to its right. The break: Heat's menu strip
-     drawn under the screen again, as it was. */
+     first stop to its last, each tab stop is at or below the one before it, or to its right. The breaks: Heat's menu
+     strip drawn under the screen again, as it was, and Flat's controls (caption, pills and Play) drawn under its screen. */
   if (id === "heat" || id === "flat") {
     if (selfTest)
       await pg.evaluate(() => {
-        const strip = document.querySelector("[data-heat-strip]");
-        if (strip) strip.style.order = "3";
+        for (const sel of ["[data-heat-strip]", "[data-flat-controls]"]) {
+          const strip = document.querySelector(sel);
+          if (strip) strip.style.order = "3";
+        }
       });
     await pg.locator("[data-play-object] a[href], [data-play-object] button").first().focus();
     const path = [];
@@ -404,8 +406,10 @@ for (const [world, id, attribute] of RUN) {
     claim("on Heat's and Flat's players each tab stop is at or below the one before it, or to its right", path.length > 3 && !against.length ? null : `${world}: ${against.length ? against.join("; ") : `${path.length} stops`}`);
     if (selfTest)
       await pg.evaluate(() => {
-        const strip = document.querySelector("[data-heat-strip]");
-        if (strip) strip.style.order = "";
+        for (const sel of ["[data-heat-strip]", "[data-flat-controls]"]) {
+          const strip = document.querySelector(sel);
+          if (strip) strip.style.order = "";
+        }
       });
   }
 
@@ -736,8 +740,12 @@ if (selfTest) {
   if (!sourceCaught) console.error("playground --self-test: a Source link to #device/button on Device's player, and the check missed it.");
   const topsCaught = (claims.get("every name in a row of Index's grid shares a top") ?? []).some((f) => f.startsWith("Device:"));
   if (!topsCaught) console.error("playground --self-test: Index's rows centred with a wrapping line on Device, and the check missed it.");
-  const orderCaught = (claims.get("on Heat's and Flat's players each tab stop is at or below the one before it, or to its right") ?? []).some((f) => f.startsWith("Heat:"));
-  if (!orderCaught) console.error("playground --self-test: Heat's menu strip drawn under its screen again, and the check missed it.");
+  const orderFails = claims.get("on Heat's and Flat's players each tab stop is at or below the one before it, or to its right") ?? [];
+  const heatOrderCaught = orderFails.some((f) => f.startsWith("Heat:"));
+  if (!heatOrderCaught) console.error("playground --self-test: Heat's menu strip drawn under its screen again, and the check missed it.");
+  const flatOrderCaught = orderFails.some((f) => f.startsWith("Flat:"));
+  if (!flatOrderCaught) console.error("playground --self-test: Flat's controls drawn under its screen, and the check missed it.");
+  const orderCaught = heatOrderCaught && flatOrderCaught;
   const menuCaught = (claims.get(OWN_INDEX_CLAIM) ?? []).some((f) => f.startsWith("Heat:"));
   if (!menuCaught) console.error("playground --self-test: Heat's Index lost its live part and gained a second current row, and the check missed it.");
   const flatMenuCaught = (claims.get(OWN_INDEX_CLAIM) ?? []).some((f) => f.startsWith("Flat:"));
@@ -749,7 +757,7 @@ if (selfTest) {
   const namesCaught = (claims.get(NAMES_CLAIM) ?? []).some((f) => f.startsWith("Device"));
   if (!namesCaught) console.error("playground --self-test: Device's selector named Components, like the link beside it, and the check missed it.");
   if (!namesCaught || !addressCaught || !caught || !bareCaught || !tileCaught || !setCaught || !homeCaught || !sourceCaught || !topsCaught || !orderCaught || !sizeCaught || !menuCaught || !flatMenuCaught) process.exit(1);
-  console.log("playground --self-test: a dialog escaped to <body> leaves the screen, with the recorder kept from loading Device draws bare, a tile missing from Device's gallery view is seen, a set naming a part outside its world is seen, a second Home and a Source link into the gallery are seen, Index's rows centred off their tops are seen, Heat's strip under its screen is seen, a small take on Heat's screen is seen, Heat's Index with no live part and two current rows is seen, Flat's with its live part off the screen and two current pills is seen, a take kept out of the address is seen, and a selector sharing the Components link's name is seen; the check catches all thirteen.");
+  console.log("playground --self-test: a dialog escaped to <body> leaves the screen, with the recorder kept from loading Device draws bare, a tile missing from Device's gallery view is seen, a set naming a part outside its world is seen, a second Home and a Source link into the gallery are seen, Index's rows centred off their tops are seen, Heat's strip and Flat's controls under their screens are seen, a small take on Heat's screen is seen, Heat's Index with no live part and two current rows is seen, Flat's with its live part off the screen and two current pills is seen, a take kept out of the address is seen, and a selector sharing the Components link's name is seen; the check catches all fourteen.");
   process.exit(0);
 }
 if (bad) {
