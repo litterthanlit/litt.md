@@ -29,6 +29,21 @@ Found by more than one audit, so fixed once in the shared layer or once per body
 
 "Not raised" means that audit did not report it, not that it was checked and found absent.
 
+## Reviewed
+
+The five audits written by agents were checked on 2026-11-21: their main claims re-measured in the build, and the "not raised" cells above measured in all six worlds. The claims held. The cells: no world but Heat has a live part on its Index, focus climbs back up to the screen in all five others, and the selector is named "Components" in all six. Three findings no audit reported are in `shared-fixes.md`: every page in a world shares one title, Back loses your place in the player, and on a phone the list starts half a screen down.
+
+## The plans
+
+| Plan | For |
+|---|---|
+| [shared-fixes.md](shared-fixes.md) | What every world shares. Goes first |
+| [press-fixes.md](press-fixes.md), [flat-fixes.md](flat-fixes.md), [device-fixes.md](device-fixes.md), [rack-fixes.md](rack-fixes.md) | Each world's own, after the shared plan |
+| [plain-fixes.md](plain-fixes.md) | Plain's, as questions for Nick: nothing in it is built without a yes |
+| [heat-fixes.md](heat-fixes.md) | Heat's, built |
+
+Each world's plan ends its front door with a stop for Nick's look.
+
 ## What to do first
 
 1. **The tap fault.** It makes most of a player unusable on a phone in five worlds, it is on `main`, and no check can see it, because every page check uses a mouse.
