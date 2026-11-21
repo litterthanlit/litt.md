@@ -74,7 +74,7 @@ import { PlusIcon, SettingsIcon } from "@/components/icons";
   ],
 };
 
-function ReplayLoading() {
+function ReplayLoading({ label = "View work" }: { label?: string }) {
   const { reduced } = useMotionDial();
   const [loading, setLoading] = useState(!reduced);
   useEffect(() => {
@@ -82,7 +82,7 @@ function ReplayLoading() {
     const t = setTimeout(() => setLoading(false), 1200);
     return () => clearTimeout(t);
   }, [reduced]);
-  return <Button loading={loading}>View work</Button>;
+  return <Button loading={loading}>{label}</Button>;
 }
 
 export const study: PageStudy = {
@@ -101,6 +101,22 @@ export const study: PageStudy = {
     label: "Replay loading",
     caption: "Watch the width: the label fades out under the spinner, and the block does not move.",
     run: () => <ReplayLoading />,
+  },
+  /* Under Device the study speaks the recorder, as its lead stage does (ExportTakeDemo). */
+  byWorld: {
+    device: {
+      object: <Button>Add marker</Button>,
+      states: {
+        default: <Button>Add marker</Button>,
+        disabled: <Button disabled>Add marker</Button>,
+        loading: <Button loading>Add marker</Button>,
+      },
+      replay: {
+        label: "Replay loading",
+        caption: "Watch the width: the label goes out under the spinner, and the key does not move.",
+        run: () => <ReplayLoading label="Add marker" />,
+      },
+    },
   },
 };
 

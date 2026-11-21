@@ -7,7 +7,7 @@
  *
  *   npm run build && npm run test:materials
  *   node scripts/materials.mjs --pages device/button,device/tag
- *   node scripts/materials.mjs --self-test     injects 9 material breaks across Device, Flat, Heat and Rack, fails if missed
+ *   node scripts/materials.mjs --self-test     injects 12 material breaks across Device, Flat, Heat, Rack and Press, fails if missed
  *
  * It fails when, anywhere on a Device page:
  * - an element carries a data-part kind that is not one of Device's (KINDS, after litt-principles.md, Device's materials,
@@ -17,7 +17,8 @@
  *   which this does not read,
  * - any other colour shows: a data hue, green or amber. The body's greys and the ink are fine; so are red (REC, the
  *   playhead, a fault) and the one blue on the screen (selection on glass, --select), within 0.03 in OKLab,
- * - a stage's ground is not the plate: every component stage (section[data-arrive=stage] > its box) and every wall tile
+ * - a stage's ground is not the plate: every component stage (section[data-arrive=stage] > its box), every study stage
+ *   below them (Anatomy, States and Replay, [data-stage=study], plans/audits/device.md, finding 4) and every wall tile
  *   (data-tile) in #device/components is data-part="plate" and paints --plate-face.
  * A colour is read in OKLCH from the computed background (its colour and any colour in a gradient), the text colour of
  * an element with its own words, an SVG's fill and stroke, and a drawn border. Under 0.035 chroma it is a grey. Images,
@@ -308,6 +309,8 @@ function read([KINDS, world, route]) {
     /* The stage's box: the section's child, or the child of its tabs root (display: contents) when it has a code view. */
     ...[...document.querySelectorAll("main section[data-arrive=stage]")].flatMap((s) => [...s.querySelectorAll(":scope > .row-start-1.col-span-2, :scope > .contents > .row-start-1.col-span-2")]),
     ...document.querySelectorAll("main [data-tile]"),
+    /* The study's stages under the lead (Anatomy, States, Replay): plates too, never a dark slab. */
+    ...document.querySelectorAll("main [data-stage=study]"),
   ];
   for (const g of grounds) {
     const cs = getComputedStyle(g);
@@ -343,7 +346,7 @@ async function check(route, theme, mutate) {
     const rules = [w === "flat" ? FLAT_KINDS : w === "press" ? PRESS_KINDS : KINDS, w, route];
     const found = (await pg.evaluate(read, rules)).map(([rule, what]) => `${route} · ${theme} · ${rule} · ${what}`);
     /* The player: Home, then every take on its screen, stepped with the tape's keys as a person would. */
-    const slider = pg.locator("[data-play-object] [role=slider][aria-label=Components]");
+    const slider = pg.locator("[data-play-object] [role=slider][aria-label=Take]");
     if ((route === "device" || route === "flat") && !mutate && (await slider.count())) {
       const n = Number(await slider.getAttribute("aria-valuemax"));
       for (let k = 1; k <= n; k++) {
@@ -363,7 +366,7 @@ async function check(route, theme, mutate) {
 }
 
 if (selfTest) {
-  /* Eleven breaks: Device's 4 checks on #device/button, Flat's 2 checks on #flat, Heat's 2 checks (radius & shadow)
+  /* Twelve breaks: Device's 5 checks on #device/button (the ground twice: a lead stage and an Anatomy stage), Flat's 2 checks on #flat, Heat's 2 checks (radius & shadow)
      on #heat, Rack's cast-shadow check on #rack, and Press's 2 checks (outline & kind) on #press. */
   const [DEVICE, FLAT, HEAT, RACK, PRESS] = PAGES;
   const breaks = [
@@ -391,6 +394,11 @@ if (selfTest) {
     }],
     ["a stage on a dark screen", "ground", () => {
       const box = document.querySelector("main section[data-arrive=stage] .row-start-1.col-span-2");
+      box.removeAttribute("data-part");
+      box.classList.add("litt-raised");
+    }],
+    ["a dark Anatomy stage", "ground", () => {
+      const box = document.querySelector("main [data-stage=study]");
       box.removeAttribute("data-part");
       box.classList.add("litt-raised");
     }],

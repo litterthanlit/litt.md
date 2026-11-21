@@ -18,12 +18,15 @@
  *   sits above the one before it and not to its right (focus runs with the eye),
  * - more than one control on the page is named Home (the top row's way out of the world; inside the object the list is
  *   Index everywhere), or a link named Source points inside the gallery (the top row's link to a part's page is Page),
+ * - on Index or on a take, two controls of the player share a name but go to different places (not the same href or
+ *   the same data-play-to): the selector is Take, never Components, the top row's link beside it,
  * - a world's set in play-object/takes.ts is not twelve parts, each a component page in that world, or a page's id is
- *   components or about, which would hide behind the world's own addresses,
+ *   components, about or take, which would hide behind the world's own addresses,
  * - the screen does not open on Index, the world's set (a row each, as many as the slider runs to and takes.ts lists),
  *   or a name in a row of Index's grid sits above or below another name in that row (rows hold to their tops), or, on
- *   Heat, Index (its own menu, body.Home) does not show the current row's part live on the screen with exactly one row
- *   current, Down moving both,
+ *   any world whose body draws its own Index (body.Home, data-play-home="body"; Heat's and Device's today), Index does not show the
+ *   current row's part live on the screen with exactly one row current, Down and the pointer on a row moving both
+ *   (a world that keeps the contract's Index passes),
  * - Right and Down do not go to the next take, Left and Up to the previous, wrapping through Index, or End and Home do
  *   not go to the last take and to Index, with aria-valuenow and the readout's count following,
  * - a take (each in the set) draws nothing inside the screen's box, or anything in the body (the object outside its
@@ -32,21 +35,31 @@
  *   on a bare object, the rail beside a take does not list the set in order with the take showing marked, and a link to
  *   #<world>/components at its foot,
  * - Index does not go back to the list, or the list does not open the take picked,
+ * - two steps along the selector do not write #<world>/take/<id> in place (with no new history entry), or Back from the
+ *   take's page (the top row's Page) does not return the player to that take,
  * - on Heat's player, the pursuit meter's drawn box covers less than TAKE_FLOOR of the screen's area,
  * - what the Dialog, Menu, Popover, Select, Context menu, Toast or Tooltip take opens, where the set holds it, (from its first button, by a click
  *   or, for the tooltip, a held pointer) is not inside the screen's box, under the screen's world (1px tolerance),
  * - the take changes within 6s with no hand on it (nothing plays on load), Play does not move it within 5s, or a press
  *   on the screen does not stop it,
+ * - following the world's name in the top row (#<world>, outside the screen) while Play runs does not stop Play, open
+ *   Index and say so in the live region, or, on a body's own Index, does not make the take just left the current row,
  * - Home's Every component link does not open #<world>/components, or that page does not hold a tile for every
- *   component in the world (read from src/gallery/pages), or a tile's name does not link to #<world>/<id>.
+ *   component in the world (read from src/gallery/pages), or a tile's name does not link to #<world>/<id>,
+ * - at 1366 by 768, a laptop's window, what a Device take opens (the openers above and the Command menu) is not inside
+ *   Device's screen, in its world (run with the shard that runs Device).
  *
  * --self-test moves the Dialog take's open dialog out to <body>, as a portal that missed the screen's OverlayRoot would,
  * so it leaves the screen and its world, keeps the recorder's body from loading, so Device draws bare, and takes a tile
  * out of Device's gallery view, adds a part Heat does not have to Heat's set, and on Device puts back a second control
  * named Home and a Source link into the gallery, centres Index's rows again with one line wrapping, draws Heat's
- * menu strip under its screen again, takes Heat's live part off its Index and marks a second row current, and sets
- * Heat's screen to the other worlds' height; it fails if the check misses
- * any.
+ * menu strip under its screen again, takes Heat's live part off its Index and marks a second row current (and the same
+ * on the recorder's Index, opened again with its body loaded, since the rest keeps it from loading, where a second
+ * break swallows Down on its rows so neither the lit row nor the live part moves), and sets
+ * Heat's screen to the other worlds' height, puts Device's address back to the bare player after a step, names
+ * Device's selector Components again, and at 1366 by 768 lowers Device's screen to 25rem, as it once was, so the
+ * command menu's panel runs past its foot, and presses Play again on
+ * Heat just after its world's name opened Index; it fails if the check misses any.
  *
  * Needs Playwright, found as worlds.mjs finds it.
  */
@@ -105,17 +118,17 @@ const claim = (name, bad) => {
 
 const WORLDS = [["Press", "press", undefined], ["Flat", "flat", "flat"], ["Device", "device", "device"], ["Plain", "plain", "plain"], ["Rack", "rack", "rack"], ["Heat", "heat", "heat"]];
 const FRAME = "[data-play-frame]";
-const SLIDER = "[data-play-object] [role=slider][aria-label=Components]";
+const SLIDER = "[data-play-object] [role=slider][aria-label=Take]";
 /* The takes that open something, and what they open. */
 const OPENERS = ["Dialog", "Menu", "Popover", "Select", "Context menu", "Toast", "Tooltip"];
 const OVERLAYS = "[role=dialog], [role=alertdialog], [role=menu], [role=listbox], [role=tooltip], [data-toast-id]";
 const browser = await chromium.launch();
 
-async function open(hash, { theme, scale = 1 } = {}) {
-  const ctx = await browser.newContext({ viewport: { width: 1440, height: 1000 }, deviceScaleFactor: scale, reducedMotion: "reduce" });
+async function open(hash, { theme, scale = 1, viewport = { width: 1440, height: 1000 }, recorder = false } = {}) {
+  const ctx = await browser.newContext({ viewport, deviceScaleFactor: scale, reducedMotion: "reduce" });
   await ctx.addInitScript(() => localStorage.setItem("litt-gallery:customize", JSON.stringify({ accent: "blue4" })));
   if (theme) await ctx.addInitScript((t) => localStorage.setItem("litt-gallery:theme", t), theme);
-  if (selfTest)
+  if (selfTest && !recorder)
     await ctx.route(/\.js$/, async (route) => {
       /* A request still in flight when its context closes is let go. */
       try {
@@ -136,8 +149,15 @@ async function open(hash, { theme, scale = 1 } = {}) {
   return { ctx, pg, errors };
 }
 
+/** The object's own Play key: never a part on its screen that is also named Play (Rack's transport on its Index). */
+const PLAY = '[data-play-object] button[aria-label="Play"]:not([data-play-take] *)';
+
 /** Scrolls the page so the object is whole in the window, under the header. */
-const inView = (pg) => pg.evaluate(() => window.scrollBy(0, document.querySelector("[data-play-object]").getBoundingClientRect().top - 80));
+const inView = async (pg) => {
+  /* The object's body loads on demand, so after a reload it may not be in the page yet. */
+  await pg.waitForSelector("[data-play-object]", { state: "attached", timeout: 10000 });
+  await pg.evaluate(() => window.scrollBy(0, document.querySelector("[data-play-object]").getBoundingClientRect().top - 80));
+};
 
 /** Where every visible element matching the selector sits against the screen, in the box and in the DOM. */
 function place(pg, selector) {
@@ -195,6 +215,79 @@ function showing(pg) {
   }, FRAME);
 }
 
+/* No two controls on a player share a name unless they go to the same place: the same href, or the same
+   data-play-to (the contract's two Index controls). What a take or Index's live part draws is the part's, not the
+   player's, so it is left out. */
+const OWN_INDEX_CLAIM = "on a body's own Index a live part is on the screen and exactly one row is current, and Down or the pointer moves both";
+const NAMES_CLAIM = "no two controls on a player share a name unless they go to the same place";
+function sharedNames(pg) {
+  return pg.evaluate(() => {
+    const name = (el) => (el.getAttribute("aria-label") ?? el.textContent ?? "").replace(/\s+/g, " ").trim();
+    const shown = (el) => el.getClientRects().length > 0 && !el.closest("[aria-hidden=true], [inert]");
+    const part = (el) => el.closest("[data-play-live]") || el.closest("[data-play-take]:not([data-play-take=home])");
+    const controls = [...document.querySelectorAll("a[href], button, [role=button], [role=link], [role=slider], [role=tab], [role=menuitem], [role=option]")].filter((el) => shown(el) && !part(el) && name(el));
+    const byName = new Map();
+    for (const el of controls) byName.set(name(el), [...(byName.get(name(el)) ?? []), el]);
+    const to = (el) => (el.getAttribute("href") ? new URL(el.href, location.href).href : el.dataset.playTo ? `to:${el.dataset.playTo}` : null);
+    return [...byName].filter(([, els]) => els.length > 1 && (els.some((el) => !to(el)) || new Set(els.map(to)).size > 1)).map(([n, els]) => `"${n}" on ${els.map((el) => el.getAttribute("role") ?? el.tagName.toLowerCase()).join(", ")}`);
+  });
+}
+
+/** A body's own Index as it stands: the live part's take, whether it draws inside the screen, and the rows marked current. */
+function ownIndex(pg) {
+  return pg.evaluate((F) => {
+    const f = document.querySelector(F).getBoundingClientRect();
+    const live = document.querySelector(`${F} [data-play-take=home] [data-play-live]`);
+    const draws = !!live && [...live.querySelectorAll("*")].some((el) => {
+      const b = el.getBoundingClientRect();
+      return b.width > 0 && b.height > 0 && b.left >= f.left - 1 && b.right <= f.right + 1 && b.top >= f.top - 1 && b.bottom <= f.bottom + 1;
+    });
+    const current = [...document.querySelectorAll(`${F} [data-play-index] button[data-current]`)].map((b) => b.textContent.trim());
+    return { live: live?.dataset.playLive ?? null, draws, current };
+  }, FRAME);
+}
+
+/** Claims OWN_INDEX_CLAIM on the Index showing: at rest row 0's part is live and current, and with `move`, Down
+    brings row 1 and the pointer on the third row brings row 2, each with exactly one row current. */
+async function checkOwnIndex(pg, world, id, { move }) {
+  const ids = SETS[id] ?? [];
+  const ok = (m, k) => m.draws && m.current.length === 1 && m.live === ids[k];
+  /* The live part is a lazy chunk, so it can take longer than a fixed wait to draw on a slow runner (CI read Heat's
+     Tune menu 300ms after the pointer reached its row, before it had drawn): read until row k's part is drawn. */
+  const settled = async (k) => {
+    const end = Date.now() + 5000;
+    let m = await ownIndex(pg);
+    while (!ok(m, k) && Date.now() < end) {
+      await pg.waitForTimeout(100);
+      m = await ownIndex(pg);
+    }
+    return m;
+  };
+  const atRest = move ? await settled(0) : await ownIndex(pg);
+  let moved = null, pointed = null;
+  if (move) {
+    await pg.locator(`${FRAME} [data-play-index] button[data-current]`).focus();
+    await pg.keyboard.press("ArrowDown");
+    moved = await settled(1);
+    await pg.keyboard.press("ArrowUp");
+    await pg.waitForTimeout(200);
+    const third = await pg.locator(`${FRAME} [data-play-index] button`).nth(2).boundingBox();
+    if (third) {
+      await pg.mouse.move(third.x + third.width / 2, third.y + third.height / 2);
+      pointed = await settled(2);
+      await pg.mouse.move(0, 0);
+    }
+    await pg.locator(`${FRAME} [data-play-index] button`).first().focus();
+    await pg.waitForTimeout(200);
+  }
+  claim(
+    OWN_INDEX_CLAIM,
+    ok(atRest, 0) && (!moved || ok(moved, 1)) && (!pointed || ok(pointed, 2))
+      ? null
+      : `${world}: at rest ${JSON.stringify(atRest)}${moved ? `, after Down ${JSON.stringify(moved)}` : ""}${pointed ? `, with the pointer on the third row ${JSON.stringify(pointed)}` : ""}`,
+  );
+}
+
 const readout = (pg) => pg.evaluate(() => document.querySelector("[data-play-readout]")?.textContent?.replace(/\s+/g, " ").trim() ?? null);
 const now = (pg) => pg.locator(SLIDER).getAttribute("aria-valuenow").then(Number);
 const pad = (i, n) => String(i).padStart(Math.max(2, String(n).length), "0");
@@ -221,8 +314,8 @@ const partsIn = (world) => PARTS.filter((p) => !p.worlds || p.worlds.includes(wo
 const SETS = Object.fromEntries(
   [...fs.readFileSync(path.join(here, "..", "src", "gallery", "play-object", "takes.ts"), "utf8").matchAll(/^\s+(\w+): \[([^\]]*)\],$/gm)].map((m) => [m[1], [...m[2].matchAll(/"([^"]+)"/g)].map((x) => x[1])]),
 );
-const shadowed = pageMetas().filter((p) => ["components", "about"].includes(p.id)).map((p) => p.id);
-claim("no page id is components or about, the world's own addresses", shadowed.length ? `pages named ${shadowed.join(", ")}` : null);
+const shadowed = pageMetas().filter((p) => ["components", "about", "take"].includes(p.id)).map((p) => p.id);
+claim("no page id is components, about or take, the world's own addresses", shadowed.length ? `pages named ${shadowed.join(", ")}` : null);
 if (selfTest) SETS.heat =[...(SETS.heat ?? []), "seven-segment"];
 for (const [, id] of WORLDS) {
   const set = SETS[id] ?? [];
@@ -328,6 +421,13 @@ for (const [world, id, attribute] of RUN) {
   claim("no link named Source points inside the gallery", names.source.length === 0 ? null : `${world}: Source links to ${names.source.join(", ")}`);
   if (selfTest) await pg.evaluate(() => document.querySelectorAll("[data-self-test]").forEach((el) => el.remove()));
 
+  /* One name, one place (plans/audits/shared-fixes.md, Track 2 step 3): the selector is Take, not Components, the top
+     row's link beside it that goes to the gallery view. The break, on Device: the selector named Components again. */
+  if (selfTest && id === "device") await pg.evaluate(() => document.querySelector("[data-play-object] [role=slider]")?.setAttribute("aria-label", "Components"));
+  const twins = await sharedNames(pg);
+  claim(NAMES_CLAIM, twins.length ? `${world} on Index: ${twins.join("; ")}` : null);
+  if (selfTest && id === "device") await pg.evaluate(() => document.querySelector("[data-play-object] [role=slider]")?.setAttribute("aria-label", "Take"));
+
   /* The keyboard: Page, then the selector, Play and the screen. */
   await pg.locator("[data-play-object]").getByRole("link", { name: "Page", exact: true }).focus();
   const stops = [];
@@ -386,42 +486,19 @@ for (const [world, id, attribute] of RUN) {
     home.id === "home" && (await readout(pg))?.includes("Index") && set.length === n && n === (SETS[id] ?? []).length ? null : `${world}: showing ${home.id}, readout "${await readout(pg)}", ${set.length} in the set on Index, the slider runs to ${n}`,
   );
 
-  /* Heat's Index is its menu (finding 1): the current row's part is live on the screen beside the list, and exactly one
-     row is current. Down makes the next row current and brings its part. The break: the live part taken away and a
-     second row marked current. */
-  if (id === "heat") {
-    if (selfTest)
+  /* A body's own Index (body.Home, plans/audits/shared-fixes.md, Track 3; Heat's first, finding 1): the current row's
+     part is live on the screen, and exactly one row is current. Down makes the next row current and brings its part,
+     and the pointer on a row does the same. A body that keeps the contract's Index has nothing to show here and
+     passes. The break, on Heat: the live part taken away and a second row marked current. */
+  const drawsOwnIndex = await pg.locator(`${FRAME} [data-play-take=home][data-play-home=body]`).count();
+  claim(OWN_INDEX_CLAIM, null);
+  if (drawsOwnIndex) {
+    if (selfTest && id === "heat")
       await pg.evaluate((F) => {
         document.querySelector(`${F} [data-play-live]`)?.remove();
         document.querySelectorAll(`${F} [data-play-index] button`)[3]?.setAttribute("data-current", "");
       }, FRAME);
-    const menu = () =>
-      pg.evaluate((F) => {
-        const f = document.querySelector(F).getBoundingClientRect();
-        const live = document.querySelector(`${F} [data-play-take=home] [data-play-live]`);
-        const draws = !!live && [...live.querySelectorAll("*")].some((el) => {
-          const b = el.getBoundingClientRect();
-          return b.width > 0 && b.height > 0 && b.left >= f.left - 1 && b.right <= f.right + 1 && b.top >= f.top - 1 && b.bottom <= f.bottom + 1;
-        });
-        const current = [...document.querySelectorAll(`${F} [data-play-index] button[data-current]`)].map((b) => b.textContent.trim());
-        return { live: live?.dataset.playLive ?? null, draws, current };
-      }, FRAME);
-    const atRest = await menu();
-    let moved = null;
-    if (!selfTest) {
-      await pg.locator(`${FRAME} [data-play-index] button[data-current]`).focus();
-      await pg.keyboard.press("ArrowDown");
-      await pg.waitForTimeout(300);
-      moved = await menu();
-      await pg.keyboard.press("ArrowUp");
-      await pg.waitForTimeout(200);
-    }
-    claim(
-      "on Heat's Index a live part is on the screen and exactly one row is current, and Down moves both",
-      atRest.draws && atRest.current.length === 1 && atRest.live === SETS.heat?.[0] && (!moved || (moved.current.length === 1 && moved.live === SETS.heat?.[1] && moved.draws))
-        ? null
-        : `${world}: at rest ${JSON.stringify(atRest)}${moved ? `, after Down ${JSON.stringify(moved)}` : ""}`,
-    );
+    await checkOwnIndex(pg, world, id, { move: !selfTest });
     if (selfTest) await pg.reload({ waitUntil: "networkidle" }).then(() => pg.waitForTimeout(300)).then(() => inView(pg));
   }
 
@@ -489,6 +566,8 @@ for (const [world, id, attribute] of RUN) {
     };
   });
   const title = await readout(pg);
+  const takeTwins = await sharedNames(pg);
+  claim(NAMES_CLAIM, takeTwins.length ? `${world} on ${title}: ${takeTwins.join("; ")}` : null);
   /* A world with an object of its own holds the take alone on its screen (plans/024, breach 17): no rail there, and the
      set stays on Index, behind its key (claimed below). A bare object keeps the rail. */
   if (OBJECTS.includes(id)) claim("an object's screen holds the take alone, with no rail inside it", rail === null ? null : `${world}: a rail of ${rail.rows.length} rows inside the screen`);
@@ -503,6 +582,38 @@ for (const [world, id, attribute] of RUN) {
   const went = await find(pg, last);
   const picked = await readout(pg);
   claim("Index goes back to the list, and the list opens what you pick", went && picked?.includes(last) ? null : `${world}: after picking ${last} from Index the readout says "${picked}"`);
+
+  /* The take is in the address (plans/audits/shared-fixes.md, S2): stepping writes #<world>/take/<id> in place, never a
+     new history entry, and Back from the take's page returns the player to that take. The break, on Device: the
+     address put back to the bare player after the step, as a player that keeps its take to itself would leave it. */
+  {
+    await inView(pg);
+    await pg.locator(SLIDER).focus();
+    await pg.keyboard.press("Home");
+    const entries = await pg.evaluate(() => history.length);
+    await pg.keyboard.press("ArrowRight");
+    await pg.keyboard.press("ArrowRight");
+    await pg.waitForTimeout(200);
+    const second = SETS[id]?.[1];
+    if (selfTest && id === "device") await pg.evaluate((w) => history.replaceState(history.state, "", `#${w}`), id);
+    const written = await pg.evaluate(() => ({ hash: location.hash, entries: history.length }));
+    await pg.locator("[data-play-object]").getByRole("link", { name: "Page", exact: true }).click();
+    await pg.waitForFunction((h) => location.hash === h, `#${id}/${second}`, { timeout: 3000 }).catch(() => {});
+    await pg.waitForTimeout(300);
+    const paged = await pg.evaluate(() => location.hash);
+    await pg.goBack();
+    await pg.waitForSelector(SLIDER, { timeout: 5000 }).catch(() => {});
+    await pg.waitForTimeout(500);
+    const back = await pg.evaluate(() => location.hash);
+    const value = await pg.locator(SLIDER).getAttribute("aria-valuenow").catch(() => null);
+    const said = await readout(pg);
+    claim(
+      "the take is in the address, written in place as you step, and Back from its page returns to it",
+      written.hash === `#${id}/take/${second}` && written.entries === entries && paged === `#${id}/${second}` && back === `#${id}/take/${second}` && value === "2" && said?.includes(set[1])
+        ? null
+        : `${world}: after two steps the address is ${written.hash} (wants #${id}/take/${second}) with ${written.entries - entries} new entries; Page went to ${paged}; Back came to ${back}, the slider at ${value}, readout "${said}" (wants ${set[1]})`,
+    );
+  }
 
   /* A take's size (finding 7): on Heat's shorter screen the pursuit meter's drawn box (every element in the take that
      paints: text, a fill, an edge, an image) covers at least TAKE_FLOOR of the screen's area. A quarter is not reachable
@@ -573,10 +684,10 @@ for (const [world, id, attribute] of RUN) {
   /* Play, only when pressed, and a hand on the screen stops it. */
   await inView(pg);
   const before = await now(pg);
-  await pg.locator("[data-play-object]").getByRole("button", { name: "Play", exact: true }).click();
+  await pg.locator(PLAY).click();
   await pg.waitForTimeout(5000);
   const after = await now(pg);
-  const pressed = await pg.locator("[data-play-object]").getByRole("button", { name: "Play", exact: true }).getAttribute("aria-pressed");
+  const pressed = await pg.locator(PLAY).getAttribute("aria-pressed");
   claim("Play steps through the takes, and a press on the screen stops it", after !== before && pressed === "true" ? null : `${world}: after Play the take went ${before} to ${after}, Play pressed ${pressed}`);
   const sb = await pg.locator(FRAME).boundingBox();
   await pg.mouse.click(sb.x + 8, sb.y + 8);
@@ -584,6 +695,48 @@ for (const [world, id, attribute] of RUN) {
   await pg.waitForTimeout(5000);
   const still = await now(pg);
   claim("Play steps through the takes, and a press on the screen stops it", still === held ? null : `${world}: after a press on the screen the take went ${held} to ${still}`);
+
+  /* The world's name in the top row (#<world>) sits outside the screen, so no hand on the screen stops Play there.
+     Followed while Play runs, it still stops Play and brings Index, with the take just left as Index's current row
+     where the body draws its own Index, and says so in the live region. The break, on Heat: Play pressed again just
+     after, as a reader of the address that skips the hand's path leaves it running. */
+  {
+    await inView(pg);
+    const play = pg.locator(PLAY);
+    await play.click();
+    await pg.waitForFunction((S) => Number(document.querySelector(S)?.getAttribute("aria-valuenow")) >= 2, SLIDER, { timeout: 6000 }).catch(() => {});
+    /* By the keys, with the pointer off the page, so a row the page scrolls under a still pointer is not made current.
+       The take just left is read from the address it moves off: Play may step once more between any
+       earlier read and the key. */
+    await pg.mouse.move(0, 0);
+    await pg.evaluate(() => {
+      window.__left = null;
+      window.addEventListener("hashchange", (e) => (window.__left ??= new URL(e.oldURL).hash.split("/take/")[1] ?? ""), { once: true });
+    });
+    await pg.locator(`a[href="#${id}"]`).first().focus();
+    await pg.keyboard.press("Enter");
+    await pg.waitForFunction(() => window.__left !== null, null, { timeout: 2000 }).catch(() => {});
+    const left = (SETS[id] ?? []).indexOf(await pg.evaluate(() => window.__left)) + 1;
+    if (selfTest && id === "heat") await play.click();
+    await pg.waitForTimeout(300);
+    const named = await pg.evaluate((F) => ({
+      said: document.querySelector("[data-play-object] > [role=status]")?.textContent ?? "",
+      current: [...document.querySelectorAll(`${F} [data-play-take=home][data-play-home=body] [data-play-index] button[data-current]`)].map((b) => b.textContent.trim()),
+      own: !!document.querySelector(`${F} [data-play-take=home][data-play-home=body]`),
+    }), FRAME);
+    const stopped = await play.getAttribute("aria-pressed");
+    const atIndex = await now(pg);
+    await pg.waitForTimeout(5000);
+    const stays = await now(pg);
+    const title = set[left - 1];
+    claim(
+      "the world's name in the top row stops Play, opens Index on the take just left, and says so",
+      left >= 1 && stopped === "false" && atIndex === 0 && stays === 0 && named.said.startsWith("Index") && (!named.own || (named.current.length === 1 && named.current[0].includes(title)))
+        ? null
+        : `${world}: left take ${left} (${title}) by the world's name; Play pressed ${stopped}, the slider at ${atIndex}, then ${stays} 5s on; said "${named.said}"${named.own ? `, current row ${JSON.stringify(named.current)}` : ""}`,
+    );
+    if (selfTest && id === "heat" && (await play.getAttribute("aria-pressed")) === "true") await play.click();
+  }
 
   /* Index's way to every component: the world's gallery view, a tile for every component in the world, each named by a
      link to its page in the world. */
@@ -609,6 +762,67 @@ for (const [world, id, attribute] of RUN) {
   );
 
   for (const e of errors) claim("the page throws nothing", `${world}: ${e}`);
+  await ctx.close();
+}
+
+/* The recorder's own Index (its file list): the rest of the self-test keeps Device's body from loading, so these breaks
+   open Device again with the recorder. The first takes the live part out of its window and marks a second row current;
+   the second leaves Index whole at rest but swallows Down on its rows before the contract hears it, so neither the lit
+   row nor the live part moves (read by the same check the players run, under the name "Device, Down kept"). */
+let recorderIndex = false;
+if (selfTest) {
+  const { ctx, pg } = await open("device", { recorder: true });
+  await inView(pg);
+  recorderIndex = (await pg.locator(`${FRAME} [data-play-take=home][data-play-home=body]`).count()) > 0;
+  await pg.evaluate((F) => {
+    document.querySelector(`${F} [data-play-live]`)?.remove();
+    document.querySelectorAll(`${F} [data-play-index] button`)[3]?.setAttribute("data-current", "");
+  }, FRAME);
+  await checkOwnIndex(pg, "Device", "device", { move: false });
+  await pg.reload({ waitUntil: "networkidle" });
+  await pg.waitForTimeout(300);
+  await inView(pg);
+  await pg.evaluate((F) => {
+    const stop = (e) => {
+      if (e.key === "ArrowDown" && e.target instanceof Element && e.target.closest(`${F} [data-play-index]`)) e.stopImmediatePropagation();
+    };
+    window.addEventListener("keydown", stop, true);
+  }, FRAME);
+  await checkOwnIndex(pg, "Device, Down kept", "device", { move: true });
+  await ctx.close();
+}
+
+/* A laptop's window (finding 6 of plans/audits/device.md, and the review of PR 155): at 1366 by 768 the recorder's
+   screen stands at SCREEN_HEIGHT's 30rem floor and its deck gives up the height, and what a take opens, the command
+   menu's panel above all, still stays on the screen. Run with the recorder's body loaded, even under --self-test, whose
+   break here is the screen lowered to 25rem again, as it once was. */
+if (RUN.some(([, id]) => id === "device")) {
+  const { ctx, pg } = await open("device", { viewport: { width: 1366, height: 768 }, recorder: true });
+  for (const title of [...OPENERS, "Command menu"]) {
+    if (!(await find(pg, title))) continue;
+    if (selfTest) await pg.evaluate((F) => (document.querySelector(F).style.height = "25rem"), FRAME);
+    const button = pg.locator(`${FRAME} [data-play-take] button:visible, ${FRAME} [data-play-take] [role=combobox]:visible`).first();
+    if (title === "Tooltip") {
+      const b = await button.boundingBox();
+      await pg.mouse.move(b.x + b.width / 2, b.y + b.height / 2);
+      await pg.waitForTimeout(1000);
+    } else if (title === "Context menu") {
+      await pg.locator(`${FRAME} [data-play-take] *:visible`).first().click({ button: "right" }).catch(() => {});
+      await pg.waitForTimeout(700);
+    } else {
+      await button.click().catch(() => {});
+      await pg.waitForTimeout(900);
+    }
+    const opened = await place(pg, OVERLAYS);
+    const name = "at 1366x768 what a take opens stays on Device's screen";
+    claim(name, opened.length ? null : `Device · ${title}: nothing opened from its first button`);
+    for (const b of opened) claim(name, b.ok ? null : `Device · ${title}: ${b.what}`);
+    await pg.mouse.move(0, 0);
+    await pg.keyboard.press("Escape");
+    await pg.keyboard.press("Escape");
+    await pg.waitForTimeout(400);
+    if (selfTest) await pg.evaluate((F) => (document.querySelector(F).style.height = ""), FRAME);
+  }
   await ctx.close();
 }
 
@@ -641,12 +855,24 @@ if (selfTest) {
   if (!topsCaught) console.error("playground --self-test: Index's rows centred with a wrapping line on Device, and the check missed it.");
   const orderCaught = (claims.get("on Heat's player each tab stop is at or below the one before it, or to its right") ?? []).some((f) => f.startsWith("Heat:"));
   if (!orderCaught) console.error("playground --self-test: Heat's menu strip drawn under its screen again, and the check missed it.");
-  const menuCaught = (claims.get("on Heat's Index a live part is on the screen and exactly one row is current, and Down moves both") ?? []).some((f) => f.startsWith("Heat:"));
+  const menuCaught = (claims.get(OWN_INDEX_CLAIM) ?? []).some((f) => f.startsWith("Heat:"));
   if (!menuCaught) console.error("playground --self-test: Heat's Index lost its live part and gained a second current row, and the check missed it.");
+  const fileListCaught = recorderIndex && (claims.get(OWN_INDEX_CLAIM) ?? []).some((f) => f.startsWith("Device:"));
+  if (!fileListCaught) console.error(`playground --self-test: ${recorderIndex ? "the recorder's Index lost its live part and gained a second current row, and the check missed it" : "the recorder did not draw its own Index, so its break could not be tried"}.`);
+  const downCaught = recorderIndex && (claims.get(OWN_INDEX_CLAIM) ?? []).some((f) => f.startsWith("Device, Down kept:") && f.includes("after Down"));
+  if (!downCaught) console.error(`playground --self-test: ${recorderIndex ? "Down on the recorder's Index no longer moved the lit row and the live part, and the check missed it" : "the recorder did not draw its own Index, so its Down break could not be tried"}.`);
   const sizeCaught = [...claims].some(([name, fails]) => name.startsWith("on Heat's player the pursuit meter covers") && fails.some((f) => f.startsWith("Heat:")));
   if (!sizeCaught) console.error("playground --self-test: Heat's screen at the other worlds' height, and the check missed the take's size.");
-  if (!caught || !bareCaught || !tileCaught || !setCaught || !homeCaught || !sourceCaught || !topsCaught || !orderCaught || !sizeCaught || !menuCaught) process.exit(1);
-  console.log("playground --self-test: a dialog escaped to <body> leaves the screen, with the recorder kept from loading Device draws bare, a tile missing from Device's gallery view is seen, a set naming a part outside its world is seen, a second Home and a Source link into the gallery are seen, Index's rows centred off their tops are seen, Heat's strip under its screen is seen, a small take on Heat's screen is seen, and Heat's Index with no live part and two current rows is seen; the check catches all ten.");
+  const addressCaught = (claims.get("the take is in the address, written in place as you step, and Back from its page returns to it") ?? []).some((f) => f.startsWith("Device:"));
+  if (!addressCaught) console.error("playground --self-test: Device's player kept its take out of the address, and the check missed it.");
+  const namesCaught = (claims.get(NAMES_CLAIM) ?? []).some((f) => f.startsWith("Device"));
+  if (!namesCaught) console.error("playground --self-test: Device's selector named Components, like the link beside it, and the check missed it.");
+  const nameCaught = (claims.get("the world's name in the top row stops Play, opens Index on the take just left, and says so") ?? []).some((f) => f.startsWith("Heat:"));
+  if (!nameCaught) console.error("playground --self-test: Play left running on Heat after the world's name opened Index, and the check missed it.");
+  const shortCaught = (claims.get("at 1366x768 what a take opens stays on Device's screen") ?? []).some((f) => f.startsWith("Device · Command menu: "));
+  if (!shortCaught) console.error("playground --self-test: Device's screen at 25rem on a 1366x768 window cuts the command menu's panel, and the check missed it.");
+  if (!nameCaught || !downCaught || !shortCaught || !namesCaught || !addressCaught || !caught || !bareCaught || !tileCaught || !setCaught || !homeCaught || !sourceCaught || !topsCaught || !orderCaught || !sizeCaught || !menuCaught || !fileListCaught) process.exit(1);
+  console.log("playground --self-test: a dialog escaped to <body> leaves the screen, with the recorder kept from loading Device draws bare, a tile missing from Device's gallery view is seen, a set naming a part outside its world is seen, a second Home and a Source link into the gallery are seen, Index's rows centred off their tops are seen, Heat's strip under its screen is seen, a small take on Heat's screen is seen, Heat's Index and the recorder's with no live part and two current rows are seen, a recorder Index where Down moves nothing is seen, a take kept out of the address is seen, a selector sharing the Components link's name is seen, and Device's screen at 25rem cutting the command menu at 1366x768 is seen, and Play left running after the world's name opened Index is seen; the check catches all sixteen.")
   process.exit(0);
 }
 if (bad) {
