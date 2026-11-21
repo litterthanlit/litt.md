@@ -10,8 +10,8 @@
  * - Everything is drawn in one svg over the stage, which sits out of the layout, so it can never widen the page.
  *   Nothing animates. The parts are also a real list for screen readers.
  */
-import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
-import type { PageStudy } from "./kit";
+import { useContext, useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import { DEVICE_PLATE, WorldContext, type PageStudy } from "./kit";
 
 /** The stage box of `Stage`, so the object sits where a stage's demo does. */
 export const STAGE_BOX =
@@ -19,6 +19,18 @@ export const STAGE_BOX =
   /* Under Flat the box is the ground, not paper, so what sits on it stays white (v1.17). */
   "in-[[data-material=flat]]:[--block:var(--surface-1)] in-[[data-material=flat]]:[--cut:var(--surface-1)] in-[[data-material=flat]]:[--slot:var(--surface-1)] " +
   "in-[[data-material=flat]]:[--block-hover:color-mix(in_oklab,var(--surface-1),var(--fg)_2.5%)]";
+
+/**
+ * A study stage's box in the page's world. Under Device it is the part's plate, as the lead stage's is (`Stage` in
+ * kit.tsx; plans/024, phase 2; plans/audits/device.md, finding 4): `data-part="plate"` painting --plate-face, never the
+ * dark slab of `litt-raised`. Elsewhere it is STAGE_BOX. Each is marked `data-stage="study"`, so test:materials reads
+ * it as a stage. Spread it on the box, then add the stage's own height.
+ */
+export function useStageBox(): { className: string; "data-part"?: "plate"; "data-stage": "study" } {
+  return useContext(WorldContext) === "device"
+    ? { className: DEVICE_PLATE + " relative grid overflow-visible text-fg p-4 min-[24rem]:p-8 sm:p-12", "data-part": "plate", "data-stage": "study" }
+    : { className: STAGE_BOX, "data-stage": "study" };
+}
 
 /** The wrapper every drawing of the object shares, in Anatomy and under each material, so it renders the same. */
 export const OBJECT_WRAP = "relative grid min-w-0 place-items-center";
@@ -93,6 +105,7 @@ export function Anatomy({ object, parts, onObjectWidth }: { object: ReactNode; p
   const wrap = useRef<HTMLDivElement>(null);
   const [callouts, setCallouts] = useState<Callout[]>([]);
   const last = useRef("");
+  const box = useStageBox();
 
   useLayoutEffect(() => {
     const s = stage.current, w = wrap.current;
@@ -119,10 +132,10 @@ export function Anatomy({ object, parts, onObjectWidth }: { object: ReactNode; p
 
   return (
     <div className="grid gap-4">
-      <div ref={stage} className={STAGE_BOX + " min-h-72 place-items-center"}>
+      <div ref={stage} {...box} className={box.className + " min-h-72 place-items-center"}>
         <div ref={wrap} className={FILL_WRAP}>{object}</div>
         {/* The labels hold still and hidden until they are measured. Each carries the panel's own surface, so one placed
-            past the panel's edge still reads (a Device panel is dark glass in a light body). */}
+            past the panel's edge still reads. */}
         <div aria-hidden="true" className="pointer-events-none absolute inset-0 max-sm:hidden">
           {parts.map((p, i) => {
             const c = placed.get(i);
