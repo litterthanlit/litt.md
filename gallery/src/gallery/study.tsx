@@ -8,7 +8,7 @@ import { Button } from "@/components/button";
 import { CodeBlock } from "@/components/code-block";
 import lock from "../../registry.lock.json";
 import { lineIn, STATES, WorldContext, type PageDocs, type PageMeta, type PageStudy } from "./kit";
-import { Anatomy, FILL_WRAP, STAGE_BOX } from "./study-anatomy";
+import { Anatomy, FILL_WRAP, useStageBox } from "./study-anatomy";
 
 const sources = import.meta.glob<string>("../components/*.tsx", { query: "?raw", import: "default" });
 
@@ -22,10 +22,11 @@ function Section({ id, title, flush = false, children }: { id: string; title: st
 }
 
 function States({ states }: { states: PageStudy["states"] }) {
+  const box = useStageBox();
   const present = STATES.filter((s) => states[s] !== undefined);
   if (!present.length) return null;
   return (
-    <div className={STAGE_BOX + " min-h-48"}>
+    <div {...box} className={box.className + " min-h-48"}>
       {/* Each state gets a column that grows, so an object that takes its width (a slide to confirm) has a tray to draw. */}
       <div className="flex flex-wrap items-end justify-center gap-8">
         {present.map((s) => (
@@ -43,9 +44,10 @@ function States({ states }: { states: PageStudy["states"] }) {
    run(n) afresh, so an overlay's replay never opens on page load or takes focus from a reader who did not ask. */
 function Replay({ object, replay }: { object: ReactNode; replay: NonNullable<PageStudy["replay"]> }) {
   const [n, setN] = useState(0);
+  const box = useStageBox();
   return (
     <div className="grid gap-6">
-      <div className={STAGE_BOX + " min-h-80 place-items-center"}>
+      <div {...box} className={box.className + " min-h-80 place-items-center"}>
         <div className={FILL_WRAP}>{n === 0 ? object : <Fragment key={n}>{replay.run(n)}</Fragment>}</div>
       </div>
       <div className="flex flex-wrap items-start justify-between gap-4">
@@ -109,11 +111,14 @@ function Source({ stem, headingId }: { stem: string; headingId: string }) {
   );
 }
 
-export function StudySections({ meta, docs, study }: { meta: PageMeta; docs?: PageDocs; study: PageStudy }) {
+export function StudySections({ meta, docs, study: shared }: { meta: PageMeta; docs?: PageDocs; study: PageStudy }) {
   const id = (part: string) => `study-${part}-${meta.id}`;
   const stem = docs?.components[0];
+  const world = useContext(WorldContext);
+  /* The study in this world's own demo (study.byWorld), or the shared one: whatever the world leaves out is shared. */
+  const study = { ...shared, ...(world ? shared.byWorld?.[world] : undefined) };
   /* How it moves in this world's own words (meta.movesByWorld), or the shared mechanism. */
-  const moves = lineIn(meta, "moves", useContext(WorldContext));
+  const moves = lineIn(meta, "moves", world);
   return (
     <>
       <Section id={id("anatomy")} title="Anatomy" flush>
