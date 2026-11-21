@@ -7,6 +7,9 @@ export const meta: PageMeta = {
   id: "curve-editor",
   title: "Curve editor",
   lede: "An easing shaped by hand, as a cubic Bézier.",
+  ledeByWorld: {
+    rack: "A curve drawn by hand, such as a filter sweep into the drop.",
+  },
   order: 4.03,
   group: "Tools",
   verbs: ["drag"],

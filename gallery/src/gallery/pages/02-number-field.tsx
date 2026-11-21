@@ -6,11 +6,17 @@ export const meta: PageMeta = {
   id: "number-field",
   title: "Number field",
   lede: "A number you set, with − and + in the field.",
+  ledeByWorld: {
+    rack: "A number in a box, with − and + keys beside it.",
+  },
   order: 2.03,
   group: "Inputs",
   verbs: ["type", "press"],
   summary:
     "A labelled number in the Input's cut, with − and + as steppers at the field's end. It steps by the arrow keys, by a press, or by holding a stepper down; what is typed is read in the page's locale when the field is left, kept between its bounds, put on the step and shown formatted. A pressed stepper answers on the instant tier, and the line changes as an Input's does.",
+  summaryByWorld: {
+    rack: "A labelled number in a value box, its unit after it, with − and + as two small keys beside the box. It steps by the arrow keys, by a press, or by holding a key down; what is typed is read in the page's locale when the field is left, kept between its bounds, put on the step and shown formatted. A pressed key darkens on the frame and never moves, and at a bound its key lies flat.",
+  },
   fun: "Drag the label sideways to scrub the value, past either end too; press + or \u2212 and the number kicks.",
   tiers: ["instant"],
 };
