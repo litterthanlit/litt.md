@@ -225,14 +225,18 @@ function useStageScale(take: string, compact: boolean) {
       if (next) setFit({ take, scale: next });
     };
     smaller();
-    /* A part that loads late, or a stage that changes size, is fitted again: from the top when the stage resizes. */
+    /* A part that loads late, or a stage that changes size, is fitted again: from the top when the stage resizes. At
+       the top already, the state does not change and this effect does not run again, so the part is measured here. */
     let size = `${stage.clientWidth}x${stage.clientHeight}`;
     const seen = new ResizeObserver(() => {
       const now = `${stage.clientWidth}x${stage.clientHeight}`;
-      if (now !== size) {
+      if (now !== size && scale !== SCALES[0]) {
         size = now;
         setFit({ take, scale: SCALES[0] });
-      } else smaller();
+      } else {
+        size = now;
+        smaller();
+      }
     });
     seen.observe(stage);
     const live = stage.querySelector("[data-play-live]");
@@ -255,7 +259,9 @@ function PressHome({ takes, current, list, row, everything, part, compact }: Pla
   return (
     <div
       className={
-        "grid h-full min-h-0 overflow-auto overscroll-contain " +
+        /* The scroller keeps its scrollbar's gutter whether or not it scrolls, so a part spilling for a moment at the
+           largest scale does not narrow the stage, which would start the fit again from the top, in a loop. */
+        "grid h-full min-h-0 overflow-auto overscroll-contain [scrollbar-gutter:stable] " +
         (compact ? "content-start gap-4 p-4" : "grid-cols-[minmax(0,17rem)_minmax(0,1fr)] grid-rows-[minmax(0,1fr)] gap-8 p-6 lg:gap-12")
       }
     >
