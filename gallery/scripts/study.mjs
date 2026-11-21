@@ -78,6 +78,8 @@ const PAGES = fs.readdirSync(pagesDir).filter((f) => f.endsWith(".tsx")).map((f)
     replay: /\breplay\s*:/.test(rest),
     /* The worlds a part is in, when fewer than all (meta.worlds); null is every world. */
     worlds: (() => { const w = /\bworlds:\s*\[([^\]]*)\]/.exec(src)?.[1]; return w ? [...w.matchAll(/"([^"]+)"/g)].map((m) => m[1]) : null; })(),
+    /* The worlds that show How it moves in their own words (meta.movesByWorld), so not the shared mechanism the docs carry. */
+    ownMoves: [...(/\bmovesByWorld:\s*\{([^}]*)\}/.exec(src)?.[1] ?? "").matchAll(/(?:^|[{,])\s*([a-z]+):\s*"/g)].map((m) => m[1]),
   };
 }).filter((p) => p.id);
 const only = get("only");
@@ -257,8 +259,9 @@ if (selfTest) {
 /* ---------- every study, in every world: Flat and Device at both sizes and themes, the rest at 1440 light ---------- */
 for (const page of STUDIES) {
   let mechanism = "";
-  /* The page's home: Flat, the gallery's world, or the first world a world-only part is in. */
-  const home = !page.worlds || page.worlds.includes("flat") ? "flat" : page.worlds[0];
+  /* The page's home, where it shows the shared mechanism the docs carry: Flat, the gallery's world, or else the first
+     world it is in whose How it moves is not its own (meta.movesByWorld). */
+  const home = ["flat", ...WORLDS].find((w) => (!page.worlds || page.worlds.includes(w)) && !page.ownMoves.includes(w));
   for (const world of WORLDS) {
     if (page.worlds && !page.worlds.includes(world)) continue;
     const full = world === "flat" || world === "device";
