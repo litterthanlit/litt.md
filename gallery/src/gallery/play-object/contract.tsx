@@ -148,7 +148,7 @@ function Loaded({ material, dark, lead, actions }: Props) {
     };
   }, [material, takes]);
 
-  /* Play runs the set:the next take every TAKE_MS, wrapping, until a hand stops it. From Home it starts at the first. */
+  /* Play runs the set: the next take every TAKE_MS, wrapping, until a hand stops it. From Home it starts at the first. */
   useEffect(() => {
     if (!playing || !n) return;
     const next = (i: number | null) => (i === null ? 0 : (i + 1) % n);

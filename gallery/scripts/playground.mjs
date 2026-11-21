@@ -248,7 +248,7 @@ const SETS = Object.fromEntries(
   [...fs.readFileSync(path.join(here, "..", "src", "gallery", "play-object", "takes.ts"), "utf8").matchAll(/^\s+(\w+): \[([^\]]*)\],$/gm)].map((m) => [m[1], [...m[2].matchAll(/"([^"]+)"/g)].map((x) => x[1])]),
 );
 const shadowed = pageMetas().filter((p) => ["components", "about", "take"].includes(p.id)).map((p) => p.id);
-claim("no page id is components, about or take, the world's own addresses",shadowed.length ? `pages named ${shadowed.join(", ")}` : null);
+claim("no page id is components, about or take, the world's own addresses", shadowed.length ? `pages named ${shadowed.join(", ")}` : null);
 if (selfTest) SETS.heat =[...(SETS.heat ?? []), "seven-segment"];
 for (const [, id] of WORLDS) {
   const set = SETS[id] ?? [];
@@ -594,7 +594,7 @@ for (const [world, id, attribute] of RUN) {
     );
   }
 
-  /* A take's size (finding 7):on Heat's shorter screen the pursuit meter's drawn box (every element in the take that
+  /* A take's size (finding 7): on Heat's shorter screen the pursuit meter's drawn box (every element in the take that
      paints: text, a fill, an edge, an image) covers at least TAKE_FLOOR of the screen's area. A quarter is not reachable
      without scaling the part or moving the take off the screen's middle (see TAKE_FLOOR). The break: the screen at the
      other worlds' height on a tall window again (46rem). */
