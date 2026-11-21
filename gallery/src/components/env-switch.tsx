@@ -7,8 +7,11 @@
  *   recessed tray (`--highlight, --block-lift`), updates the tabular host/region readout, and adjusts the cut-in slot
  *   meter (`--slot`, `--slot-shade`, `--slot-fill`).
  * - Zero button outlines, zero decorative color pills, zero `--accent` fills (R6), and zero auto-animation on mount.
+ * - Keys: the group is one tab stop, on the chosen environment (a roving tab index). The arrow keys move to the next or
+ *   previous environment and choose it, wrapping at the ends; Home and End go to the first and the last. Enter and Space
+ *   choose the focused one. Each choice is announced once in a polite status region.
  */
-import { useId, useState } from "react";
+import { useId, useState, type KeyboardEvent } from "react";
 
 export type EnvTarget = {
   /** Stable environment id. */
@@ -69,12 +72,28 @@ export function EnvSwitch({
     setLive(`${env.label}: ${env.host}, ${env.region}, ${env.latency}, ${env.load}% capacity.`);
   }
 
+  /** The radio group's keys: arrows move and choose, wrapping; Home and End go to the ends. */
+  function onKeyDown(e: KeyboardEvent<HTMLDivElement>) {
+    const at = environments.findIndex((env) => env.id === current.id);
+    const n = environments.length;
+    const rtl = getComputedStyle(e.currentTarget).direction === "rtl";
+    const fwd = e.key === "ArrowDown" || e.key === (rtl ? "ArrowLeft" : "ArrowRight");
+    const back = e.key === "ArrowUp" || e.key === (rtl ? "ArrowRight" : "ArrowLeft");
+    const to = fwd ? (at + 1) % n : back ? (at - 1 + n) % n : e.key === "Home" ? 0 : e.key === "End" ? n - 1 : -1;
+    if (to < 0 || e.altKey || e.ctrlKey || e.metaKey) return;
+    e.preventDefault();
+    const env = environments[to]!;
+    if (env.id !== current.id) pick(env);
+    e.currentTarget.querySelectorAll<HTMLElement>("[role=radio]")[to]?.focus();
+  }
+
   return (
     <div data-body="press" className={"grid w-full max-w-md min-w-0 gap-3 text-fg " + className}>
       {/* Recessed tray holding the environment blocks */}
       <div
         role="radiogroup"
         aria-label={label}
+        onKeyDown={onKeyDown}
         data-part="tray"
         className="grid gap-1 rounded-control bg-tray p-1 shadow-(--tray-shade) forced-colors:border"
         style={{ gridTemplateColumns: `repeat(${Math.max(1, environments.length)}, minmax(0, 1fr))` }}
@@ -87,6 +106,7 @@ export function EnvSwitch({
               type="button"
               role="radio"
               aria-checked={selected}
+              tabIndex={selected ? 0 : -1}
               data-part={selected ? "block" : "tray"}
               onClick={() => pick(env)}
               className={

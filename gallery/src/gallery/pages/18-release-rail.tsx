@@ -32,11 +32,14 @@ export const docs: PageDocs = {
     "A chronological event feed without selection. Use Timeline.",
   ],
   keyboard: [
-    [["Tab"], "Moves focus across release rows and the Promote to live key."],
-    [["Enter", "Space"], "Selects the focused release or promotes it to production."],
+    [["Tab"], "Moves focus onto the selected release, then to Promote to live when it shows. The releases are one tab stop."],
+    [["←", "→", "↑", "↓"], "Moves to the newer or older release and selects it. At either end it wraps around."],
+    [["Home", "End"], "Selects the newest or the oldest release."],
+    [["Enter", "Space"], "Selects the focused release, or on Promote to live, promotes it to production."],
   ],
   a11y: [
     "Exposes role=\"radiogroup\" labelled by the project header, with role=\"radio\" and aria-checked on each release.",
+    "The releases are one tab stop: only the selected release is in the tab order, and the arrow keys move the selection, as a radio group does.",
     "Selecting or promoting a release announces the commit SHA and summary once in a polite status region.",
   ],
 };
