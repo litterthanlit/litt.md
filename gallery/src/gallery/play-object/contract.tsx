@@ -57,6 +57,12 @@ function bodyOf(material: Material): Promise<PlayObjectBody> {
   return p;
 }
 
+/** The place the address names among the takes: the take's index, or null for Index. */
+function takeOfAddress(takes: Take[]): number | null {
+  const i = takes.findIndex((t) => t.id === takeOfRoute(location.hash));
+  return i < 0 ? null : i;
+}
+
 /** The element the screen's host lives in while this body shows. */
 function ScreenSlot({ host }: { host: HTMLElement }) {
   const slot = useRef<HTMLDivElement>(null);
@@ -99,11 +105,7 @@ function Loaded({ material, dark, lead, actions }: Props) {
   const id = useId();
   /* null is Index: the world's introduction and its set, inside the screen. A world opens there, or on the take its
      address names (#<world>/take/<id>, route.ts), so Back from a take's page returns to it. */
-  const fromAddress = () => {
-    const i = takes.findIndex((t) => t.id === takeOfRoute(location.hash));
-    return i < 0 ? null : i;
-  };
-  const [at, setAt] = useState<number | null>(fromAddress);
+  const [at, setAt] = useState<number | null>(() => takeOfAddress(takes));
   const [playing, setPlaying] = useState(false);
   const [said, setSaid] = useState("");
   const [details, setDetails] = useState(false);
@@ -131,10 +133,14 @@ function Loaded({ material, dark, lead, actions }: Props) {
     const want = takeAddress(material, takeId);
     if (location.hash !== want) history.replaceState(history.state, "", `${location.pathname}${location.search}${want}`);
   }, [material, takeId]);
-  /* And read back when the address moves under the player: the world's name in the top row (#<world>) opens Index. */
+  /* And read back when the address moves under the player: the world's name in the top row (#<world>) opens Index. A
+     move of the address is a hand's pick, as any other: through go, so Play stops (the top row is outside the screen,
+     whose hand stops it), Index's current row is the take just left, and the change is said. Through a ref, so the
+     listener never reads a stale place. */
+  const picked = useRef<(to: number | null) => void>(() => {});
   useEffect(() => {
     const read = () => {
-      if (isPlayerRoute(location.hash, material)) setAt(fromAddress());
+      if (isPlayerRoute(location.hash, material)) picked.current(takeOfAddress(takes));
     };
     window.addEventListener("hashchange", read);
     window.addEventListener("popstate", read);
@@ -144,7 +150,7 @@ function Loaded({ material, dark, lead, actions }: Props) {
     };
   }, [material, takes]);
 
-  /* Play runs the set:the next take every TAKE_MS, wrapping, until a hand stops it. From Home it starts at the first. */
+  /* Play runs the set: the next take every TAKE_MS, wrapping, until a hand stops it. From Home it starts at the first. */
   useEffect(() => {
     if (!playing || !n) return;
     const next = (i: number | null) => (i === null ? 0 : (i + 1) % n);
@@ -177,6 +183,7 @@ function Loaded({ material, dark, lead, actions }: Props) {
     setAt(to);
     setSaid(to === null ? homeText : `${takes[to]!.title}, ${to + 1} of ${n}`);
   };
+  picked.current = go;
   /** The place `by` along the cycle Index, take 0 … take n-1, wrapping. */
   const along = (by: number) => {
     const k = ((((at === null ? 0 : at + 1) + by) % (n + 1)) + n + 1) % (n + 1);
@@ -241,6 +248,9 @@ function Loaded({ material, dark, lead, actions }: Props) {
   const cued = takes[Math.min(cue, n - 1)];
   /* On a phone the live part is drawn above the list only where the body asks for it (body.phonePart). */
   const livePart = !compact || body.phonePart === "above";
+  /* Index's rows in columns that run top to bottom (body.homeColumns, at desktop widths): how many rows each holds. */
+  const columns = compact ? 1 : Math.max(1, Math.floor(body.homeColumns ?? 1));
+  const perColumn = Math.ceil(n / columns);
   const homeProps: PlayObjectHomeProps | null =
     body.Home && cued
       ? {
@@ -260,7 +270,9 @@ function Loaded({ material, dark, lead, actions }: Props) {
             onPointerEnter: () => (setCue(i), setPointer(i)),
             onPointerLeave: () => setPointer((p) => (p === i ? null : p)),
             onKeyDown: (e) => {
-              const to = ({ ArrowDown: (i + 1) % n, ArrowUp: (i - 1 + n) % n, Home: 0, End: n - 1 } as Record<string, number>)[e.key];
+              /* In columns (body.homeColumns), Left and Right go a column over, to the ends at the edges. */
+              const across = columns > 1 ? { ArrowRight: Math.min(n - 1, i + perColumn), ArrowLeft: Math.max(0, i - perColumn) } : {};
+              const to = ({ ArrowDown: (i + 1) % n, ArrowUp: (i - 1 + n) % n, Home: 0, End: n - 1, ...across } as Record<string, number>)[e.key];
               if (to === undefined) return;
               e.preventDefault();
               setCue(to);

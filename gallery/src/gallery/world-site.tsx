@@ -106,7 +106,7 @@ export function WorldSite({ material }: { material: Material }) {
   /* #<world>/take/<id> is the player on that take (route.ts, takeOfRoute): the player reads it from the address. */
   const player = isPlayerRoute(route, material);
   const page = sub && !player && sub !== "about" && sub !== "components" && !own ? pages.find((p) => p.id === sub && p.group && p.group !== "Worlds" && !p.world && inWorld(p, material)) : undefined;
-  const here: Here = player ? "player" :sub === "about" ? "about" : sub === "components" ? "components" : own ? "own" : "page";
+  const here: Here = player ? "player" : sub === "about" ? "about" : sub === "components" ? "components" : own ? "own" : "page";
   const main = useFocusOnArrival(route);
   const world = materialOf(material);
   const [muted, setMuted] = useMuted();
