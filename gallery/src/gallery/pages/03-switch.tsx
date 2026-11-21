@@ -10,6 +10,7 @@ export const meta: PageMeta = {
   title: "Switch",
   lede: "A setting that is on or off, with the word to say which.",
   ledeByWorld: {
+    heat: "Off and On as two square cells, the live one in brackets.",
     device: "A toggle key that flips in a well, its word on the glass beside it.",
     rack: "A key that reads On or Off, lit when on.",
     press: "A block thrown along a tray, uncovering On or Off.",
@@ -20,6 +21,7 @@ export const meta: PageMeta = {
   summary:
     "An on or off setting you can feel. Click, tap or drag it, and it says On or Off in a word as well as by where it stands. Neutral keeps it quiet; accent marks it when on, for the one switch that is a view's main choice. The label sits beside it, or the switch sits at the end of a settings row.",
   summaryByWorld: {
+    heat: "An on or off setting as two flat square cells in a black slab, Off and On, the live one filled and framed by four corner brackets: ink brackets for Off, amber for On, or solid amber for the one switch that is a view's main choice. Click, tap or drag it, and it cuts to the other side at once. The label sits beside it, or the switch sits at the end of a settings row.",
     device: "An on or off setting you can feel: a toggle key in a well that flips with a detent, and its word on a small LCD beside it, with a lamp that lights when on. Press it and the key sinks its 2px; click, tap or drag it across. The label sits beside it, or the switch sits at the end of a settings row.",
     rack: "An on or off setting as a toggle key, its word on its face. Off is a key in the panel's grey; on, it lights in the ink, or in the accent for the one switch that is a view's main choice. Click or tap it, or drag across it and it flips by the side you end on. The key never moves or changes width. The label sits beside it, or the switch sits at the end of a settings row.",
     press: "An on or off setting you can feel. A raised block rides a sunken tray with On and Off set in its floor, and the block's travel uncovers the one that is true. Press it and it presses down; click, tap or drag it across. Neutral keeps the block white; accent fills it when on, for the one switch that is a view's main choice. The block crosses on the responsive tier, and the tray never moves. The label sits beside it, or the switch sits at the end of a settings row.",
@@ -29,6 +31,7 @@ export const meta: PageMeta = {
   mechanism:
     "Press the row and the block presses down, its cast tightening at once. A click, a tap or Space sends it across the tray on the responsive tier, 200ms with no bounce. Or take the block and drag it: it follows the finger one to one and lands on the nearer side. Its fill and cast change on the instant tier, 100ms, and the tray never moves. Under Press the block is weight: it presses down and is thrown along the tray, uncovering the word set in the floor. Under Flat it is a small ink pill with a canvas knob when on and an outline when off, the word in type beside it. Under Device it is a toggle key: it sinks its 2px under the finger and flips across its well in three steps with a detent, and its word lights on an LCD beside it with a lamp. Reduced motion drops the crossing.",
   movesByWorld: {
+    heat: "A click, a tap or Space cuts the fill and the brackets to the other cell at once, on the frame: nothing slides, sinks or casts. A drag across it lands on the side it ends on, as in every world. Reduced motion changes nothing, since the cut is already instant.",
     press: "Press the row and the block presses down, its cast tightening at once. A click, a tap or Space throws it along the tray on the responsive tier, 200ms with no bounce, uncovering the word set in the floor. Or take the block and drag it: it follows the finger one to one and lands on the nearer side. Its fill and cast change on the instant tier, 100ms, and the tray never moves. Reduced motion drops the crossing.",
     device: "Press and the key sinks the whole 2px into its well. A click, a tap or Space flips it across in three even steps on the instant tier, 100ms, a detent and never a spring, and with sound on it clicks. Or take the key and drag it: it follows the finger one to one and lands on the nearer side. The word changes on the glass and the lamp lights when on. Reduced motion flips it at once.",
     rack: "A press darkens the key's outline and fill on the frame, and the key stays where it is. A click, a tap or Space flips it: the word and the fill change at once on the instant tier, and nothing slides across. A drag over it flips it by the side it ends on. Reduced motion changes nothing, since nothing travels.",
@@ -112,6 +115,11 @@ export const study: PageStudy = {
     { name: "The label", selector: "label" },
   ],
   partsByWorld: {
+    heat: [
+      { name: "The cells", selector: "[role=switch]" },
+      { name: "The words", selector: "[role=switch] span[aria-hidden]:not(:empty)" },
+      { name: "The label", selector: "label" },
+    ],
     device: [
       { name: "The well", selector: "[data-part=well]" },
       { name: "The key", selector: "[data-part=key]" },
