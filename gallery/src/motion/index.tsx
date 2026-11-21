@@ -339,6 +339,6 @@ export function useStagger(): number {
 }
 
 /* One contract, three bodies (proposals/worlds.md, Bodies): a part picks its body by the material on <html>. */
-export { byWorld, MaterialProvider, OverlayRoot, useMaterial, useOverlayRoot } from "./deal";
+export { byWorld, MaterialProvider, OverlayRoot, useMaterial, useOverlayRoot, useSettles } from "./deal";
 /* Device's voice (plans/021): synthesized Web Audio answers to a hand, only under Device and while unmuted. */
 export { SoundProvider, useSound, type PlayOptions, type VoiceName } from "./sound";
