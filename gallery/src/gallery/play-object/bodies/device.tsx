@@ -33,11 +33,11 @@
  *   set), the readout's group caption (Details says it) and the ring beside the count (the chip says it).
  * - Voice (plan 021): the dial ticks per detent (`notch`), the tape ticks on scrub and arrow keys (`notch`), and the
  *   keys (Play and the dial's four edges) click down and up (`key-down` / `key-up`). A silent hardware Mute key sits on
- *   the deck beside the dial, sharing `litt-gallery:sound` with the `M` shortcut and other Device pages. Play's timer
+ *   the deck beside the dial (on a phone, beside Play, each with its word printed under it), sharing `litt-gallery:sound` with the `M` shortcut and other Device pages. Play's timer
  *   never sounds.
  * - Left out, as the plan says: the player's Find and Options screens, and playing on load (Decision 6 is Nick's).
  */
-import { useEffect, useRef, type CSSProperties, type KeyboardEvent, type PointerEvent } from "react";
+import { useEffect, useRef, type CSSProperties, type KeyboardEvent, type PointerEvent, type ReactNode } from "react";
 import { motion, useMotionValue } from "motion/react";
 import { snap, useHand, useSettle } from "@/motion/hand";
 import { useSound } from "@/motion/sound";
@@ -194,6 +194,21 @@ function PlayKey({ play, className, onDial = false }: { play: PlayObjectBodyProp
   );
 }
 
+/* ---------- a key's word, printed on the plate under it ---------- */
+
+/** A key on the phone's strip with its word printed under it, as the deck's Mute is on a desktop. The word is lettering
+    (aria-hidden): the key's own name is what a screen reader hears. */
+function Lettered({ word, children }: { word: string; children: ReactNode }) {
+  return (
+    <div className="grid shrink-0 justify-items-center gap-1">
+      {children}
+      <span aria-hidden="true" data-part="lettering" className="select-none font-field text-caption text-fg-subtle">
+        {word}
+      </span>
+    </div>
+  );
+}
+
 /* ---------- Mute: a latching hardware key on the deck ---------- */
 
 function RecorderMute({ compact = false, className = "" }: { compact?: boolean; className?: string }) {
@@ -213,7 +228,7 @@ function RecorderMute({ compact = false, className = "" }: { compact?: boolean; 
         "hover:bg-block-hover active:shadow-(--block-press) active:[transform:translateY(var(--press-depth))] " +
         "aria-pressed:bg-[color-mix(in_oklab,var(--block),var(--tray)_55%)] aria-pressed:shadow-(--tray-shade) aria-pressed:[transform:translateY(var(--press-depth))] " +
         "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus forced-colors:border forced-colors:aria-pressed:border-[Highlight] " +
-        (compact ? "size-11 shrink-0 rounded-pill" : "size-10 rounded-[calc(var(--radius-control)-2px)]")
+        (compact ? "size-11 rounded-pill" : "size-10 rounded-[calc(var(--radius-control)-2px)]")
       }
     >
       <svg aria-hidden="true" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="size-4">
@@ -222,7 +237,8 @@ function RecorderMute({ compact = false, className = "" }: { compact?: boolean; 
       </svg>
     </button>
   );
-  if (compact) return button;
+  /* On a phone the key keeps its word too, printed under it as Play's is (plans/audits/device.md, finding 8). */
+  if (compact) return <Lettered word="Mute">{button}</Lettered>;
   return (
     <div className={"grid justify-items-center gap-1.5 " + className}>
       <span data-part="well" className="inline-flex rounded-control bg-tray px-0.5 pt-0.5 pb-1 shadow-(--tray-shade) forced-colors:border">
@@ -413,7 +429,9 @@ function DeviceBody({ takes, at, selector, pick, step, index, everything, turn, 
         <div data-part="plate" className="grid shrink-0 gap-2 border-b border-line bg-canvas px-gutter py-3 shadow-(--plate-edge)">
           <div className="flex items-center gap-2">
             <Readout readout={readout} playing={playing} compact className="min-w-0 flex-1" />
-            <PlayKey play={play} className="size-11 shrink-0" />
+            <Lettered word="Play">
+              <PlayKey play={play} className="size-11" />
+            </Lettered>
             <RecorderMute compact />
           </div>
           <Tape takes={takes} at={at} selector={selector} pick={pick} className="h-11" />
