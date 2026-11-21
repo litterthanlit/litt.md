@@ -684,11 +684,18 @@ for (const [world, id, attribute] of RUN) {
     const play = pg.locator("[data-play-object]").getByRole("button", { name: "Play", exact: true });
     await play.click();
     await pg.waitForFunction((S) => Number(document.querySelector(S)?.getAttribute("aria-valuenow")) >= 2, SLIDER, { timeout: 6000 }).catch(() => {});
-    const left = await now(pg);
-    /* By the keys, with the pointer off the page, so a row the page scrolls under a still pointer is not made current. */
+    /* By the keys, with the pointer off the page, so a row the page scrolls under a still pointer is not made current.
+       The take just left is read from the address it moves off: Play may step once more between any
+       earlier read and the key. */
     await pg.mouse.move(0, 0);
+    await pg.evaluate(() => {
+      window.__left = null;
+      window.addEventListener("hashchange", (e) => (window.__left ??= new URL(e.oldURL).hash.split("/take/")[1] ?? ""), { once: true });
+    });
     await pg.locator(`a[href="#${id}"]`).first().focus();
     await pg.keyboard.press("Enter");
+    await pg.waitForFunction(() => window.__left !== null, null, { timeout: 2000 }).catch(() => {});
+    const left = (SETS[id] ?? []).indexOf(await pg.evaluate(() => window.__left)) + 1;
     if (selfTest && id === "heat") await play.click();
     await pg.waitForTimeout(300);
     const named = await pg.evaluate((F) => ({
