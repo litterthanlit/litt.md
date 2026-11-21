@@ -12,7 +12,7 @@ export const meta: PageMeta = {
   group: "Inputs",
   verbs: ["type"],
   summary:
-    "A field that turns typed or pasted values into removable tokens, such as the senders of a mail rule. It is the Input's field with tokens inside, each a block you can lift out under Press, a darker grey pill under Flat and a lit cell under Device: it grows as tokens wrap, a long list folds into a +N token until you focus it, and tokens fade in and out on the responsive tier while their neighbors slide.",
+    "A field that turns typed or pasted values into removable tokens, such as the senders of a mail rule. It is the Input's field with tokens inside, each one you can take out again: it grows as tokens wrap, a long list folds into a +N token until you focus it, and tokens fade in and out on the responsive tier while their neighbors slide.",
   tiers: ["instant", "responsive"],
 };
 

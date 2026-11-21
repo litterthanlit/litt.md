@@ -8,7 +8,7 @@ export const meta: PageMeta = {
   lede: "A small label that names, files or reports.",
   order: 3.08, group: "Selection",
   summary:
-    "A small label (a raised block in Press, a grey pill in Flat, an engraved plate in Device) that names a thing, files it under a category or reports its state. A status tag colors its text, never the fill, and always says the status in words. A category can take one of the five data hues. A value in a field, one you can lift back out, is a raised tag. Nothing about it moves.",
+    "A small label that names a thing, files it under a category or reports its state. A status tag colors its text, never the fill, and always says the status in words. A category can take one of the five data hues. A value in a field, one you can lift back out, takes the raised prop. Nothing about it moves.",
   tiers: [],
 };
 
@@ -41,7 +41,7 @@ export const docs: PageDocs = {
     "The label is one or two words. A tag never wraps, so a longer one runs out of room.",
     "Several tags sit on one item, such as a project card. Keep one status tag and let the rest be plain.",
     "Items fall into a few categories that people sort by eye, such as mail labels. Give each category one hue and keep it everywhere in the view.",
-    "A value sits in a field and can be taken out again, as in a token field of your own. Set raised, so it stands up out of the field.",
+    "A value sits in a field and can be taken out again, as in a token field of your own. Pass the raised prop, so it reads as a value you can take back out.",
   ],
   skip: [
     "People press it to filter or select. Use the filter chips in List and cards, or a Button, because a tag is not a control and takes no focus.",

@@ -11,7 +11,7 @@ export const meta: PageMeta = {
   order: 6.07, group: "Navigation",
   verbs: ["press"],
   summary:
-    "Previous and next for a table that shows one page of many. The range comes first, in words and tabular figures. Under Press the range sits on a raised face and one tray holds Previous and Next as blocks at its ends with the page numbers between; under Flat the range is a line of words with grey pills; under Device it is seven segments on an LCD panel with step keys. The numbers show when the row is wide enough. The button at either end disables and lies flat. Nothing about it moves; the rows it pages are the table's job.",
+    "Previous and next for a table that shows one page of many. The range comes first, in words and tabular figures. Previous and Next sit at the ends with the page numbers between them. The numbers show when the row is wide enough. The button at either end disables and lies flat. Nothing about it moves; the rows it pages are the table's job.",
   tiers: ["instant"],
 };
 
@@ -53,7 +53,7 @@ const rows = deploys.slice((page - 1) * 20, page * 20);
   a11y: [
     "It is a nav with its own name, so a page with two tables can have two paginations and a screen reader tells them apart.",
     "The range is a polite live region: after a page change a screen reader hears \"21 to 40 of 143\" without moving focus.",
-    "The current page number has aria-current=\"page\" and stands raised, in a grey bubble or latched down by its world, so it does not rely on color. In forced colors the tray, the pills, the keys and the current page each keep a border. Each number is named \"Page 3\". Device draws the range in segments that a screen reader skips; the same range is said in words in the live region.",
+    "The current page number has aria-current=\"page\" and its world marks it by shape as well as color. In forced colors every control and the current page keep a border. Each number is named \"Page 3\". Where the range is drawn in segments, a screen reader skips them; the same range is said in words in the live region.",
     "An end button that is pressed and becomes disabled hands its focus to the other one, so focus never drops to the page.",
     "Previous, Next and the pages are 32px tall, and 44px on a touch screen, where a page number is 40px wide. The numbered pages are hidden under 36rem, which is a width and not a device, so a narrow frame on a desktop gets the same bar as a phone.",
     "Under reduced motion nothing changes: pagination has no motion of its own.",

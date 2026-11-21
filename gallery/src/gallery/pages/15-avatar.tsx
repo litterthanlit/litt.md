@@ -55,7 +55,7 @@ export const docs: PageDocs = {
   a11y: [
     "Initials are a role=\"img\" named by the name, so a screen reader says \"Ines Duarte\". A photo is an img whose alt is the name.",
     "When the name is written beside the avatar, set decorative. It is hidden from assistive tech and the name is read once. The caller still has to write the name.",
-    "A group is a labelled group, such as \"Project team, 26 people\", and the \"+N\" pill is an image named \"22 more\". Write the label for the whole team, not only the faces shown.",
+    "A group is a labelled group, such as \"Project team, 26 people\", and the \"+N\" count is an image named \"22 more\". Write the label for the whole team, not only the faces shown.",
     "The initials are the hue's text tone on its tint, which reaches 4.5:1 in light and dark (check.mjs checks every pair). Neutral is fg-muted on surface-2.",
     "The hue is never the only signal. The name or the initials say who it is, and a hue shared by two names changes nothing for someone who cannot see color.",
     "A picture (fluid, film, thermal) carries no letters, so it is named by the name exactly as initials are. Keep the name written beside it: nobody recognizes a client by a pattern alone.",
