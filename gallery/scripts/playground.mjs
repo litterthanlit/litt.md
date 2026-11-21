@@ -24,7 +24,7 @@
  *   components, about or take, which would hide behind the world's own addresses,
  * - the screen does not open on Index, the world's set (a row each, as many as the slider runs to and takes.ts lists),
  *   or a name in a row of Index's grid sits above or below another name in that row (rows hold to their tops), or, on
- *   any world whose body draws its own Index (body.Home, data-play-home="body"; Heat's today), Index does not show the
+ *   any world whose body draws its own Index (body.Home, data-play-home="body"; Heat's and Device's today), Index does not show the
  *   current row's part live on the screen with exactly one row current, Down and the pointer on a row moving both
  *   (a world that keeps the contract's Index passes),
  * - Right and Down do not go to the next take, Left and Up to the previous, wrapping through Index, or End and Home do
@@ -49,7 +49,8 @@
  * so it leaves the screen and its world, keeps the recorder's body from loading, so Device draws bare, and takes a tile
  * out of Device's gallery view, adds a part Heat does not have to Heat's set, and on Device puts back a second control
  * named Home and a Source link into the gallery, centres Index's rows again with one line wrapping, draws Heat's
- * menu strip under its screen again, takes Heat's live part off its Index and marks a second row current, and sets
+ * menu strip under its screen again, takes Heat's live part off its Index and marks a second row current (and the same
+ * on the recorder's Index, opened again with its body loaded, since the rest keeps it from loading), and sets
  * Heat's screen to the other worlds' height, puts Device's address back to the bare player after a step, and names
  * Device's selector Components again; it fails
  * if the check misses any.
@@ -117,11 +118,11 @@ const OPENERS = ["Dialog", "Menu", "Popover", "Select", "Context menu", "Toast",
 const OVERLAYS = "[role=dialog], [role=alertdialog], [role=menu], [role=listbox], [role=tooltip], [data-toast-id]";
 const browser = await chromium.launch();
 
-async function open(hash, { theme, scale = 1 } = {}) {
+async function open(hash, { theme, scale = 1, recorder = false } = {}) {
   const ctx = await browser.newContext({ viewport: { width: 1440, height: 1000 }, deviceScaleFactor: scale, reducedMotion: "reduce" });
   await ctx.addInitScript(() => localStorage.setItem("litt-gallery:customize", JSON.stringify({ accent: "blue4" })));
   if (theme) await ctx.addInitScript((t) => localStorage.setItem("litt-gallery:theme", t), theme);
-  if (selfTest)
+  if (selfTest && !recorder)
     await ctx.route(/\.js$/, async (route) => {
       /* A request still in flight when its context closes is let go. */
       try {
@@ -217,6 +218,20 @@ function sharedNames(pg) {
     const to = (el) => (el.getAttribute("href") ? new URL(el.href, location.href).href : el.dataset.playTo ? `to:${el.dataset.playTo}` : null);
     return [...byName].filter(([, els]) => els.length > 1 && (els.some((el) => !to(el)) || new Set(els.map(to)).size > 1)).map(([n, els]) => `"${n}" on ${els.map((el) => el.getAttribute("role") ?? el.tagName.toLowerCase()).join(", ")}`);
   });
+}
+
+/** A body's own Index as it stands: the live part's take, whether it draws inside the screen, and the rows marked current. */
+function ownIndex(pg) {
+  return pg.evaluate((F) => {
+    const f = document.querySelector(F).getBoundingClientRect();
+    const live = document.querySelector(`${F} [data-play-take=home] [data-play-live]`);
+    const draws = !!live && [...live.querySelectorAll("*")].some((el) => {
+      const b = el.getBoundingClientRect();
+      return b.width > 0 && b.height > 0 && b.left >= f.left - 1 && b.right <= f.right + 1 && b.top >= f.top - 1 && b.bottom <= f.bottom + 1;
+    });
+    const current = [...document.querySelectorAll(`${F} [data-play-index] button[data-current]`)].map((b) => b.textContent.trim());
+    return { live: live?.dataset.playLive ?? null, draws, current };
+  }, FRAME);
 }
 
 const readout = (pg) => pg.evaluate(() => document.querySelector("[data-play-readout]")?.textContent?.replace(/\s+/g, " ").trim() ?? null);
@@ -421,25 +436,15 @@ for (const [world, id, attribute] of RUN) {
      part is live on the screen, and exactly one row is current. Down makes the next row current and brings its part,
      and the pointer on a row does the same. A body that keeps the contract's Index has nothing to show here and
      passes. The break, on Heat: the live part taken away and a second row marked current. */
-  const ownIndex = await pg.locator(`${FRAME} [data-play-take=home][data-play-home=body]`).count();
+  const drawsOwnIndex = await pg.locator(`${FRAME} [data-play-take=home][data-play-home=body]`).count();
   claim(OWN_INDEX_CLAIM, null);
-  if (ownIndex) {
+  if (drawsOwnIndex) {
     if (selfTest && id === "heat")
       await pg.evaluate((F) => {
         document.querySelector(`${F} [data-play-live]`)?.remove();
         document.querySelectorAll(`${F} [data-play-index] button`)[3]?.setAttribute("data-current", "");
       }, FRAME);
-    const menu = () =>
-      pg.evaluate((F) => {
-        const f = document.querySelector(F).getBoundingClientRect();
-        const live = document.querySelector(`${F} [data-play-take=home] [data-play-live]`);
-        const draws = !!live && [...live.querySelectorAll("*")].some((el) => {
-          const b = el.getBoundingClientRect();
-          return b.width > 0 && b.height > 0 && b.left >= f.left - 1 && b.right <= f.right + 1 && b.top >= f.top - 1 && b.bottom <= f.bottom + 1;
-        });
-        const current = [...document.querySelectorAll(`${F} [data-play-index] button[data-current]`)].map((b) => b.textContent.trim());
-        return { live: live?.dataset.playLive ?? null, draws, current };
-      }, FRAME);
+    const menu = () => ownIndex(pg);
     const atRest = await menu();
     let moved = null, pointed = null;
     if (!selfTest) {
@@ -691,6 +696,23 @@ for (const [world, id, attribute] of RUN) {
   await ctx.close();
 }
 
+/* The recorder's own Index (its file list): the rest of the self-test keeps Device's body from loading, so this break
+   opens Device again with the recorder, takes the live part out of its window and marks a second row current. */
+let recorderIndex = false;
+if (selfTest) {
+  const { ctx, pg } = await open("device", { recorder: true });
+  await inView(pg);
+  recorderIndex = (await pg.locator(`${FRAME} [data-play-take=home][data-play-home=body]`).count()) > 0;
+  await pg.evaluate((F) => {
+    document.querySelector(`${F} [data-play-live]`)?.remove();
+    document.querySelectorAll(`${F} [data-play-index] button`)[3]?.setAttribute("data-current", "");
+  }, FRAME);
+  const m = await ownIndex(pg);
+  const ids = SETS.device ?? [];
+  claim(OWN_INDEX_CLAIM, m.draws && m.current.length === 1 && m.live === ids[0] ? null : `Device: at rest ${JSON.stringify(m)}`);
+  await ctx.close();
+}
+
 await browser.close();
 server.close();
 
@@ -722,14 +744,16 @@ if (selfTest) {
   if (!orderCaught) console.error("playground --self-test: Heat's menu strip drawn under its screen again, and the check missed it.");
   const menuCaught = (claims.get(OWN_INDEX_CLAIM) ?? []).some((f) => f.startsWith("Heat:"));
   if (!menuCaught) console.error("playground --self-test: Heat's Index lost its live part and gained a second current row, and the check missed it.");
+  const fileListCaught = recorderIndex && (claims.get(OWN_INDEX_CLAIM) ?? []).some((f) => f.startsWith("Device:"));
+  if (!fileListCaught) console.error(`playground --self-test: ${recorderIndex ? "the recorder's Index lost its live part and gained a second current row, and the check missed it" : "the recorder did not draw its own Index, so its break could not be tried"}.`);
   const sizeCaught = [...claims].some(([name, fails]) => name.startsWith("on Heat's player the pursuit meter covers") && fails.some((f) => f.startsWith("Heat:")));
   if (!sizeCaught) console.error("playground --self-test: Heat's screen at the other worlds' height, and the check missed the take's size.");
   const addressCaught = (claims.get("the take is in the address, written in place as you step, and Back from its page returns to it") ?? []).some((f) => f.startsWith("Device:"));
   if (!addressCaught) console.error("playground --self-test: Device's player kept its take out of the address, and the check missed it.");
   const namesCaught = (claims.get(NAMES_CLAIM) ?? []).some((f) => f.startsWith("Device"));
   if (!namesCaught) console.error("playground --self-test: Device's selector named Components, like the link beside it, and the check missed it.");
-  if (!namesCaught || !addressCaught || !caught || !bareCaught || !tileCaught || !setCaught || !homeCaught || !sourceCaught || !topsCaught || !orderCaught || !sizeCaught || !menuCaught) process.exit(1);
-  console.log("playground --self-test: a dialog escaped to <body> leaves the screen, with the recorder kept from loading Device draws bare, a tile missing from Device's gallery view is seen, a set naming a part outside its world is seen, a second Home and a Source link into the gallery are seen, Index's rows centred off their tops are seen, Heat's strip under its screen is seen, a small take on Heat's screen is seen, Heat's Index with no live part and two current rows is seen, a take kept out of the address is seen, and a selector sharing the Components link's name is seen; the check catches all twelve.");
+  if (!namesCaught || !addressCaught || !caught || !bareCaught || !tileCaught || !setCaught || !homeCaught || !sourceCaught || !topsCaught || !orderCaught || !sizeCaught || !menuCaught || !fileListCaught) process.exit(1);
+  console.log("playground --self-test: a dialog escaped to <body> leaves the screen, with the recorder kept from loading Device draws bare, a tile missing from Device's gallery view is seen, a set naming a part outside its world is seen, a second Home and a Source link into the gallery are seen, Index's rows centred off their tops are seen, Heat's strip under its screen is seen, a small take on Heat's screen is seen, Heat's Index and the recorder's with no live part and two current rows are seen, a take kept out of the address is seen, and a selector sharing the Components link's name is seen; the check catches all thirteen.");
   process.exit(0);
 }
 if (bad) {

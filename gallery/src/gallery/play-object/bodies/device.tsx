@@ -22,6 +22,12 @@
  *   switches on and off where it stands, as the chip does, and is hidden from screen readers, which hear the edge's own
  *   name from the contract. A chip, not the Tooltip part: a tooltip is a panel that floats over the page, and Device's
  *   words for a state are the chip's.
+ * - Index, on the glass, is the recorder's file list (`DeviceHome`, plans/audits/device-fixes.md, The front door): each
+ *   take's number, name and its tape level in the mono, the row under the keys or the pointer lit by the selection blue
+ *   (--select), and that take's part live in a window (`window`) beside the list under a Cue chip. The contract owns the
+ *   list, its keys, the pick and the link; this only draws. On Index the dial's edges and its turn go along the contract's
+ *   one cycle (Next to the first take, Previous to the last), as the tape does; they do not move the list's lit row.
+ *   The rows are silent: a voice answers a key or a detent, and a row is neither.
  * - At a short window (a laptop's 768 or 800) the screen gives up height, down to 25rem, so the frame and the whole dial
  *   stay in the first screen (finding 6; `shape`).
  * - Orange is nowhere at rest; red is the playhead and the chip's lamp while Play runs.
@@ -42,7 +48,7 @@ import { motion, useMotionValue } from "motion/react";
 import { snap, useHand, useSettle } from "@/motion/hand";
 import { useSound } from "@/motion/sound";
 import { useMuted } from "../../mute";
-import type { PlayObjectBody, PlayObjectBodyProps } from "../body";
+import type { PartScale, PlayObjectBody, PlayObjectBodyProps, PlayObjectHomeProps } from "../body";
 import { COMPACT_BOX, COMPACT_SCREEN, SCREEN_HEIGHT } from "../body";
 import { useScrub } from "../scrub";
 
@@ -461,6 +467,104 @@ function DeviceBody({ takes, at, selector, pick, step, index, everything, turn, 
   );
 }
 
+/* ---------- Index: the recorder's file list ---------- */
+
+/* A row of the list: its number, its name and its level, in the mono, touching the next. The current row (under the keys
+   or the pointer) is the one blue on the glass, the selection bar (--select, its words --select-ink), switched where it
+   stands on the instant tier; under forced colors it is Highlight. A short window (the laptop's 400px screen) sets the
+   rows closer, so all twelve fit beside the window. */
+const FILE_ROW =
+  "group/row litt-target relative grid h-control-sm w-full min-w-0 cursor-pointer grid-cols-[2.5ch_minmax(0,1fr)_2.5rem] items-center gap-3 rounded-chip px-3 text-left font-field text-small select-none " +
+  "[@media(max-height:52rem)]:h-7 pointer-coarse:h-control-md " +
+  "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus";
+const FILE_ROW_ON =
+  "bg-select text-select-ink forced-colors:bg-[Highlight] forced-colors:text-[HighlightText] forced-colors:[forced-color-adjust:none]";
+const FILE_ROW_OFF = "text-fg-muted data-pointer:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] data-pointer:text-fg";
+
+/** How large the cued part stands in its window: as large as the window holds it at 1440 by 1000, so it is the main
+    thing on the glass. A small part (a key, a figure, a gauge) stands half again its size; a conversation, which runs
+    tall, a little under its own; the rest a quarter over. Where a short window cannot hold a part, its window scrolls. */
+const LIVE_SCALE: Record<string, PartScale> = {
+  "agent-indicator": 1.5,
+  "seven-segment": 1.5,
+  gauge: 1.5,
+  "copy-button": 1.5,
+  button: 1.5,
+  "command-menu": 1.5,
+  slider: 1,
+  "tape-progress": 1,
+  message: 0.75,
+};
+
+function DeviceHome({ world, takes, current, list, row, everything, part, compact }: PlayObjectHomeProps) {
+  const { children: words, ...link } = everything;
+  const n = takes.length;
+  const pad = (i: number) => String(i).padStart(Math.max(2, String(n).length), "0");
+  const cued = takes[current];
+  return (
+    <div
+      className={
+        "grid h-full min-h-0 overflow-auto overscroll-contain " +
+        (compact ? "content-start gap-4 p-4" : "grid-cols-[minmax(0,20rem)_minmax(0,1fr)] gap-6 p-6 [@media(max-height:52rem)]:p-4")
+      }
+    >
+      <div className="flex min-h-0 min-w-0 flex-col gap-2">
+        {/* The list's head, as a recorder's file list prints it: the world, and how many takes are on it. A short window
+            leaves it out, so the twelve rows and the link fit the 400px screen. */}
+        <p aria-hidden="true" className="flex items-baseline justify-between gap-3 px-3 font-field text-caption text-fg-subtle [@media(max-height:52rem)]:hidden">
+          <span>{world.name}</span>
+          <span className="tabular-nums">{n} takes</span>
+        </p>
+        <nav {...list}>
+          <ul className="grid">
+            {takes.map((t, i) => {
+              const on = i === current;
+              return (
+                <li key={t.id} className="grid min-w-0">
+                  <button {...row(i)} style={STEP} className={FILE_ROW + " " + (on ? FILE_ROW_ON : FILE_ROW_OFF)}>
+                    {/* The name first in the source, so it is the row's name; the number sits before it on the glass. */}
+                    <span className="col-start-2 row-start-1 min-w-0 truncate">{t.title}</span>
+                    <span aria-hidden="true" className={"col-start-1 row-start-1 text-caption tabular-nums " + (on ? "" : "text-fg-subtle")}>
+                      {pad(i + 1)}
+                    </span>
+                    {/* The take's level, the same tick the tape prints for it. */}
+                    <span aria-hidden="true" className="col-start-3 row-start-1 flex h-1 items-center bg-[color-mix(in_oklab,currentColor_22%,transparent)]">
+                      <span className="h-full bg-current" style={{ width: `${level(t.id) * 100}%` }} />
+                    </span>
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
+        <a
+          {...link}
+          className="litt-target relative mt-auto self-start px-3 font-field text-small text-fg underline decoration-line-strong underline-offset-4 hover:decoration-current focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+        >
+          {words}
+        </a>
+      </div>
+      {!compact && cued && (
+        /* The window on the same glass: the cued take, live, and its one line under the chip that says so. */
+        <div data-part="window" className="grid min-h-0 min-w-0 grid-rows-[auto_minmax(0,1fr)] overflow-hidden rounded-surface border border-line">
+          <p className="flex min-w-0 items-center gap-3 border-b border-line px-4 py-2.5">
+            <span data-part="chip" className="inline-flex shrink-0 items-center gap-1.5 rounded-chip bg-fg px-1.5 py-0.5 text-caption font-label text-canvas uppercase forced-colors:border">
+              <svg aria-hidden="true" viewBox="0 0 16 16" className="size-2 fill-current">
+                <path d="M4 2v12l10-6z" />
+              </svg>
+              Cue
+            </span>
+            <span className="min-w-0 truncate font-field text-small text-fg-muted">{cued.lede}</span>
+          </p>
+          <div className="grid min-h-0 min-w-0 justify-items-center overflow-auto overscroll-contain p-6 [align-content:safe_center] [@media(max-height:52rem)]:p-4">
+            {part({ scale: LIVE_SCALE[cued.id] ?? 1.25 })}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export const device: PlayObjectBody = {
   name: "device",
   /* Below 52rem of window, where SCREEN_HEIGHT stops at its 30rem floor and pushes the dial under the fold, the screen
@@ -469,4 +573,8 @@ export const device: PlayObjectBody = {
     compact ? COMPACT_SCREEN : SCREEN_HEIGHT + " [@media(max-height:52rem)]:h-[max(25rem,calc(100dvh-23rem))] w-full rounded-[calc(var(--object-radius)-24px)]",
   rail: false,
   Body: DeviceBody,
+  Home: DeviceHome,
+  /* On a phone the list stands alone: a touch on a row opens its take at once, so the cue never moves under a finger,
+     and a part above would push the list under the fold to show only the first take. */
+  phonePart: "none",
 };
