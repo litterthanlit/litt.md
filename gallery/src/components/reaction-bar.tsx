@@ -1,14 +1,13 @@
 /**
- * ReactionBar, a Flat part (skills/litt-md/taste/litt-principles.md, Flat): minimal reader reaction pills in Flat's
- * vivid Candy palette (cotton candy: bubblegum, sky, violet, teal) on Flat's 0.28 expressive spring.
+ * ReactionBar, a Flat part (skills/litt-md/taste/litt-principles.md, Flat): readers' reactions to a post, each a pill in
+ * one of Flat's data hues (--data-bubblegum, --data-sky, --data-violet, --data-teal) on the expressive spring.
  *
- * - Dieter Rams economy: each pill carries only its glyph and tabular count (no redundant dot next to an icon, no
- *   noisy word clutter). Full reaction names live in `aria-label` and `title`.
- * - Untouched reactions rest in Flat's 1.5px outline ("an outline means off", Flat rule 2). Toggling a reaction fills
- *   the pill with its soft Candy tint (never an accent fill, R6), lights its glyph in the vivid Candy hue, pops on
- *   Flat's 0.28 bounce, and floats a tiny "+1" upward.
- * - Clicking an active reaction removes it cleanly so every press stays reversible.
- * - Reduced motion removes all bounce and floating badges and updates the pills and counts at once.
+ * - Each pill carries only its glyph and tabular count. Full reaction names live in `aria-label` and `title`.
+ * - Reactions this reader has not chosen rest in Flat's 1.5px outline ("an outline means off", Flat rule 2). Choosing
+ *   one fills the pill with its hue's tint (never an accent fill, R6), colors its glyph in the hue, pops on the
+ *   expressive spring, and floats a small "+1" upward.
+ * - Choosing an active reaction again removes it, so every choice stays reversible.
+ * - Reduced motion removes the spring and the floating badges and updates the pills and counts at once.
  */
 import { useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
@@ -24,14 +23,14 @@ export type ReactionItem = {
   label: string;
   /** Icon glyph inside the pill. */
   icon: ReactionIcon;
-  /** Candy data hue painted on the active tint and glyph. */
+  /** Data hue painted on the chosen tint and the glyph. */
   hue: ReactionHue;
   /** Baseline count from other readers. */
   count: number;
 };
 
 export type ReactionBarProps = {
-  /** Accessible subject being reacted to, e.g. "Issue 18" or "Field notes". */
+  /** Accessible subject being reacted to, e.g. "Issue 18" or "Dusk tide". */
   subject?: string;
   /** Reaction pills to display. */
   items?: ReactionItem[];
@@ -95,7 +94,7 @@ function Glyph({ icon, color }: { icon: ReactionIcon; color?: string }) {
   );
 }
 
-/** Minimal Flat reader reaction pills in vivid cotton-candy hues on Flat's 0.28 expressive spring. */
+/** Readers' reactions to a post: outlined pills that take their color when a reader chooses one, each with its count. */
 export function ReactionBar({
   subject = "this essay",
   items = DEFAULT_REACTIONS,

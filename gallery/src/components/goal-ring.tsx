@@ -1,20 +1,19 @@
 /**
- * GoalRing, a Flat part (skills/litt-md/taste/litt-principles.md, Flat): a centered, Dieter Rams radial goal
- * tracker sitting directly on Flat's ground — no outer box, no redundant labels, pure geometry.
+ * GoalRing, a Flat part (skills/litt-md/taste/litt-principles.md, Flat): progress toward one goal you can count, centered
+ * directly on Flat's ground with no box around it.
  *
- * - One 136px SVG ring stepping through Flat's vivid cotton-candy hues (`--data-sky`, `--data-violet`,
- *   `--data-bubblegum`), with Flat's single 40px standing figure and `/ target` centered cleanly inside.
- * - Directly beneath: the quiet goal title and two balanced circular `−` / `+` keys (`bg-block` / `outline`) that
- *   spring the arc on Flat's 0.28 expressive bounce.
- * - Zero outer card wrapper (matches `Poll`, `Streak`, and `Kudos`), zero `--accent` fills (R6), and zero
- *   auto-animation on mount (R2/R4).
+ * - One 136px SVG ring stroked across `--data-sky`, `--data-violet` and `--data-bubblegum`, with Flat's single 40px
+ *   standing figure and `/ target` centered inside.
+ * - Directly beneath: the goal's name and two round `−` / `+` keys (`bg-block` / `outline`) that step the count, the
+ *   arc following on the expressive spring.
+ * - No outer box (as `Poll`, `Streak` and `Kudos`), no `--accent` fills (R6), and nothing moves on mount (R2/R4).
  */
 import { useId, useState, type ReactNode } from "react";
 import { motion } from "motion/react";
 import { useMotionDial, useTransition } from "@/motion";
 
 export type GoalRingProps = {
-  /** Short title printed quietly beneath the ring, e.g. "2026 Reading goal". */
+  /** The goal's name, printed quietly beneath the ring in sentence case, e.g. "Books read in 2026". */
   title?: ReactNode;
   /** Target value to reach. Defaults to 24. */
   target?: number;
@@ -35,9 +34,9 @@ const STROKE = 8;
 const RADIUS = (SIZE - STROKE) / 2;
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
-/** A minimal centered Flat radial goal tracker: cotton-candy ring with the 40px figure inside and − / + circles below. */
+/** Progress toward one goal you can count: a ring with the count inside and − and + keys below. */
 export function GoalRing({
-  title = "2026 Reading goal",
+  title = "Books read in 2026",
   target = 24,
   unit = "books",
   value,
@@ -73,7 +72,7 @@ export function GoalRing({
 
   return (
     <div className={"inline-grid justify-items-center gap-4 text-fg " + className}>
-      {/* Centered cotton-candy ring holding the single 40px standing figure */}
+      {/* Centered ring holding the single 40px standing figure */}
       <div
         role="progressbar"
         aria-labelledby={headingId}
