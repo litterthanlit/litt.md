@@ -25,8 +25,10 @@
  *   a tooltip is a panel that floats over the page, and Device's words for a state are the chip's.
  * - Index, on the glass, is the recorder's file list (`DeviceHome`, plans/audits/device-fixes.md, The front door): each
  *   take's number, name and its tape level in the mono, the row under the keys or the pointer lit by the selection blue
- *   (--select), and that take's part live in a window (`window`) beside the list under a Cue chip. The contract owns the
- *   list, its keys, the pick and the link; this only draws. On Index the dial's edges and its turn go along the contract's
+ *   (--select), and that take's part live in a window (`window`) beside the list, under a chip with its number and name,
+ *   as a recorder labels the file selected. Not a cue or a play glyph: from Index, Play starts at take 01 and the dial
+ *   goes to the first or the last take, not to this row, so the chip promises nothing the contract does not do (what
+ *   Play starts from is Nick's to decide). The contract owns the list, its keys, the pick and the link; this only draws. On Index the dial's edges and its turn go along the contract's
  *   one cycle (Next to the first take, Previous to the last), as the tape does; they do not move the list's lit row.
  *   The rows are silent: a voice answers a key or a detent, and a row is neither.
  * - At a short window (a laptop's 768 or 800) the screen keeps SCREEN_HEIGHT's 30rem floor and the deck gives up height
@@ -548,14 +550,12 @@ function DeviceHome({ world, takes, current, list, row, everything, part, compac
         </a>
       </div>
       {!compact && cued && (
-        /* The window on the same glass: the cued take, live, and its one line under the chip that says so. */
+        /* The window on the same glass: the selected take, live, under a chip with its number and name (a recorder's
+           selected file, not a cue: from Index, Play starts at take 01) and its one line. */
         <div data-part="window" className="grid min-h-0 min-w-0 grid-rows-[auto_minmax(0,1fr)] overflow-hidden rounded-surface border border-line">
           <p className="flex min-w-0 items-center gap-3 border-b border-line px-4 py-2.5">
             <span data-part="chip" className="inline-flex shrink-0 items-center gap-1.5 rounded-chip bg-fg px-1.5 py-0.5 text-caption font-label text-canvas uppercase forced-colors:border">
-              <svg aria-hidden="true" viewBox="0 0 16 16" className="size-2 fill-current">
-                <path d="M4 2v12l10-6z" />
-              </svg>
-              Cue
+              <span className="tabular-nums">{pad(current + 1)}</span> {cued.title}
             </span>
             <span className="min-w-0 truncate font-field text-small text-fg-muted">{cued.lede}</span>
           </p>
