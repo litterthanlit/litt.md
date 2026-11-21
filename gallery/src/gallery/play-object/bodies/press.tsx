@@ -216,6 +216,8 @@ function useStageScale(take: string, compact: boolean) {
   const [fit, setFit] = useState<{ take: string; scale: PartScale }>({ take, scale: SCALES[0] });
   const scale = fit.take === take ? fit.scale : SCALES[0];
   useLayoutEffect(() => {
+    /* On a phone there is no stage (the tray stands alone); back at a desktop width the stage mounts, and this runs. */
+    if (compact) return;
     const stage = ref.current;
     if (!stage) return;
     const over = () => stage.scrollHeight > stage.clientHeight + 1 || stage.scrollWidth > stage.clientWidth + 1;
