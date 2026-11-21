@@ -7,17 +7,21 @@
  *   the ground lifted a step in dark), at the object's radius (--object-radius, the surface's outside Device). It is
  *   filled, not framed: no ring of a second grey round it, since Flat outlines nothing (plans/024, Flat, leftovers). It
  *   holds the take alone: no rail (body.rail is false). The set is on Home, behind Index and on the pills.
- * - Under the screen, the caption (`lettering`), in the ink: the take's place as the one figure that stands up (call 8),
+ * - Above the screen, the caption (`lettering`), in the ink: the take's place as the one figure that stands up (call 8),
  *   over the size of the set, and the take's name.
  * - Under the caption, the selector: a row of pills, Index and then the set. On the ground, chosen is white (the bubble
  *   on the ground), so the current pill is paper with its name in the ink, and the paper travels from pill to pill on
  *   the expressive spring, Flat's 0.28 bounce: the view's one moment. Under reduced motion it lands at once. The rest
  *   are words in the quiet ink, with no pill drawn until a hand is on one. Each is a `pill`, the travelling paper `paper`,
  *   and the words are body size, never under it.
+ * - Focus shows on the chosen pill alone (plans/audits/flat.md, finding 7): while the selector has the keys, the paper
+ *   under the chosen pill takes the focus ring at its own radius, wherever it is, Index included. Nothing rings the row,
+ *   since in Flat an outline round a group reads as off. Under forced colors the ring stands in CanvasText beside the
+ *   chosen pill's Highlight edge, so focused and not still differ.
  * - Play is a `circle`, a key with one symbol, white on the ground.
  * - No fill in the ink (it is Flat's accent): the take on the screen holds the view's one primary action (R6).
- * - The DOM puts the selector and Play before the screen, so the keyboard meets the controls first; order puts the
- *   screen on top.
+ * - The caption, the selector and Play sit above the screen at every width, in the DOM and on screen, so focus runs as
+ *   the eye reads: the top row, the selector, Play, then the screen (finding 6, as Heat's body does).
  */
 import { useEffect, useId, useRef } from "react";
 import { LayoutGroup, motion } from "motion/react";
@@ -31,6 +35,11 @@ const PILL =
   "transition-colors duration-(--dur-instant) ease-litt pointer-coarse:h-control-md";
 const QUIET = "text-fg-muted hover:bg-[color-mix(in_oklab,var(--block),transparent_40%)] hover:text-fg";
 
+/* The chosen pill's focus ring, shown while the selector (in the same row, group/pills) has the keys. */
+const FOCUSED =
+  "group-has-[[role=slider]:focus-visible]/pills:outline-2 group-has-[[role=slider]:focus-visible]/pills:outline-offset-2 " +
+  "group-has-[[role=slider]:focus-visible]/pills:outline-focus forced-colors:group-has-[[role=slider]:focus-visible]/pills:outline-[CanvasText]";
+
 /** The paper under the current pill. One per row, so it travels between pills on the expressive spring. */
 function Chosen({ id }: { id: string }) {
   const enter = useTransition("expressive");
@@ -40,7 +49,7 @@ function Chosen({ id }: { id: string }) {
       transition={enter}
       aria-hidden="true"
       data-part="paper"
-      className="absolute inset-0 -z-10 rounded-control bg-block forced-colors:border forced-colors:border-[Highlight]"
+      className={"absolute inset-0 -z-10 rounded-control bg-block forced-colors:border forced-colors:border-[Highlight] " + FOCUSED}
     />
   );
 }
@@ -57,16 +66,13 @@ function Pills({ takes, at, selector, pick, index, className }: Pick<PlayObjectB
   }, [at]);
   return (
     <LayoutGroup id={id}>
-      <div ref={row} className={"flex min-w-0 items-center gap-1 overflow-x-auto overscroll-x-contain [scrollbar-width:none] " + className}>
+      <div ref={row} className={"group/pills flex min-w-0 items-center gap-1 overflow-x-auto overscroll-x-contain [scrollbar-width:none] " + className}>
         {/* Index, the first place on the selector: its key, out of the tab order like the take pills. */}
         <button {...index} aria-label={undefined} data-part="pill" data-chosen={at === null ? "" : undefined} className={PILL + " " + (at === null ? "text-fg" : QUIET)}>
           {at === null && <Chosen id={id} />}
           Index
         </button>
-        <div
-          {...selector}
-          className="flex shrink-0 items-center gap-1 rounded-control focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus"
-        >
+        <div {...selector} className="flex shrink-0 items-center gap-1 outline-none">
           {takes.map((t, i) => (
             <span key={t.id} aria-hidden="true" data-part="pill" data-chosen={i === at ? "" : undefined} onClick={() => pick(i)} className={PILL + " " + (i === at ? "text-fg" : QUIET)}>
               {i === at && <Chosen id={id} />}
@@ -120,7 +126,7 @@ function FlatBody({ takes, at, selector, pick, index, play, readout, screen, com
             <Caption readout={readout} compact className="flex-1" />
             <PlayCircle play={play} className="size-11" />
           </div>
-          <Pills takes={takes} at={at} selector={selector} pick={pick} index={index} className="-mx-gutter px-gutter" />
+          <Pills takes={takes} at={at} selector={selector} pick={pick} index={index} className="-mx-gutter -my-1 px-gutter py-1" />
         </div>
         {screen}
       </div>
@@ -128,14 +134,14 @@ function FlatBody({ takes, at, selector, pick, index, play, readout, screen, com
   }
   return (
     <div className="flex w-full min-w-0 flex-col gap-5">
-      <div className="order-2 flex min-w-0 flex-col gap-4 px-1">
+      <div className="flex min-w-0 flex-col gap-4 px-1">
         <Caption readout={readout} />
         <div className="flex min-w-0 items-center justify-between gap-6">
           <Pills takes={takes} at={at} selector={selector} pick={pick} index={index} className="-m-1 p-1" />
           <PlayCircle play={play} className="size-control-md" />
         </div>
       </div>
-      <div data-part="paper" className="order-1 flex rounded-[var(--object-radius)] forced-colors:border">
+      <div data-part="paper" className="flex rounded-[var(--object-radius)] forced-colors:border">
         {screen}
       </div>
     </div>

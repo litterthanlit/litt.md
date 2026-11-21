@@ -4,6 +4,15 @@ Every change to the litt registry at https://littmd.vercel.app/r/, newest first.
 
 To update an item, read the entries since your version, then reinstall it with `--overwrite`. A **breaking** entry says what to change in your code.
 
+## 2026-11-21 · Flat
+
+Flat's audit, finding 3 (plans/audits/flat.md): Flat's six own parts said what they were made of, not what they are for. Their words now speak to a reader: no palette or spring names, no instruction lines, and sentence case. Nothing looks or moves differently.
+
+- **changed** `streak`, `flat-streak`: the line under the pills no longer tells the reader what to press. With the current slot open it reads the action and "Not done yet" ("Send Issue 14 · Not done yet"), and once logged the slot's label and "Done" ("W14 · Done"), where it read "press the outlined pill to light it up" and "click again to undo". Props are unchanged.
+- **changed** `reading-progress`, `flat-reading-progress`: the defaults are a post a site would publish. `title` defaults to "A week on the coast" (was "Field notes on motion") and `DEFAULT_CHAPTERS` to Getting there, Low tide, The lighthouse and Coming home (was Opening, Springs, Tactile feel and Closing notes), with the same minutes. Pass `title` and `chapters` to keep the old ones.
+- **changed** `goal-ring`, `flat-goal-ring`: `title` defaults to "Books read in 2026", in sentence case (was "2026 Reading goal").
+- **changed** `poll`, `flat-poll`, `kudos`, `flat-kudos`, `reaction-bar`, `flat-reaction-bar`: the doc comments say what the part is for, in plain words. No behavior or prop changed.
+
 ## 2026-11-20 · Press deploy-dashboard identity, and Heat's keycaps are keys
 
 Press identity (plans/024, Press; taste/litt-principles.md, Press): adds three minimal Press-only product/deploy components (`deploy-status`, `env-switch`, `release-rail`) built strictly from Press's warm stone recessed trays, cut-in slots and raised blocks with zero button outlines, brings deploy-dashboard voice demos across `SET.press`, and adds Press to `test:materials`. Nothing changes outside Press.

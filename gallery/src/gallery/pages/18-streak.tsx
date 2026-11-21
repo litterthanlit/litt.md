@@ -6,16 +6,16 @@ import { Page, Stage, TryIt, type PageDocs, type PageMeta, type PageStudy } from
 export const meta: PageMeta = {
   id: "streak",
   title: "Streak",
-  lede: "A publishing or reading cadence walking Flat's sunset heatwave.",
+  lede: "How long you have kept something going, such as a weekly letter sent or days read.",
   order: 9.05,
   group: "Data",
   verbs: ["watch"],
   worlds: ["flat"],
   summary:
-    "How many weeks or days a run has lasted, told in Flat's materials: one 40px figure standing at the top, a status dot and word beside it, and a row of pill capsules warming along Flat's sunset ramp from gold to plum in light and plum to gold in dark. The current slot rests as a 1.5px outline until pressed, when it springs into the warmest heatwave step on Flat's 0.28 bounce. It belongs to Flat.",
+    "How many weeks or days a run has lasted: the count as one large number at the top with a status word beside it, and a pill for each week or day below. Each one done is a step warmer than the last, gold to plum in light and plum to gold in dark; a missed one stays grey. The current one is outlined until you log it, and logging it again takes it back. It belongs to Flat.",
   tiers: ["instant", "expressive"],
   mechanism:
-    "Completed capsules read Flat's sequential sunset ramp (--data-seq-1 to --data-seq-4) blended in OKLab so warmth climbs with the run. The current slot is a native button with aria-pressed drawn as Flat's 1.5px outline when open; pressing it springs the capsule and the standing figure on Flat's expressive spring (350ms, bounce 0.28) and announces the new streak in a polite status region. Reduced motion updates at once.",
+    "Done pills read the sequential ramp (--data-seq-1 to --data-seq-4) blended in OKLab, so warmth climbs with the run. The current slot is a native button with aria-pressed, drawn as a 1.5px outline while open; logging it springs the pill and the figure on the expressive spring (350ms) and announces the new streak in a polite status region. Reduced motion updates at once.",
 };
 
 export const docs: PageDocs = {
@@ -41,7 +41,7 @@ export const docs: PageDocs = {
     "A warm visual reward where each step along the run adds heat.",
   ],
   skip: [
-    "Another world's page. Streak reads Flat's sunset heatwave ramp and 40px figure; it needs data-material=\"flat\" on <html>.",
+    "Another world's page. Streak reads Flat's warm sequential ramp and large figure; it needs data-material=\"flat\" on <html>.",
     "A dense calendar of months of history. Use Heatmap.",
     "A live job or upload with a known percentage. Use Progress.",
   ],
@@ -52,8 +52,8 @@ export const docs: PageDocs = {
   a11y: [
     "The standing count, unit and status are plain text; the capsules sit in a labelled list with full labels.",
     "The interactive current slot is a native button with aria-pressed, and toggling announces the updated count once in a polite status.",
-    "Status never relies on the sunset ramp alone: the figure, status word and footer caption state the run in words.",
-    "Under reduced motion the figure and capsule update at once with no bounce.",
+    "Status never relies on color alone: the figure, status word and footer caption state the run in words.",
+    "Under reduced motion the figure and capsule update at once with no spring.",
   ],
 };
 
@@ -101,7 +101,7 @@ export const study: PageStudy = {
   parts: [
     { name: "The figure", selector: "[data-part=figure]" },
     { name: "The status", selector: "[data-part=mark]" },
-    { name: "A heatwave pill", selector: "[role=listitem] [data-part=pill]" },
+    { name: "A week done", selector: "[role=listitem] [data-part=pill]" },
     { name: "The open slot", selector: "[role=listitem] button" },
   ],
   states: {
@@ -110,7 +110,7 @@ export const study: PageStudy = {
   },
   replay: {
     label: "Replay logging a week",
-    caption: "Watch the outlined pill spring into the warmest heatwave tone as the 40px figure ticks from 6 to 7.",
+    caption: "Watch this week's pill take the warmest color as the count goes from 6 to 7.",
     run: () => <ReplayStreak />,
   },
 };
@@ -127,7 +127,7 @@ export default function StreakPage() {
         title="Friday letter cadence"
         tier="expressive"
         code="LetterCadenceDemo"
-        caption="Six weeks sent, each pill warming along Flat's sunset ramp. Press the outlined W14 pill to send Issue 14 and watch it bounce warm."
+        caption="Six weeks sent in a row, each a little warmer than the last. W14 is still open until Issue 14 goes out."
       >
         <LetterCadenceDemo />
       </Stage>
@@ -135,7 +135,7 @@ export default function StreakPage() {
         title="With a missed day"
         tier="expressive"
         code="ReadingWeekDemo"
-        caption="A missed slot steps back to a quiet ink wash while the current run counts backward from today."
+        caption="A missed day stays grey, so the run counts only the days since."
       >
         <ReadingWeekDemo />
       </Stage>

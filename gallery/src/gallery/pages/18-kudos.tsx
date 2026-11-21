@@ -6,16 +6,16 @@ import { Page, Stage, TryIt, type PageDocs, type PageMeta, type PageStudy } from
 export const meta: PageMeta = {
   id: "kudos",
   title: "Kudos",
-  lede: "A multi-tap reader cheer that pops on Flat's bounce and warms through the sunset.",
+  lede: "A way for readers to cheer a post, up to five times each.",
   order: 1.03,
   group: "Actions",
   verbs: ["press"],
   worlds: ["flat"],
   summary:
-    "A tactile reader appreciation pill for a post, photo series or issue. Untouched, it rests in Flat's 1.5px outline; each tap pops the pill on Flat's 0.28 expressive bounce, lights the next dot along Flat's sunset heatwave ramp, warms the heart glyph and floats a tiny +1 badge upward. Tapping again at the cap clears your kudos so every press stays reversible. It belongs to Flat.",
+    "A cheer for a post, a picture series or an issue. Until a reader gives kudos the pill is outlined; each one fills it, lights the next dot a step warmer, warms the heart and sends a small +1 up. One more at the cap clears the reader's kudos, so it can always be undone. It belongs to Flat.",
   tiers: ["instant", "expressive"],
   mechanism:
-    "A native button tracks taps from zero up to max (five by default). Each tap steps the heart glyph and the row of progress dots along Flat's sunset ramp (--data-seq-1 to --data-seq-4), pops the pill on the expressive spring (350ms, bounce 0.28), and releases a floating +1 badge that rises on the expressive spring and fades on the exit tween. Reduced motion updates the count and dots at once.",
+    "A native button counts the reader's kudos from zero up to max (five by default). Each one steps the heart glyph and the row of progress dots along the sequential ramp (--data-seq-1 to --data-seq-4), pops the pill on the expressive spring (350ms), and releases a floating +1 badge that rises on the expressive spring and fades on the exit tween. Reduced motion updates the count and dots at once.",
 };
 
 export const docs: PageDocs = {
@@ -29,10 +29,10 @@ export const docs: PageDocs = {
 <Kudos count={142} subject="Dusk tide" prominent />`,
   use: [
     "At the foot of a post, photo series or newsletter issue under Flat, where a reader wants to cheer without writing a comment.",
-    "A lightweight multi-tap signal that feels warm and playful without taking an accent fill.",
+    "A light signal, given up to five times, that feels warm and playful without taking an accent fill.",
   ],
   skip: [
-    "Another world's page. Kudos uses Flat's 0.28 bounce, outline-means-off pill and sunset dots; it needs data-material=\"flat\" on <html>.",
+    "Another world's page. Kudos uses Flat's outline-means-off pill and warm dots; it needs data-material=\"flat\" on <html>.",
     "A single on/off bookmark or save action. Use Button with aria-pressed or Switch.",
     "A numeric quantity in a form. Use NumberField.",
   ],
@@ -42,9 +42,9 @@ export const docs: PageDocs = {
   ],
   a11y: [
     "A single native button with aria-pressed and an accessible name carrying the subject, total count and how many taps you gave.",
-    "Each tap announces the updated count and progress (or clear) once in a polite status region.",
-    "The floating +1 badge and decorative heatwave dots are hidden from assistive tech; the live region and label say everything in words.",
-    "Under reduced motion nothing bounces or floats; the count and heatwave dots update at once.",
+    "Each kudos announces the updated count and progress (or clear) once in a polite status region.",
+    "The floating +1 badge and the decorative dots are hidden from assistive tech; the live region and label say everything in words.",
+    "Under reduced motion nothing springs or floats; the count and dots update at once.",
   ],
 };
 
@@ -53,7 +53,7 @@ function PostKudosDemo() {
     <div className="grid gap-4">
       <div className="grid gap-1">
         <p className="text-body font-title text-fg">Dusk tide · Spring series</p>
-        <p className="text-small text-fg-subtle">Tap up to five times to warm the dots, then tap once more to reset.</p>
+        <p className="text-small text-fg-subtle">Give up to five kudos. One more clears yours.</p>
       </div>
       <Kudos count={142} subject="Dusk tide" defaultValue={2} prominent />
     </div>
@@ -91,7 +91,7 @@ export const study: PageStudy = {
   parts: [
     { name: "The figure", selector: "[data-part=figure]" },
     { name: "The pill", selector: "button" },
-    { name: "The heatwave dots", selector: "[data-part=circle]" },
+    { name: "The dots", selector: "[data-part=circle]" },
   ],
   states: {
     empty: <Kudos count={142} subject="Dusk tide" defaultValue={0} prominent />,
@@ -100,7 +100,7 @@ export const study: PageStudy = {
   },
   replay: {
     label: "Replay three taps",
-    caption: "Watch the pill pop on Flat's 0.28 bounce as each heatwave dot warms along the sunset.",
+    caption: "Watch the pill pop and the next dot warm with each kudos given.",
     run: () => <ReplayKudos />,
   },
 };
@@ -117,7 +117,7 @@ export default function KudosPage() {
         title="Reader kudos"
         tier="expressive"
         code="PostKudosDemo"
-        caption="Standing 40px count above the pill. Tap up to five times as the heatwave dots warm across the sunset ramp; tap again at five to clear."
+        caption="The total stands above the pill. Each kudos warms the next dot, and one past five clears yours."
       >
         <PostKudosDemo />
       </Stage>
@@ -125,7 +125,7 @@ export default function KudosPage() {
         title="Compact inline pills"
         tier="expressive"
         code="InlineKudosDemo"
-        caption="At the foot of a post or issue: outlined when untouched, white paper once tapped, with no accent fill."
+        caption="At the foot of a post or issue: outlined until you give kudos, white once you have."
       >
         <InlineKudosDemo />
       </Stage>

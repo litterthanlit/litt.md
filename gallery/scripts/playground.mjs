@@ -14,8 +14,8 @@
  * - the screen (data-play-frame) does not wear the world (data-material, none for Press), or the page's <html> material
  *   changed,
  * - the object's root (data-play-object) is not the world's id for a world in OBJECTS, or not "bare" for one that is not,
- * - from Page, Tab does not reach the selector (a slider), then Play, then the screen, or, on Heat's player, a tab stop
- *   sits above the one before it and not to its right (focus runs with the eye),
+ * - from Page, Tab does not reach the selector (a slider), then Play, then the screen, or, on Heat's and Flat's players, a
+ *   tab stop sits above the one before it and not to its right (focus runs with the eye),
  * - more than one control on the page is named Home (the top row's way out of the world; inside the object the list is
  *   Index everywhere), or a link named Source points inside the gallery (the top row's link to a part's page is Page),
  * - on Index or on a take, two controls of the player share a name but go to different places (not the same href or
@@ -373,9 +373,10 @@ for (const [world, id, attribute] of RUN) {
   }
   claim("from Page, Tab reaches the selector, then Play, then the screen", stops.join(",") === "slider,play,screen" ? null : `${world}: ${stops.join(", ")}`);
 
-  /* Heat's order (finding 4): focus runs with the eye. From the object's first stop to its last, each tab stop is at or
-     below the one before it, or to its right. The break: the menu strip drawn under the screen again, as it was. */
-  if (id === "heat") {
+  /* Heat's order (finding 4) and Flat's (plans/audits/flat.md, finding 6): focus runs with the eye. From the object's
+     first stop to its last, each tab stop is at or below the one before it, or to its right. The break: Heat's menu strip
+     drawn under the screen again, as it was. */
+  if (id === "heat" || id === "flat") {
     if (selfTest)
       await pg.evaluate(() => {
         const strip = document.querySelector("[data-heat-strip]");
@@ -399,7 +400,7 @@ for (const [world, id, attribute] of RUN) {
       const a = path[k - 1];
       return a && b.top < a.top - 1 && b.left <= a.left + 1 ? [`${a.name} (${a.left},${a.top}) then ${b.name} (${b.left},${b.top})`] : [];
     });
-    claim("on Heat's player each tab stop is at or below the one before it, or to its right", path.length > 3 && !against.length ? null : `${world}: ${against.length ? against.join("; ") : `${path.length} stops`}`);
+    claim("on Heat's and Flat's players each tab stop is at or below the one before it, or to its right", path.length > 3 && !against.length ? null : `${world}: ${against.length ? against.join("; ") : `${path.length} stops`}`);
     if (selfTest)
       await pg.evaluate(() => {
         const strip = document.querySelector("[data-heat-strip]");
@@ -718,7 +719,7 @@ if (selfTest) {
   if (!sourceCaught) console.error("playground --self-test: a Source link to #device/button on Device's player, and the check missed it.");
   const topsCaught = (claims.get("every name in a row of Index's grid shares a top") ?? []).some((f) => f.startsWith("Device:"));
   if (!topsCaught) console.error("playground --self-test: Index's rows centred with a wrapping line on Device, and the check missed it.");
-  const orderCaught = (claims.get("on Heat's player each tab stop is at or below the one before it, or to its right") ?? []).some((f) => f.startsWith("Heat:"));
+  const orderCaught = (claims.get("on Heat's and Flat's players each tab stop is at or below the one before it, or to its right") ?? []).some((f) => f.startsWith("Heat:"));
   if (!orderCaught) console.error("playground --self-test: Heat's menu strip drawn under its screen again, and the check missed it.");
   const menuCaught = (claims.get(OWN_INDEX_CLAIM) ?? []).some((f) => f.startsWith("Heat:"));
   if (!menuCaught) console.error("playground --self-test: Heat's Index lost its live part and gained a second current row, and the check missed it.");
