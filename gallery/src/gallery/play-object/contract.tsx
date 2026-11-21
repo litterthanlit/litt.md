@@ -290,15 +290,9 @@ function Loaded({ material, dark, lead, actions }: Props) {
 
   return (
     <div {...lookAttributes({ accent: look.accent, material }, dark)} data-play-object={body.name} className="grid min-w-0 gap-4 bg-transparent">
-      {/* The top row. On a phone its two lines (the world's nav, then the theme, Index, Details and Page) fold into one,
-          in its own sideways scroller edge to edge, so the list starts higher (plans/audits/shared-fixes.md, S3); every
-          control keeps its 44px target, and the padding keeps a focus ring from being cut. */}
-      <div
-        data-play-top=""
-        className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 max-sm:-mx-gutter max-sm:flex-nowrap max-sm:justify-start max-sm:overflow-x-auto max-sm:overscroll-x-contain max-sm:px-gutter max-sm:py-1"
-      >
+      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
         {lead}
-        <div className="flex flex-wrap items-center gap-1 max-sm:shrink-0 max-sm:flex-nowrap">
+        <div className="flex flex-wrap items-center gap-1">
           {actions}
           <Button size="sm" variant="ghost" data-play-to="index" aria-current={at === null ? "page" : undefined} onClick={() => go(null)}>
             Index
