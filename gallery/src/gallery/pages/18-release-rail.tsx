@@ -32,11 +32,14 @@ export const docs: PageDocs = {
     "A chronological event feed without selection. Use Timeline.",
   ],
   keyboard: [
-    [["Tab"], "Moves focus across release rows and the Promote to live key."],
-    [["Enter", "Space"], "Selects the focused release or promotes it to production."],
+    [["Tab"], "Moves focus onto the selected release, then to Promote to live when it shows. The releases are one tab stop."],
+    [["←", "→", "↑", "↓"], "Moves to the newer or older release and selects it. At either end it wraps around."],
+    [["Home", "End"], "Selects the newest or the oldest release."],
+    [["Enter", "Space"], "Selects the focused release, or on Promote to live, promotes it to production."],
   ],
   a11y: [
     "Exposes role=\"radiogroup\" labelled by the project header, with role=\"radio\" and aria-checked on each release.",
+    "The releases are one tab stop: only the selected release is in the tab order, and the arrow keys move the selection, as a radio group does.",
     "Selecting or promoting a release announces the commit SHA and summary once in a polite status region.",
   ],
 };
@@ -74,15 +77,15 @@ export default function ReleaseRailPage() {
         title="Release selector"
         tier="instant"
         code="HarborReleasesDemo"
-        caption="All releases rest quietly inside one recessed tray; click any older commit to lift it up and reveal Promote to live."
+        caption="The last four deploys of harbor-web, newest first. Pick an older one to see its build, and Promote to live puts it back in production."
       >
         <HarborReleasesDemo />
       </Stage>
       <Stage
-        title="Pinned previous release"
+        title="Rolled back"
         tier="instant"
         code="RollbackInspectDemo"
-        caption="Live is stated in plain words on the right — no green status chips."
+        caption="harbor-api is serving an older release, 9a2b810. Pick 4f9c2e1 to promote the newer build to live again."
       >
         <RollbackInspectDemo />
       </Stage>

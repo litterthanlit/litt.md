@@ -142,6 +142,32 @@ const SCENARIOS = {
       setTimeout(() => { button.disabled = true; }, 30);
     }, true),
   },
+  "deploy-status": {
+    context: DESKTOP,
+    async run(pg) {
+      await open(pg, "press/deploy-status");
+      const on = () => pg.evaluate(() => (document.activeElement === document.body ? "" : document.activeElement.textContent.trim()));
+      const say = (t) => (t ? `"${t}"` : "the body");
+      /* Step to the last stage with the keys. There Next disables itself, and focus must be on Rebuild. */
+      const next = pg.locator("main button").filter({ hasText: /^(Next stage|Promote)$/ }).first();
+      if (await next.isDisabled()) return "the lead Deploy status opens on its last stage, so the walk to it cannot be checked";
+      await next.focus();
+      for (let i = 0; i < 8 && /^(Next stage|Promote)$/.test(await on()); i++) {
+        await pg.keyboard.press("Enter");
+        await pg.waitForTimeout(150);
+      }
+      const end = await on();
+      if (end !== "Rebuild") return `after the last stage, focus is on ${say(end)}, not Rebuild`;
+      /* Now Rebuild: it disables itself, and the key to take focus was disabled until the render that follows. */
+      await pg.keyboard.press("Enter");
+      await pg.waitForTimeout(200);
+      const after = await on();
+      return /^(Next stage|Promote)$/.test(after) ? "" : `after Rebuild at the last stage, focus is on ${say(after)}, not the Next stage key`;
+    },
+    broken: () => document.addEventListener("click", (e) => {
+      if (e.target.closest?.("button")?.textContent.trim() === "Rebuild") setTimeout(() => document.activeElement?.blur(), 50);
+    }, true),
+  },
   "type-to-confirm": {
     context: DESKTOP,
     async run(pg) {
