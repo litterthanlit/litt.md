@@ -211,7 +211,7 @@ function RackBody({ takes, at, selector, pick, step, index, play, readout, scree
     );
   }
   return (
-    <div className="flex w-full min-w-0 flex-col overflow-hidden rounded-surface bg-surface-1 shadow-[inset_0_0_0_1px_var(--line-strong)] forced-colors:border">
+    <div className="flex w-full min-w-0 flex-col overflow-hidden rounded-surface border border-line-strong bg-surface-1">
       {/* Top to bottom, in the order read and the order tabbed, at every width (finding 7, as Heat's strip): the title
           bar (no tab stop), the clip lane and the transport (the selector, then Play), then the screen. */}
       <TitleBar readout={readout} at={at} n={takes.length} playing={playing} />
