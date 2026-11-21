@@ -21,7 +21,8 @@
  * Checks: weight by role (400 text, 500 titles with font-title, 600 caption labels with font-label;
  * nothing else), the three radii, zero-offset shadows, no `transition-all`,
  * only transform, opacity and color-family fades, duration and ease classes
- * that pair by tier, no literal timings or easings, no raw or quoted colors.
+ * that pair by tier, no literal timings or easings, no raw or quoted colors, and no touch target (litt-target)
+ * without relative, absolute, fixed or sticky in its class list (rule `other`; test:targets sees the same in a build).
  *
  *   node lint-litt.mjs [files...]                         gallery mode, text output (needs the litt.md repo)
  *   node lint-litt.mjs --host [--json] [--root DIR] FILE...   host mode (files or folders), anywhere
@@ -230,6 +231,10 @@ function lintGallery(files, root) {
       if (/\btext-\[\d/.test(line)) warn("type", "arbitrary text size: use text-display, text-h1…h4, text-reading, text-body, text-small, text-caption");
       if (/\bonMouse(Enter|Over)\b/.test(line)) warn("other", "onMouseEnter: make sure touch and keyboard users get the same thing");
     });
+    if (!f.endsWith(".css")) {
+      const lines = text.split("\n");
+      for (const line of new Set(unpositionedTargets(text))) if (!lines[line - 1].includes("litt-allow")) fails.push({ file: rel(f), line, rule: "other", message: TARGET_MESSAGE });
+    }
     for (const m of text.matchAll(MOTION_PROPS)) {
       const start = m.index + m[0].length;
       const body = text.slice(start, text.indexOf("}}", start));
@@ -487,8 +492,41 @@ function scanSource(text, css) {
     f.scope = best >= 0 ? `r${best}` : `g${find(f.lit)}`;
     f.dynamic = (best >= 0 && ranges[best][2]) || f.openLeft || f.openRight; // a ${...} in a template hides classes too
   }
-  return { code: code.join(""), skel: skelText, frags, lineAt, lineStarts, matchClose };
+  return { code: code.join(""), skel: skelText, frags, lits, lineAt, lineStarts, matchClose };
 }
+
+/* ---------------------------------------------------------------------- touch targets */
+
+/* A touch target (litt-target, tokens.css) grows a control's place for a finger with an absolute ::before, so the
+   control must be positioned: alone, its ::before grows to the nearest positioned ancestor and takes its neighbours'
+   taps (plans/audits/README.md, the tap fault). test:targets sees it in a build; this sees it in the source. A class
+   list is a cn(...) call, a className={...} value, a "a" + "b" chain or one string (a constant); the positioning class
+   may sit anywhere in it, on another line too. A list that takes classes from a variable (a constant joined in, a
+   ${...} in a template) is not judged, since what it joins is out of sight. */
+const POSITIONED = new Set(["relative", "absolute", "fixed", "sticky"]);
+const POSITION_VARIANTS = new Set(["pointer-coarse"]); // the ::before only grows on a coarse pointer
+function unpositionedTargets(text) {
+  const sc = scanSource(text, false);
+  const litById = new Map(sc.lits.map((l) => [l.lit, l]));
+  /* A literal joined to a name or a call by + is a list whose other half is out of sight. */
+  const joined = (lit) => {
+    const l = litById.get(lit);
+    if (!l) return false;
+    return /[\w$)\]]\s*\+\s*$/.test(sc.skel.slice(Math.max(0, l.start - 80), l.start)) || /^\s*\+\s*[\w$(]/.test(sc.skel.slice(l.end, l.end + 80));
+  };
+  const scopes = new Map();
+  for (const f of sc.frags) {
+    const s = scopes.get(f.scope) ?? { targets: [], positioned: false, dynamic: false };
+    scopes.set(f.scope, s);
+    s.dynamic ||= !!f.dynamic || joined(f.lit);
+    for (const t of fragTokens(f)) {
+      if (t.base === "litt-target" && !t.variants.length) s.targets.push(t.line);
+      if (POSITIONED.has(t.base) && t.variants.every((v) => POSITION_VARIANTS.has(v))) s.positioned = true;
+    }
+  }
+  return [...scopes.values()].filter((s) => s.targets.length && !s.positioned && !s.dynamic).flatMap((s) => s.targets);
+}
+const TARGET_MESSAGE = "litt-target with no relative, absolute, fixed or sticky in its class list: its ::before grows to the nearest positioned ancestor and takes its neighbours' taps; write litt-target relative";
 
 /* ---------------------------------------------------------------------- class tokens */
 
@@ -697,7 +735,10 @@ function lintHostFile(file, text, rel) {
       const start = m.index + m[0].indexOf(m[1]);
       checkTokens([{ pos: start, line: sc.lineAt(start), text: m[1], lit: 0, openLeft: false, openRight: false, scope: `a${start}` }], codeLines, add);
     }
-  } else checkTokens(sc.frags, codeLines, add);
+  } else {
+    checkTokens(sc.frags, codeLines, add);
+    for (const line of unpositionedTargets(text)) add("fail", line, "other", TARGET_MESSAGE);
+  }
 
   // line patterns: colors, declarations, motion values
   const motionContext = (pos) => { // is the object that holds this key a motion transition?
