@@ -290,4 +290,5 @@ export const flat: PlayObjectBody = {
   Body: FlatBody,
   Home: FlatHome,
   phonePart: "none",
+  homeColumns: 2,
 };
