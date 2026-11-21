@@ -3,14 +3,15 @@
  * outline with a title bar, a live value bar readout, and a lane of clips, one per part in the set.
  *
  * - Outer module (`bg-surface-1`, 1px `--line-strong` outline, `rounded-surface`, `overflow-hidden`):
- *   - Title bar (`order-1`, non-focusable): module name, transport indicator dot, and a Rack value bar filled to the
+ *   - Title bar (non-focusable): module name, transport indicator dot, and a Rack value bar filled to the
  *     take's place in the set (`--slot` + `--slot-fill` + 2px `--fg` line) beside the tabular count and title.
- *   - Screen bay (`order-2`): the screen recessed inside a 1px rule, holding the take alone (`rail: false`).
- *   - Clip lane (`order-3`, DOM child 1): a dense lane of clips, one per part in the set, each grey (`bg-block`) with a
+ *   - Clip lane, under the title bar at every width, so focus runs top to bottom with the eye (plans/audits/rack.md,
+ *     finding 7): a dense lane of clips, one per part in the set, each grey (`bg-block`) with a
  *     subtle seeded waveform silhouette in `--fg-subtle`; the active clip cuts cleanly to lit ink (`bg-fg text-canvas`,
  *     as Rack's Tabs do), beside square outlined transport keys. Color is owned, not dealt (plans/audits/rack.md,
  *     finding 4): a clip color in Rack stands for a track inside a take (Drums, Bass, a macro), so the lane, which
  *     holds parts, not tracks, takes none; a hue dealt by place would mean two things on one screen.
+ *   - Screen bay: the screen recessed inside a 1px rule, holding the take alone (`rail: false`).
  * - Under a finger the lane's Index and its clips grow to 44px tall, a finger's target (a 44px ::before would be cut off
  *   by the lane's scroller), and the transport keys keep theirs with `litt-target relative`.
  * - Zero accent fill in the body (R6): yellow stays reserved for the take inside the screen; clip colors belong to the
@@ -79,6 +80,13 @@ function TitleBar({
   );
 }
 
+/* Focus on the selector (finding 6): no ring round the lane, where the clips covered it; while the selector has the keys,
+   the chosen clip (or Index) takes a 2px ring in --focus, 2px outside it and drawn over its neighbours, where the eye
+   already is. The lane's 4px padding keeps the ring inside its scroller. Under forced colors the outline stays. */
+const RING =
+  "group-has-[[role=slider]:focus-visible]/lane:z-10 group-has-[[role=slider]:focus-visible]/lane:outline-2 " +
+  "group-has-[[role=slider]:focus-visible]/lane:outline-offset-2 group-has-[[role=slider]:focus-visible]/lane:outline-focus";
+
 function ClipLane({ takes, at, selector, pick, index }: Pick<PlayObjectBodyProps, "takes" | "at" | "selector" | "pick" | "index">) {
   const lane = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -89,16 +97,16 @@ function ClipLane({ takes, at, selector, pick, index }: Pick<PlayObjectBodyProps
   }, [at]);
 
   return (
-    <div ref={lane} className="flex min-w-0 flex-1 items-stretch gap-1 overflow-x-auto overscroll-x-contain py-0.5 [scrollbar-width:none]">
+    <div ref={lane} className="group/lane flex min-w-0 flex-1 items-stretch gap-1 overflow-x-auto overscroll-x-contain p-1 [scrollbar-width:none]">
       <button
         {...index}
         aria-label={undefined}
         data-chosen={at === null ? "" : undefined}
         className={
-          "inline-flex h-control-sm shrink-0 cursor-pointer items-center rounded-control px-2.5 text-caption font-title select-none pointer-coarse:h-control-md " +
+          "relative inline-flex h-control-sm shrink-0 cursor-pointer items-center rounded-control px-2.5 text-caption font-title select-none pointer-coarse:h-control-md " +
           "shadow-(--block-lift) transition-colors duration-(--dur-instant) ease-litt " +
           (at === null
-            ? "bg-fg text-canvas forced-colors:border forced-colors:bg-[Highlight] forced-colors:text-[HighlightText]"
+            ? "bg-fg text-canvas forced-colors:border forced-colors:bg-[Highlight] forced-colors:text-[HighlightText] " + RING
             : "bg-block text-fg-subtle hover:bg-(--block-hover) hover:text-fg forced-colors:border")
         }
       >
@@ -106,7 +114,7 @@ function ClipLane({ takes, at, selector, pick, index }: Pick<PlayObjectBodyProps
       </button>
       <div
         {...selector}
-        className="flex shrink-0 items-stretch gap-1 rounded-control focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus"
+        className="flex shrink-0 items-stretch gap-1 outline-none"
       >
         {takes.map((t, i) => {
           const active = i === at;
@@ -121,7 +129,7 @@ function ClipLane({ takes, at, selector, pick, index }: Pick<PlayObjectBodyProps
                 "relative inline-flex h-control-sm shrink-0 cursor-pointer items-center gap-1.5 overflow-hidden rounded-control px-2.5 text-caption font-title whitespace-nowrap select-none pointer-coarse:h-control-md " +
                 "shadow-(--block-lift) transition-colors duration-(--dur-instant) ease-litt forced-colors:border " +
                 (active
-                  ? "bg-fg text-canvas forced-colors:bg-[Highlight] forced-colors:text-[HighlightText]"
+                  ? "bg-fg text-canvas forced-colors:bg-[Highlight] forced-colors:text-[HighlightText] " + RING
                   : "bg-block text-fg-muted hover:bg-(--block-hover) hover:text-fg")
               }
             >
@@ -172,8 +180,10 @@ function RackBody({ takes, at, selector, pick, step, index, play, readout, scree
   }
   return (
     <div className="flex w-full min-w-0 flex-col overflow-hidden rounded-surface bg-surface-1 shadow-[inset_0_0_0_1px_var(--line-strong)] forced-colors:border">
-      {/* DOM order: clip lane + transport (selector -> Play) first, then screen, then non-focusable title bar. */}
-      <div className="order-3 flex min-w-0 items-center gap-2 border-t border-line bg-surface-2 px-3 py-2">
+      {/* Top to bottom, in the order read and the order tabbed, at every width (finding 7, as Heat's strip): the title
+          bar (no tab stop), the clip lane and the transport (the selector, then Play), then the screen. */}
+      <TitleBar readout={readout} at={at} n={takes.length} playing={playing} />
+      <div data-rack-lane="" className="flex min-w-0 items-center gap-2 border-b border-line bg-surface-2 px-3 py-1">
         <ClipLane takes={takes} at={at} selector={selector} pick={pick} index={index} />
         <div className="flex shrink-0 items-center gap-1">
           <button {...step(-1)} className={rackKey + " w-control-sm"}>
@@ -189,10 +199,9 @@ function RackBody({ takes, at, selector, pick, step, index, play, readout, scree
           </button>
         </div>
       </div>
-      <div className="order-2 flex bg-canvas p-1.5">
+      <div className="flex bg-canvas p-1.5">
         {screen}
       </div>
-      <TitleBar readout={readout} at={at} n={takes.length} playing={playing} className="order-1" />
     </div>
   );
 }
