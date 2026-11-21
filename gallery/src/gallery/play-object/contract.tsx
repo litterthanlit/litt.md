@@ -29,7 +29,7 @@ import { useDevice } from "@/motion";
 import { useCustomize } from "../customize-state";
 import { PreviewContext } from "../kit";
 import { lookAttributes, materialOf, MATERIALS, type Material } from "../look";
-import { worldTitle } from "../route";
+import { isPlayerRoute, takeAddress, takeOfRoute, worldTitle } from "../route";
 import { bare } from "./bodies/bare";
 import type { PlayObjectBody, PlayObjectBodyProps, PlayObjectHomeProps } from "./body";
 import { PlayScreen } from "./screen";
@@ -97,8 +97,13 @@ function Loaded({ material, dark, lead, actions }: Props) {
   const { look } = useCustomize();
   const { compact } = useDevice();
   const id = useId();
-  /* null is Index: the world's introduction and its set, inside the screen. A world opens there. */
-  const [at, setAt] = useState<number | null>(null);
+  /* null is Index: the world's introduction and its set, inside the screen. A world opens there, or on the take its
+     address names (#<world>/take/<id>, route.ts), so Back from a take's page returns to it. */
+  const fromAddress = () => {
+    const i = takes.findIndex((t) => t.id === takeOfRoute(location.hash));
+    return i < 0 ? null : i;
+  };
+  const [at, setAt] = useState<number | null>(fromAddress);
   const [playing, setPlaying] = useState(false);
   const [said, setSaid] = useState("");
   const [details, setDetails] = useState(false);
@@ -115,6 +120,27 @@ function Loaded({ material, dark, lead, actions }: Props) {
   useEffect(() => {
     for (const m of MATERIALS) void bodyOf(m.id);
   }, []);
+
+  /* The take is in the address: replaced as the hand or Play steps, never pushed, so Back leaves the player in one step.
+     Only while the address is this player's: a link away (Page) has already put its own address in. */
+  const takeId = at === null ? null : (takes[at]?.id ?? null);
+  useEffect(() => {
+    if (!isPlayerRoute(location.hash, material)) return;
+    const want = takeAddress(material, takeId);
+    if (location.hash !== want) history.replaceState(history.state, "", `${location.pathname}${location.search}${want}`);
+  }, [material, takeId]);
+  /* And read back when the address moves under the player: the world's name in the top row (#<world>) opens Index. */
+  useEffect(() => {
+    const read = () => {
+      if (isPlayerRoute(location.hash, material)) setAt(fromAddress());
+    };
+    window.addEventListener("hashchange", read);
+    window.addEventListener("popstate", read);
+    return () => {
+      window.removeEventListener("hashchange", read);
+      window.removeEventListener("popstate", read);
+    };
+  }, [material, takes]);
 
   /* Play runs the set:the next take every TAKE_MS, wrapping, until a hand stops it. From Home it starts at the first. */
   useEffect(() => {

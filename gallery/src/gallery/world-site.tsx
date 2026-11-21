@@ -20,7 +20,7 @@ import { useCustomize, useDark } from "./customize-state";
 import { materialOf, type Material } from "./look";
 import { PlayObject } from "./play-object/contract";
 import { inWorld, pages } from "./registry";
-import { hasNavigated, useRoute, worldTitle } from "./route";
+import { hasNavigated, isPlayerRoute, useRoute, worldTitle } from "./route";
 import { WorldContext } from "./kit";
 import { World } from "./world";
 import { WorldGallery } from "./world-gallery";
@@ -103,8 +103,9 @@ export function WorldSite({ material }: { material: Material }) {
   const dark = useDark();
   const sub = route.split("/").slice(1).join("/");
   const own = !!sub && !!OWN_PAGES[material]?.includes(sub);
-  const player = !sub;
-  const page = sub && sub !== "about" && sub !== "components" && !own ? pages.find((p) => p.id === sub && p.group && p.group !== "Worlds" && !p.world && inWorld(p, material)) : undefined;
+  /* #<world>/take/<id> is the player on that take (route.ts, takeOfRoute): the player reads it from the address. */
+  const player = isPlayerRoute(route, material);
+  const page = sub && !player && sub !== "about" && sub !== "components" && !own ? pages.find((p) => p.id === sub && p.group && p.group !== "Worlds" && !p.world && inWorld(p, material)) : undefined;
   const here: Here = player ? "player" :sub === "about" ? "about" : sub === "components" ? "components" : own ? "own" : "page";
   const main = useFocusOnArrival(route);
   const world = materialOf(material);

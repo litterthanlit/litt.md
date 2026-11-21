@@ -19,7 +19,7 @@
  * - more than one control on the page is named Home (the top row's way out of the world; inside the object the list is
  *   Index everywhere), or a link named Source points inside the gallery (the top row's link to a part's page is Page),
  * - a world's set in play-object/takes.ts is not twelve parts, each a component page in that world, or a page's id is
- *   components or about, which would hide behind the world's own addresses,
+ *   components, about or take, which would hide behind the world's own addresses,
  * - the screen does not open on Index, the world's set (a row each, as many as the slider runs to and takes.ts lists),
  *   or a name in a row of Index's grid sits above or below another name in that row (rows hold to their tops), or, on
  *   Heat, Index (its own menu, body.Home) does not show the current row's part live on the screen with exactly one row
@@ -32,6 +32,8 @@
  *   on a bare object, the rail beside a take does not list the set in order with the take showing marked, and a link to
  *   #<world>/components at its foot,
  * - Index does not go back to the list, or the list does not open the take picked,
+ * - two steps along the selector do not write #<world>/take/<id> in place (with no new history entry), or Back from the
+ *   take's page (the top row's Page) does not return the player to that take,
  * - on Heat's player, the pursuit meter's drawn box covers less than TAKE_FLOOR of the screen's area,
  * - what the Dialog, Menu, Popover, Select, Context menu, Toast or Tooltip take opens, where the set holds it, (from its first button, by a click
  *   or, for the tooltip, a held pointer) is not inside the screen's box, under the screen's world (1px tolerance),
@@ -45,8 +47,8 @@
  * out of Device's gallery view, adds a part Heat does not have to Heat's set, and on Device puts back a second control
  * named Home and a Source link into the gallery, centres Index's rows again with one line wrapping, draws Heat's
  * menu strip under its screen again, takes Heat's live part off its Index and marks a second row current, and sets
- * Heat's screen to the other worlds' height; it fails if the check misses
- * any.
+ * Heat's screen to the other worlds' height, and puts Device's address back to the bare player after a step; it fails
+ * if the check misses any.
  *
  * Needs Playwright, found as worlds.mjs finds it.
  */
@@ -221,8 +223,8 @@ const partsIn = (world) => PARTS.filter((p) => !p.worlds || p.worlds.includes(wo
 const SETS = Object.fromEntries(
   [...fs.readFileSync(path.join(here, "..", "src", "gallery", "play-object", "takes.ts"), "utf8").matchAll(/^\s+(\w+): \[([^\]]*)\],$/gm)].map((m) => [m[1], [...m[2].matchAll(/"([^"]+)"/g)].map((x) => x[1])]),
 );
-const shadowed = pageMetas().filter((p) => ["components", "about"].includes(p.id)).map((p) => p.id);
-claim("no page id is components or about, the world's own addresses", shadowed.length ? `pages named ${shadowed.join(", ")}` : null);
+const shadowed = pageMetas().filter((p) => ["components", "about", "take"].includes(p.id)).map((p) => p.id);
+claim("no page id is components, about or take, the world's own addresses",shadowed.length ? `pages named ${shadowed.join(", ")}` : null);
 if (selfTest) SETS.heat =[...(SETS.heat ?? []), "seven-segment"];
 for (const [, id] of WORLDS) {
   const set = SETS[id] ?? [];
@@ -504,7 +506,39 @@ for (const [world, id, attribute] of RUN) {
   const picked = await readout(pg);
   claim("Index goes back to the list, and the list opens what you pick", went && picked?.includes(last) ? null : `${world}: after picking ${last} from Index the readout says "${picked}"`);
 
-  /* A take's size (finding 7): on Heat's shorter screen the pursuit meter's drawn box (every element in the take that
+  /* The take is in the address (plans/audits/shared-fixes.md, S2): stepping writes #<world>/take/<id> in place, never a
+     new history entry, and Back from the take's page returns the player to that take. The break, on Device: the
+     address put back to the bare player after the step, as a player that keeps its take to itself would leave it. */
+  {
+    await inView(pg);
+    await pg.locator(SLIDER).focus();
+    await pg.keyboard.press("Home");
+    const entries = await pg.evaluate(() => history.length);
+    await pg.keyboard.press("ArrowRight");
+    await pg.keyboard.press("ArrowRight");
+    await pg.waitForTimeout(200);
+    const second = SETS[id]?.[1];
+    if (selfTest && id === "device") await pg.evaluate((w) => history.replaceState(history.state, "", `#${w}`), id);
+    const written = await pg.evaluate(() => ({ hash: location.hash, entries: history.length }));
+    await pg.locator("[data-play-object]").getByRole("link", { name: "Page", exact: true }).click();
+    await pg.waitForFunction((h) => location.hash === h, `#${id}/${second}`, { timeout: 3000 }).catch(() => {});
+    await pg.waitForTimeout(300);
+    const paged = await pg.evaluate(() => location.hash);
+    await pg.goBack();
+    await pg.waitForSelector(SLIDER, { timeout: 5000 }).catch(() => {});
+    await pg.waitForTimeout(500);
+    const back = await pg.evaluate(() => location.hash);
+    const value = await pg.locator(SLIDER).getAttribute("aria-valuenow").catch(() => null);
+    const said = await readout(pg);
+    claim(
+      "the take is in the address, written in place as you step, and Back from its page returns to it",
+      written.hash === `#${id}/take/${second}` && written.entries === entries && paged === `#${id}/${second}` && back === `#${id}/take/${second}` && value === "2" && said?.includes(set[1])
+        ? null
+        : `${world}: after two steps the address is ${written.hash} (wants #${id}/take/${second}) with ${written.entries - entries} new entries; Page went to ${paged}; Back came to ${back}, the slider at ${value}, readout "${said}" (wants ${set[1]})`,
+    );
+  }
+
+  /* A take's size (finding 7):on Heat's shorter screen the pursuit meter's drawn box (every element in the take that
      paints: text, a fill, an edge, an image) covers at least TAKE_FLOOR of the screen's area. A quarter is not reachable
      without scaling the part or moving the take off the screen's middle (see TAKE_FLOOR). The break: the screen at the
      other worlds' height on a tall window again (46rem). */
@@ -645,8 +679,10 @@ if (selfTest) {
   if (!menuCaught) console.error("playground --self-test: Heat's Index lost its live part and gained a second current row, and the check missed it.");
   const sizeCaught = [...claims].some(([name, fails]) => name.startsWith("on Heat's player the pursuit meter covers") && fails.some((f) => f.startsWith("Heat:")));
   if (!sizeCaught) console.error("playground --self-test: Heat's screen at the other worlds' height, and the check missed the take's size.");
-  if (!caught || !bareCaught || !tileCaught || !setCaught || !homeCaught || !sourceCaught || !topsCaught || !orderCaught || !sizeCaught || !menuCaught) process.exit(1);
-  console.log("playground --self-test: a dialog escaped to <body> leaves the screen, with the recorder kept from loading Device draws bare, a tile missing from Device's gallery view is seen, a set naming a part outside its world is seen, a second Home and a Source link into the gallery are seen, Index's rows centred off their tops are seen, Heat's strip under its screen is seen, a small take on Heat's screen is seen, and Heat's Index with no live part and two current rows is seen; the check catches all ten.");
+  const addressCaught = (claims.get("the take is in the address, written in place as you step, and Back from its page returns to it") ?? []).some((f) => f.startsWith("Device:"));
+  if (!addressCaught) console.error("playground --self-test: Device's player kept its take out of the address, and the check missed it.");
+  if (!addressCaught || !caught|| !bareCaught || !tileCaught || !setCaught || !homeCaught || !sourceCaught || !topsCaught || !orderCaught || !sizeCaught || !menuCaught) process.exit(1);
+  console.log("playground --self-test: a dialog escaped to <body> leaves the screen, with the recorder kept from loading Device draws bare, a tile missing from Device's gallery view is seen, a set naming a part outside its world is seen, a second Home and a Source link into the gallery are seen, Index's rows centred off their tops are seen, Heat's strip under its screen is seen, a small take on Heat's screen is seen, Heat's Index with no live part and two current rows is seen, and a take kept out of the address is seen; the check catches all eleven.");
   process.exit(0);
 }
 if (bad) {

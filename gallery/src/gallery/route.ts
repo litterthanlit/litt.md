@@ -25,6 +25,28 @@ export function readHash(): string {
 
 const WORLDS = ["press", "flat", "device", "plain", "rack", "heat"];
 
+/**
+ * The player's take in its address (plans/audits/shared-fixes.md, S2): #<world> is the player on Index, and
+ * #<world>/take/<id> the player on that take, written with replaceState as the hand steps (so Back never fills with
+ * steps) and read on load, so Back from a part's page returns to the take it was opened from. The world stays the first
+ * part of the address, so worldOfHash (look.ts), index.html's hand copy of it, canonical and routes.mjs read it as they
+ * read any page in the world; a page id is one part with no slash, and no page id may be `take` (test:playground), so
+ * neither can be taken for the other.
+ */
+export const TAKE = "take";
+/** The take a player address names: "flat/take/poll" is "poll"; "flat" and any other address name none. */
+export function takeOfRoute(route: string): string | null {
+  const [, seg, id, ...rest] = route.replace(/^#/, "").split("/");
+  return seg === TAKE && id && !rest.length ? id : null;
+}
+/** Whether an address is this world's player, on Index or on a take. */
+export const isPlayerRoute = (route: string, world: string) => {
+  const r = route.replace(/^#/, "");
+  return r === world || (r.startsWith(`${world}/${TAKE}/`) && takeOfRoute(r) !== null);
+};
+/** The player's address on a take, or on Index (null). */
+export const takeAddress = (world: string, id: string | null) => (id ? `#${world}/${TAKE}/${id}` : `#${world}`);
+
 /** The gallery's own name, last in every title. */
 export const GALLERY_NAME = "litt.md Gallery";
 /** A world address's tab title: the part or page, then the world, then the gallery ("Button · Press · litt.md Gallery"),
