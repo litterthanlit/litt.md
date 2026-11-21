@@ -1,6 +1,6 @@
 /**
- * DeviceRack, a Rack part (proposals/rack.md; taste/litt-principles.md, Rack): an Ableton Live Audio Effect Rack with
- * color-coded rotary Macro Dials, a device power bypass toggle, and instant preset recall.
+ * DeviceRack, a Rack part (proposals/rack.md; taste/litt-principles.md, Rack): an Ableton Live audio effect rack with
+ * color-coded rotary macro dials, a device power bypass toggle, and instant preset recall.
  *
  * - Each macro dial is a compact square parameter box (`bg-surface-2 border border-line rounded-control`) holding a
  *   color-coded SVG rotary arc (`amber`, `blue`, `teal`, `violet`, `rose`), a crisp indicator needle, and its tabular
@@ -41,7 +41,7 @@ export type DevicePreset = {
 };
 
 export type DeviceRackProps = {
-  /** Device title in the rack header, e.g. "Dub Echo Rack". */
+  /** Device title in the rack header, e.g. "Dub echo rack". */
   title?: ReactNode;
   /** Macro dials to render in the device strip. */
   macros?: DeviceMacro[];
@@ -61,9 +61,9 @@ export const DEFAULT_MACROS: DeviceMacro[] = [
 ];
 
 export const DEFAULT_PRESETS: DevicePreset[] = [
-  { name: "Dub Tape", values: { cutoff: 3400, res: 38, feedback: 54, drive: 6, drywet: 42 } },
-  { name: "Warm Wash", values: { cutoff: 1800, res: 24, feedback: 76, drive: 4, drywet: 64 } },
-  { name: "Acid Ping", values: { cutoff: 6200, res: 74, feedback: 62, drive: 14, drywet: 50 } },
+  { name: "Dub tape", values: { cutoff: 3400, res: 38, feedback: 54, drive: 6, drywet: 42 } },
+  { name: "Warm wash", values: { cutoff: 1800, res: 24, feedback: 76, drive: 4, drywet: 64 } },
+  { name: "Acid ping", values: { cutoff: 6200, res: 74, feedback: 62, drive: 14, drywet: 50 } },
   { name: "Init", values: { cutoff: 12000, res: 0, feedback: 0, drive: 0, drywet: 0 } },
 ];
 
@@ -215,9 +215,9 @@ function MacroDial({
   );
 }
 
-/** Rack's Ableton-style Audio Effect Rack with rotary macro dials, bypass toggle, and instant preset recall. */
+/** Rack's Ableton-style audio effect rack with rotary macro dials, bypass toggle, and instant preset recall. */
 export function DeviceRack({
-  title = "Dub Echo Rack",
+  title = "Dub echo rack",
   macros = DEFAULT_MACROS,
   presets = DEFAULT_PRESETS,
   className = "",

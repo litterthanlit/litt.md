@@ -404,7 +404,7 @@
     },
     "device-rack": {
       "version": "2026.11.21",
-      "hash": "0973306ec8cd8f2a"
+      "hash": "55f372924afbc79f"
     },
     "device-range-chart": {
       "version": "2026.11.16",
@@ -2408,7 +2408,7 @@
     },
     "rack-device-rack": {
       "version": "2026.11.21",
-      "hash": "0973306ec8cd8f2a"
+      "hash": "55f372924afbc79f"
     },
     "rack-dialog": {
       "version": "2026.11.16",
@@ -2628,7 +2628,7 @@
     },
     "rack-step-sequencer": {
       "version": "2026.11.21",
-      "hash": "bfc2360bfb87bb7d"
+      "hash": "58a261a5b311857f"
     },
     "rack-steps": {
       "version": "2026.11.16",
@@ -2792,7 +2792,7 @@
     },
     "step-sequencer": {
       "version": "2026.11.21",
-      "hash": "bfc2360bfb87bb7d"
+      "hash": "58a261a5b311857f"
     },
     "steps": {
       "version": "2026.11.06",

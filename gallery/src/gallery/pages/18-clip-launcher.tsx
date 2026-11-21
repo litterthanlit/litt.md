@@ -10,7 +10,7 @@ export const meta: PageMeta = {
   verbs: ["select", "press"],
   worlds: ["rack"],
   summary:
-    "Ableton Live's Session View clip launcher in Rack's materials: quiet grey module chrome with 1px outlines, while color belongs to the music — each track keeps one of Rack's five clip colors (orange, blue, cyan, purple, green) across its header and slots. Click any clip to launch or stop it on the frame, or trigger an entire scene across all tracks from the Master column. It belongs to Rack.",
+    "Ableton Live's Session View clip launcher in Rack's materials: quiet grey module chrome with 1px outlines, and the color belongs to the music: each track keeps one of Rack's five clip colors (orange, blue, cyan, purple, green) across its header and slots. Click any clip to launch or stop it on the frame, or trigger an entire scene across all tracks from the Master column. It belongs to Rack.",
   tiers: ["instant"],
 };
 

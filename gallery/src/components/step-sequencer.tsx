@@ -89,7 +89,7 @@ const STEPS = 8;
 
 /** Rack's Ableton-style colorful 8-step drum & bass pattern sequencer. */
 export function StepSequencer({
-  title = "Drum Rack · Pattern A",
+  title = "Drum rack · Pattern A",
   bpm = 124,
   lanes: initialLanes = DEFAULT_LANES,
   className = "",

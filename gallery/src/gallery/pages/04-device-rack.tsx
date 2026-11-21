@@ -10,7 +10,7 @@ export const meta: PageMeta = {
   verbs: ["drag", "select"],
   worlds: ["rack"],
   summary:
-    "An Ableton Live Audio Effect Rack: a grey module with a bypass toggle, instant preset buttons, and a row of color-coded rotary Macro Dials. Drag vertically on any dial (1:1 pointer capture) or step with arrow keys, double-click to reset to home, and switch presets to cut every macro on the frame. It belongs to Rack.",
+    "An Ableton Live audio effect rack: a grey module with a bypass toggle, instant preset buttons, and a row of rotary macro dials, each in a color of its own. Drag vertically on any dial (1:1 pointer capture) or step with arrow keys, double-click to reset to home, and switch presets to cut every macro on the frame. It belongs to Rack.",
   tiers: ["instant"],
 };
 
@@ -19,7 +19,7 @@ export const docs: PageDocs = {
   exports: ["DeviceRack"],
   usage: `import { DeviceRack } from "@/components/device-rack";
 
-<DeviceRack title="Dub Echo Rack" />`,
+<DeviceRack title="Dub echo rack" />`,
   use: [
     "Audio effect chains, synth macros, or dense creative-tool parameter strips under Rack where many values stay in reach at once.",
     "Grouping color-coded rotary parameters with instant preset recall and a module bypass switch.",
@@ -48,17 +48,17 @@ const SYNTH_MACROS: DeviceMacro[] = [
 ];
 
 const SYNTH_PRESETS: DevicePreset[] = [
-  { name: "Glass Pad", values: { wave: 48, detune: 14, attack: 18, release: 62 } },
+  { name: "Glass pad", values: { wave: 48, detune: 14, attack: 18, release: 62 } },
   { name: "Pluck", values: { wave: 82, detune: 6, attack: 2, release: 24 } },
-  { name: "Sub Drone", values: { wave: 12, detune: 28, attack: 64, release: 90 } },
+  { name: "Sub drone", values: { wave: 12, detune: 28, attack: 64, release: 90 } },
 ];
 
 function EchoRackDemo() {
-  return <DeviceRack title="Dub Echo Rack" className="max-w-3xl" />;
+  return <DeviceRack title="Dub echo rack" className="max-w-3xl" />;
 }
 
 function SynthRackDemo() {
-  return <DeviceRack title="Wavetable Macro" macros={SYNTH_MACROS} presets={SYNTH_PRESETS} className="max-w-xl" />;
+  return <DeviceRack title="Wavetable macro" macros={SYNTH_MACROS} presets={SYNTH_PRESETS} className="max-w-xl" />;
 }
 
 export default function DeviceRackPage() {
@@ -66,14 +66,14 @@ export default function DeviceRackPage() {
     <Page
       meta={meta}
       docs={docs}
-      tile={<DeviceRack title="Dub Echo Rack" macros={SYNTH_MACROS} presets={SYNTH_PRESETS} className="max-w-md" />}
+      tile={<DeviceRack title="Dub echo rack" macros={SYNTH_MACROS} presets={SYNTH_PRESETS} className="max-w-md" />}
     >
       <Stage
-        title="Audio Effect Rack"
+        title="Audio effect rack"
         tier="instant"
         size="lg"
         code="EchoRackDemo"
-        caption="Drag vertically on any macro dial, step with arrow keys, or double-click a dial to reset it. Switch between Dub Tape, Warm Wash, Acid Ping and Init to snap all five macros at once."
+        caption="Drag vertically on any macro dial, step with arrow keys, or double-click a dial to reset it. Switch between Dub tape, Warm wash, Acid ping and Init to snap all five macros at once."
       >
         <EchoRackDemo />
       </Stage>
@@ -88,7 +88,7 @@ export default function DeviceRackPage() {
       <TryIt
         of="DeviceRack"
         component={DeviceRack}
-        props={{ title: "Dub Echo Rack", className: "max-w-3xl" }}
+        props={{ title: "Dub echo rack", className: "max-w-3xl" }}
         controls={[{ name: "title", type: "text" }]}
       />
     </Page>
