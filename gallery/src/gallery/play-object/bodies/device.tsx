@@ -17,19 +17,22 @@
  *   top (Index, as an iPod's Menu), Every component below (the world's gallery view) and Play at its centre, a key (`key`)
  *   in a well cut through the cap, that latches down while it plays. Keys, a pick and Play turn it too, so it always
  *   stands at the take showing. Radii nest: the well at --radius-well, the glass 4px in, the chip at --radius-chip.
- * - The dial says what its edges do (plans/audits/device.md, finding 6): under the hand or on focus, an edge's word shows
- *   in the readout's own chip (`chip`), set under the collar on the plate, PREVIOUS, NEXT, INDEX or EVERY COMPONENT. It
- *   switches on and off where it stands, as the chip does, and is hidden from screen readers, which hear the edge's own
- *   name from the contract. A chip, not the Tooltip part: a tooltip is a panel that floats over the page, and Device's
- *   words for a state are the chip's.
+ * - The dial says what its edges do (plans/audits/device.md, finding 6): under the pointer, an edge's word shows in the
+ *   readout's own chip (`chip`), set under the collar on the plate, PREVIOUS, NEXT, INDEX or EVERY COMPONENT. It
+ *   switches on and off where it stands, as the chip does, and is hidden from screen readers. The edges take no Tab
+ *   stop (the contract gives them tabIndex -1), so the keyboard never shows a legend: keyboard and screen reader users
+ *   get the same names from the contract, on the edges' labels and the selector's keys. A chip, not the Tooltip part:
+ *   a tooltip is a panel that floats over the page, and Device's words for a state are the chip's.
  * - Index, on the glass, is the recorder's file list (`DeviceHome`, plans/audits/device-fixes.md, The front door): each
  *   take's number, name and its tape level in the mono, the row under the keys or the pointer lit by the selection blue
  *   (--select), and that take's part live in a window (`window`) beside the list under a Cue chip. The contract owns the
  *   list, its keys, the pick and the link; this only draws. On Index the dial's edges and its turn go along the contract's
  *   one cycle (Next to the first take, Previous to the last), as the tape does; they do not move the list's lit row.
  *   The rows are silent: a voice answers a key or a detent, and a row is neither.
- * - At a short window (a laptop's 768 or 800) the screen gives up height, down to 25rem, so the frame and the whole dial
- *   stay in the first screen (finding 6; `shape`).
+ * - At a short window (a laptop's 768 or 800) the screen keeps SCREEN_HEIGHT's 30rem floor and the deck gives up height
+ *   instead: a lower tape, a smaller dial and tighter margins, so the frame and the whole dial stay in the first screen
+ *   (finding 6). At 1366 by 768 the frame ends at the window's foot. The command menu's list is capped there so its
+ *   panel stays on the 30rem screen (`shape`).
  * - Orange is nowhere at rest; red is the playhead and the chip's lamp while Play runs.
  * - Things are mechanisms: the take, the playhead and the readout switch where they stand; only the dial travels, on the
  *   responsive spring (useSettle), and lands at once under reduced motion.
@@ -261,13 +264,13 @@ function RecorderMute({ compact = false, className = "" }: { compact?: boolean; 
 
 const DETENT = 15; // degrees of turn per component, as the player's dial clicks
 
-/* An edge's word, in the readout's chip, under the collar: shown while that edge is under the hand or has focus. Each
+/* An edge's word, in the readout's chip, under the collar: shown while that edge is under the pointer. Each
    rule is its own string, so no two classes on one chip set the same property under the same variant. */
 const LEGEND_ON = {
-  prev: "group-has-[[data-side=prev]:is(:hover,:focus-visible)]/dial:flex",
-  next: "group-has-[[data-side=next]:is(:hover,:focus-visible)]/dial:flex",
-  up: "group-has-[[data-side=up]:is(:hover,:focus-visible)]/dial:flex",
-  down: "group-has-[[data-side=down]:is(:hover,:focus-visible)]/dial:flex",
+  prev: "group-has-[[data-side=prev]:hover]/dial:flex",
+  next: "group-has-[[data-side=next]:hover]/dial:flex",
+  up: "group-has-[[data-side=up]:hover]/dial:flex",
+  down: "group-has-[[data-side=down]:hover]/dial:flex",
 } as const;
 const legend =
   "pointer-events-none absolute top-[calc(100%+0.25rem)] left-1/2 z-10 hidden -translate-x-1/2 items-center whitespace-nowrap rounded-chip bg-chip px-1.5 py-0.5 " +
@@ -363,7 +366,7 @@ function Dial({
   const edgeSound = keyVoice(sound);
 
   return (
-    <div data-part="collar" data-recorder-dial="" className={"group/dial relative size-36 shrink-0 rounded-pill bg-tray p-2 shadow-(--tray-shade) " + className}>
+    <div data-part="collar" data-recorder-dial="" className={"group/dial relative size-36 [@media(max-height:52rem)]:size-28 shrink-0 rounded-pill bg-tray p-2 shadow-(--tray-shade) " + className}>
       <div
         ref={cap}
         data-part="cap"
@@ -453,15 +456,15 @@ function DeviceBody({ takes, at, selector, pick, step, index, everything, turn, 
   return (
     <div data-part="frame" className="mx-auto flex w-full max-w-6xl min-w-0 flex-col rounded-[var(--object-radius)] p-1 [background:var(--frame)] shadow-[var(--frame-edge),var(--object-cast)] forced-colors:border">
       <div data-part="plate" className="litt-grain relative isolate grid min-w-0 grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-x-6 rounded-[calc(var(--object-radius)-4px)] bg-canvas p-3 shadow-(--plate-edge) [--grain-opacity:var(--object-grain)]">
-        <Tape takes={takes} at={at} selector={selector} pick={pick} className="col-span-full row-start-2 mx-3 mt-3 h-10" />
-        <Readout readout={readout} playing={playing} className="col-start-1 row-start-3 mt-3 mb-4 ml-6 w-full max-w-xl" />
-        <Dial at={at} n={takes.length} step={step} index={index} everything={everything} turn={turn} play={play} className="col-start-3 row-start-3 mt-3 mr-6 mb-4" />
+        <Tape takes={takes} at={at} selector={selector} pick={pick} className="col-span-full row-start-2 mx-3 mt-3 h-10 [@media(max-height:52rem)]:mt-1 [@media(max-height:52rem)]:h-9" />
+        <Readout readout={readout} playing={playing} className="col-start-1 row-start-3 mt-3 mb-4 ml-6 w-full max-w-xl [@media(max-height:52rem)]:mt-1 [@media(max-height:52rem)]:mb-3" />
+        <Dial at={at} n={takes.length} step={step} index={index} everything={everything} turn={turn} play={play} className="col-start-3 row-start-3 mt-3 mr-6 mb-4 [@media(max-height:52rem)]:mt-1 [@media(max-height:52rem)]:mb-3" />
         <div data-part="bezel" className="relative col-span-full row-start-1 flex rounded-[calc(var(--object-radius)-16px)] bg-bezel p-2 shadow-(--bezel-edge) forced-colors:border">
           {screen}
           {/* The glass over the screen: a sheen where the light catches it. It takes no hand. */}
           <span aria-hidden="true" data-part="glass" className="pointer-events-none absolute inset-2 rounded-[calc(var(--object-radius)-24px)] [background:var(--glass-sheen)]" />
         </div>
-        <RecorderMute className="col-start-2 row-start-3 mt-3 mb-4 justify-self-end" />
+        <RecorderMute className="col-start-2 row-start-3 mt-3 mb-4 justify-self-end [@media(max-height:52rem)]:mt-1 [@media(max-height:52rem)]:mb-3" />
       </div>
     </div>
   );
@@ -471,7 +474,7 @@ function DeviceBody({ takes, at, selector, pick, step, index, everything, turn, 
 
 /* A row of the list: its number, its name and its level, in the mono, touching the next. The current row (under the keys
    or the pointer) is the one blue on the glass, the selection bar (--select, its words --select-ink), switched where it
-   stands on the instant tier; under forced colors it is Highlight. A short window (the laptop's 400px screen) sets the
+   stands on the instant tier; under forced colors it is Highlight. A short window (the laptop's 30rem screen) sets the
    rows closer, so all twelve fit beside the window. */
 const FILE_ROW =
   "group/row litt-target relative grid h-control-sm w-full min-w-0 cursor-pointer grid-cols-[2.5ch_minmax(0,1fr)_2.5rem] items-center gap-3 rounded-chip px-3 text-left font-field text-small select-none " +
@@ -510,7 +513,7 @@ function DeviceHome({ world, takes, current, list, row, everything, part, compac
     >
       <div className="flex min-h-0 min-w-0 flex-col gap-2">
         {/* The list's head, as a recorder's file list prints it: the world, and how many takes are on it. A short window
-            leaves it out, so the twelve rows and the link fit the 400px screen. */}
+            leaves it out, so the twelve rows and the link fit the 30rem screen. */}
         <p aria-hidden="true" className="flex items-baseline justify-between gap-3 px-3 font-field text-caption text-fg-subtle [@media(max-height:52rem)]:hidden">
           <span>{world.name}</span>
           <span className="tabular-nums">{n} takes</span>
@@ -567,10 +570,15 @@ function DeviceHome({ world, takes, current, list, row, everything, part, compac
 
 export const device: PlayObjectBody = {
   name: "device",
-  /* Below 52rem of window, where SCREEN_HEIGHT stops at its 30rem floor and pushes the dial under the fold, the screen
-     gives the deck its room instead, down to 25rem: at 1366 by 768 and 1280 by 800 the whole frame is in view. */
+  /* SCREEN_HEIGHT alone, never under its 30rem floor. Below 52rem of window, where that floor would push the dial under
+     the fold, the deck gives up its height instead (DeviceBody): at 1366 by 768 and 1280 by 800 the whole frame is in
+     view. There the screen is the floor, 30rem, and the command menu's panel, set 15dvh down it with a list up to 22rem
+     (command-menu.tsx), would run 80px past its foot at 768; so the screen caps the list at what is left of its 30rem
+     under the panel's top, its field and its footer (7rem), as a window that short caps it. The list scrolls inside. */
   shape: (compact) =>
-    compact ? COMPACT_SCREEN : SCREEN_HEIGHT + " [@media(max-height:52rem)]:h-[max(25rem,calc(100dvh-23rem))] w-full rounded-[calc(var(--object-radius)-24px)]",
+    compact
+      ? COMPACT_SCREEN
+      : SCREEN_HEIGHT + " [@media(max-height:52rem)]:[--cmd-list-max:min(22rem,calc(30rem-15dvh-7rem))] w-full rounded-[calc(var(--object-radius)-24px)]",
   rail: false,
   Body: DeviceBody,
   Home: DeviceHome,
