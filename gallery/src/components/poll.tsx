@@ -1,13 +1,13 @@
 /**
- * Poll, a Flat part (skills/litt-md/taste/litt-principles.md, Flat): a reader poll built from Flat's pills, Candy data
- * hues and 0.28 expressive bounce.
+ * Poll, a Flat part (skills/litt-md/taste/litt-principles.md, Flat): a question for readers, built from Flat's pills,
+ * its data hues and the expressive spring.
  *
  * - Before a pick, every choice sits as a plain white paper pill on the grey ground (or a grey bubble inside paper) with
- *   an 8px Candy data dot naming its option. No frames, no dividers, nothing cast.
- * - Picking a choice reveals the shares: each pill's tinted Candy data bar springs open from the left on Flat's
- *   expressive spring (0.28 bounce; instant under reduced motion), with the percentage and vote count in ink words.
+ *   an 8px data dot naming its option. No frames, no dividers, nothing cast.
+ * - Picking a choice reveals the shares: each pill's tinted data bar springs open from the left on the expressive
+ *   spring (instant under reduced motion), with the percentage and vote count in ink words.
  * - A standing 40px figure (text-figure, Flat's call 8) holds the total votes at the top when showFigure is set.
- * - Color stays strictly on data (Candy hues carry each choice's vote share, R7), and no large fill uses the accent (R6).
+ * - Color stays strictly on data (the hues carry each choice's vote share, R7), and no large fill uses the accent (R6).
  * - A hand always wins: picking another option moves your vote at once, and picking your current choice takes it back.
  * - Accessibility: native radiogroup / radio buttons with full text names, polite live announcement on change, and clear
  *   forced-colors borders on every pill and the chosen row.
@@ -17,7 +17,7 @@ import { motion } from "motion/react";
 import { CheckIcon } from "@/components/icons";
 import { useMotionDial, useTransition } from "@/motion";
 
-/** Candy data hues for poll options, in R7's fixed order (Flat's eight slots). */
+/** Data hues for poll options, in R7's fixed order (Flat's eight slots). */
 export type PollHue = "blue" | "amber" | "teal" | "violet" | "rose" | "sky" | "bubblegum" | "sun";
 
 /** One choice in a Poll. */
@@ -28,14 +28,14 @@ export type PollOption = {
   label: string;
   /** Starting votes for this choice before the current reader votes. */
   votes: number;
-  /** Optional Candy data hue; defaults to the option's slot in R7's order. */
+  /** Optional data hue; defaults to the option's slot in R7's order. */
   hue?: PollHue;
 };
 
 export type PollProps = {
   /** The question asked of the reader. */
   question: ReactNode;
-  /** Two to six choices. Each gets its own Candy data hue in R7's order. */
+  /** Two to six choices. Each gets its own data hue in R7's order. */
   options: PollOption[];
   /** Controlled picked option id, or null when the reader has not voted yet. */
   value?: string | null;
@@ -76,7 +76,7 @@ const HUE_BAR: Record<PollHue, string> = {
   sun: "bg-[color-mix(in_oklab,var(--data-sun)_20%,transparent)]",
 };
 
-/** A playful Flat reader poll: pills on grey that spring open in Candy data hues when a reader votes. */
+/** A question for readers: its choices as pills, with everyone's share once the reader votes. */
 export function Poll({
   question,
   options,
