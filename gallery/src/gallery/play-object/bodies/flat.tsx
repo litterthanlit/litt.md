@@ -30,7 +30,8 @@
  * thinned towards the grey) with their names in the quiet ink. No pill is filled with the ink, and nothing is outlined
  * at rest, since in Flat an outline means off. Beside the table, on the sheet, that pill's
  * part stands live at one and a half times its size (one and a quarter on a short screen) with its line under it,
- * springing up on Flat's expressive spring (0.28) each time the hand moves to another pill; nothing moves on load and,
+ * springing up on Flat's expressive spring (0.28) each time the hand moves to another pill, except while a pointer
+ * sweeps across the table (pills entered under 150ms apart), when each part simply appears; nothing moves on load and,
  * under reduced motion, it simply appears.
  * Color arrives with the part: the table is grey, white and the ink, and holds no accent fill, so the view's one is the
  * part's own. On a phone the table is the whole screen and stands alone (`phonePart` "none"): a touch on a pill opens
@@ -183,6 +184,9 @@ const TABLE_PILL =
 const PILL_ON = "bg-(--flat-paper) font-title text-fg forced-colors:border-2 forced-colors:border-[Highlight]";
 const PILL_OFF = "bg-[color-mix(in_oklab,var(--flat-paper),transparent_70%)] text-fg-muted";
 
+/* How soon after the last pill the pointer entered a new one counts as a sweep (no spring). */
+const SWEEP_MS = 150;
+
 /** The current pill's part, live, springing up as the hand reaches its pill. Still on the first draw. */
 function LivePart({ id, still, children }: { id: string; still: boolean; children: ReactNode }) {
   const enter = useTransition("expressive");
@@ -206,6 +210,11 @@ function FlatHome({ takes, current, list, row, everything, part, compact }: Play
   /* Nothing moves on load: the first part (and the one shown when Index is reached from a take) is simply there. */
   const [drawn, setDrawn] = useState(false);
   useEffect(() => setDrawn(true), []);
+  /* A pointer sweeping down the table changes the current pill on every row it crosses, and each change brings a new
+     part: a pill entered within SWEEP_MS of the last one brings its part without the spring, so a sweep does not
+     restart it a dozen times. The keys always spring. */
+  const lastEnter = useRef(-Infinity);
+  const [sweeping, setSweeping] = useState(false);
   /* The part reads as the main thing at one and a half times its size; where the screen is short (a laptop's 30rem) or
      narrow (a tablet's), at one and a quarter, so the tallest (Card) and the widest still stand whole on it, and at
      real size where the screen is narrower still. */
@@ -218,6 +227,19 @@ function FlatHome({ takes, current, list, row, everything, part, compact }: Play
     ro.observe(el);
     return () => ro.disconnect();
   }, [compact]);
+  const withSweep = (r: ReturnType<PlayObjectHomeProps["row"]>): typeof r => ({
+    ...r,
+    onPointerEnter: (e) => {
+      const now = e.timeStamp;
+      setSweeping(now - lastEnter.current < SWEEP_MS);
+      lastEnter.current = now;
+      r.onPointerEnter?.(e);
+    },
+    onKeyDown: (e) => {
+      setSweeping(false);
+      r.onKeyDown?.(e);
+    },
+  });
   const take = takes[current];
   const half = Math.ceil(takes.length / 2);
   const table = (
@@ -227,7 +249,7 @@ function FlatHome({ takes, current, list, row, everything, part, compact }: Play
         <ul className="grid grid-flow-col grid-cols-2" style={{ gridTemplateRows: `repeat(${half}, auto)` }}>
           {takes.map((t, i) => (
             <li key={t.id} className="grid min-w-0">
-              <button {...row(i)} className={CELL}>
+              <button {...withSweep(row(i))} className={CELL}>
                 <span className={TABLE_PILL + " " + (i === current ? PILL_ON : PILL_OFF)}>
                   <span className="min-w-0 truncate">{t.title}</span>
                 </span>
@@ -250,7 +272,7 @@ function FlatHome({ takes, current, list, row, everything, part, compact }: Play
       {table}
       <div className="grid min-h-0 min-w-0 content-center justify-items-center gap-6 py-4">
         {take && (
-          <LivePart id={take.id} still={reduced || !drawn}>
+          <LivePart id={take.id} still={reduced || !drawn || sweeping}>
             {part({ scale })}
           </LivePart>
         )}
