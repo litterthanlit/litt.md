@@ -52,7 +52,8 @@
  * out of Device's gallery view, adds a part Heat does not have to Heat's set, and on Device puts back a second control
  * named Home and a Source link into the gallery, centres Index's rows again with one line wrapping, draws Heat's
  * menu strip under its screen again, takes Heat's live part off its Index and marks a second row current (and the same
- * on the recorder's Index, opened again with its body loaded, since the rest keeps it from loading), and sets
+ * on the recorder's Index, opened again with its body loaded, since the rest keeps it from loading, where a second
+ * break swallows Down on its rows so neither the lit row nor the live part moves), and sets
  * Heat's screen to the other worlds' height, puts Device's address back to the bare player after a step, names
  * Device's selector Components again, and at 1366 by 768 lowers Device's screen to 25rem, as it once was, so the
  * command menu's panel runs past its foot; it fails if the check misses any.
@@ -234,6 +235,47 @@ function ownIndex(pg) {
     const current = [...document.querySelectorAll(`${F} [data-play-index] button[data-current]`)].map((b) => b.textContent.trim());
     return { live: live?.dataset.playLive ?? null, draws, current };
   }, FRAME);
+}
+
+/** Claims OWN_INDEX_CLAIM on the Index showing: at rest row 0's part is live and current, and with `move`, Down
+    brings row 1 and the pointer on the third row brings row 2, each with exactly one row current. */
+async function checkOwnIndex(pg, world, id, { move }) {
+  const ids = SETS[id] ?? [];
+  const ok = (m, k) => m.draws && m.current.length === 1 && m.live === ids[k];
+  /* The live part is a lazy chunk, so it can take longer than a fixed wait to draw on a slow runner (CI read Heat's
+     Tune menu 300ms after the pointer reached its row, before it had drawn): read until row k's part is drawn. */
+  const settled = async (k) => {
+    const end = Date.now() + 5000;
+    let m = await ownIndex(pg);
+    while (!ok(m, k) && Date.now() < end) {
+      await pg.waitForTimeout(100);
+      m = await ownIndex(pg);
+    }
+    return m;
+  };
+  const atRest = move ? await settled(0) : await ownIndex(pg);
+  let moved = null, pointed = null;
+  if (move) {
+    await pg.locator(`${FRAME} [data-play-index] button[data-current]`).focus();
+    await pg.keyboard.press("ArrowDown");
+    moved = await settled(1);
+    await pg.keyboard.press("ArrowUp");
+    await pg.waitForTimeout(200);
+    const third = await pg.locator(`${FRAME} [data-play-index] button`).nth(2).boundingBox();
+    if (third) {
+      await pg.mouse.move(third.x + third.width / 2, third.y + third.height / 2);
+      pointed = await settled(2);
+      await pg.mouse.move(0, 0);
+    }
+    await pg.locator(`${FRAME} [data-play-index] button`).first().focus();
+    await pg.waitForTimeout(200);
+  }
+  claim(
+    OWN_INDEX_CLAIM,
+    ok(atRest, 0) && (!moved || ok(moved, 1)) && (!pointed || ok(pointed, 2))
+      ? null
+      : `${world}: at rest ${JSON.stringify(atRest)}${moved ? `, after Down ${JSON.stringify(moved)}` : ""}${pointed ? `, with the pointer on the third row ${JSON.stringify(pointed)}` : ""}`,
+  );
 }
 
 const readout = (pg) => pg.evaluate(() => document.querySelector("[data-play-readout]")?.textContent?.replace(/\s+/g, " ").trim() ?? null);
@@ -446,43 +488,7 @@ for (const [world, id, attribute] of RUN) {
         document.querySelector(`${F} [data-play-live]`)?.remove();
         document.querySelectorAll(`${F} [data-play-index] button`)[3]?.setAttribute("data-current", "");
       }, FRAME);
-    const menu = () => ownIndex(pg);
-    const ids = SETS[id] ?? [];
-    const ok = (m, k) => m.draws && m.current.length === 1 && m.live === ids[k];
-    /* The live part is a lazy chunk, so it can take longer than a fixed wait to draw on a slow runner (CI read Heat's
-       Tune menu 300ms after the pointer reached its row, before it had drawn): read until row k's part is drawn. */
-    const settled = async (k) => {
-      const end = Date.now() + 5000;
-      let m = await menu();
-      while (!ok(m, k) && Date.now() < end) {
-        await pg.waitForTimeout(100);
-        m = await menu();
-      }
-      return m;
-    };
-    const atRest = selfTest ? await menu() : await settled(0);
-    let moved = null, pointed = null;
-    if (!selfTest) {
-      await pg.locator(`${FRAME} [data-play-index] button[data-current]`).focus();
-      await pg.keyboard.press("ArrowDown");
-      moved = await settled(1);
-      await pg.keyboard.press("ArrowUp");
-      await pg.waitForTimeout(200);
-      const third = await pg.locator(`${FRAME} [data-play-index] button`).nth(2).boundingBox();
-      if (third) {
-        await pg.mouse.move(third.x + third.width / 2, third.y + third.height / 2);
-        pointed = await settled(2);
-        await pg.mouse.move(0, 0);
-      }
-      await pg.locator(`${FRAME} [data-play-index] button`).first().focus();
-      await pg.waitForTimeout(200);
-    }
-    claim(
-      OWN_INDEX_CLAIM,
-      ok(atRest, 0) && (!moved || ok(moved, 1)) && (!pointed || ok(pointed, 2))
-        ? null
-        : `${world}: at rest ${JSON.stringify(atRest)}${moved ? `, after Down ${JSON.stringify(moved)}` : ""}${pointed ? `, with the pointer on the third row ${JSON.stringify(pointed)}` : ""}`,
-    );
+    await checkOwnIndex(pg, world, id, { move: !selfTest });
     if (selfTest) await pg.reload({ waitUntil: "networkidle" }).then(() => pg.waitForTimeout(300)).then(() => inView(pg));
   }
 
@@ -707,8 +713,10 @@ for (const [world, id, attribute] of RUN) {
   await ctx.close();
 }
 
-/* The recorder's own Index (its file list): the rest of the self-test keeps Device's body from loading, so this break
-   opens Device again with the recorder, takes the live part out of its window and marks a second row current. */
+/* The recorder's own Index (its file list): the rest of the self-test keeps Device's body from loading, so these breaks
+   open Device again with the recorder. The first takes the live part out of its window and marks a second row current;
+   the second leaves Index whole at rest but swallows Down on its rows before the contract hears it, so neither the lit
+   row nor the live part moves (read by the same check the players run, under the name "Device, Down kept"). */
 let recorderIndex = false;
 if (selfTest) {
   const { ctx, pg } = await open("device", { recorder: true });
@@ -718,9 +726,17 @@ if (selfTest) {
     document.querySelector(`${F} [data-play-live]`)?.remove();
     document.querySelectorAll(`${F} [data-play-index] button`)[3]?.setAttribute("data-current", "");
   }, FRAME);
-  const m = await ownIndex(pg);
-  const ids = SETS.device ?? [];
-  claim(OWN_INDEX_CLAIM, m.draws && m.current.length === 1 && m.live === ids[0] ? null : `Device: at rest ${JSON.stringify(m)}`);
+  await checkOwnIndex(pg, "Device", "device", { move: false });
+  await pg.reload({ waitUntil: "networkidle" });
+  await pg.waitForTimeout(300);
+  await inView(pg);
+  await pg.evaluate((F) => {
+    const stop = (e) => {
+      if (e.key === "ArrowDown" && e.target instanceof Element && e.target.closest(`${F} [data-play-index]`)) e.stopImmediatePropagation();
+    };
+    window.addEventListener("keydown", stop, true);
+  }, FRAME);
+  await checkOwnIndex(pg, "Device, Down kept", "device", { move: true });
   await ctx.close();
 }
 
@@ -791,6 +807,8 @@ if (selfTest) {
   if (!menuCaught) console.error("playground --self-test: Heat's Index lost its live part and gained a second current row, and the check missed it.");
   const fileListCaught = recorderIndex && (claims.get(OWN_INDEX_CLAIM) ?? []).some((f) => f.startsWith("Device:"));
   if (!fileListCaught) console.error(`playground --self-test: ${recorderIndex ? "the recorder's Index lost its live part and gained a second current row, and the check missed it" : "the recorder did not draw its own Index, so its break could not be tried"}.`);
+  const downCaught = recorderIndex && (claims.get(OWN_INDEX_CLAIM) ?? []).some((f) => f.startsWith("Device, Down kept:") && f.includes("after Down"));
+  if (!downCaught) console.error(`playground --self-test: ${recorderIndex ? "Down on the recorder's Index no longer moved the lit row and the live part, and the check missed it" : "the recorder did not draw its own Index, so its Down break could not be tried"}.`);
   const sizeCaught = [...claims].some(([name, fails]) => name.startsWith("on Heat's player the pursuit meter covers") && fails.some((f) => f.startsWith("Heat:")));
   if (!sizeCaught) console.error("playground --self-test: Heat's screen at the other worlds' height, and the check missed the take's size.");
   const addressCaught = (claims.get("the take is in the address, written in place as you step, and Back from its page returns to it") ?? []).some((f) => f.startsWith("Device:"));
@@ -799,8 +817,8 @@ if (selfTest) {
   if (!namesCaught) console.error("playground --self-test: Device's selector named Components, like the link beside it, and the check missed it.");
   const shortCaught = (claims.get("at 1366x768 what a take opens stays on Device's screen") ?? []).some((f) => f.startsWith("Device · Command menu: "));
   if (!shortCaught) console.error("playground --self-test: Device's screen at 25rem on a 1366x768 window cuts the command menu's panel, and the check missed it.");
-  if (!shortCaught || !namesCaught || !addressCaught || !caught || !bareCaught || !tileCaught || !setCaught || !homeCaught || !sourceCaught || !topsCaught || !orderCaught || !sizeCaught || !menuCaught || !fileListCaught) process.exit(1);
-  console.log("playground --self-test: a dialog escaped to <body> leaves the screen, with the recorder kept from loading Device draws bare, a tile missing from Device's gallery view is seen, a set naming a part outside its world is seen, a second Home and a Source link into the gallery are seen, Index's rows centred off their tops are seen, Heat's strip under its screen is seen, a small take on Heat's screen is seen, Heat's Index and the recorder's with no live part and two current rows are seen, a take kept out of the address is seen, a selector sharing the Components link's name is seen, and Device's screen at 25rem cutting the command menu at 1366x768 is seen; the check catches all fourteen.")
+  if (!downCaught || !shortCaught || !namesCaught || !addressCaught || !caught || !bareCaught || !tileCaught || !setCaught || !homeCaught || !sourceCaught || !topsCaught || !orderCaught || !sizeCaught || !menuCaught || !fileListCaught) process.exit(1);
+  console.log("playground --self-test: a dialog escaped to <body> leaves the screen, with the recorder kept from loading Device draws bare, a tile missing from Device's gallery view is seen, a set naming a part outside its world is seen, a second Home and a Source link into the gallery are seen, Index's rows centred off their tops are seen, Heat's strip under its screen is seen, a small take on Heat's screen is seen, Heat's Index and the recorder's with no live part and two current rows are seen, a recorder Index where Down moves nothing is seen, a take kept out of the address is seen, a selector sharing the Components link's name is seen, and Device's screen at 25rem cutting the command menu at 1366x768 is seen; the check catches all fifteen.")
   process.exit(0);
 }
 if (bad) {
