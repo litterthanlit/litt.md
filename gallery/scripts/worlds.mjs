@@ -33,6 +33,10 @@
  * - a world's page (its main, at every size and theme) or its Copy prompt (read back from the clipboard at 1440, where
  *   the rail shows) says a thing that world may not claim (NOT_CLAIMS below: Device is not "orange as its own accent",
  *   not "As Press" in shape, and has no "dark LCD screens for panels and overlays", plans/audits/device.md, finding 2).
+ * - two addresses in routes() share a document.title, or one but the overview (the gallery's own front page) is titled
+ *   with the gallery's name alone (plans/audits/shared-fixes.md, S1: "Button · Press · litt.md Gallery").
+ *
+ * --self-test also makes every title the bare gallery name again and fails if the title claim misses it.
  *
  * Not here: nothing moving under reduced motion on a world page. reduced-motion.mjs (test:motion) opens every file in
  * src/gallery/pages, every world included, so a second copy of its frame-by-frame watcher would only repeat it.
@@ -46,6 +50,7 @@ import path from "node:path";
 import { createRequire } from "node:module";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import ts from "typescript";
+import { routes } from "./routes.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const args = process.argv.slice(2);
@@ -235,7 +240,39 @@ async function audit(world, size, scheme, mutate) {
 
 const SIZES = [{ width: 1440, height: 900, label: "1440" }, { width: 390, height: 844, label: "390" }];
 
+/* Every address names itself (plans/audits/shared-fixes.md, S1): the part or page, then the world, then the gallery.
+   One tab walks every address in routes() by its hash and reads document.title; the overview, the gallery's own
+   front page, is the one address titled with the gallery's name alone. `broken` makes every title the bare name. */
+const TITLE_CLAIM = "no two addresses share a title, and none in a world is the bare gallery name";
+async function titles(list, broken = false) {
+  const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, reducedMotion: "reduce" });
+  if (broken) await ctx.addInitScript(() => Object.defineProperty(Document.prototype, "title", { get: () => "litt.md Gallery", set() {}, configurable: true }));
+  const pg = await ctx.newPage();
+  await pg.goto(`${base}#${list[0]}`, { waitUntil: "networkidle" });
+  const seen = new Map();
+  let last = null;
+  for (const route of list) {
+    await pg.evaluate((r) => (location.hash = r), route);
+    await pg.waitForFunction((prev) => document.title !== prev, last, { timeout: 2500 }).catch(() => {});
+    await pg.waitForTimeout(30);
+    const title = await pg.evaluate(() => document.title);
+    last = title;
+    if (title === "litt.md Gallery" && route !== "overview") claim(TITLE_CLAIM, `#${route} is titled "${title}"`);
+    seen.set(title, [...(seen.get(title) ?? []), route]);
+  }
+  for (const [title, at] of seen) if (at.length > 1) claim(TITLE_CLAIM, `"${title}" on ${at.length} addresses: ${at.slice(0, 4).map((r) => `#${r}`).join(", ")}`);
+  claim(TITLE_CLAIM, null);
+  await ctx.close();
+}
+
 if (selfTest) {
+  /* The titles: every one the bare gallery name again, as every world page was before S1. */
+  await titles(["press", "press/button", "press/about", "heat/slider"], true);
+  const titleCaught = (claims.get(TITLE_CLAIM) ?? []).length > 0;
+  console.log(`${titleCaught ? "✓" : "✗"} self-test: "${TITLE_CLAIM.slice(0, 60)}…" ${titleCaught ? "is caught" : "is MISSED"}`);
+  if (!titleCaught) { await browser.close(); server.close(); console.error("\nworlds --self-test: every page titled with the bare gallery name went unseen."); process.exit(1); }
+  claims.clear();
+
   /* Each break is a defect one claim must name: a second fill on the first screen, a missing Foundations card, a wrong
      line on a card, a page wider than the screen, an old claim back on Device's page or in its prompt. The world is
      Press at 1440 unless the break names another. */
@@ -349,6 +386,9 @@ for (const size of SIZES) {
   for (const e of errors) claim("the Systems page throws nothing", `${size.label}: ${e}`);
   await ctx.close();
 }
+
+/* ---------- every address's title ---------- */
+await titles(routes());
 
 /* ---------- llms.txt ---------- */
 {

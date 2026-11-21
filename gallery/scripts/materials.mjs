@@ -346,7 +346,7 @@ async function check(route, theme, mutate) {
     const rules = [w === "flat" ? FLAT_KINDS : w === "press" ? PRESS_KINDS : KINDS, w, route];
     const found = (await pg.evaluate(read, rules)).map(([rule, what]) => `${route} · ${theme} · ${rule} · ${what}`);
     /* The player: Home, then every take on its screen, stepped with the tape's keys as a person would. */
-    const slider = pg.locator("[data-play-object] [role=slider][aria-label=Components]");
+    const slider = pg.locator("[data-play-object] [role=slider][aria-label=Take]");
     if ((route === "device" || route === "flat") && !mutate && (await slider.count())) {
       const n = Number(await slider.getAttribute("aria-valuemax"));
       for (let k = 1; k <= n; k++) {
