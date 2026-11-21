@@ -131,10 +131,14 @@ function Loaded({ material, dark, lead, actions }: Props) {
     const want = takeAddress(material, takeId);
     if (location.hash !== want) history.replaceState(history.state, "", `${location.pathname}${location.search}${want}`);
   }, [material, takeId]);
-  /* And read back when the address moves under the player: the world's name in the top row (#<world>) opens Index. */
+  /* And read back when the address moves under the player: the world's name in the top row (#<world>) opens Index. A
+     move of the address is a hand's pick, as any other: through go, so Play stops (the top row is outside the screen,
+     whose hand stops it), Index's current row is the take just left, and the change is said. Through a ref, so the
+     listener never reads a stale place. */
+  const picked = useRef<(to: number | null) => void>(() => {});
   useEffect(() => {
     const read = () => {
-      if (isPlayerRoute(location.hash, material)) setAt(fromAddress());
+      if (isPlayerRoute(location.hash, material)) picked.current(fromAddress());
     };
     window.addEventListener("hashchange", read);
     window.addEventListener("popstate", read);
@@ -177,6 +181,7 @@ function Loaded({ material, dark, lead, actions }: Props) {
     setAt(to);
     setSaid(to === null ? homeText : `${takes[to]!.title}, ${to + 1} of ${n}`);
   };
+  picked.current = go;
   /** The place `by` along the cycle Index, take 0 … take n-1, wrapping. */
   const along = (by: number) => {
     const k = ((((at === null ? 0 : at + 1) + by) % (n + 1)) + n + 1) % (n + 1);

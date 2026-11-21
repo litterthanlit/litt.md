@@ -42,6 +42,8 @@
  *   or, for the tooltip, a held pointer) is not inside the screen's box, under the screen's world (1px tolerance),
  * - the take changes within 6s with no hand on it (nothing plays on load), Play does not move it within 5s, or a press
  *   on the screen does not stop it,
+ * - following the world's name in the top row (#<world>, outside the screen) while Play runs does not stop Play, open
+ *   Index and say so in the live region, or, on a body's own Index, does not make the take just left the current row,
  * - Home's Every component link does not open #<world>/components, or that page does not hold a tile for every
  *   component in the world (read from src/gallery/pages), or a tile's name does not link to #<world>/<id>.
  *
@@ -51,7 +53,7 @@
  * named Home and a Source link into the gallery, centres Index's rows again with one line wrapping, draws Heat's
  * menu strip under its screen again, takes Heat's live part off its Index and marks a second row current, and sets
  * Heat's screen to the other worlds' height, puts Device's address back to the bare player after a step, and names
- * Device's selector Components again; it fails
+ * Device's selector Components again, and presses Play again on Heat just after its world's name opened Index; it fails
  * if the check misses any.
  *
  * Needs Playwright, found as worlds.mjs finds it.
@@ -673,6 +675,41 @@ for (const [world, id, attribute] of RUN) {
   const still = await now(pg);
   claim("Play steps through the takes, and a press on the screen stops it", still === held ? null : `${world}: after a press on the screen the take went ${held} to ${still}`);
 
+  /* The world's name in the top row (#<world>) sits outside the screen, so no hand on the screen stops Play there.
+     Followed while Play runs, it still stops Play and brings Index, with the take just left as Index's current row
+     where the body draws its own Index, and says so in the live region. The break, on Heat: Play pressed again just
+     after, as a reader of the address that skips the hand's path leaves it running. */
+  {
+    await inView(pg);
+    const play = pg.locator("[data-play-object]").getByRole("button", { name: "Play", exact: true });
+    await play.click();
+    await pg.waitForFunction((S) => Number(document.querySelector(S)?.getAttribute("aria-valuenow")) >= 2, SLIDER, { timeout: 6000 }).catch(() => {});
+    const left = await now(pg);
+    /* By the keys, with the pointer off the page, so a row the page scrolls under a still pointer is not made current. */
+    await pg.mouse.move(0, 0);
+    await pg.locator(`a[href="#${id}"]`).first().focus();
+    await pg.keyboard.press("Enter");
+    if (selfTest && id === "heat") await play.click();
+    await pg.waitForTimeout(300);
+    const named = await pg.evaluate((F) => ({
+      said: document.querySelector("[data-play-object] > [role=status]")?.textContent ?? "",
+      current: [...document.querySelectorAll(`${F} [data-play-take=home][data-play-home=body] [data-play-index] button[data-current]`)].map((b) => b.textContent.trim()),
+      own: !!document.querySelector(`${F} [data-play-take=home][data-play-home=body]`),
+    }), FRAME);
+    const stopped = await play.getAttribute("aria-pressed");
+    const atIndex = await now(pg);
+    await pg.waitForTimeout(5000);
+    const stays = await now(pg);
+    const title = set[left - 1];
+    claim(
+      "the world's name in the top row stops Play, opens Index on the take just left, and says so",
+      left >= 1 && stopped === "false" && atIndex === 0 && stays === 0 && named.said.startsWith("Index") && (!named.own || (named.current.length === 1 && named.current[0].includes(title)))
+        ? null
+        : `${world}: left take ${left} (${title}) by the world's name; Play pressed ${stopped}, the slider at ${atIndex}, then ${stays} 5s on; said "${named.said}"${named.own ? `, current row ${JSON.stringify(named.current)}` : ""}`,
+    );
+    if (selfTest && id === "heat" && (await play.getAttribute("aria-pressed")) === "true") await play.click();
+  }
+
   /* Index's way to every component: the world's gallery view, a tile for every component in the world, each named by a
      link to its page in the world. */
   await find(pg, set[0]);
@@ -737,8 +774,10 @@ if (selfTest) {
   if (!addressCaught) console.error("playground --self-test: Device's player kept its take out of the address, and the check missed it.");
   const namesCaught = (claims.get(NAMES_CLAIM) ?? []).some((f) => f.startsWith("Device"));
   if (!namesCaught) console.error("playground --self-test: Device's selector named Components, like the link beside it, and the check missed it.");
-  if (!namesCaught || !addressCaught || !caught || !bareCaught || !tileCaught || !setCaught || !homeCaught || !sourceCaught || !topsCaught || !orderCaught || !sizeCaught || !menuCaught) process.exit(1);
-  console.log("playground --self-test: a dialog escaped to <body> leaves the screen, with the recorder kept from loading Device draws bare, a tile missing from Device's gallery view is seen, a set naming a part outside its world is seen, a second Home and a Source link into the gallery are seen, Index's rows centred off their tops are seen, Heat's strip under its screen is seen, a small take on Heat's screen is seen, Heat's Index with no live part and two current rows is seen, a take kept out of the address is seen, and a selector sharing the Components link's name is seen; the check catches all twelve.");
+  const nameCaught = (claims.get("the world's name in the top row stops Play, opens Index on the take just left, and says so") ?? []).some((f) => f.startsWith("Heat:"));
+  if (!nameCaught) console.error("playground --self-test: Play left running on Heat after the world's name opened Index, and the check missed it.");
+  if (!nameCaught || !namesCaught || !addressCaught || !caught || !bareCaught || !tileCaught || !setCaught || !homeCaught || !sourceCaught || !topsCaught || !orderCaught || !sizeCaught || !menuCaught) process.exit(1);
+  console.log("playground --self-test: a dialog escaped to <body> leaves the screen, with the recorder kept from loading Device draws bare, a tile missing from Device's gallery view is seen, a set naming a part outside its world is seen, a second Home and a Source link into the gallery are seen, Index's rows centred off their tops are seen, Heat's strip under its screen is seen, a small take on Heat's screen is seen, Heat's Index with no live part and two current rows is seen, a take kept out of the address is seen, a selector sharing the Components link's name is seen, and Play left running after the world's name opened Index is seen; the check catches all thirteen.");
   process.exit(0);
 }
 if (bad) {
