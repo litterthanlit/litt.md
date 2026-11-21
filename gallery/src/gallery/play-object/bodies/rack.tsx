@@ -9,6 +9,8 @@
  *   - Clip lane (`order-3`, DOM child 1): a dense lane of clips in Rack's five clip colors (`--data-*-tint` / `-text` /
  *     mark), each with a subtle seeded waveform silhouette; the active clip cuts cleanly to lit ink (`bg-fg text-canvas`,
  *     as Rack's Tabs do), beside square outlined transport keys.
+ * - Under a finger the lane's Index and its clips grow to 44px tall, a finger's target (a 44px ::before would be cut off
+ *   by the lane's scroller), and the transport keys keep theirs with `litt-target relative`.
  * - Zero accent fill in the body (R6): yellow stays reserved for the take inside the screen; clip colors belong to data.
  * - Instant cuts only (`duration-(--dur-instant)`), nothing glides.
  */
@@ -98,7 +100,7 @@ function ClipLane({ takes, at, selector, pick, index }: Pick<PlayObjectBodyProps
         aria-label={undefined}
         data-chosen={at === null ? "" : undefined}
         className={
-          "inline-flex h-control-sm shrink-0 cursor-pointer items-center rounded-control px-2.5 text-caption font-title select-none " +
+          "inline-flex h-control-sm shrink-0 cursor-pointer items-center rounded-control px-2.5 text-caption font-title select-none pointer-coarse:h-control-md " +
           "shadow-(--block-lift) transition-colors duration-(--dur-instant) ease-litt " +
           (at === null
             ? "bg-fg text-canvas forced-colors:border forced-colors:bg-[Highlight] forced-colors:text-[HighlightText]"
@@ -122,7 +124,7 @@ function ClipLane({ takes, at, selector, pick, index }: Pick<PlayObjectBodyProps
               data-chosen={active ? "" : undefined}
               onClick={() => pick(i)}
               className={
-                "relative inline-flex h-control-sm shrink-0 cursor-pointer items-center gap-1.5 overflow-hidden rounded-control px-2.5 text-caption font-title whitespace-nowrap select-none " +
+                "relative inline-flex h-control-sm shrink-0 cursor-pointer items-center gap-1.5 overflow-hidden rounded-control px-2.5 text-caption font-title whitespace-nowrap select-none pointer-coarse:h-control-md " +
                 "shadow-(--block-lift) transition-colors duration-(--dur-instant) ease-litt forced-colors:border " +
                 (active
                   ? "bg-fg text-canvas forced-colors:bg-[Highlight] forced-colors:text-[HighlightText]"

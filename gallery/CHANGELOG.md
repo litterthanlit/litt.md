@@ -10,6 +10,8 @@ Rack's audit, fixed (plans/audits/rack-fixes.md, Buildable now): the grids take 
 
 - **changed** `clip-launcher`, `rack-clip-launcher`: the session is a grid (`role="grid"`, the tracks and Master as column headers, a row per scene) and one tab stop instead of one per cell. The arrows move a cell at a time without wrapping, Home and End go to the row's ends (with Ctrl or ⌘, the grid's), and Enter or Space launches, stops or fires the scene as before. Tab leaves the grid. Every launch is still announced. Props are unchanged.
 - **changed** `step-sequencer`, `rack-step-sequencer`: the steps are a grid (`role="grid"`, a row per lane with its name as the row header) and one tab stop instead of 32. The arrows move a step at a time without wrapping, Home and End go to the lane's ends (with Ctrl or ⌘, the grid's), and Enter or Space toggles the step. Tab leaves the grid. The beat ruler is hidden from screen readers, since each step's name says its number. Props are unchanged.
+- **fixed** `step-sequencer`, `rack-step-sequencer`: under a finger (`pointer: coarse`) each step is 44 by 44 instead of 22 wide, and the grid scrolls sideways inside its panel rather than shrink a step. Nothing changes under a mouse.
+- **fixed** `device-rack`, `rack-device-rack`: the 24px bypass keeps a 44px touch target (`litt-target relative`). Nothing looks different.
 
 ## 2026-11-20 · Press deploy-dashboard identity, and Heat's keycaps are keys
 

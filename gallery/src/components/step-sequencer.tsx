@@ -6,6 +6,8 @@
  *   8 quantized steps grouped into two 4-step beats (`1`–`4`, `5`–`8`).
  * - Active steps light up in their lane's rich Rack clip tint (`bg-data-*-tint`) with a crisp mark border and 2px top
  *   bar (`bg-data-*`); inactive steps rest in `--tray` with subtle beat-group alternation.
+ * - Under a finger (pointer: coarse) every step is 44 by 44, a finger's target, and the grid scrolls sideways inside
+ *   its panel rather than shrink a step below that.
  * - Starts stopped (R2/R4: nothing animates on mount). Pressing `Play` steps the playhead column across the 8 beats at
  *   the current BPM; clicking any step toggles it immediately on the frame. Includes `Pattern` cycler and `Clear`.
  * - Keys (principle 5, one tab stop per composite): the steps are a grid (role grid, a row per lane, its name the row
@@ -211,8 +213,12 @@ export function StepSequencer({
             const c = cellOf(e.target);
             if (c && (c.r !== stop.r || c.c !== stop.c)) setStop(c);
           }}
-          className="grid min-w-[17rem] gap-1 sm:min-w-[22rem] sm:gap-1.5"
-          style={{ gridTemplateColumns: `minmax(3.25rem, 4.5rem) repeat(${STEPS}, minmax(1.375rem, 1fr))` }}
+          className={
+            "grid min-w-[17rem] gap-1 sm:min-w-[22rem] sm:gap-1.5 " +
+            /* The lane's name, then the STEPS (8) steps. Under a finger each step keeps 44px, and the grid scrolls sideways
+               inside its panel instead of shrinking them. */
+            "grid-cols-[minmax(3.25rem,4.5rem)_repeat(8,minmax(1.375rem,1fr))] pointer-coarse:grid-cols-[minmax(3.25rem,4.5rem)_repeat(8,minmax(2.75rem,1fr))]"
+          }
         >
           {/* Step index ruler, for the eye: each step's name says its number */}
           <div aria-hidden="true" className="contents">

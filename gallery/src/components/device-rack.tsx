@@ -8,6 +8,7 @@
  * - Drag vertically on any dial (1:1 pointer capture, just like Live), step with arrow keys (`role="slider"`), or
  *   double-click to reset to its default value. Presets cut all dials to their stored values on the frame ("on the
  *   beat", zero bounce).
+ * - The bypass is a 24px dot that keeps a 44px target for a finger (`litt-target`).
  * - Zero `--accent` fills (R6) and zero auto-animation on mount; every coordinate is rounded to 2 decimals for SSR.
  */
 import { useId, useRef, useState, type KeyboardEvent, type PointerEvent, type ReactNode } from "react";
@@ -258,7 +259,7 @@ export function DeviceRack({
               setLive(next ? "Device active." : "Device bypassed.");
             }}
             className={
-              "grid size-6 cursor-pointer place-items-center rounded-pill border transition-colors duration-(--dur-instant) ease-litt " +
+              "litt-target relative grid size-6 cursor-pointer place-items-center rounded-pill border transition-colors duration-(--dur-instant) ease-litt " +
               "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus forced-colors:border " +
               (enabled ? "border-fg bg-fg text-canvas forced-colors:bg-[Highlight] forced-colors:text-[HighlightText]" : "border-line-strong bg-canvas text-fg-subtle")
             }
