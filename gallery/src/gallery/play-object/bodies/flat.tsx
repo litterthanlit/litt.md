@@ -180,9 +180,10 @@ const TABLE_PILL =
 /* The current pill is paper (on the ground, chosen is white) with its name in the ink at the title weight; the rest
    step back into the ground with their names in the quiet ink. Never the ink as a fill: under Flat it is the accent,
    and the view's one is the part's own (R6). Under forced colors the fills go, so the current pill keeps a Highlight
-   edge inside it and its neighbours none. */
+   edge inside it and its neighbours one of the same width in Canvas, so no name shifts against the others. (Not
+   transparent: forced colors paints a transparent border in CanvasText, which would outline every pill.) */
 const PILL_ON = "bg-(--flat-paper) font-title text-fg forced-colors:border-2 forced-colors:border-[Highlight]";
-const PILL_OFF = "bg-[color-mix(in_oklab,var(--flat-paper),transparent_70%)] text-fg-muted";
+const PILL_OFF = "bg-[color-mix(in_oklab,var(--flat-paper),transparent_70%)] text-fg-muted forced-colors:border-2 forced-colors:border-[Canvas]";
 
 /* How soon after the last pill the pointer entered a new one counts as a sweep (no spring). */
 const SWEEP_MS = 150;
