@@ -1,16 +1,17 @@
 /**
- * Streak, a Flat part (skills/litt-md/taste/litt-principles.md, Flat): a publishing or reading cadence tracker built on
- * Flat's standing 40px figure, sunset heatwave ramp and 0.28 expressive bounce.
+ * Streak, a Flat part (skills/litt-md/taste/litt-principles.md, Flat): how long a run has lasted (issues sent, days
+ * read), built on Flat's standing 40px figure, the sequential ramp (--data-seq-1 to --data-seq-4) and the expressive spring.
  *
  * - One 40px figure (text-figure, call 8) carries the live count, paired with its unit in quiet ink and an optional status
  *   dot + word (call 6 amended: small 8px circle in status color, word in ink, no pill).
- * - Each entry in the cadence is a pill capsule: completed slots walk Flat's sunset heatwave ramp (gold to plum in light,
- *   plum to gold in dark) as the streak warms up; missed slots rest in a quiet 8% ink wash.
+ * - Each entry in the cadence is a pill: done slots walk the sequential ramp (gold to plum in light, plum to gold in
+ *   dark) as the run grows; missed slots rest in a quiet 8% ink wash.
  * - An open current slot (when onToggle is set) is a native button drawn with Flat's 1.5px outline when off ("an outline
- *   means off", Flat rule 2). Pressing it springs the capsule into the warmest heatwave step on Flat's 0.28 bounce and
- *   steps the figure up.
- * - Hovering or focusing any slot reads its detail note in plain words underneath, and toggling announces the updated
- *   streak in a polite live region. No accent fills (R6); forced colors keeps real borders on every capsule.
+ *   means off", Flat rule 2). Logging it springs the pill into the warmest step on the expressive spring and steps the
+ *   figure up.
+ * - Hovering or focusing any slot reads its detail note in plain words underneath; otherwise the line says whether the
+ *   current slot is done, in words, with no instruction (principle 6). Toggling announces the updated streak in a polite
+ *   live region. No accent fills (R6); forced colors keeps real borders on every pill.
  */
 import { useId, useState, type ReactNode } from "react";
 import { motion } from "motion/react";
@@ -58,7 +59,7 @@ function rampAt(t: number) {
   return `color-mix(in oklab, ${SEQ[k + 1]} ${u}%, ${SEQ[k]})`;
 }
 
-/** A Flat heatwave cadence tracker: standing 40px figure + pill capsules warming along Flat's sunset ramp. */
+/** How long a run has lasted: the count, its status, and a pill for each day or week, warmer as the run grows. */
 export function Streak({
   label,
   unit,
@@ -217,8 +218,8 @@ export function Streak({
           ? `${focusedSlot.label}${focusedSlot.detail ? ` · ${focusedSlot.detail}` : focusedSlot.done ? " · Done" : " · Open"}`
           : currentIdx >= 0
             ? currentDone
-              ? `${resolved[currentIdx]!.label} logged · click again to undo`
-              : `${actionLabel} · press the outlined pill to light it up`
+              ? `${resolved[currentIdx]!.label} · Done`
+              : `${actionLabel} · Not done yet`
             : `${totalDone} of ${resolved.length} completed`}
       </p>
       <span role="status" aria-live="polite" className="sr-only">
