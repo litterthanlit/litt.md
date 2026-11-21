@@ -134,7 +134,7 @@ function FlatBody({ takes, at, selector, pick, index, play, readout, screen, com
   }
   return (
     <div className="flex w-full min-w-0 flex-col gap-5">
-      <div className="flex min-w-0 flex-col gap-4 px-1">
+      <div data-flat-controls="" className="flex min-w-0 flex-col gap-4 px-1">
         <Caption readout={readout} />
         <div className="flex min-w-0 items-center justify-between gap-6">
           <Pills takes={takes} at={at} selector={selector} pick={pick} index={index} className="-m-1 p-1" />
