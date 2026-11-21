@@ -11,11 +11,11 @@ export const meta: PageMeta = {
   group: "Charts",
   verbs: ["drag", "press"],
   summary:
-    "One quantity over time as a barcode of thin bars, its segments and their shares in a tray above, and a range you brush by hand: drag across the bars, drag either cap, or drag the whole span. The edges follow the pointer one to one and settle on a bar or a segment start on the responsive tier; the segment the range matches is raised, and the total of what is brushed rolls as you go, its last group in the quiet ink. In fun mode the span can be thrown, and the bars it sweeps rise.",
+    "One quantity over time as a barcode of thin bars, its segments and their shares in a strip above, and a range you brush by hand: drag across the bars, drag either end, or drag the whole span. The edges follow the pointer one to one and settle on a bar or a segment start on the responsive tier; the segment the range matches stands out, and the total of what is brushed rolls as you go, its last group in the quiet ink. In fun mode a flicked span coasts, and the bars it sweeps rise.",
   fun: "Throw the span: it coasts across the bars, they rise as it passes, and it lands on the segment start nearest where it would stop.",
   tiers: ["responsive", "instant"],
   mechanism:
-    "The hand drags across the bars to brush a span, takes either cap, or takes the whole span and moves it. The edges follow the pointer one to one, with no easing. On release they settle onto a bar or a segment start on the responsive spring, 200ms with no bounce, and the figure rolls as they go. Bars light on the instant tier. Press raises the matching segment, Flat grows the page's parts out of what you touched, and Device steps the display on. Under reduced motion the edges jump to where they settle and the figure just changes.",
+    "The hand drags across the bars to brush a span, takes either end, or takes the whole span and moves it. The edges follow the pointer one to one, with no easing. On release they settle onto a bar or a segment start on the responsive spring, 200ms with no bounce, and the figure rolls as they go. Bars light on the instant tier. Under reduced motion the edges jump to where they settle and the figure just changes.",
 };
 
 export const docs: PageDocs = {
@@ -225,10 +225,10 @@ export const study: PageStudy = {
   parts: [
     { name: "The reading", selector: "[role=group] > div:first-child p" },
     { name: "Whole range", selector: "[role=group] > div:first-child button" },
-    { name: "The raised segment", selector: "[aria-pressed=true]" },
+    { name: "The matching segment", selector: "[aria-pressed=true]" },
     { name: "The bars", selector: "svg[role=img]" },
     { name: "The rail", selector: "[data-no-drag] > div" },
-    { name: "The cap", selector: "[data-cap=from]" },
+    { name: "An end", selector: "[data-cap=from]" },
     { name: "The axis", selector: "[data-no-drag] + div" },
   ],
   states: {

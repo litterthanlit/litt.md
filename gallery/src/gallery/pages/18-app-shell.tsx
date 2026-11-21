@@ -13,7 +13,7 @@ export const meta: PageMeta = {
   order: 6.04, group: "Navigation",
   verbs: ["open"],
   summary:
-    "The frame around an app's pages: a 240px sidebar that runs the full height of the page, with its links kept in view as the page scrolls. On a phone the sidebar goes, a glass top bar holds a menu button, and the nav opens in the same bottom sheet as Dialog and Popover.",
+    "The frame around an app's pages: a 240px sidebar that runs the full height of the page, with its links kept in view as the page scrolls. On a phone the sidebar goes, a top bar holds a menu button, and the nav opens in the same bottom sheet as Dialog and Popover.",
   tiers: ["instant", "expressive"],
 };
 
