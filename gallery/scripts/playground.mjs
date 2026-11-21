@@ -21,7 +21,8 @@
  * - on Index or on a take, two controls of the player share a name but go to different places (not the same href or
  *   the same data-play-to): the selector is Take, never Components, the top row's link beside it,
  * - a world's set in play-object/takes.ts is not twelve parts, each a component page in that world, or a page's id is
- *   components, about or take, which would hide behind the world's own addresses,
+ *   components, about or take, which would hide behind the world's own addresses, or a part in Rack's set is named in
+ *   none of the tracks its Index draws (TRACKS in play-object/bodies/rack.tsx),
  * - the screen does not open on Index, the world's set (a row each, as many as the slider runs to and takes.ts lists),
  *   or a name in a row of Index's grid sits above or below another name in that row (rows hold to their tops), or, on
  *   any world whose body draws its own Index (body.Home, data-play-home="body"; Heat's and Rack's today), Index does not show the
@@ -51,7 +52,7 @@
  * named Home and a Source link into the gallery, centres Index's rows again with one line wrapping, draws Heat's
  * menu strip and Rack's clip lane under their screens again, takes Heat's and Rack's live parts off their Index and marks a second row current on each, and sets
  * Heat's screen to the other worlds' height, puts Device's address back to the bare player after a step, and names
- * Device's selector Components again; it fails
+ * Device's selector Components again, and adds a part no track names to the Rack set it reads; it fails
  * if the check misses any.
  *
  * Needs Playwright, found as worlds.mjs finds it.
@@ -252,6 +253,19 @@ for (const [, id] of WORLDS) {
   const set = SETS[id] ?? [];
   const missing = set.filter((p) => !partsIn(id).includes(p));
   claim("every part in a world's set (takes.ts) is in that world, twelve to a set", set.length === 12 && !missing.length ? null : `${id}: ${set.length} in the set${missing.length ? `, not in the world: ${missing.join(", ")}` : ""}`);
+}
+
+/* Rack's Index puts each part of its set on a track (TRACKS in play-object/bodies/rack.tsx), and a part no track names
+   would fall onto Controls without a word: every id in Rack's set must be named in a track. --self-test adds a part to
+   the set read here that no track names. */
+const TRACKS_CLAIM = "every part in Rack's set is named in one of its Index's tracks";
+{
+  const src = fs.readFileSync(path.join(here, "..", "src", "gallery", "play-object", "bodies", "rack.tsx"), "utf8");
+  const block = src.match(/const TRACKS[^=]*= \[([\s\S]*?)\n\];/)?.[1] ?? "";
+  const named = [...block.matchAll(/ids: \[([^\]]*)\]/g)].flatMap((m) => [...m[1].matchAll(/"([^"]+)"/g)].map((x) => x[1]));
+  const set = selfTest ? [...(SETS.rack ?? []), "seven-segment"] : SETS.rack ?? [];
+  const loose = set.filter((p) => !named.includes(p));
+  claim(TRACKS_CLAIM, !named.length ? "Rack: no TRACKS list read from bodies/rack.tsx" : loose.length ? `Rack: on no track: ${loose.join(", ")}` : null);
 }
 
 /**
@@ -739,9 +753,11 @@ if (selfTest) {
   const addressCaught = (claims.get("the take is in the address, written in place as you step, and Back from its page returns to it") ?? []).some((f) => f.startsWith("Device:"));
   if (!addressCaught) console.error("playground --self-test: Device's player kept its take out of the address, and the check missed it.");
   const namesCaught = (claims.get(NAMES_CLAIM) ?? []).some((f) => f.startsWith("Device"));
+  const tracksCaught = (claims.get(TRACKS_CLAIM) ?? []).some((f) => f.includes("seven-segment"));
+  if (!tracksCaught) console.error("playground --self-test: a part in Rack's set that no track on its Index names, and the check missed it.");
   if (!namesCaught) console.error("playground --self-test: Device's selector named Components, like the link beside it, and the check missed it.");
-  if (!namesCaught || !addressCaught || !caught || !bareCaught || !tileCaught || !setCaught || !homeCaught || !sourceCaught || !topsCaught || !orderCaught || !sizeCaught || !menuCaught) process.exit(1);
-  console.log("playground --self-test: a dialog escaped to <body> leaves the screen, with the recorder kept from loading Device draws bare, a tile missing from Device's gallery view is seen, a set naming a part outside its world is seen, a second Home and a Source link into the gallery are seen, Index's rows centred off their tops are seen, Heat's strip and Rack's lane under their screens are seen, a small take on Heat's screen is seen, Heat's and Rack's Index with no live part and two current rows are seen, a take kept out of the address is seen, and a selector sharing the Components link's name is seen; the check catches all twelve.");
+  if (!tracksCaught || !namesCaught || !addressCaught || !caught || !bareCaught || !tileCaught || !setCaught || !homeCaught || !sourceCaught || !topsCaught || !orderCaught || !sizeCaught || !menuCaught) process.exit(1);
+  console.log("playground --self-test: a dialog escaped to <body> leaves the screen, with the recorder kept from loading Device draws bare, a tile missing from Device's gallery view is seen, a set naming a part outside its world is seen, a second Home and a Source link into the gallery are seen, Index's rows centred off their tops are seen, Heat's strip and Rack's lane under their screens are seen, a small take on Heat's screen is seen, Heat's and Rack's Index with no live part and two current rows are seen, a take kept out of the address is seen, a selector sharing the Components link's name is seen, and a part in Rack's set on none of its tracks is seen; the check catches all thirteen.");
   process.exit(0);
 }
 if (bad) {

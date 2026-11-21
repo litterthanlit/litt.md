@@ -20,7 +20,7 @@
  * - Index (`RackHome`, plans/audits/rack.md, finding 9) is a session: the set as one column of grey clips on three
  *   tracks, the clip under the keys or the pointer launched in the ink, and its part live in a device panel beside it.
  */
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import type { PartScale, PlayObjectBody, PlayObjectBodyProps, PlayObjectHomeProps } from "../body";
 import type { Take } from "../takes";
 import { COMPACT_BOX, COMPACT_SCREEN, SCREEN_HEIGHT } from "../body";
@@ -243,11 +243,12 @@ function RackBody({ takes, at, selector, pick, step, index, play, readout, scree
 
 /* Index as a session (plans/audits/rack.md, finding 9): the set is a column of clips on tracks, grouped by what the
    parts are. The tracks are read off the set's order, a run of parts per track, so a set reordered in takes.ts still
-   draws, with a part no track names on Controls. */
+   draws. Every part in Rack's set is named here, one id per string (test:playground reads this list and fails on a part
+   in SET.rack that no track names); one that slips through still draws, on Controls. */
 const TRACKS: { name: string; ids: string[] }[] = [
   { name: "Only here", ids: ["clip-launcher", "device-rack", "step-sequencer"] },
   { name: "Values", ids: ["slider", "curve-editor", "pad", "time-scrubber", "inspector", "number-field"] },
-  { name: "Controls", ids: [] },
+  { name: "Controls", ids: ["segmented", "switch", "button"] },
 ];
 function trackOf(id: string) {
   const k = TRACKS.findIndex((t) => t.ids.includes(id));
@@ -287,6 +288,7 @@ function RackHome({ takes, current, list, row, everything, part, compact }: Play
   const { children: words, ...link } = everything;
   const runs = sessionOf(takes);
   const panel = useRef<HTMLDivElement>(null);
+  const titleId = useId();
   const [box, setBox] = useState({ width: 0, height: 0 });
   /* The panel's content box. Seeded here, in a layout effect, so the re-render at the real size happens before the
      first paint (an observer's first callback lands after it, and its update with it, so the part would paint once
@@ -313,8 +315,8 @@ function RackHome({ takes, current, list, row, everything, part, compact }: Play
   const key = `${current}:${box.width}:${box.height}`;
   const [held, setHeld] = useState({ key: "", step: 0 });
   const step = held.key === key ? held.step : startFor(box.width);
-  /* Too big for the panel: one step smaller. Checked after every render and again when the part's own size changes
-     (a part that loads late). */
+  /* Too big for the panel: one step smaller. Checked whenever the part, the panel's size or the step changes, and
+     again when the part's own size changes (a part that loads late). */
   useLayoutEffect(() => {
     const p = panel.current;
     if (!p) return;
@@ -328,7 +330,7 @@ function RackHome({ takes, current, list, row, everything, part, compact }: Play
     const seen = new ResizeObserver(fit);
     seen.observe(live);
     return () => seen.disconnect();
-  });
+  }, [key, step]);
   const scale = SCALES[step];
   const cued = takes[current];
   const pad = String(takes.length).length;
@@ -388,11 +390,11 @@ function RackHome({ takes, current, list, row, everything, part, compact }: Play
     <div className="grid h-full min-h-0 grid-cols-[minmax(0,19rem)_minmax(0,1fr)] gap-4 overflow-auto overscroll-contain p-4">
       {session}
       {/* The device panel: the launched clip's part, live, as a device you have just selected, with its line. */}
-      <section aria-label="Device" className="flex min-h-0 min-w-0 flex-col overflow-hidden rounded-surface border border-line-strong bg-surface-1 forced-colors:border">
+      <section aria-labelledby={titleId} className="flex min-h-0 min-w-0 flex-col overflow-hidden rounded-surface border border-line-strong bg-surface-1 forced-colors:border">
         <div className="flex min-w-0 items-center justify-between gap-3 border-b border-line bg-surface-2 px-3 py-2">
           <div className="flex min-w-0 items-center gap-2">
             <span aria-hidden="true" className="size-2 shrink-0 rounded-pill bg-fg forced-colors:bg-[CanvasText]" />
-            <span className="min-w-0 truncate text-small font-title text-fg">{cued?.title}</span>
+            <span id={titleId} className="min-w-0 truncate text-small font-title text-fg">{cued?.title}</span>
           </div>
           <span className="shrink-0 text-caption text-fg-muted">
             {cued ? TRACKS[trackOf(cued.id)].name : ""} <span className="font-mono tabular-nums">{String(current + 1).padStart(pad, "0")}</span>
