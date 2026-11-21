@@ -38,11 +38,15 @@ const OWN_PAGES: Partial<Record<Material, string[]>> = { device: ["sound"] };
 
 type Here = "player" | "components" | "about" | "own" | "page";
 
+const LEAD = "-mx-2 flex flex-wrap items-center gap-1";
+/* On the player the top row is one line on a phone, in its own scroller (contract.tsx), so the nav keeps to one line. */
+const LEAD_IN_PLAYER = "-mx-2 flex flex-wrap items-center gap-1 max-sm:shrink-0 max-sm:flex-nowrap";
+
 /** Home, the world's name (which leads back to its player), its gallery view and its About page. */
 function Lead({ material, here }: { material: Material; here: Here }) {
   const world = materialOf(material);
   return (
-    <nav aria-label={world.name} className="-mx-2 flex flex-wrap items-center gap-1">
+    <nav aria-label={world.name} className={here === "player" ? LEAD_IN_PLAYER : LEAD}>
       <a href={HOME} className={LINK}>
         Home
       </a>
