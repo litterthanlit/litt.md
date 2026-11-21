@@ -19,7 +19,7 @@ export const meta: PageMeta = {
   order: 9.02, group: "Data",
   verbs: ["press", "watch"],
   summary:
-    "Airy project rows and raised cards. The rows arrive in one staggered cascade, this page's single expressive moment; filtering and inserting stay responsive, and hover never moves anything.",
+    "Airy project rows and cards. The rows arrive in one staggered cascade, this page's single expressive moment; filtering and inserting stay responsive, and hover never moves anything.",
   tiers: ["instant", "responsive", "expressive"],
 };
 
@@ -67,7 +67,7 @@ const [filter, setFilter] = useState<ProjectFilter>("all");
   ],
   skip: [
     "Your data is not project-shaped, or you need columns, sorting or a dense table. Build a table from the \"Table and list rows\" rules in components.md, because these rows have a fixed layout.",
-    "A short list of actions or commands. Use Menu or the Command menu, because they glide a highlight and answer to the arrow keys.",
+    "A short list of actions or commands. Use Menu or the Command menu, because they move a highlight with the arrow keys.",
     "Switching between views rather than filtering a collection. Use Tabs.",
     "A page that already plays another expressive entrance. The list entrance is the page's one moment, so pass entrance={false}.",
     "Thousands of rows. Nothing here is virtualised, so reach for a virtualised table.",

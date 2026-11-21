@@ -38,7 +38,7 @@ const [steps, setSteps] = useState<PlanStep[]>([
 { id: "build", label: "Run the build", status: "failed", detail: "Build failed: font file missing" }
 { id: "video", label: "Compress the case study videos", status: "skipped" }`,
   use: [
-    "An agent has a list of steps for a task and the person wants to see where it is. It sits bare in the agent's turn, or in a raised panel you draw beside the chat.",
+    "An agent has a list of steps for a task and the person wants to see where it is. It sits bare in the agent's turn, or in a panel you draw beside the chat.",
     "The plan changes while the agent works. Add a step with a new id and it fades in without moving the steps above it.",
     "A step can fail or be skipped. Each says so in words, and a detail line gives the reason in the label's column.",
     "The count is the steps that are done over all the steps, and the rail shows the same share. A failed or a skipped step does not count, so a plan with a skipped step ends one short, and the step says Skipped.",
@@ -58,7 +58,7 @@ const [steps, setSteps] = useState<PlanStep[]>([
     "The count reads \"3 of 7 steps done\". The rail repeats it and is hidden from assistive tech.",
     "A polite status region says \"Step 4 of 7: Run the build\" when the running step changes, \"Step 4 of 7 failed: Run the build\" when a step fails, and \"Plan done\" when every step is done or skipped. It never speaks on the first render, so a plan loaded from history is silent, and it never reads a detail line.",
     "Status is never color alone. Each mark has its own shape (an empty circle, a half circle, a check, an x, a dashed circle), and failed and skipped are also words. Only the failed icon takes a status color.",
-    "Text is the small size in fg, fg-muted or fg-subtle and the caption in fg-subtle, which pass 4.5:1 on the canvas and on a raised surface in both themes. A done step steps back to fg-muted and is never struck through, so it stays easy to read.",
+    "Text is the small size in fg, fg-muted or fg-subtle and the caption in fg-subtle, which pass 4.5:1 on the canvas and on a panel in both themes. A done step steps back to fg-muted and is never struck through, so it stays easy to read.",
     "The plan takes no focus, because it is not a control. Under reduced motion a step that is added appears at once, and the color fades are instant.",
   ],
 };
