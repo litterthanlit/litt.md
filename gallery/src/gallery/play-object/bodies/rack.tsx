@@ -17,9 +17,12 @@
  * - Zero accent fill in the body (R6): yellow stays reserved for the take inside the screen; clip colors belong to the
  *   takes' tracks.
  * - Instant cuts only (`duration-(--dur-instant)`), nothing glides.
+ * - Index (`RackHome`, plans/audits/rack.md, finding 9) is a session: the set as one column of grey clips on three
+ *   tracks, the clip under the keys or the pointer launched in the ink, and its part live in a device panel beside it.
  */
-import { useEffect, useRef, useState } from "react";
-import type { PlayObjectBody, PlayObjectBodyProps } from "../body";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import type { PartScale, PlayObjectBody, PlayObjectBodyProps, PlayObjectHomeProps } from "../body";
+import type { Take } from "../takes";
 import { COMPACT_BOX, COMPACT_SCREEN, SCREEN_HEIGHT } from "../body";
 
 /** Deterministic mini-waveform heights (4 bars per clip) seeded from take id. */
@@ -238,9 +241,169 @@ function RackBody({ takes, at, selector, pick, step, index, play, readout, scree
   );
 }
 
+/* Index as a session (plans/audits/rack.md, finding 9): the set is a column of clips on tracks, grouped by what the
+   parts are. The tracks are read off the set's order, a run of parts per track, so a set reordered in takes.ts still
+   draws, with a part no track names on Controls. */
+const TRACKS: { name: string; ids: string[] }[] = [
+  { name: "Only here", ids: ["clip-launcher", "device-rack", "step-sequencer"] },
+  { name: "Values", ids: ["slider", "curve-editor", "pad", "time-scrubber", "inspector", "number-field"] },
+  { name: "Controls", ids: [] },
+];
+function trackOf(id: string) {
+  const k = TRACKS.findIndex((t) => t.ids.includes(id));
+  return k < 0 ? TRACKS.length - 1 : k;
+}
+
+/** The set cut into runs of one track each, in the set's order: [track, first index, the takes]. */
+function sessionOf(takes: Take[]) {
+  const runs: { track: string; from: number; takes: Take[] }[] = [];
+  takes.forEach((t, i) => {
+    const track = TRACKS[trackOf(t.id)].name;
+    const last = runs[runs.length - 1];
+    if (last && last.track === track) last.takes.push(t);
+    else runs.push({ track, from: i, takes: [t] });
+  });
+  return runs;
+}
+
+/* A clip slot. Clips touch, a 1px rule between them, so the pointer is always on one (test:gaps). The launched clip
+   is the ink at once, with no transition: it cuts in on the frame, as a clip launches on the beat. Focus is always on
+   the launched clip, and Rack's focus colour is the ink it is filled with, so its ring is drawn 4px inside it in the
+   canvas colour, as Live frames the clip it has selected. Under forced colors the launched
+   clip is Highlight and its triangle is filled where the others are outlined, so the shape tells it apart too. */
+const CLIP =
+  "litt-target relative grid h-control-sm w-full min-w-0 cursor-pointer grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 border-b border-line px-2.5 text-left text-caption font-title select-none pointer-coarse:h-control-md " +
+  "focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-canvas forced-colors:border-b-[CanvasText] forced-colors:focus-visible:outline-[HighlightText]";
+const CLIP_AT_REST = "bg-block text-fg-muted hover:bg-(--block-hover) hover:text-fg";
+const CLIP_LAUNCHED = "bg-fg text-canvas forced-colors:bg-[Highlight] forced-colors:text-[HighlightText]";
+
+/* The live part's size: the largest the device panel holds whole, so the part reads as the main thing on the screen.
+   It starts from the panel's width and steps down while the part overflows the panel (a tall part, such as the time
+   scrubber's cue list), on the frame, before paint, so no size is ever seen to change. */
+const SCALES: PartScale[] = [1.5, 1.25, 1];
+const startFor = (width: number) => (width >= 760 ? 0 : width >= 600 ? 1 : 2);
+
+function RackHome({ takes, current, list, row, everything, part, compact }: PlayObjectHomeProps) {
+  const { children: words, ...link } = everything;
+  const runs = sessionOf(takes);
+  const panel = useRef<HTMLDivElement>(null);
+  const [box, setBox] = useState({ width: 0, height: 0 });
+  useEffect(() => {
+    const p = panel.current;
+    if (!p || typeof ResizeObserver === "undefined") return;
+    const seen = new ResizeObserver(([e]) => {
+      const next = { width: Math.round(e.contentRect.width), height: Math.round(e.contentRect.height) };
+      setBox((b) => (b.width === next.width && b.height === next.height ? b : next));
+    });
+    seen.observe(p);
+    return () => seen.disconnect();
+  }, [compact]);
+  /* The steps down from the widest scale, held for one part at one panel size: a new part, or a new size, starts
+     again from the widest scale the panel's width allows. */
+  const key = `${current}:${box.width}:${box.height}`;
+  const [held, setHeld] = useState({ key: "", step: 0 });
+  const step = held.key === key ? held.step : startFor(box.width);
+  /* Too big for the panel: one step smaller. Checked after every render and again when the part's own size changes
+     (a part that loads late). */
+  useLayoutEffect(() => {
+    const p = panel.current;
+    if (!p) return;
+    const fit = () => {
+      const over = p.scrollHeight > p.clientHeight + 1 || p.scrollWidth > p.clientWidth + 1;
+      if (over && step < SCALES.length - 1) setHeld({ key, step: step + 1 });
+    };
+    fit();
+    const live = p.firstElementChild;
+    if (!live || typeof ResizeObserver === "undefined") return;
+    const seen = new ResizeObserver(fit);
+    seen.observe(live);
+    return () => seen.disconnect();
+  });
+  const scale = SCALES[step];
+  const cued = takes[current];
+  const pad = String(takes.length).length;
+
+  const session = (
+    <div className="flex min-h-0 min-w-0 flex-col gap-3">
+      <nav {...list} className="min-w-0 overflow-hidden rounded-surface border border-line-strong bg-surface-1 forced-colors:border">
+        {runs.map((run, r) => {
+          const trackId = `rack-track-${r}`;
+          return (
+            <div key={run.track + run.from} className={"grid grid-cols-[5.5rem_minmax(0,1fr)] " + (r > 0 ? "border-t border-line-strong" : "")}>
+              {/* The track: its name at the head of a column as tall as its clips, as Live's tracks stand. */}
+              <div id={trackId} className="border-r border-line bg-surface-2 px-2.5 py-2 text-caption font-label text-fg-muted">
+                {run.track}
+              </div>
+              <ul aria-labelledby={trackId} className="grid min-w-0 [&>li:last-child>button]:border-b-0">
+                {run.takes.map((t, k) => {
+                  const i = run.from + k;
+                  const on = i === current;
+                  return (
+                    <li key={t.id} className="grid min-w-0">
+                      <button {...row(i)} className={CLIP + " " + (on ? CLIP_LAUNCHED : CLIP_AT_REST)}>
+                        <svg aria-hidden="true" viewBox="0 0 12 12" className="size-2.5 shrink-0">
+                          {on ? (
+                            <path d="M3 2v8l7-4z" className="fill-current" />
+                          ) : (
+                            <path d="M3.5 2.9v6.2L8.9 6z" className="fill-none stroke-current" strokeWidth={1} />
+                          )}
+                        </svg>
+                        <span className="min-w-0 truncate">{t.title}</span>
+                        <span aria-hidden="true" className="inline-flex h-3 items-end gap-px">
+                          {clipBars(t.id).map((pct, b) => (
+                            <span key={b} className={"w-0.5 " + (on ? "bg-canvas opacity-75" : "bg-fg-subtle")} style={{ height: `${pct}%` }} />
+                          ))}
+                        </span>
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          );
+        })}
+      </nav>
+      <a
+        {...link}
+        className="litt-target relative self-start text-small text-fg underline decoration-line-strong underline-offset-4 hover:decoration-current focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+      >
+        {words}
+      </a>
+    </div>
+  );
+
+  if (compact) return <div className="h-full min-h-0 overflow-auto overscroll-contain p-3">{session}</div>;
+
+  return (
+    <div className="grid h-full min-h-0 grid-cols-[minmax(0,19rem)_minmax(0,1fr)] gap-4 overflow-auto overscroll-contain p-4">
+      {session}
+      {/* The device panel: the launched clip's part, live, as a device you have just selected, with its line. */}
+      <section aria-label="Device" className="flex min-h-0 min-w-0 flex-col overflow-hidden rounded-surface border border-line-strong bg-surface-1 forced-colors:border">
+        <div className="flex min-w-0 items-center justify-between gap-3 border-b border-line bg-surface-2 px-3 py-2">
+          <div className="flex min-w-0 items-center gap-2">
+            <span aria-hidden="true" className="size-2 shrink-0 rounded-pill bg-fg forced-colors:bg-[CanvasText]" />
+            <span className="min-w-0 truncate text-small font-title text-fg">{cued?.title}</span>
+          </div>
+          <span className="shrink-0 text-caption text-fg-muted">
+            {cued ? TRACKS[trackOf(cued.id)].name : ""} <span className="font-mono tabular-nums">{String(current + 1).padStart(pad, "0")}</span>
+          </span>
+        </div>
+        <div ref={panel} className="grid min-h-0 flex-1 place-items-center overflow-auto overscroll-contain p-4">
+          {part({ scale, className: "self-center" })}
+        </div>
+        <p className="border-t border-line bg-surface-2 px-3 py-2 text-small text-fg-muted">{cued?.lede}</p>
+      </section>
+    </div>
+  );
+}
+
 export const rack: PlayObjectBody = {
   name: "rack",
   shape: (compact) => (compact ? COMPACT_SCREEN : SCREEN_HEIGHT + " w-full rounded-control"),
   rail: false,
   Body: RackBody,
+  Home: RackHome,
+  /* On a phone the session stands alone: a touch opens the take, and with no pointer to hover there, a part above the
+     list would only ever show the first clip while pushing the clips down the screen. */
+  phonePart: "none",
 };

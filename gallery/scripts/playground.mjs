@@ -24,7 +24,7 @@
  *   components, about or take, which would hide behind the world's own addresses,
  * - the screen does not open on Index, the world's set (a row each, as many as the slider runs to and takes.ts lists),
  *   or a name in a row of Index's grid sits above or below another name in that row (rows hold to their tops), or, on
- *   any world whose body draws its own Index (body.Home, data-play-home="body"; Heat's today), Index does not show the
+ *   any world whose body draws its own Index (body.Home, data-play-home="body"; Heat's and Rack's today), Index does not show the
  *   current row's part live on the screen with exactly one row current, Down and the pointer on a row moving both
  *   (a world that keeps the contract's Index passes),
  * - Right and Down do not go to the next take, Left and Up to the previous, wrapping through Index, or End and Home do
@@ -49,7 +49,7 @@
  * so it leaves the screen and its world, keeps the recorder's body from loading, so Device draws bare, and takes a tile
  * out of Device's gallery view, adds a part Heat does not have to Heat's set, and on Device puts back a second control
  * named Home and a Source link into the gallery, centres Index's rows again with one line wrapping, draws Heat's
- * menu strip under its screen again, takes Heat's live part off its Index and marks a second row current, and sets
+ * menu strip and Rack's clip lane under their screens again, takes Heat's and Rack's live parts off their Index and marks a second row current on each, and sets
  * Heat's screen to the other worlds' height, puts Device's address back to the bare player after a step, and names
  * Device's selector Components again; it fails
  * if the check misses any.
@@ -423,11 +423,11 @@ for (const [world, id, attribute] of RUN) {
   /* A body's own Index (body.Home, plans/audits/shared-fixes.md, Track 3; Heat's first, finding 1): the current row's
      part is live on the screen, and exactly one row is current. Down makes the next row current and brings its part,
      and the pointer on a row does the same. A body that keeps the contract's Index has nothing to show here and
-     passes. The break, on Heat: the live part taken away and a second row marked current. */
+     passes. The break, on Heat and on Rack: the live part taken away and a second row marked current. */
   const ownIndex = await pg.locator(`${FRAME} [data-play-take=home][data-play-home=body]`).count();
   claim(OWN_INDEX_CLAIM, null);
   if (ownIndex) {
-    if (selfTest && id === "heat")
+    if (selfTest && (id === "heat" || id === "rack"))
       await pg.evaluate((F) => {
         document.querySelector(`${F} [data-play-live]`)?.remove();
         document.querySelectorAll(`${F} [data-play-index] button`)[3]?.setAttribute("data-current", "");
@@ -723,8 +723,8 @@ if (selfTest) {
   if (!topsCaught) console.error("playground --self-test: Index's rows centred with a wrapping line on Device, and the check missed it.");
   const orderCaught = ["Heat:", "Rack:"].every((w) => (claims.get("on Heat's and Rack's players each tab stop is at or below the one before it, or to its right") ?? []).some((f) => f.startsWith(w)));
   if (!orderCaught) console.error("playground --self-test: Heat's menu strip or Rack's clip lane drawn under its screen again, and the check missed it.");
-  const menuCaught = (claims.get(OWN_INDEX_CLAIM) ?? []).some((f) => f.startsWith("Heat:"));
-  if (!menuCaught) console.error("playground --self-test: Heat's Index lost its live part and gained a second current row, and the check missed it.");
+  const menuCaught = ["Heat:", "Rack:"].every((w) => (claims.get(OWN_INDEX_CLAIM) ?? []).some((f) => f.startsWith(w)));
+  if (!menuCaught) console.error("playground --self-test: Heat's or Rack's Index lost its live part and gained a second current row, and the check missed it.");
   const sizeCaught = [...claims].some(([name, fails]) => name.startsWith("on Heat's player the pursuit meter covers") && fails.some((f) => f.startsWith("Heat:")));
   if (!sizeCaught) console.error("playground --self-test: Heat's screen at the other worlds' height, and the check missed the take's size.");
   const addressCaught = (claims.get("the take is in the address, written in place as you step, and Back from its page returns to it") ?? []).some((f) => f.startsWith("Device:"));
@@ -732,7 +732,7 @@ if (selfTest) {
   const namesCaught = (claims.get(NAMES_CLAIM) ?? []).some((f) => f.startsWith("Device"));
   if (!namesCaught) console.error("playground --self-test: Device's selector named Components, like the link beside it, and the check missed it.");
   if (!namesCaught || !addressCaught || !caught || !bareCaught || !tileCaught || !setCaught || !homeCaught || !sourceCaught || !topsCaught || !orderCaught || !sizeCaught || !menuCaught) process.exit(1);
-  console.log("playground --self-test: a dialog escaped to <body> leaves the screen, with the recorder kept from loading Device draws bare, a tile missing from Device's gallery view is seen, a set naming a part outside its world is seen, a second Home and a Source link into the gallery are seen, Index's rows centred off their tops are seen, Heat's strip and Rack's lane under their screens are seen, a small take on Heat's screen is seen, Heat's Index with no live part and two current rows is seen, a take kept out of the address is seen, and a selector sharing the Components link's name is seen; the check catches all twelve.");
+  console.log("playground --self-test: a dialog escaped to <body> leaves the screen, with the recorder kept from loading Device draws bare, a tile missing from Device's gallery view is seen, a set naming a part outside its world is seen, a second Home and a Source link into the gallery are seen, Index's rows centred off their tops are seen, Heat's strip and Rack's lane under their screens are seen, a small take on Heat's screen is seen, Heat's and Rack's Index with no live part and two current rows are seen, a take kept out of the address is seen, and a selector sharing the Components link's name is seen; the check catches all twelve.");
   process.exit(0);
 }
 if (bad) {
