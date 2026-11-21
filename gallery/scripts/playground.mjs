@@ -440,27 +440,36 @@ for (const [world, id, attribute] of RUN) {
         const current = [...document.querySelectorAll(`${F} [data-play-index] button[data-current]`)].map((b) => b.textContent.trim());
         return { live: live?.dataset.playLive ?? null, draws, current };
       }, FRAME);
-    const atRest = await menu();
+    const ids = SETS[id] ?? [];
+    const ok = (m, k) => m.draws && m.current.length === 1 && m.live === ids[k];
+    /* The live part is a lazy chunk, so it can take longer than a fixed wait to draw on a slow runner (CI read Heat's
+       Tune menu 300ms after the pointer reached its row, before it had drawn): read until row k's part is drawn. */
+    const settled = async (k) => {
+      const end = Date.now() + 5000;
+      let m = await menu();
+      while (!ok(m, k) && Date.now() < end) {
+        await pg.waitForTimeout(100);
+        m = await menu();
+      }
+      return m;
+    };
+    const atRest = selfTest ? await menu() : await settled(0);
     let moved = null, pointed = null;
     if (!selfTest) {
       await pg.locator(`${FRAME} [data-play-index] button[data-current]`).focus();
       await pg.keyboard.press("ArrowDown");
-      await pg.waitForTimeout(300);
-      moved = await menu();
+      moved = await settled(1);
       await pg.keyboard.press("ArrowUp");
       await pg.waitForTimeout(200);
       const third = await pg.locator(`${FRAME} [data-play-index] button`).nth(2).boundingBox();
       if (third) {
         await pg.mouse.move(third.x + third.width / 2, third.y + third.height / 2);
-        await pg.waitForTimeout(300);
-        pointed = await menu();
+        pointed = await settled(2);
         await pg.mouse.move(0, 0);
       }
       await pg.locator(`${FRAME} [data-play-index] button`).first().focus();
       await pg.waitForTimeout(200);
     }
-    const ids = SETS[id] ?? [];
-    const ok = (m, k) => m.draws && m.current.length === 1 && m.live === ids[k];
     claim(
       OWN_INDEX_CLAIM,
       ok(atRest, 0) && (!moved || ok(moved, 1)) && (!pointed || ok(pointed, 2))
