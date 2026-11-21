@@ -42,7 +42,7 @@ formatMoney({ amount: 12.5, currencyCode: "EUR" });`,
   a11y: [
     "A sale price reads \"Sale price €108, Regular price €145\": the strike is never the only signal.",
     "The amount is text, formatted by Intl.NumberFormat in the page's locale, so a screen reader reads the currency as words.",
-    "The saving tag is text in the foreground's grey on a raised fill, never a color alone.",
+    "The saving tag is text in the foreground's grey on a quiet fill, never a color alone.",
     "Whole amounts drop the cents and any other keeps two places, so a list of prices never reads \"€90.00\" beside \"€12.50\" for no reason.",
   ],
 };

@@ -7,8 +7,11 @@
  * - Clicking any release lifts it out of the tray so you can inspect its commit, region, and build time, and promote
  *   an older release back to live with a single tactile raised key.
  * - Zero button outlines, zero decorative status colors, zero `--accent` fills (R6), and zero auto-animation on mount.
+ * - Keys: the releases are one tab stop, on the selected release (a roving tab index). The arrow keys move to the next
+ *   or previous release and select it, wrapping at the ends; Home and End go to the newest and the oldest. Enter and
+ *   Space select the focused one. Promote to live is its own tab stop after the group.
  */
-import { useId, useState, type ReactNode } from "react";
+import { useId, useState, type KeyboardEvent, type ReactNode } from "react";
 
 export type ReleaseEntry = {
   /** Short commit SHA, e.g. "4f9c2e1". */
@@ -63,6 +66,22 @@ export function ReleaseRail({
     setLiveMsg(`Selected ${entry.sha}, ${entry.summary}, ${entry.sha === liveSha ? "live" : entry.age}.`);
   }
 
+  /** The radio group's keys: arrows move and select, wrapping; Home and End go to the ends. */
+  function onKeyDown(e: KeyboardEvent<HTMLDivElement>) {
+    const at = releases.findIndex((r) => r.sha === selected.sha);
+    const n = releases.length;
+    if (n === 0) return;
+    const rtl = getComputedStyle(e.currentTarget).direction === "rtl";
+    const fwd = e.key === "ArrowDown" || e.key === (rtl ? "ArrowLeft" : "ArrowRight");
+    const back = e.key === "ArrowUp" || e.key === (rtl ? "ArrowRight" : "ArrowLeft");
+    const to = fwd ? (at + 1) % n : back ? (at - 1 + n) % n : e.key === "Home" ? 0 : e.key === "End" ? n - 1 : -1;
+    if (to < 0 || e.altKey || e.ctrlKey || e.metaKey) return;
+    e.preventDefault();
+    const entry = releases[to]!;
+    if (entry.sha !== selected.sha) select(entry);
+    e.currentTarget.querySelectorAll<HTMLElement>("[role=radio]")[to]?.focus();
+  }
+
   function promote() {
     setLiveSha(selected.sha);
     onPromote?.(selected.sha);
@@ -85,6 +104,7 @@ export function ReleaseRail({
       <div
         role="radiogroup"
         aria-labelledby={headingId}
+        onKeyDown={onKeyDown}
         data-part="tray"
         className="grid gap-1 rounded-surface bg-tray p-1 shadow-(--tray-shade) forced-colors:border"
       >
@@ -97,6 +117,7 @@ export function ReleaseRail({
               type="button"
               role="radio"
               aria-checked={isSelected}
+              tabIndex={isSelected ? 0 : -1}
               data-part={isSelected ? "block" : "tray"}
               onClick={() => select(entry)}
               className={
