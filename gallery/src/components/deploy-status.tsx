@@ -14,7 +14,7 @@
  *   running, pending), never by decorative status pills.
  * - Zero outer card wrapper, zero button outlines, zero `--accent` fills (R6), and zero auto-animation on mount (R2/R4).
  */
-import { useId, useRef, useState, type ReactNode } from "react";
+import { useId, useRef, useState, type ReactNode, useLayoutEffect } from "react";
 
 export type DeployStage = {
   /** Stable stage id. */
@@ -76,8 +76,18 @@ export function DeployStatus({
   const [live, setLive] = useState("");
   const rebuildKey = useRef<HTMLButtonElement>(null);
   const nextKey = useRef<HTMLButtonElement>(null);
+  /* Which key takes focus once the stage has changed. A press can disable the key it was on, and the other key may
+     still be disabled until the render that follows, so focus moves after the commit, never in the handler. */
+  const pendingFocus = useRef<"rebuild" | "next" | null>(null);
 
   const index = stageIndex !== undefined ? clamp(stageIndex) : inner;
+
+  useLayoutEffect(() => {
+    const to = pendingFocus.current;
+    pendingFocus.current = null;
+    if (to === "next") nextKey.current?.focus();
+    if (to === "rebuild") rebuildKey.current?.focus();
+  }, [index]);
   const activeStage = stages[index];
   const isLive = index === safeCount - 1;
   /** The state in words: the stage and "running" while the deploy moves, the last stage's word once it is reached. */
@@ -138,7 +148,7 @@ export function DeployStatus({
               }
             >
               <span className="truncate">{st.label}</span>
-              <span className="sr-only">{`, ${st.duration}, ${current ? (i === safeCount - 1 ? "done" : "running") : raised ? "done" : "pending"}`}</span>
+              <span className="sr-only">{`${st.duration ? `, ${st.duration}` : ""}, ${current ? (i === safeCount - 1 ? "done" : "running") : raised ? "done" : "pending"}`}</span>
             </div>
           );
         })}
@@ -156,8 +166,8 @@ export function DeployStatus({
             ref={rebuildKey}
             disabled={index === 0}
             onClick={() => {
+              if (safeCount > 1) pendingFocus.current = "next";
               go(0);
-              if (safeCount > 1) nextKey.current?.focus();
             }}
             className={keyCls}
           >
@@ -169,8 +179,8 @@ export function DeployStatus({
             ref={nextKey}
             disabled={isLive}
             onClick={() => {
+              if (index + 1 >= safeCount - 1) pendingFocus.current = "rebuild";
               go(index + 1);
-              if (index + 1 >= safeCount - 1) rebuildKey.current?.focus();
             }}
             className={keyCls}
           >

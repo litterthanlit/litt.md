@@ -76,6 +76,7 @@ export function EnvSwitch({
   function onKeyDown(e: KeyboardEvent<HTMLDivElement>) {
     const at = environments.findIndex((env) => env.id === current.id);
     const n = environments.length;
+    if (n === 0) return;
     const rtl = getComputedStyle(e.currentTarget).direction === "rtl";
     const fwd = e.key === "ArrowDown" || e.key === (rtl ? "ArrowLeft" : "ArrowRight");
     const back = e.key === "ArrowUp" || e.key === (rtl ? "ArrowRight" : "ArrowLeft");
