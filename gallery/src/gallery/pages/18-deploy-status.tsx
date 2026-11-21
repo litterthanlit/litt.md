@@ -37,13 +37,13 @@ export const docs: PageDocs = {
     "A multi-page wizard form. Use Tabs or Breadcrumb.",
   ],
   keyboard: [
-    [["Tab"], "Moves focus across pipeline stages, Rebuild and Next stage keys."],
-    [["Enter", "Space"], "Jumps to the focused stage or steps the pipeline forward."],
+    [["Tab"], "Moves focus to Rebuild, then to Next stage. The stages are a readout, not tab stops."],
+    [["Enter", "Space"], "Presses the focused key: Rebuild starts the deploy again from Build, and Next stage moves it on. Before the last stage Next stage reads Promote."],
   ],
   a11y: [
-    "Stages sit inside role=\"group\" labelled by the project heading; the current stage carries aria-current=\"step\".",
-    "Each stage button names the stage, duration and whether it is completed, current or pending.",
-    "Every stage transition announces once in a polite status region.",
+    "The stages are a read-only list (role=\"list\") labelled by the project name; the current stage carries aria-current=\"step\". No stage is a button or a tab stop.",
+    "Each stage says its duration and whether it is done, running or pending, and the header says the state in words (\"Edge, running\", or \"Live\").",
+    "Rebuild and Next stage are the only keys. Each step announces the state once in a polite status region.",
   ],
 };
 
@@ -57,10 +57,13 @@ function LiveDeployDemo() {
 
 export const study: PageStudy = {
   object: <DeployStatus project="harbor-web" refLabel="main · 4f9c2e1" region="fra1" defaultStageIndex={2} />,
+  /* Callouts alternate left and right and meet a part at its outer edge, so each is picked to be reached without
+     crossing a word: the first stage and the project from the left, the state word and the tray's end from the right. */
   parts: [
-    { name: "The recessed tray", selector: "[data-part=tray]" },
     { name: "The raised stage block", selector: "[data-part=block]" },
-    { name: "The status readout", selector: "[data-part=lettering]" },
+    { name: "The state, in words", selector: "[data-slot=state]" },
+    { name: "The project", selector: "[data-slot=project]" },
+    { name: "The recessed tray", selector: "[role=list][data-part=tray]" },
   ],
   states: {
     empty: <DeployStatus project="harbor-web" refLabel="main · 4f9c2e1" region="fra1" defaultStageIndex={0} />,
@@ -81,7 +84,7 @@ export default function DeployStatusPage() {
         title="Active rollout"
         tier="instant"
         code="ProductionDeployDemo"
-        caption="Reached stages rise as tactile stone blocks inside the recessed tray; pending stages stay flush. Click any stage or press Promote."
+        caption="harbor-web is on its way to the edge. Rebuild starts the deploy again from Build; Next stage moves it on, and reads Promote before Live."
       >
         <ProductionDeployDemo />
       </Stage>
@@ -89,7 +92,7 @@ export default function DeployStatusPage() {
         title="Live in production"
         tier="instant"
         code="LiveDeployDemo"
-        caption="When all four stages stand raised, Promote disables cleanly and Rebuild lets you step back to Build."
+        caption="harbor-api is live in iad1. Only Rebuild is left to press: it starts the deploy again from Build."
       >
         <LiveDeployDemo />
       </Stage>
