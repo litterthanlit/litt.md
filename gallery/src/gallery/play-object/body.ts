@@ -13,8 +13,9 @@ export type PlayObjectBodyProps = {
   takes: Take[];
   /** The take showing, or null on Index: the world's introduction and its set, inside the screen. */
   at: number | null;
-  /** Spread on the element that picks the take, the tape or its stand-in: role="slider" over Home (0) and the takes,
-      its name, value and keys (Right and Down to the next, Left and Up to the previous, wrapping through Index; the
+  /** Spread on the element that picks the take, the tape or its stand-in: role="slider" over Index (0) and the takes,
+      named Take (never Components, the top row's link beside it that goes elsewhere), its spoken value ("Poll, 2 of
+      12"), and keys (Right and Down to the next, Left and Up to the previous, wrapping through Index; the
       Home key for Index, End for the last). One tab stop. */
   selector: HTMLAttributes<HTMLElement>;
   /** Take the hand to take i, as a press or drag along the selector does. Stops Play. */
@@ -23,8 +24,9 @@ export type PlayObjectBodyProps = {
   step: (by: 1 | -1) => ButtonHTMLAttributes<HTMLButtonElement>;
   /** Spread on a key that goes to Index, where a body draws one, as an iPod's Menu does. Its visible word is Index (the
       top row's Home is the way out of the world, and no other control may share that name). Out of the tab order: the
-      top row's Index and the selector's Home key do this. */
-  index: ButtonHTMLAttributes<HTMLButtonElement>;
+      top row's Index and the selector's Home key do this. It carries data-play-to="index", as the top row's Index does,
+      so the checks know the two controls named Index go to the same place. */
+  index: ButtonHTMLAttributes<HTMLButtonElement> & { "data-play-to": "index" };
   /** Spread on a link to the world's gallery view (#<world>/components), where a body draws one. Out of the tab order:
       Home and the rail link there too. */
   everything: AnchorHTMLAttributes<HTMLAnchorElement> & { href: string };
@@ -43,29 +45,89 @@ export type PlayObjectBodyProps = {
 };
 
 /**
- * What a body that draws Index's list itself gets (plans/audits/heat-fixes.md, finding 1). The contract still owns the
- * list, its order, its keys and what it opens; the body draws the rows in its own grammar and places the live part.
+ * Index, drawn by the body: the hand-off (plans/audits/heat-fixes.md, finding 1; plans/audits/shared-fixes.md, Track 3).
+ * A body that sets `Home` draws Index's list inside the screen in its own grammar; one that does not keeps the
+ * contract's (`HomeView` in contract.tsx). Heat's (`HeatHome` in bodies/heat.tsx) is the worked case.
+ *
+ * Who owns what:
+ * - The contract owns the list (the set, in order), which row is current, which is under the pointer, every key (one
+ *   tab stop for the list; Up and Down move, wrapping; Home and End go to the ends; Left and Right a column over when
+ *   the body draws the rows in columns, `homeColumns`; Enter or a press opens the take),
+ *   what a row opens, the live part (which part, its preview context, its mark and name), the link to every component
+ *   and its words, and whether the live part exists on a phone (`phonePart` on the body). It also wraps what the body
+ *   draws in `data-play-take="home" data-play-home="body"`, which the checks read.
+ * - The body owns only the drawing: the layout (where the list, the live part and the link sit), each row's look
+ *   (current, under the pointer, focused, forced colors), the live part's size (`scale`) and the screen's padding and
+ *   scroll. It adds no role, key, tab stop or state of its own, and draws nothing in the accent's fill (R6).
+ *
+ * The rules a body keeps, which test:playground checks on every body with its own Index:
+ * - Spread `list` on one element (a nav) holding every row, and `row(i)` on each row's button, in the set's order.
+ *   A row's text is the take's title (its accessible name); anything else in it (a line, a chevron, brackets) is
+ *   aria-hidden. Rows touch, with no gap between them (test:gaps), and the button is `litt-target relative`.
+ * - Call `part()` once per render, in one place; on a phone it returns null unless the body says `phonePart: "above"`,
+ *   and then the body draws it above the list. Exactly one row is current at a time (`data-current`, set by `row`).
+ * - Spread `everything` (its `children` are its words) on one link.
+ *
+ * A minimal Home (a body in bodies/<world>.tsx; Heat's adds brackets, a chevron and the take's line):
+ *
+ *   function MyHome({ world, takes, current, pointer, list, row, everything, part, compact }: PlayObjectHomeProps) {
+ *     const { children: words, ...link } = everything;
+ *     return (
+ *       <div className={"grid h-full min-h-0 overflow-auto overscroll-contain p-6 " + (compact ? "content-start gap-4" : "grid-cols-2 gap-10")}>
+ *         {compact && part({ scale: 0.75 })}
+ *         <nav {...list}>
+ *           <ul className="grid">
+ *             {takes.map((t, i) => (
+ *               <li key={t.id} className="grid">
+ *                 <button {...row(i)} className={"litt-target relative h-control-sm px-3 text-left " + (i === current ? "text-fg" : i === pointer ? "text-fg-muted" : "text-fg-subtle")}>
+ *                   {t.title}
+ *                 </button>
+ *               </li>
+ *             ))}
+ *           </ul>
+ *         </nav>
+ *         {!compact && part({ scale: 1.25, className: "self-center" })}
+ *         <a {...link} className="text-small underline">{words}</a>
+ *       </div>
+ *     );
+ *   }
+ *   export const mine: PlayObjectBody = { name: "mine", shape, rail: false, Body: MyBody, Home: MyHome, phonePart: "above" };
  */
 export type PlayObjectHomeProps = {
+  /** The world: its name, line and audience, for a heading the body may draw. */
   world: MaterialInfo;
-  /** The world's set, in order: a row each. */
+  /** The world's set, in order: a row each, in this order. */
   takes: Take[];
-  /** The row under the keys or the pointer: its part is the one live beside the list. */
+  /** The current row: the one under the keys, or the last the pointer entered, 0 when Index opens (the take just shown
+      when Index is reached from a take). Always exactly one. Its part is the live one, and its row the list's tab stop. */
   current: number;
-  /** Spread on the list's element (a nav): its name, and the mark the checks read. */
+  /** The row under the pointer now, or null (no pointer over the list, or touch after the finger lifts). Entering a row
+      also makes it current, so a body draws this only for a hover that differs from the current row's look. */
+  pointer: number | null;
+  /** Spread on the list's element (a nav): its name ("The set in <world>"), and data-play-index, the mark the checks read. */
   list: HTMLAttributes<HTMLElement> & { "data-play-index": "" };
-  /** Spread on row i's button: one tab stop for the list (the current row), Up and Down to move (wrapping), Home and
-      End to the ends, Enter or a press to open the take, and the pointer or focus making it current. Its name is the
-      take's title, so the row holds the title as its text and draws everything else aria-hidden. */
-  row: (i: number) => ButtonHTMLAttributes<HTMLButtonElement> & { ref: Ref<HTMLButtonElement>; "data-current"?: "" };
-  /** Spread on the link to the world's gallery view, with its words. */
+  /** Spread on row i's button: type, ref, the roving tab stop (tabIndex 0 on the current row, -1 on the rest), the
+      keys (Up and Down move, wrapping; Home and End go to the ends; with homeColumns over 1, Left and Right go a
+      column over), onClick (opens the take), onFocus, onPointerEnter
+      and onPointerLeave (current and pointer), data-current on the current row and data-pointer on the row under the
+      pointer. Put the className after the spread; never override its handlers. */
+  row: (i: number) => ButtonHTMLAttributes<HTMLButtonElement> & { ref: Ref<HTMLButtonElement>; "data-current"?: ""; "data-pointer"?: "" };
+  /** Spread on the link to the world's gallery view (#<world>/components). Draw its `children` (its words, "Every
+      component, 97 in 12 groups") as the link's text. */
   everything: AnchorHTMLAttributes<HTMLAnchorElement> & { href: string; "data-play-everything": ""; children: string };
-  /** The current row's part, live, drawn as its wall tile (PreviewContext "tile"). Place it once; the contract marks it
-      data-play-live. */
-  part: ReactNode;
-  /** Below sm: the screen is a phone's, and a body may leave the live part out, since a row opens its take at a touch. */
+  /** The current row's part, live, drawn as its wall tile (PreviewContext "tile"), keyed by the take so it remounts
+      as the current row moves, and marked data-play-live with a group name ("Poll, live"). `scale` is the size the
+      body picks (1, real size, by default; 0.75 for a small slot such as a phone's, up to 1.5 for a wide one), drawn
+      with CSS zoom so its box and hit areas scale with it; `className` goes on the outer box (placement, a min height).
+      Returns null on a phone unless the body's `phonePart` is "above". Call it once per render. */
+  part: (options?: { scale?: PartScale; className?: string }) => ReactNode;
+  /** Below sm: the screen is a phone's. With `phonePart` "none" (the default) `part()` is null and the list stands alone,
+      since a row opens its take at a touch; with "above" the body draws `part()` above the list. */
   compact: boolean;
 };
+
+/** The sizes a body may draw Index's live part at: real size (1), smaller for a narrow slot, larger for a wide one. */
+export type PartScale = 0.75 | 1 | 1.25 | 1.5;
 
 export type PlayObjectBody = {
   /** What the object's root says in data-play-object: the world's id, or "bare". */
@@ -78,9 +140,18 @@ export type PlayObjectBody = {
       alone (Device's recorder: plans/024, breach 17) says false, and the set stays on Index, behind its key and the dial. */
   rail: boolean;
   Body: ComponentType<PlayObjectBodyProps>;
-  /** Index's list in the body's own grammar, drawn inside the screen in place of the contract's. A body without one
-      keeps the contract's (every world but Heat). */
+  /** Index's list in the body's own grammar, drawn inside the screen in place of the contract's (see
+      PlayObjectHomeProps). A body without one keeps the contract's (HomeView in contract.tsx). */
   Home?: ComponentType<PlayObjectHomeProps>;
+  /** With its own Home: how many columns the body draws Index's rows in, filled top to bottom (CSS grid-flow-col, each
+      column ceil(takes / homeColumns) rows tall). Over 1, the contract's row keys add Left and Right: a column back or
+      on (minus or plus the rows per column), clamped to the first and last row, never wrapping. Up and Down still run
+      the set in order, wrapping. 1, the default, is one column, and Left and Right do nothing. At desktop widths only:
+      on a phone (`compact`) the contract keys Index as one column, so draw it as one there. */
+  homeColumns?: number;
+  /** On a phone, with its own Home: "none" (the default) leaves the live part out, so the list starts at the top of the
+      screen; "above" mounts it, and the body draws it above the list. */
+  phonePart?: "none" | "above";
 };
 
 /** How tall a landscape screen stands: the window less the top row, the tape and the deck, so the whole object fits the
