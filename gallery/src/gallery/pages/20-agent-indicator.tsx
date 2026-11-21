@@ -54,7 +54,7 @@ export const docs: PageDocs = {
     "Nothing moves on its own. It runs only while a phase is set and `paused` is false, and it stops off screen and in a hidden tab.",
     "Under reduced motion each mechanism rolls 1.2 seconds ahead and holds that frame. The loop is never joined, and the crossfade is instant.",
     "Pair it with words that say the same thing, as a Thinking row does. The indicator adds to them and does not replace them.",
-    "Inks are the LCD's: the field's ink on the field, at 7:1 or better under Device. The record lamp is the accent, and it is never the only way to tell the phases apart.",
+    "Inks are the LCD's: the field's ink on the field, at 7:1 or better under Device. The record lamp is red, Device's signal for REC, and it is never the only way to tell the phases apart.",
   ],
 };
 
