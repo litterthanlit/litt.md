@@ -194,15 +194,18 @@ function PressBody({ takes, at, selector, pick, step, index, play, readout, scre
 
 /* A row of Index's tray: the full width of the tray's floor, 2px in from its wall, so its corners are the tray's less
    2px (concentric). At rest it lies on the floor in the muted ink; current, it is raised as a block (lit top edge and
-   its cast), as the selected cell of every Press tray is; pressed, it sinks by the press depth. No outline. */
+   its cast), as the selected cell of every Press tray is; pressed, it sinks by the press depth. No outline. Under forced
+   colors the tray keeps its border and the current row is filled with Highlight, drawn in system colors alone and kept
+   off the text backplate, so its words stay HighlightText on Highlight. */
 const HOME_ROW =
   "litt-target relative flex h-control-sm w-full min-w-0 cursor-pointer items-center gap-3 rounded-[calc(var(--radius-control)-2px)] px-3 text-left text-small select-none " +
   "transition-[background-color,color,box-shadow,transform] duration-(--dur-instant) ease-litt motion-reduce:transition-none " +
   "active:shadow-(--block-press) active:[transform:translateY(var(--press-depth))] " +
-  "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus pointer-coarse:h-control-md forced-colors:border";
-const ROW_AT_REST = "bg-transparent font-normal text-fg-muted forced-colors:border-transparent";
+  "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus pointer-coarse:h-control-md";
+const ROW_AT_REST = "bg-transparent font-normal text-fg-muted";
 const ROW_RAISED =
-  "bg-block font-title text-fg shadow-[var(--highlight),var(--block-lift)] forced-colors:bg-[Highlight] forced-colors:text-[HighlightText]";
+  "bg-block font-title text-fg shadow-[var(--highlight),var(--block-lift)] " +
+  "forced-colors:bg-[Highlight] forced-colors:text-[HighlightText] forced-colors:forced-color-adjust-none forced-colors:focus-visible:outline-[CanvasText]";
 
 /* How large the live part stands: the largest size the kit offers at which the part and its line still fit the space
    beside the tray, read from that space and the part itself, never the window. Each part starts at the largest and
