@@ -29,6 +29,7 @@ import { useDevice } from "@/motion";
 import { useCustomize } from "../customize-state";
 import { PreviewContext } from "../kit";
 import { lookAttributes, materialOf, MATERIALS, type Material } from "../look";
+import { isPlayerRoute, takeAddress, takeOfRoute, worldTitle } from "../route";
 import { bare } from "./bodies/bare";
 import type { PlayObjectBody, PlayObjectBodyProps, PlayObjectHomeProps } from "./body";
 import { PlayScreen } from "./screen";
@@ -54,6 +55,12 @@ function bodyOf(material: Material): Promise<PlayObjectBody> {
   let p = bodies.get(material);
   if (!p) bodies.set(material, (p = (BODIES[material]?.() ?? Promise.resolve(bare)).catch(() => bare)));
   return p;
+}
+
+/** The place the address names among the takes: the take's index, or null for Index. */
+function takeOfAddress(takes: Take[]): number | null {
+  const i = takes.findIndex((t) => t.id === takeOfRoute(location.hash));
+  return i < 0 ? null : i;
 }
 
 /** The element the screen's host lives in while this body shows. */
@@ -96,13 +103,16 @@ function Loaded({ material, dark, lead, actions }: Props) {
   const { look } = useCustomize();
   const { compact } = useDevice();
   const id = useId();
-  /* null is Index: the world's introduction and its set, inside the screen. A world opens there. */
-  const [at, setAt] = useState<number | null>(null);
+  /* null is Index: the world's introduction and its set, inside the screen. A world opens there, or on the take its
+     address names (#<world>/take/<id>, route.ts), so Back from a take's page returns to it. */
+  const [at, setAt] = useState<number | null>(() => takeOfAddress(takes));
   const [playing, setPlaying] = useState(false);
   const [said, setSaid] = useState("");
   const [details, setDetails] = useState(false);
   /* On a body's own Index (body.Home), the row under the keys or the pointer, whose part is live beside the list. */
   const [cue, setCue] = useState(0);
+  /* The row under the pointer now, or null: a body may draw it apart from the current row. */
+  const [pointer, setPointer] = useState<number | null>(null);
   const rows = useRef<(HTMLButtonElement | null)[]>([]);
   const [host] = useState(() => Object.assign(document.createElement("div"), { className: "contents" }));
   const n = takes.length;
@@ -114,6 +124,31 @@ function Loaded({ material, dark, lead, actions }: Props) {
   useEffect(() => {
     for (const m of MATERIALS) void bodyOf(m.id);
   }, []);
+
+  /* The take is in the address: replaced as the hand or Play steps, never pushed, so Back leaves the player in one step.
+     Only while the address is this player's: a link away (Page) has already put its own address in. */
+  const takeId = at === null ? null : (takes[at]?.id ?? null);
+  useEffect(() => {
+    if (!isPlayerRoute(location.hash, material)) return;
+    const want = takeAddress(material, takeId);
+    if (location.hash !== want) history.replaceState(history.state, "", `${location.pathname}${location.search}${want}`);
+  }, [material, takeId]);
+  /* And read back when the address moves under the player: the world's name in the top row (#<world>) opens Index. A
+     move of the address is a hand's pick, as any other: through go, so Play stops (the top row is outside the screen,
+     whose hand stops it), Index's current row is the take just left, and the change is said. Through a ref, so the
+     listener never reads a stale place. */
+  const picked = useRef<(to: number | null) => void>(() => {});
+  useEffect(() => {
+    const read = () => {
+      if (isPlayerRoute(location.hash, material)) picked.current(takeOfAddress(takes));
+    };
+    window.addEventListener("hashchange", read);
+    window.addEventListener("popstate", read);
+    return () => {
+      window.removeEventListener("hashchange", read);
+      window.removeEventListener("popstate", read);
+    };
+  }, [material, takes]);
 
   /* Play runs the set: the next take every TAKE_MS, wrapping, until a hand stops it. From Home it starts at the first. */
   useEffect(() => {
@@ -148,6 +183,7 @@ function Loaded({ material, dark, lead, actions }: Props) {
     setAt(to);
     setSaid(to === null ? homeText : `${takes[to]!.title}, ${to + 1} of ${n}`);
   };
+  picked.current = go;
   /** The place `by` along the cycle Index, take 0 … take n-1, wrapping. */
   const along = (by: number) => {
     const k = ((((at === null ? 0 : at + 1) + by) % (n + 1)) + n + 1) % (n + 1);
@@ -169,6 +205,12 @@ function Loaded({ material, dark, lead, actions }: Props) {
   };
 
   const where = body.name === "bare" ? `in ${world.name}` : `in ${world.name}, on its ${world.object}`;
+
+  /* The tab names the take showing, so the player never shares a title with the take's own page ("Poll · Press"). */
+  const titled = `${take ? take.title : "Index"}, on the ${body.name === "bare" ? "player" : world.object}`;
+  useEffect(() => {
+    document.title = worldTitle(titled, world.name);
+  }, [titled, world.name]);
   const here = take ? `#${material}/${take.id}` : `#${material}/about`;
 
   const bodyProps: PlayObjectBodyProps = {
@@ -178,7 +220,7 @@ function Loaded({ material, dark, lead, actions }: Props) {
     selector: {
       role: "slider",
       tabIndex: 0,
-      "aria-label": "Components",
+      "aria-label": "Take",
       "aria-valuemin": 0,
       "aria-valuemax": n,
       "aria-valuenow": at === null ? 0 : at + 1,
@@ -188,7 +230,7 @@ function Loaded({ material, dark, lead, actions }: Props) {
     },
     pick: go,
     step: (by) => ({ type: "button", tabIndex: -1, "aria-label": by > 0 ? "Next" : "Previous", onClick: () => go(along(by)) }),
-    index: { type: "button", tabIndex: -1, "aria-label": "Index", onClick: () => go(null) },
+    index: { type: "button", tabIndex: -1, "aria-label": "Index", "data-play-to": "index", onClick: () => go(null) },
     everything: { href: `#${material}/components`, tabIndex: -1, "aria-label": `Every component in ${world.name}` },
     turn: (by) => go(along(by)),
     play: { type: "button", "aria-label": "Play", "aria-pressed": playing, onClick: () => setPlaying((p) => !p) },
@@ -204,23 +246,33 @@ function Loaded({ material, dark, lead, actions }: Props) {
 
   /* A body's own Index: the contract owns the list, its order, its keys and what each row opens; the body only draws. */
   const cued = takes[Math.min(cue, n - 1)];
+  /* On a phone the live part is drawn above the list only where the body asks for it (body.phonePart). */
+  const livePart = !compact || body.phonePart === "above";
+  /* Index's rows in columns that run top to bottom (body.homeColumns, at desktop widths): how many rows each holds. */
+  const columns = compact ? 1 : Math.max(1, Math.floor(body.homeColumns ?? 1));
+  const perColumn = Math.ceil(n / columns);
   const homeProps: PlayObjectHomeProps | null =
     body.Home && cued
       ? {
           world,
           takes,
           current: cue,
+          pointer,
           list: { "aria-label": `The set in ${world.name}`, "data-play-index": "" },
           row: (i) => ({
             type: "button",
             ref: (el: HTMLButtonElement | null) => void (rows.current[i] = el),
             tabIndex: i === cue ? 0 : -1,
             "data-current": i === cue ? "" : undefined,
+            "data-pointer": i === pointer ? "" : undefined,
             onClick: () => go(i),
             onFocus: () => setCue(i),
-            onPointerEnter: () => setCue(i),
+            onPointerEnter: () => (setCue(i), setPointer(i)),
+            onPointerLeave: () => setPointer((p) => (p === i ? null : p)),
             onKeyDown: (e) => {
-              const to = ({ ArrowDown: (i + 1) % n, ArrowUp: (i - 1 + n) % n, Home: 0, End: n - 1 } as Record<string, number>)[e.key];
+              /* In columns (body.homeColumns), Left and Right go a column over, to the ends at the edges. */
+              const across = columns > 1 ? { ArrowRight: Math.min(n - 1, i + perColumn), ArrowLeft: Math.max(0, i - perColumn) } : {};
+              const to = ({ ArrowDown: (i + 1) % n, ArrowUp: (i - 1 + n) % n, Home: 0, End: n - 1, ...across } as Record<string, number>)[e.key];
               if (to === undefined) return;
               e.preventDefault();
               setCue(to);
@@ -228,15 +280,19 @@ function Loaded({ material, dark, lead, actions }: Props) {
             },
           }),
           everything: { href: `#${material}/components`, "data-play-everything": "", children: `Every component, ${total} in ${shelves.length} groups` },
-          part: (
-            <div key={cued.id} data-play-live={cued.id} aria-label={`${cued.title}, live`} role="group" className="grid w-full min-w-0 justify-items-center">
-              <PreviewContext.Provider value="tile">
-                <Suspense fallback={null}>
-                  <cued.Component />
-                </Suspense>
-              </PreviewContext.Provider>
-            </div>
-          ),
+          part: ({ scale = 1, className = "" } = {}) =>
+            livePart ? (
+              <div key={cued.id} data-play-live={cued.id} aria-label={`${cued.title}, live`} role="group" className={"grid w-full min-w-0 justify-items-center " + className}>
+                {/* zoom, not a transform, so the part's box, its hit areas and its overlays scale with what is drawn. */}
+                <div className="grid w-full min-w-0 justify-items-center" style={scale === 1 ? undefined : { zoom: scale }}>
+                  <PreviewContext.Provider value="tile">
+                    <Suspense fallback={null}>
+                      <cued.Component />
+                    </Suspense>
+                  </PreviewContext.Provider>
+                </div>
+              </div>
+            ) : null,
           compact,
         }
       : null;
@@ -250,7 +306,7 @@ function Loaded({ material, dark, lead, actions }: Props) {
         {lead}
         <div className="flex flex-wrap items-center gap-1">
           {actions}
-          <Button size="sm" variant="ghost" aria-current={at === null ? "page" : undefined} onClick={() => go(null)}>
+          <Button size="sm" variant="ghost" data-play-to="index" aria-current={at === null ? "page" : undefined} onClick={() => go(null)}>
             Index
           </Button>
           <Button size="sm" variant="ghost" aria-expanded={details} aria-controls={`${id}-details`} onClick={() => (setPlaying(false), setDetails((d) => !d))}>
@@ -278,7 +334,7 @@ function Loaded({ material, dark, lead, actions }: Props) {
               </div>
             </div>
           ) : body.Home && homeProps ? (
-            <div data-play-take="home" className="h-full min-h-0">
+            <div data-play-take="home" data-play-home="body" className="h-full min-h-0">
               <body.Home {...homeProps} />
             </div>
           ) : (
@@ -362,7 +418,7 @@ const FLAT_HOME = {
 function HomeView({ material, takes, total, groups, open }: { material: Material; takes: Take[]; total: number; groups: number; open: (i: number) => void }) {
   const world = materialOf(material);
   return (
-    <div data-play-take="home" className={"grid h-full min-h-0 content-start gap-8 overflow-auto overscroll-contain p-6 sm:p-10 " + FLAT_HOME.view}>
+    <div data-play-take="home" data-play-home="contract" className={"grid h-full min-h-0 content-start gap-8 overflow-auto overscroll-contain p-6 sm:p-10 " + FLAT_HOME.view}>
       <header className="grid gap-2">
         <h2 className={"text-h3 text-fg " + FLAT_HOME.name}>{world.name}</h2>
         <p className="max-w-[48ch] text-body text-fg-muted">{world.tagline}</p>
@@ -385,7 +441,7 @@ function HomeView({ material, takes, total, groups, open }: { material: Material
       <a
         href={`#${material}/components`}
         data-play-everything=""
-        className={"justify-self-start rounded-control text-small text-fg underline decoration-line-strong underline-offset-4 hover:decoration-current focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus " + FLAT_HOME.everything}
+        className={"litt-target relative justify-self-start rounded-control text-small text-fg underline decoration-line-strong underline-offset-4 hover:decoration-current focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus " + FLAT_HOME.everything}
       >
         Every component, {total} in {groups} groups
       </a>

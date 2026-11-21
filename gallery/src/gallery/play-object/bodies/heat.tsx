@@ -316,7 +316,7 @@ function HeatHome({ world, takes, current, list, row, everything, part, compact 
       </div>
       {!compact && (
         <div className="grid min-h-0 min-w-0 content-center justify-items-center gap-4">
-          {part}
+          {part()}
           <p className="max-w-[48ch] text-center text-small text-fg-muted">{takes[current]?.lede}</p>
         </div>
       )}
