@@ -29,6 +29,7 @@ import { useDevice } from "@/motion";
 import { useCustomize } from "../customize-state";
 import { PreviewContext } from "../kit";
 import { lookAttributes, materialOf, MATERIALS, type Material } from "../look";
+import { worldTitle } from "../route";
 import { bare } from "./bodies/bare";
 import type { PlayObjectBody, PlayObjectBodyProps, PlayObjectHomeProps } from "./body";
 import { PlayScreen } from "./screen";
@@ -115,7 +116,7 @@ function Loaded({ material, dark, lead, actions }: Props) {
     for (const m of MATERIALS) void bodyOf(m.id);
   }, []);
 
-  /* Play runs the set: the next take every TAKE_MS, wrapping, until a hand stops it. From Home it starts at the first. */
+  /* Play runs the set:the next take every TAKE_MS, wrapping, until a hand stops it. From Home it starts at the first. */
   useEffect(() => {
     if (!playing || !n) return;
     const next = (i: number | null) => (i === null ? 0 : (i + 1) % n);
@@ -169,6 +170,12 @@ function Loaded({ material, dark, lead, actions }: Props) {
   };
 
   const where = body.name === "bare" ? `in ${world.name}` : `in ${world.name}, on its ${world.object}`;
+
+  /* The tab names the take showing, so the player never shares a title with the take's own page ("Poll · Press"). */
+  const titled = `${take ? take.title : "Index"}, on the ${body.name === "bare" ? "player" : world.object}`;
+  useEffect(() => {
+    document.title = worldTitle(titled, world.name);
+  }, [titled, world.name]);
   const here = take ? `#${material}/${take.id}` : `#${material}/about`;
 
   const bodyProps: PlayObjectBodyProps = {

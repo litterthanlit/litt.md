@@ -25,6 +25,12 @@ export function readHash(): string {
 
 const WORLDS = ["press", "flat", "device", "plain", "rack", "heat"];
 
+/** The gallery's own name, last in every title. */
+export const GALLERY_NAME = "litt.md Gallery";
+/** A world address's tab title: the part or page, then the world, then the gallery ("Button · Press · litt.md Gallery"),
+    so a tab, a bookmark, the history list and a screen reader's page announcement tell them apart (WCAG 2.4.2). */
+export const worldTitle = (what: string, world: string) => `${what} · ${world} · ${GALLERY_NAME}`;
+
 /**
  * Where an older address lives now (plans/019): each world is closed, so a component's page is in a world. #button
  * opens #flat/button (the gallery's own world), #playground/device opens Device's player, #playground the gallery's.
