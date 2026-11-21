@@ -7,13 +7,14 @@
  *   edge by `--highlight` and lifted by `--block-lift`, with zero outline); pending stages stay recessed in the tray.
  * - It is a readout, not a control: the stages are a list (`role="list"`, the current one `aria-current="step"`), and
  *   none of them is a button or a tab stop. Rebuild and Next stage (it reads Promote before the last stage) are the
- *   only keys, and the only tab stops.
+ *   only keys, and the only tab stops. When a press disables the key it was on (Next stage at the last stage, Rebuild at
+ *   the first), focus moves to the other key, so it never falls to the page.
  * - The header says the state in words: the current stage and "running" while the deploy moves ("Edge, running"), and
  *   the last stage's word alone once it is reached ("Live"). Each stage also says its state to a screen reader (done,
  *   running, pending), never by decorative status pills.
  * - Zero outer card wrapper, zero button outlines, zero `--accent` fills (R6), and zero auto-animation on mount (R2/R4).
  */
-import { useId, useState, type ReactNode } from "react";
+import { useId, useRef, useState, type ReactNode } from "react";
 
 export type DeployStage = {
   /** Stable stage id. */
@@ -73,6 +74,8 @@ export function DeployStatus({
   const clamp = (i: number) => Math.max(0, Math.min(safeCount - 1, i));
   const [inner, setInner] = useState(() => clamp(defaultStageIndex));
   const [live, setLive] = useState("");
+  const rebuildKey = useRef<HTMLButtonElement>(null);
+  const nextKey = useRef<HTMLButtonElement>(null);
 
   const index = stageIndex !== undefined ? clamp(stageIndex) : inner;
   const activeStage = stages[index];
@@ -150,8 +153,12 @@ export function DeployStatus({
           <button
             type="button"
             data-part="block"
+            ref={rebuildKey}
             disabled={index === 0}
-            onClick={() => go(0)}
+            onClick={() => {
+              go(0);
+              if (safeCount > 1) nextKey.current?.focus();
+            }}
             className={keyCls}
           >
             Rebuild
@@ -159,8 +166,12 @@ export function DeployStatus({
           <button
             type="button"
             data-part="block"
+            ref={nextKey}
             disabled={isLive}
-            onClick={() => go(index + 1)}
+            onClick={() => {
+              go(index + 1);
+              if (index + 1 >= safeCount - 1) rebuildKey.current?.focus();
+            }}
             className={keyCls}
           >
             {index === safeCount - 2 ? "Promote" : "Next stage"}
