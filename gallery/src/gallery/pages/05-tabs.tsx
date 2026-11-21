@@ -8,7 +8,7 @@ import { useLoop } from "../tile";
 export const meta: PageMeta = {
   id: "tabs",
   title: "Tabs",
-  lede: "Views that slide into place.",
+  lede: "Views of one thing, one open at a time.",
   ledeByWorld: { heat: "Views in a strip of square cells, the open one in brackets." },
   order: 3.07, group: "Selection",
   verbs: ["select"],

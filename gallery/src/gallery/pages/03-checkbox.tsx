@@ -6,7 +6,7 @@ import { Page, Stage, TryIt, type PageDocs, type PageMeta } from "../kit";
 export const meta: PageMeta = {
   id: "checkbox",
   title: "Checkbox and radio",
-  lede: "Real checkboxes and radios, filled with ink when on.",
+  lede: "Real checkboxes and radios, with a mark when on.",
   ledeByWorld: { heat: "Real checkboxes as square cells that take brackets and a check when on, and radios with a dot." },
   order: 3.01,
   group: "Selection",
