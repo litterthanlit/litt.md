@@ -8,6 +8,7 @@ import { Button } from "@/components/button";
 import { CurveEditor, toCubicBezier, type CubicBezier } from "@/components/curve-editor";
 import { CheckCircleIcon, RetryIcon } from "@/components/icons";
 import { Inspector, InspectorGroup, type InspectorCheck, type InspectorVersion } from "@/components/inspector";
+import { Segmented } from "@/components/segmented";
 import { Slider } from "@/components/slider";
 import { SpringEditor } from "@/components/spring-editor";
 import { Switch } from "@/components/switch";
@@ -561,6 +562,88 @@ function TrackInspectorTile() {
   );
 }
 
+/* The lead under Rack (plans/audits/rack.md, finding 3): a device on a track, its parameters set in one panel. */
+type FilterType = "low" | "high" | "band";
+type AutoFilter = { freq: number; res: number; type: FilterType; lfo: number; mix: number; on: boolean };
+const FILTER_INIT: AutoFilter = { freq: 12000, res: 0, type: "low", lfo: 0, mix: 100, on: true };
+const FILTER_SWEEP: AutoFilter = { freq: 3400, res: 45, type: "low", lfo: 30, mix: 100, on: true };
+const FILTER_NAMES: Record<FilterType, string> = { low: "Low pass", high: "High pass", band: "Band pass" };
+
+const hz = (v: number) => (v >= 1000 ? `${(v / 1000).toFixed(1)} kHz` : `${v} Hz`);
+const pct = (v: number) => `${v}%`;
+
+function AutoFilterInspectorDemo() {
+  const [f, setF] = useState<AutoFilter>(FILTER_SWEEP);
+  const set = (patch: Partial<AutoFilter>) => setF((v) => ({ ...v, ...patch }));
+  const values: [string, string][] = [
+    ["Type", FILTER_NAMES[f.type]],
+    ["Frequency", hz(f.freq)],
+    ["Resonance", pct(f.res)],
+    ["LFO", pct(f.lfo)],
+    ["Dry/Wet", pct(f.mix)],
+  ];
+  return (
+    <div className="@container w-full">
+      <div className="grid w-full items-start gap-6 @2xl:grid-cols-[1fr_auto]">
+        <div className="mx-auto grid w-full max-w-xs gap-2 rounded-surface border border-line-strong bg-surface-1 p-3 forced-colors:border">
+          <div className="flex items-baseline justify-between gap-3">
+            <p className="text-small font-title text-fg">Auto filter</p>
+            <p className="text-caption text-fg-subtle">{f.on ? "Synth track" : "Synth track, off"}</p>
+          </div>
+          <dl className="grid grid-cols-2 gap-1">
+            {values.map(([name, shown]) => (
+              <div key={name} className="grid gap-0.5 rounded-control border border-line bg-surface-2 px-2 py-1.5">
+                <dt className="text-caption text-fg-subtle">{name}</dt>
+                <dd className={"font-mono text-caption tabular-nums " + (f.on ? "text-fg" : "text-fg-subtle")}>{shown}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+        <Inspector
+          title="Auto filter · Synth"
+          value={f}
+          onValueChange={setF}
+          defaultValue={FILTER_INIT}
+          presets={[
+            { label: "Init", value: FILTER_INIT },
+            { label: "Sweep into the drop", value: FILTER_SWEEP },
+          ]}
+          checks={(v) => [
+            { ok: v.res <= 90, text: `Resonance at most 90%, so the filter does not ring: ${pct(v.res)}` },
+            { ok: v.type !== "high" || v.freq <= 2000, text: `A high pass keeps the body under 2 kHz: ${v.type === "high" ? hz(v.freq) : "low or band pass"}` },
+          ]}
+          className="justify-self-center"
+        >
+          <InspectorGroup title="Filter" summary={`${FILTER_NAMES[f.type]}, ${hz(f.freq)}`}>
+            <Segmented
+              legend="Filter type"
+              showLegend
+              size="sm"
+              block
+              value={f.type}
+              onValueChange={(type) => set({ type })}
+              options={[
+                { value: "low", label: "Low pass" },
+                { value: "high", label: "High pass" },
+                { value: "band", label: "Band pass" },
+              ]}
+            />
+            <Slider label="Frequency" value={f.freq} onValueChange={(freq) => set({ freq })} min={100} max={12000} step={100} home={12000} formatValue={hz} />
+            <Slider label="Resonance" value={f.res} onValueChange={(res) => set({ res })} min={0} max={100} step={1} home={0} formatValue={pct} />
+          </InspectorGroup>
+          <InspectorGroup title="Modulation" summary={`LFO ${pct(f.lfo)}`}>
+            <Slider label="LFO amount" value={f.lfo} onValueChange={(lfo) => set({ lfo })} min={0} max={100} step={1} home={0} formatValue={pct} />
+          </InspectorGroup>
+          <InspectorGroup title="Output" summary={`${pct(f.mix)} wet${f.on ? "" : ", off"}`} defaultOpen={false}>
+            <Slider label="Dry/Wet" value={f.mix} onValueChange={(mix) => set({ mix })} min={0} max={100} step={1} home={100} formatValue={pct} />
+            <Switch label="Device on" align="end" checked={f.on} onCheckedChange={(on) => set({ on })} />
+          </InspectorGroup>
+        </Inspector>
+      </div>
+    </div>
+  );
+}
+
 export default function InspectorPage() {
   return (
     <Page meta={meta} docs={docs} tile={<InspectorTile />} tileByWorld={{ device: <TakeCardInspectorTile />, flat: <PostCardInspectorTile />, rack: <TrackInspectorTile /> }}>
@@ -585,6 +668,13 @@ export default function InspectorPage() {
             code: "NoticeInspectorDemo",
             caption:
               "Every value of the notice a recorder's app shows when a take is exported, in one panel: its corners and padding on Sliders, its shadow on a Switch, its entrance on a Spring editor and its exit on a Curve editor, which starts folded. Let go of a spring or a curve and the notice leaves on the exit and enters on the spring. The Rules group checks every value against litt and says Fits or Change; Lively breaks five of them. Pick litt's notice from the version list and every row fits. Copy tokens hands over CSS custom properties. A group snaps open, and nothing animates its height.",
+          },
+          rack: {
+            demo: <AutoFilterInspectorDemo />,
+            title: "Set a device",
+            code: "AutoFilterInspectorDemo",
+            caption:
+              "Every parameter of the Auto filter on the synth track in one panel: its type on a Segmented control, its frequency and resonance on Sliders, the LFO's amount, and Dry/Wet and the device's power under Output, which starts folded. The device beside it shows each value in words as you set it. Init and Sweep into the drop are its presets, Save keeps a version of your own, and Reset goes back to Init. The Rules group says Fits or Change for each rule: push Resonance past 90% and the filter rings. A group cuts open, and nothing animates its height.",
           },
         }}
       >
