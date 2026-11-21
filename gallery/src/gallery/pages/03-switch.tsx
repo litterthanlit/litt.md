@@ -8,12 +8,18 @@ import { Page, Stage, TryIt, type PageDocs, type PageMeta, type PageStudy } from
 export const meta: PageMeta = {
   id: "switch",
   title: "Switch",
-  lede: "A block thrown along a tray, uncovering On or Off.",
+  lede: "A setting that is on or off, with the word to say which.",
+  ledeByWorld: {
+    press: "A block thrown along a tray, uncovering On or Off.",
+  },
   order: 3.02,
   group: "Selection",
   verbs: ["press"],
   summary:
-    "An on or off setting you can feel. A raised block rides a sunken tray with On and Off set in its floor, and the block's travel uncovers the one that is true. Press it and it presses down; click, tap or drag it across. Neutral keeps the block white; accent fills it when on, for the one switch that is a view's main choice. The block crosses on the responsive tier, and the tray never moves. The label sits beside it, or the switch sits at the end of a settings row.",
+    "An on or off setting you can feel. Click, tap or drag it, and it says On or Off in a word as well as by where it stands. Neutral keeps it quiet; accent marks it when on, for the one switch that is a view's main choice. The label sits beside it, or the switch sits at the end of a settings row.",
+  summaryByWorld: {
+    press: "An on or off setting you can feel. A raised block rides a sunken tray with On and Off set in its floor, and the block's travel uncovers the one that is true. Press it and it presses down; click, tap or drag it across. Neutral keeps the block white; accent fills it when on, for the one switch that is a view's main choice. The block crosses on the responsive tier, and the tray never moves. The label sits beside it, or the switch sits at the end of a settings row.",
+  },
   fun: "Flip a switch: the block springs across and meets the far wall with a little life.",
   tiers: ["responsive", "instant"],
   mechanism:
@@ -68,10 +74,10 @@ export const docs: PageDocs = {
     "On and off differ in the block's position and the word it uncovers, so color is never the only signal. The word is hidden from screen readers, which hear on or off from aria-checked instead, and it reaches 4.5:1 in both themes and both tones.",
     "In a form, Radix adds a hidden checkbox that carries the name and value. It is hidden from screen readers, so the setting is not read twice.",
     "A switch changes at once, and nothing tells a screen reader that it saved. If the change is saved, confirm it somewhere, such as a status line or a toast.",
-    "Every row is 44px tall at least. A sideways drag that starts on the tray moves the block; a vertical one still scrolls the page.",
+    "Every row is 44px tall at least. A sideways drag that starts on the switch flips it; a vertical one still scrolls the page.",
     "Dragging is never the only way: a click, a tap, Space or Enter does the same, and a screen reader's activate flips it.",
-    "Keyboard focus draws a 2px outline at a 2px offset around the tray. Mouse and touch presses do not show it.",
-    "In forced colors mode the tray and the block get real borders and the on state uses the system highlight.",
+    "Keyboard focus draws a 2px outline at a 2px offset around the switch. Mouse and touch presses do not show it.",
+    "In forced colors mode the switch keeps real borders and the on state uses the system highlight.",
     "A disabled switch is muted, skipped by Tab, left out of a form, and exempt from contrast rules. If the reason is not obvious, say it in the description.",
   ],
 };
@@ -101,7 +107,7 @@ export const study: PageStudy = {
   },
   replay: {
     label: "Replay the flip",
-    caption: "Watch the block cross the tray and uncover the word in the floor.",
+    caption: "Watch it go from Off to On, and the word change with it.",
     run: () => <ReplayFlip />,
   },
 };

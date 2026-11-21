@@ -11,11 +11,11 @@ import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 export const meta: PageMeta = {
   id: "card",
   title: "Card",
-  lede: "A raised surface for one thing that links.",
+  lede: "One thing that links, on a surface of its own.",
   order: 7.01, group: "Layout",
   verbs: ["press"],
   summary:
-    "A raised surface for one independent object that links somewhere. A linked card is one real link stretched over the card; hover moves its fill one step, and nothing lifts, grows or scales.",
+    "A surface for one independent object that links somewhere. A linked card is one real link stretched over the card; hover moves its fill one step, and nothing lifts, grows or scales.",
   tiers: ["instant"],
 };
 
@@ -56,7 +56,7 @@ export const docs: PageDocs = {
   skip: [
     "The items are rows of the same few fields that people compare or sort. Use Table, because a card hides the columns.",
     "A feature list, or three equal cards with an icon and two lines. Use text with hairline dividers, because cards are not the default layout.",
-    "A floating panel over content, such as a menu or a popover. Those are glass; a card never is.",
+    "A panel over the content, such as a menu or a popover. Use those; a card sits in the page.",
     "A long list of projects with a status and a date. Use List and cards, which has the rows.",
     "You want a card to lift or grow on hover. It will not: a card only changes its fill.",
   ],

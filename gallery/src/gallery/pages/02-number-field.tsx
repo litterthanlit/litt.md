@@ -10,7 +10,7 @@ export const meta: PageMeta = {
   group: "Inputs",
   verbs: ["type", "press"],
   summary:
-    "A labelled number in the Input's cut, with − and + as raised blocks inside the field's end. It steps by the arrow keys, by a press, or by holding a stepper down; what is typed is read in the page's locale when the field is left, kept between its bounds, put on the step and shown formatted. A pressed stepper sinks half a pixel and the line fades on the instant tier, as an Input's does.",
+    "A labelled number in the Input's cut, with − and + as steppers at the field's end. It steps by the arrow keys, by a press, or by holding a stepper down; what is typed is read in the page's locale when the field is left, kept between its bounds, put on the step and shown formatted. A pressed stepper answers on the instant tier, and the line changes as an Input's does.",
   fun: "Drag the label sideways to scrub the value, past either end too; press + or \u2212 and the number kicks.",
   tiers: ["instant"],
 };

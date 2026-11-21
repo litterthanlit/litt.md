@@ -31,11 +31,11 @@ export const meta: PageMeta = {
   order: 5.06, group: "Overlays",
   verbs: ["type", "open"],
   summary:
-    "Search every page, project and action from the keyboard. The panel drops in over a dimmed canvas, and one highlight glides between rows as you arrow through them. On a phone it sits at the top edge and follows the keyboard.",
+    "Search every page, project and action from the keyboard. The panel opens over a dimmed page, and one highlight moves between rows as you arrow through them. On a phone it sits at the top edge and follows the keyboard.",
   fun: "Move through the results: the highlight reaches for each row, then gathers itself there.",
   tiers: ["instant", "responsive"],
   mechanism:
-    "The hand opens it with a press or the shortcut, then types. The field keeps focus the whole time, and the rows only light. One highlight glides to the row you point at or arrow to, and a keyboard move adds a focus ring. Opened by the shortcut, it appears and leaves at once, because something opened hundreds of times a day must not make you wait. Opened by a click, it moves on the responsive tier, 200ms with no bounce: Press rises and settles, Flat grows out of the Search button, and Device switches on where it stands, in steps. Under Device the search and rows are set in the mono. Typing is instant, and the list never animates its height. Under reduced motion the panel appears at once and the highlight jumps to the row.",
+    "The hand opens it with a press or the shortcut, then types. The field keeps focus the whole time, and the rows only light. One highlight moves to the row you point at or arrow to, and a keyboard move adds a focus ring. Opened by the shortcut, it appears and leaves at once, because something opened hundreds of times a day must not make you wait. Opened by a click, it opens on the responsive tier, 200ms with no bounce, the way its world's body opens a panel. Typing is instant, and the list never animates its height. Under reduced motion the panel appears at once and the highlight jumps to the row.",
 };
 
 export const docs: PageDocs = {

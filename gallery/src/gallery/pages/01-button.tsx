@@ -13,8 +13,9 @@ export const meta: PageMeta = {
   ledeByWorld: { heat: "A square key whose corner brackets snap on under the hand." },
   order: 1.01, group: "Actions",
   verbs: ["press"],
-  summary: "Roomy and slightly rounded, with the label at the title weight. Under Press, secondary is a block raised once by its cast, with no outline, and danger is the same block with red words. Hover changes the fill on the instant tier, and a press sinks the block half a pixel, so the button answers without ever changing its size.",
+  summary: "Roomy, with the label at the title weight. Primary is the view's one strong fill, secondary and ghost are quieter, and danger says the loss in red words. Hover changes the fill on the instant tier, and a press answers under the hand without the button ever changing its size.",
   summaryByWorld: {
+    press: "Roomy and slightly rounded, with the label at the title weight. Under Press, secondary is a block raised once by its cast, with no outline, and danger is the same block with red words. Hover changes the fill on the instant tier, and a press sinks the block half a pixel, so the button answers without ever changing its size.",
     heat: "A square key with the label at the title weight. Primary is the one accent fill; secondary is a flat cell in a 1px line, and danger the same cell with red words. Hover steps the fill and four corner brackets snap on, on the instant tier, and a press draws the key in a touch on the frame, so the button answers without ever changing its size.",
   },
   fun: "Press and let go: the button goes deeper and springs back with a little life.",
@@ -43,9 +44,9 @@ import { PlusIcon, SettingsIcon } from "@/components/icons";
 <Button variant="danger" icon={<TrashIcon />}>Delete project</Button>`,
   use: [
     "A person does something: save, create, send, start a project.",
-    "The main action in a view. Make it primary, because the accent fill appears once per view.",
+    "The main action in a view. Make it primary, because one action per view takes the primary fill.",
     "Other important actions (secondary), and quiet ones like Cancel or a toolbar action (ghost).",
-    "An action that destroys something, such as Delete project or Revoke key. Use danger: the block says it in red words. The confirm in the dialog that asks is the same variant, and only there does it fill red.",
+    "An action that destroys something, such as Delete project or Revoke key. Use danger: the button says it in red words. The confirm in the dialog that asks is the same variant, and only there does it fill red.",
     "A page form's submit and its paired Cancel. Keep both md, like the fields, in a page form and in a dialog. lg is for a hero CTA.",
     "A compact, familiar action such as copy, settings or more. Use iconOnly and give it an aria-label.",
   ],
@@ -67,10 +68,10 @@ import { PlusIcon, SettingsIcon } from "@/components/icons";
     "Loading sets aria-busy and aria-disabled and ignores presses, so it cannot be pressed twice, and a submit does not send the form again. It is not disabled, so it keeps focus and its place in the tab order while it waits.",
     "A disabled button leaves the tab order, so say why somewhere else, such as a status line next to it.",
     "Keyboard focus draws a 2px outline at a 2px offset. Mouse and touch presses do not show it.",
-    "A press sinks the button half a pixel and tightens its cast, by mouse or finger, and the OS tap flash is off so a touch press does not show two things. Touch has no hover, so a pressed button also takes its hover fill. Under reduced motion the button does not sink, and the fill still shows the press.",
+    "A press shows by mouse or finger, and the OS tap flash is off so a touch press does not show two things. Touch has no hover, so a pressed button also takes its hover fill. Under reduced motion nothing moves, and the fill still shows the press.",
     "Small is 32px tall and medium is 44px. Use medium or large for primary actions on touch screens.",
     "A disabled button is muted and exempt from contrast rules. If the reason is not obvious, say it in text next to the button.",
-    "Danger says it in words, not only in red: the label names the loss (Delete project, not OK). The red words reach 4.5:1 on the block, and the confirm's words reach it on the red fill, in light and dark.",
+    "Danger says it in words, not only in red: the label names the loss (Delete project, not OK). The red words reach 4.5:1 on the button, and the confirm's words reach it on the red fill, in light and dark.",
   ],
 };
 
@@ -88,7 +89,7 @@ function ReplayLoading() {
 export const study: PageStudy = {
   object: <Button>View work</Button>,
   parts: [
-    { name: "The block", selector: "button" },
+    { name: "The button", selector: "button" },
     { name: "The row", selector: "button > span" },
     { name: "The label", selector: "button .litt-trim" },
   ],
@@ -99,7 +100,7 @@ export const study: PageStudy = {
   },
   replay: {
     label: "Replay loading",
-    caption: "Watch the width: the label fades out under the spinner, and the block does not move.",
+    caption: "Watch the width: the label fades out under the spinner, and the button keeps its size.",
     run: () => <ReplayLoading />,
   },
 };

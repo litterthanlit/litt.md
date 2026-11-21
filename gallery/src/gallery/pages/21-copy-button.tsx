@@ -44,7 +44,7 @@ export const docs: PageDocs = {
   a11y: [
     "The key is a real button named \"Copy command\" (set label for another name). The command beside it is real text for a screen reader, and the scrambling glyphs are hidden from it.",
     "\"Copied\" is said once in a polite status, and only on a real copy. Nothing is announced on mount.",
-    "The glass says Copied in words as well as the check drawing, so the state never rests on an icon or a color.",
+    "The readout says Copied in words as well as the check drawing, so the state never rests on an icon or a color.",
     "If the clipboard refuses, the command on the line is selected so it can be copied by hand, and the status says so.",
     "Under reduced motion the glyphs swap at once and the check appears without drawing.",
   ],
@@ -73,7 +73,7 @@ export const study: PageStudy = {
   parts: [
     { name: "The key", selector: "button" },
     { name: "The glyph", selector: "button svg" },
-    { name: "The glass", selector: "button + span" },
+    { name: "The readout", selector: "button + span" },
     { name: "The prompt", selector: "button + span > span" },
     { name: "The command", selector: "button + span [aria-hidden] > span" },
   ],
