@@ -9,8 +9,8 @@
  *   clip stops it. Clicking a scene button launches the entire row across every track at once.
  * - Active clips cut cleanly to lit ink (`bg-fg text-canvas`) with their track hue stripe preserved on the left rail,
  *   while resting clips show their rich Rack clip tint (`bg-data-*-tint`), text tone, and seeded mini-waveform bars.
- * - A clip's name is never cut short in a narrow panel: it wraps to a second line and the row grows to hold it (every
- *   value in reach), and its accessible name carries it whole.
+ * - A clip's name wraps to two lines in a narrow panel and the row grows to hold them; a name that needs a third ends
+ *   in an ellipsis there, and its accessible name carries it whole.
  * - Keys (principle 5, one tab stop per composite): the session is a grid (role grid, a row of column headers for the
  *   tracks and Master, then a row per scene) and one Tab stop, on the cell focused last (the first clip to start
  *   with). ← → ↑ ↓ move a cell at a time without wrapping, Home and End go to the row's ends, Ctrl (or ⌘) with them to
