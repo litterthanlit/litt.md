@@ -396,7 +396,8 @@ export function Page({
               <StudySections meta={meta} docs={docs} study={study} />
             </Suspense>
           )}
-          <section aria-labelledby={`about-${meta.id}`} className="grid content-start gap-4 border-t border-line pt-12">
+          {/* Under Flat, space alone parts About from the stage: Flat draws no lines between things (plans/audits/flat.md, finding 9). */}
+          <section aria-labelledby={`about-${meta.id}`} className="grid content-start gap-4 border-t border-line pt-12 in-[[data-material=flat]]:border-t-0">
             <h2 id={`about-${meta.id}`} className={QUIET_HEADING}>
               About
             </h2>

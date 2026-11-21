@@ -4,13 +4,20 @@ Every change to the litt registry at https://littmd.vercel.app/r/, newest first.
 
 To update an item, read the entries since your version, then reinstall it with `--overwrite`. A **breaking** entry says what to change in your code.
 
-## 2026-11-21 · Press
+## 2026-11-21 · Press and Flat
 
 Press's audit (plans/audits/press.md, findings 2, 3 and 14; plans/audits/press-fixes.md, Buildable now): Press's own parts keep the contracts they announce. Nothing changes outside Press, and nothing looks different at rest.
 
 - **fixed** `env-switch`, `press-env-switch`: the environments are a radio group a keyboard can work. The group is one tab stop, on the chosen environment; the arrow keys move to the next or previous environment and choose it, wrapping at the ends, and Home and End go to the first and the last. Each choice is announced as before. Props are unchanged.
 - **fixed** `release-rail`, `press-release-rail`: the releases are a radio group a keyboard can work. They are one tab stop, on the selected release; the arrow keys move to the newer or older release and select it, wrapping at the ends, and Home and End go to the newest and the oldest. Promote to live stays its own tab stop. Props are unchanged.
 - **fixed** `deploy-status`, `press-deploy-status`: Deploy status is a readout. The stages are a read-only list (`role="list"`, the current one `aria-current="step"`), no longer buttons or tab stops, so a click on a stage no longer rewrites the deploy; Rebuild and Next stage (Promote before the last stage) are the only keys. The header says the state in words ("Edge, running", or "Live" once it is reached), each stage tells a screen reader whether it is done, running or pending, and the live region announces the same words. When a press disables the key it was on (Promote reaching the last stage, Rebuild the first), focus moves to the other key instead of falling to the page. Reached stages look as they did. Props are unchanged; `onStageChange` now fires only from the keys.
+
+Flat's audit, finding 3 (plans/audits/flat.md): Flat's six own parts said what they were made of, not what they are for. Their words now speak to a reader: no palette or spring names, no instruction lines, and sentence case. Nothing looks or moves differently.
+
+- **changed** `streak`, `flat-streak`: the line under the pills no longer tells the reader what to press. With the current slot open it reads the action and "Not done yet" ("Send Issue 14 · Not done yet"), and once logged the slot's label and "Done" ("W14 · Done"), where it read "press the outlined pill to light it up" and "click again to undo". Props are unchanged.
+- **changed** `reading-progress`, `flat-reading-progress`: the defaults are a post a site would publish. `title` defaults to "A week on the coast" (was "Field notes on motion") and `DEFAULT_CHAPTERS` to Getting there, Low tide, The lighthouse and Coming home (was Opening, Springs, Tactile feel and Closing notes), with the same minutes. Pass `title` and `chapters` to keep the old ones. The default chapters' ids changed too (`intro`, `springs`, `tactile`, `closing` are now `leaving`, `tide`, `lighthouse`, `home`), so a host that keyed state on them should pass its own `chapters`.
+- **changed** `goal-ring`, `flat-goal-ring`: `title` defaults to "Books read in 2026", in sentence case (was "2026 Reading goal").
+- **changed** `poll`, `flat-poll`, `kudos`, `flat-kudos`, `reaction-bar`, `flat-reaction-bar`: the doc comments say what the part is for, in plain words. No behavior or prop changed.
 
 ## 2026-11-20 · Press deploy-dashboard identity, and Heat's keycaps are keys
 

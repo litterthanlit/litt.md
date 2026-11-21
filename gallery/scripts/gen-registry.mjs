@@ -810,32 +810,32 @@ const COPY = {
   /* Flat's own parts (skills/litt-md/taste/litt-principles.md, Flat): each needs data-material="flat" on <html>; its page says so. */
   poll: {
     title: "Poll",
-    description: "A reader poll of paper pills on grey whose Candy data share bars spring open on Flat's 0.28 bounce, with the total votes at Flat's 40px figure size. A Flat part.",
-    docs: "Needs data-material=\"flat\" on <html>. Pass the question and choices; picking any pill reveals or moves your vote and announces the share in words. Under reduced motion the bars land at once.",
+    description: "A question for your readers, its choices as pills, with everyone's share as a bar and the total votes as one large figure once they vote. A Flat part.",
+    docs: "Needs data-material=\"flat\" on <html>. Pass the question and choices; choosing one reveals or moves your vote and announces the share in words. Under reduced motion the bars land at once.",
   },
   streak: {
     title: "Streak",
-    description: "A publishing or reading cadence tracker with a standing 40px figure and pill capsules walking Flat's sunset heatwave ramp, with an outlined current slot that bounces warm when logged. A Flat part.",
+    description: "How long a run has lasted, such as a weekly letter sent or days read: the count as one large figure and a pill for each week or day, each a step warmer, with the current one outlined until it is logged. A Flat part.",
     docs: "Needs data-material=\"flat\" on <html>. Pass the slots and unit; mark the latest slot current so readers can toggle it. Under reduced motion the count and pill update at once.",
   },
   kudos: {
     title: "Kudos",
-    description: "A multi-tap reader cheer pill that pops on Flat's 0.28 bounce, warms a row of sunset heatwave dots and floats a +1 badge on each tap. A Flat part.",
-    docs: "Needs data-material=\"flat\" on <html>. Pass count and subject; tapping again at the cap clears your taps. Under reduced motion nothing bounces or floats and the count updates at once.",
+    description: "A way for readers to cheer a post, up to five times each: an outlined pill until they do, a row of dots that warm with each kudos, and a +1 that rises. A Flat part.",
+    docs: "Needs data-material=\"flat\" on <html>. Pass count and subject; one more at the cap clears the reader's kudos. Under reduced motion nothing springs or floats and the count updates at once.",
   },
   "reaction-bar": {
     title: "Reaction bar",
-    description: "Minimal cotton-candy reader reaction pills carrying only glyph and count, washing in soft Candy tints with a floating +1 pop on Flat's 0.28 bounce. A Flat part.",
-    docs: "Needs data-material=\"flat\" on <html>. Pass subject and optional items; toggling any pill washes it in its Candy tint and announces the updated count once. Under reduced motion nothing bounces or floats.",
+    description: "Quick reactions to a post, each a pill with a symbol and its count, outlined until a reader chooses it and tinted once they have. A Flat part.",
+    docs: "Needs data-material=\"flat\" on <html>. Pass subject and optional items; choosing a reaction tints it and announces the updated count once. Under reduced motion nothing springs or floats.",
   },
   "reading-progress": {
     title: "Reading progress",
-    description: "A minimal editorial reading progress card pairing Flat's 40px completion figure with directly-clickable cotton-candy chapter segments. A Flat part.",
-    docs: "Needs data-material=\"flat\" on <html>. Pass title and chapters; clicking any bar segment jumps directly to that chapter on Flat's 0.28 bounce.",
+    description: "How far a reader is through a long post, chapter by chapter: the percent read as one large figure, the time left, and a bar of chapters to jump between. A Flat part.",
+    docs: "Needs data-material=\"flat\" on <html>. Pass title and chapters; choosing a chapter jumps to it and announces the progress once.",
   },
   "goal-ring": {
     title: "Goal ring",
-    description: "A minimal radial cotton-candy goal tracker with Flat's 40px standing figure and Braun-style circular − / + stepper keys on Flat's 0.28 bounce. A Flat part.",
+    description: "Progress toward one goal you can count, such as books read this year: a ring that fills, the count inside it as one large figure, and round − and + keys. A Flat part.",
     docs: "Needs data-material=\"flat\" on <html>. Pass title, target and unit; the circular − and + keys step the ring and announce progress once.",
   },
   /* Heat's own parts (proposals/heat.md; taste/litt-principles.md, Heat): each needs data-material="heat" on <html>; its page says so. */
