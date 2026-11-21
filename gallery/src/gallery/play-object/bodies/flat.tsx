@@ -204,8 +204,8 @@ function FlatHome({ takes, current, list, row, everything, part, compact }: Play
   const { children: words, ...link } = everything;
   const { reduced } = useMotionDial();
   /* Nothing moves on load: the first part (and the one shown when Index is reached from a take) is simply there. */
-  const drawn = useRef(false);
-  useEffect(() => void (drawn.current = true), []);
+  const [drawn, setDrawn] = useState(false);
+  useEffect(() => setDrawn(true), []);
   /* The part reads as the main thing at one and a half times its size; where the screen is short (a laptop's 30rem) or
      narrow (a tablet's), at one and a quarter, so the tallest (Card) and the widest still stand whole on it, and at
      real size where the screen is narrower still. */
@@ -250,7 +250,7 @@ function FlatHome({ takes, current, list, row, everything, part, compact }: Play
       {table}
       <div className="grid min-h-0 min-w-0 content-center justify-items-center gap-6 py-4">
         {take && (
-          <LivePart id={take.id} still={reduced || !drawn.current}>
+          <LivePart id={take.id} still={reduced || !drawn}>
             {part({ scale })}
           </LivePart>
         )}
