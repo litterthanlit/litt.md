@@ -57,6 +57,12 @@ function bodyOf(material: Material): Promise<PlayObjectBody> {
   return p;
 }
 
+/** The place the address names among the takes: the take's index, or null for Index. */
+function takeOfAddress(takes: Take[]): number | null {
+  const i = takes.findIndex((t) => t.id === takeOfRoute(location.hash));
+  return i < 0 ? null : i;
+}
+
 /** The element the screen's host lives in while this body shows. */
 function ScreenSlot({ host }: { host: HTMLElement }) {
   const slot = useRef<HTMLDivElement>(null);
@@ -99,11 +105,7 @@ function Loaded({ material, dark, lead, actions }: Props) {
   const id = useId();
   /* null is Index: the world's introduction and its set, inside the screen. A world opens there, or on the take its
      address names (#<world>/take/<id>, route.ts), so Back from a take's page returns to it. */
-  const fromAddress = () => {
-    const i = takes.findIndex((t) => t.id === takeOfRoute(location.hash));
-    return i < 0 ? null : i;
-  };
-  const [at, setAt] = useState<number | null>(fromAddress);
+  const [at, setAt] = useState<number | null>(() => takeOfAddress(takes));
   const [playing, setPlaying] = useState(false);
   const [said, setSaid] = useState("");
   const [details, setDetails] = useState(false);
@@ -138,7 +140,7 @@ function Loaded({ material, dark, lead, actions }: Props) {
   const picked = useRef<(to: number | null) => void>(() => {});
   useEffect(() => {
     const read = () => {
-      if (isPlayerRoute(location.hash, material)) picked.current(fromAddress());
+      if (isPlayerRoute(location.hash, material)) picked.current(takeOfAddress(takes));
     };
     window.addEventListener("hashchange", read);
     window.addEventListener("popstate", read);
