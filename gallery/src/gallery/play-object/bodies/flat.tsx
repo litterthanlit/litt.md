@@ -35,7 +35,9 @@ const PILL =
   "transition-colors duration-(--dur-instant) ease-litt pointer-coarse:h-control-md";
 const QUIET = "text-fg-muted hover:bg-[color-mix(in_oklab,var(--block),transparent_40%)] hover:text-fg";
 
-/* The chosen pill's focus ring, shown while the selector (in the same row, group/pills) has the keys. */
+/* The chosen pill's focus ring, shown while the selector (in the same row, group/pills) has the keys. It reaches 4px past
+   the pill (a 2px outline at a 2px offset), and the row clips (overflow-x-auto), so each Pills row is padded by exactly
+   4px (p-1, or py-1 with the gutter) and pulled back by the same margin: change the ring and that padding together. */
 const FOCUSED =
   "group-has-[[role=slider]:focus-visible]/pills:outline-2 group-has-[[role=slider]:focus-visible]/pills:outline-offset-2 " +
   "group-has-[[role=slider]:focus-visible]/pills:outline-focus forced-colors:group-has-[[role=slider]:focus-visible]/pills:outline-[CanvasText]";
@@ -126,6 +128,7 @@ function FlatBody({ takes, at, selector, pick, index, play, readout, screen, com
             <Caption readout={readout} compact className="flex-1" />
             <PlayCircle play={play} className="size-11" />
           </div>
+          {/* -my-1 py-1: the 4px the focus ring needs inside the clipping row (FOCUSED). */}
           <Pills takes={takes} at={at} selector={selector} pick={pick} index={index} className="-mx-gutter -my-1 px-gutter py-1" />
         </div>
         {screen}
@@ -137,6 +140,7 @@ function FlatBody({ takes, at, selector, pick, index, play, readout, screen, com
       <div data-flat-controls="" className="flex min-w-0 flex-col gap-4 px-1">
         <Caption readout={readout} />
         <div className="flex min-w-0 items-center justify-between gap-6">
+          {/* -m-1 p-1: the 4px the focus ring needs inside the clipping row (FOCUSED). */}
           <Pills takes={takes} at={at} selector={selector} pick={pick} index={index} className="-m-1 p-1" />
           <PlayCircle play={play} className="size-control-md" />
         </div>
