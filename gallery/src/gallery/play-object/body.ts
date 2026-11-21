@@ -139,7 +139,7 @@ export type PlayObjectBody = {
   rail: boolean;
   Body: ComponentType<PlayObjectBodyProps>;
   /** Index's list in the body's own grammar, drawn inside the screen in place of the contract's (see
-      PlayObjectHomeProps). A body without one keeps the contract's (every world but Heat, today). */
+      PlayObjectHomeProps). A body without one keeps the contract's (HomeView in contract.tsx). */
   Home?: ComponentType<PlayObjectHomeProps>;
   /** On a phone, with its own Home: "none" (the default) leaves the live part out, so the list starts at the top of the
       screen; "above" mounts it, and the body draws it above the list. */
