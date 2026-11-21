@@ -7,6 +7,10 @@
 import { motion } from "motion/react";
 import { Button } from "@/components/button";
 
+/* Touch targets: a constant that holds its own positioning, and one joined from elsewhere, both pass. */
+const TARGET_ROW = "litt-target relative flex h-control-sm";
+const POSITION = "relative";
+
 export function ProjectCard({ open }: { open: boolean }) {
   return (
     <div className="grid gap-4 rounded-surface bg-surface-1 p-4 shadow-float">
@@ -132,6 +136,26 @@ export function ProjectCard({ open }: { open: boolean }) {
       <div
         onMouseEnter={() => undefined} // warn: other
       />
+      {/* Touch targets: a litt-target needs a positioning class in its own class list. */}
+      <a href="#a" className="litt-target inline-flex h-control-sm" /> {/* expect: other */}
+      <button
+        type="button"
+        className={
+          "litt-target inline-flex h-control-sm " + // expect: other
+          "text-small text-fg-muted"
+        }
+      />
+      <a href="#b" className="litt-target relative inline-flex h-control-sm" />
+      <button
+        type="button"
+        className={
+          "litt-target inline-flex h-control-sm " +
+          "text-small text-fg-muted absolute"
+        }
+      />
+      <a href="#c" className={TARGET_ROW + " justify-between"} />
+      <a href="#d" className={"litt-target " + POSITION} />
+      <a href="#e" className="litt-target sm:relative" /> {/* expect: other */}
       <Button size="lg">Open</Button>
     </div>
   );

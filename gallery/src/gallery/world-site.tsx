@@ -20,7 +20,7 @@ import { useCustomize, useDark } from "./customize-state";
 import { materialOf, type Material } from "./look";
 import { PlayObject } from "./play-object/contract";
 import { inWorld, pages } from "./registry";
-import { hasNavigated, useRoute } from "./route";
+import { hasNavigated, isPlayerRoute, useRoute, worldTitle } from "./route";
 import { WorldContext } from "./kit";
 import { World } from "./world";
 import { WorldGallery } from "./world-gallery";
@@ -29,7 +29,6 @@ import { MuteKey, useMuted, useMuteKey } from "./mute";
 import { SoundPage } from "./sound-page";
 
 export const HOME = "https://www.litt.design/systems/";
-
 const LINK =
   "litt-target relative inline-flex h-control-sm items-center rounded-control px-2 text-small font-title text-fg-muted hover:text-fg " +
   "aria-[current=page]:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus pointer-coarse:h-control-md";
@@ -104,13 +103,21 @@ export function WorldSite({ material }: { material: Material }) {
   const dark = useDark();
   const sub = route.split("/").slice(1).join("/");
   const own = !!sub && !!OWN_PAGES[material]?.includes(sub);
-  const page = sub && sub !== "about" && sub !== "components" && !own ? pages.find((p) => p.id === sub && p.group && p.group !== "Worlds" && !p.world && inWorld(p, material)) : undefined;
-  const here: Here = !sub ? "player" : sub === "about" ? "about" : sub === "components" ? "components" : own ? "own" : "page";
+  /* #<world>/take/<id> is the player on that take (route.ts, takeOfRoute): the player reads it from the address. */
+  const player = isPlayerRoute(route, material);
+  const page = sub && !player && sub !== "about" && sub !== "components" && !own ? pages.find((p) => p.id === sub && p.group && p.group !== "Worlds" && !p.world && inWorld(p, material)) : undefined;
+  const here: Here = player ? "player" : sub === "about" ? "about" : sub === "components" ? "components" : own ? "own" : "page";
   const main = useFocusOnArrival(route);
   const world = materialOf(material);
   const [muted, setMuted] = useMuted();
   const sounds = material === "device";
   useMuteKey(muted, setMuted, sounds);
+
+  /* Every address names itself in the tab. The player names itself after its take (contract.tsx), so it is left out. */
+  const named = here === "about" ? "About" : here === "components" ? "Components" : here === "own" ? sub.charAt(0).toUpperCase() + sub.slice(1) : page ? page.title : `Not in ${world.name}`;
+  useEffect(() => {
+    if (here !== "player") document.title = worldTitle(named, world.name);
+  }, [here, named, world.name]);
 
   let body: ReactNode;
   if (here === "player")

@@ -497,6 +497,18 @@ export function Warnings() {
   );
 }
 
+/* ---- touch targets: litt-target needs a positioning class in its class list ---- */
+export function Targets() {
+  return (
+    <nav className="flex gap-litt-gutter">
+      <a href="#a" className="litt-target inline-flex h-litt-control-sm" /> {/* expect: other */}
+      <a href="#b" className={cn("litt-target inline-flex", "h-litt-control-sm")} /> {/* expect: other */}
+      <a href="#c" className={cn("litt-target inline-flex", "relative h-litt-control-sm")} />
+      <a href="#d" className="litt-target pointer-coarse:relative inline-flex" />
+    </nav>
+  );
+}
+
 export default function Page() {
   const [open, setOpen] = useState(false);
   return (
