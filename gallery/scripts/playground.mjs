@@ -145,7 +145,11 @@ async function open(hash, { theme, scale = 1 } = {}) {
 }
 
 /** Scrolls the page so the object is whole in the window, under the header. */
-const inView = (pg) => pg.evaluate(() => window.scrollBy(0, document.querySelector("[data-play-object]").getBoundingClientRect().top - 80));
+const inView = async (pg) => {
+  /* The object's body loads on demand, so after a reload it may not be in the page yet. */
+  await pg.waitForSelector("[data-play-object]", { state: "attached", timeout: 10000 });
+  await pg.evaluate(() => window.scrollBy(0, document.querySelector("[data-play-object]").getBoundingClientRect().top - 80));
+};
 
 /** Where every visible element matching the selector sits against the screen, in the box and in the DOM. */
 function place(pg, selector) {
