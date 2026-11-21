@@ -80,7 +80,9 @@ const PAGES = fs.readdirSync(pagesDir).filter((f) => f.endsWith(".tsx")).map((f)
     replay: /\breplay\s*:/.test(rest),
     /* The worlds a part is in, when fewer than all (meta.worlds); null is every world. */
     worlds: (() => { const w = /\bworlds:\s*\[([^\]]*)\]/.exec(src)?.[1]; return w ? [...w.matchAll(/"([^"]+)"/g)].map((m) => m[1]) : null; })(),
-    /* The worlds that show How it moves in their own words (meta.movesByWorld), so not the shared mechanism the docs carry. */
+    /* The worlds that show How it moves in their own words (meta.movesByWorld), so not the shared mechanism the docs carry.
+       The regex holds only while the map is one level of `world: "line"` pairs with no brace inside it, the layout
+       .claude/CLAUDE.md asks for: a nested object or a "}" in a line would end the map early. */
     ownMoves: [...(/\bmovesByWorld:\s*\{([^}]*)\}/.exec(src)?.[1] ?? "").matchAll(/(?:^|[{,])\s*([a-z]+):\s*"/g)].map((m) => m[1]),
   };
 }).filter((p) => p.id);

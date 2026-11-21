@@ -12,8 +12,9 @@
  *   node scripts/world-words.mjs --shard 1/2                every other page
  *   node scripts/world-words.mjs --json found.json          also writes every hit, for working through them
  *   node scripts/world-words.mjs --self-test                puts a sentence of Press's materials back on every world's
- *                                                           Button page and player's Home, and on Plain's Select; fails
- *                                                           if one is missed or only a KNOWN entry holds it
+ *                                                           Button page (Plain's Select) and player's Home; fails unless
+ *                                                           each world's expected word and another world named are
+ *                                                           caught there, and not held by KNOWN
  *
  * Every world (WORDS): every page under #<world> and the player's Home, at 1440 by 1000, with Variants closed (it reads what
  * a visitor sees first, so `openVariants` is not called). It reads the text of `main` that is rendered (shown, or said to
@@ -186,9 +187,11 @@ if (!fs.existsSync(path.join(dist, "index.html"))) {
 
 /* Every address in a checked world: its player, About, gallery view, own pages and every part in it. */
 const worlds = (get("worlds", "") || Object.keys(WORDS).join(",")).split(",").filter((w) => WORDS[w]);
-/* The self-test reads each world's Button page and its player's Home, and Plain's Select, a page whose words wait on
-   Nick (KNOWN), so a KNOWN entry that held any word on it would be seen. */
-const only = (get("pages", selfTest ? [...worlds.flatMap((w) => [`${w}/button`, w]), ...(worlds.includes("plain") ? ["plain/select"] : [])].join(",") : "") || "").split(",").filter(Boolean);
+/* The self-test reads each world's Button page and its player's Home; for Plain, Select in place of Button, whose
+   shared lines wait on Nick in KNOWN (sinks, another world), so the words it expects can only be caught fresh there. A
+   KNOWN entry that held the planted words on Plain's Select, as a "plain/*" entry did, would be seen. */
+const selfPages = (w) => [w === "plain" ? "plain/select" : `${w}/button`, w];
+const only = (get("pages", selfTest ? worlds.flatMap(selfPages).join(",") : "") || "").split(",").filter(Boolean);
 const inWorlds = routes().filter((r) => worlds.includes(r.split("/")[0]));
 const chosen = only.length ? inWorlds.filter((r) => only.includes(r) || only.some((o) => !o.includes("/") && r.endsWith(`/${o}`))) : inWorlds;
 const pages = chosen.filter((_, i) => i % shards === shard - 1);
@@ -226,6 +229,9 @@ const browser = await chromium.launch();
 const ctx = await browser.newContext({ viewport: { width: 1440, height: 1000 }, colorScheme: "dark", reducedMotion: "reduce" });
 /* What the self-test puts back: each world's list catches some of it (glass, raised, the tray, the cast, or another world named). */
 const INJECTED = "A glass dropdown whose raised block sinks into its tray and tightens its cast, as in Flat and in Device.";
+/* One sentence trips several lists at once, so a page counts as caught only when its world's own list finds the word
+   named here, and another world named: a list that lost most of its words would otherwise still catch something. */
+const EXPECT = { press: "another world", flat: "glass", device: "tray", plain: "sinks", rack: "cast", heat: "raised" };
 if (selfTest) {
   await ctx.addInitScript((injected) => {
     new MutationObserver((_, obs) => {
@@ -275,9 +281,13 @@ const took = `${Math.round((Date.now() - started) / 1000)}s`;
 if (get("json")) fs.writeFileSync(get("json"), JSON.stringify(found, null, 1));
 
 if (selfTest) {
-  /* Caught means caught as a fresh hit: one a KNOWN entry holds would pass the real run unseen. */
-  const caught = new Set(found.filter((f) => f.injected && !knownFor(f)).map((f) => f.id));
-  const missed = pages.filter((id) => !caught.has(id));
+  /* Caught means caught as a fresh hit (one a KNOWN entry holds would pass the real run unseen), by the world's expected
+     word and by another world named. */
+  const fresh = found.filter((f) => f.injected && !knownFor(f));
+  const wanted = (id) => [...new Set([EXPECT[id.split("/")[0]], "another world"])];
+  const lacks = (id) => wanted(id).filter((w) => !fresh.some((f) => f.id === id && f.word === w));
+  const caught = new Set(pages.filter((id) => !lacks(id).length));
+  const missed = pages.filter((id) => !caught.has(id)).map((id) => `${id} (no fresh ${lacks(id).join(", ")})`);
   const broken = found.filter((f) => !f.word);
   console.log(`words self-test: "${INJECTED}" was caught on ${caught.size} of ${pages.length} pages in ${worlds.join(", ")} (${took}).`);
   for (const f of broken) console.log(`✗ ${f.id}: ${f.what}`);
