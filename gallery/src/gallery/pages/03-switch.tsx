@@ -24,6 +24,9 @@ export const meta: PageMeta = {
   tiers: ["responsive", "instant"],
   mechanism:
     "Press the row and the block presses down, its cast tightening at once. A click, a tap or Space sends it across the tray on the responsive tier, 200ms with no bounce. Or take the block and drag it: it follows the finger one to one and lands on the nearer side. Its fill and cast change on the instant tier, 100ms, and the tray never moves. Under Press the block is weight: it presses down and is thrown along the tray, uncovering the word set in the floor. Under Flat it is a small ink pill with a canvas knob when on and an outline when off, the word in type beside it. Under Device it is a toggle key: it sinks its 2px under the finger and flips across its well in three steps with a detent, and its word lights on an LCD beside it with a lamp. Reduced motion drops the crossing.",
+  movesByWorld: {
+    flat: "A click, a tap or Space sends the round knob across the pill on the responsive tier, 200ms with no bounce, and the pill fills with ink as it goes on, or empties to an outline as it goes off. Or take the knob and drag it: it follows the finger one to one and lands on the nearer side. The word beside it changes at once, and nothing sinks or casts. Reduced motion drops the crossing.",
+  },
 };
 
 export const docs: PageDocs = {
@@ -101,6 +104,14 @@ export const study: PageStudy = {
     { name: "The word", selector: "[role=switch] span[aria-hidden]:not(:empty)" },
     { name: "The label", selector: "label" },
   ],
+  partsByWorld: {
+    flat: [
+      { name: "The switch", selector: "[role=switch]" },
+      { name: "The knob", selector: "[role=switch] [data-state]" },
+      { name: "The word", selector: "[role=switch] span[aria-hidden]:not(:empty)" },
+      { name: "The label", selector: "label" },
+    ],
+  },
   states: {
     default: <Switch label="Email me about new deploys" defaultChecked />,
     disabled: <Switch label="Email me about new deploys" defaultChecked disabled />,

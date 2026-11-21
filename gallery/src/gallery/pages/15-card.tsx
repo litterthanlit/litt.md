@@ -12,10 +12,16 @@ export const meta: PageMeta = {
   id: "card",
   title: "Card",
   lede: "One thing that links, on a surface of its own.",
+  ledeByWorld: {
+    flat: "A sheet of paper on the grey for one thing that links.",
+  },
   order: 7.01, group: "Layout",
   verbs: ["press"],
   summary:
     "A surface for one independent object that links somewhere. A linked card is one real link stretched over the card; hover moves its fill one step, and nothing lifts, grows or scales.",
+  summaryByWorld: {
+    flat: "A sheet of paper on the grey ground for one independent object that links somewhere, with no edge and nothing cast: on grey the fill is the edge. A linked card is one real link stretched over the card; hover moves its fill one step, and nothing lifts, grows or scales.",
+  },
   tiers: ["instant"],
 };
 

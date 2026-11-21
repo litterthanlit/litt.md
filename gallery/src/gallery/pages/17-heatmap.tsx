@@ -5,11 +5,17 @@ export const meta: PageMeta = {
   id: "heatmap",
   title: "Heatmap",
   lede: "How much, in four steps of one hue.",
+  ledeByWorld: {
+    flat: "How much, in four warm steps of the sunset.",
+  },
   order: 10.10,
   group: "Charts",
   verbs: ["hover"],
   summary:
     "A dot matrix whose depth says how much: usage per day, deploys per week, mail per hour. One data hue in four steps over an empty dot, labels in tabular figures, a tooltip on hover, touch and focus, and a legend from less to more.",
+  summaryByWorld: {
+    flat: "A dot matrix whose depth says how much: posts per week, readers per day, letters per hour. With no hue the four steps walk the sunset, gold to plum by day and plum to gold by night, over an empty dot; labels in tabular figures, a tooltip on hover, touch and focus, and a legend from less to more.",
+  },
   fun: "The grid arrives in two waves, the peaks last; move over it and a lens follows the pointer.",
   tiers: ["instant", "responsive"],
 };
@@ -51,7 +57,7 @@ export const docs: PageDocs = {
     "The exact numbers are the point. Use a Table.",
     "You compare a handful of amounts. Use a Bar chart, which puts the values on a scale the eye can measure.",
     "You need to show how a value moves in time, with a trend. Use a Line chart.",
-    "The values go below zero, or two things share one grid. A heatmap has one hue and one direction: more or less.",
+    "The values go below zero, or two things share one grid. A heatmap has one scale and one direction: more or less.",
     "The grid has more than a few hundred columns. Aggregate first, because a dot per hour for a year is not a reading.",
   ],
   keyboard: [
