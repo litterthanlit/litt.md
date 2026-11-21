@@ -40,7 +40,7 @@ Where a part does something over time that is not motion (Thinking's clock, Copy
 | Form | About | …Fields and link colors answer on the instant tier, and the saved toast is the view's one expressive moment. | How the fields make a page: one left-aligned column, sections on a settings page, and an error summary that takes focus when a submit fails. A saved form says so in words under it. |
 | Callout | About | An inline note in the page flow… A surface with an icon… | An inline note in the page flow, said in words: a tip, a heads-up or a result to act on, with its icon, a title, a line and an optional action. Only the icon takes the status color, and a hidden word says the same thing. |
 | Breadcrumb | Skip when | The main navigation. Use the Glass header or the App shell's sidebar. | Waits on Nick's call on the name Glass header (below). |
-| Details, Pagination | — | Nothing false found. | (keep) |
+| Details, Pagination | any | Nothing false found. | (keep) |
 
 ## Every other page `test:words` flags under Plain
 
