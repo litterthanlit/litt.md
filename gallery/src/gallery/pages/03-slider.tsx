@@ -12,6 +12,7 @@ export const meta: PageMeta = {
   title: "Slider",
   lede: "One value on a range, set by hand or by key.",
   ledeByWorld: {
+    device: "A fader: a key you slide along a well, its value on the glass.",
     rack: "A value in a box you drag, filled up to where you set it.",
     heat: "A value as a row of dashes, lit up to where you set it.",
     press: "A cap you hold, riding in a slot on a raised plate.",
@@ -22,6 +23,7 @@ export const meta: PageMeta = {
   summary:
     "One value on a range, such as the default animation speed, or a span, such as the builds that took between 20s and 80s. Take the thumb and it follows your hand 1:1, or press the track and it goes there. Notches mark steps, and the default holds the value a little. The label row says the value.",
   summaryByWorld: {
+    device: "One value on a range, such as a level, or a span. A fader: a well cut into the body with engraved ticks under it, the pulled-out part lit in the ink like a meter, and a key for a cap with a line across its face. Take the key and it follows your hand 1:1, or press the well and it goes there. The value reads on an LCD in the label row.",
     rack: "One value on a range, such as a track's gain, or a span. A box set into the panel fills as a solid bar up to the value, with a 2px line in the ink at it: take the box anywhere and the line and the bar follow your hand 1:1. Ticks under the box mark steps, home's the longer one, and the value reads at the box's end in words with its unit.",
     press: "One value on a range, such as the default animation speed, or a span, such as the builds that took between 20s and 80s. A raised plate holds a slot, and a cap rides in it: take the cap and it follows your hand 1:1, press the slot and it goes there on the spring. Notches mark steps, and the default holds the cap a little. The label row says the value.",
     heat: "One value on a range, such as the default animation speed, or a span, such as the builds that took between 20s and 80s. The value is a row of dashes in a flat channel, lit up to where you set it: take the row and a thin marker follows your hand 1:1, press it and the marker cuts there. Notches mark steps, and the default holds the value a little. The value reads beside the row.",
@@ -30,6 +32,7 @@ export const meta: PageMeta = {
   mechanism:
     "Take the cap and it follows the hand one to one, with no easing, sinking half a pixel as its cast tightens. Press the slot, or use an arrow key, and the cap glides there on the responsive tier, 200ms with no bounce. Pushed fast it leans, at most 4 degrees, and rights itself when the hand slows. Home holds the cap a little. Moving parts are transforms only. Reduced motion stills the glide and the lean. Each world has its own body. Press is a cap riding a deep slot cut into a plate, its notches lighting as the fill passes them, and the value on a small raised face that rides over the cap and sinks with it; the cap casts and leans into a fast push. Under Flat there is no plate and no shadow: a pill track, an ink fill and a round ink knob that your hand moves like a page, with nothing to sink into, and the value in words at the end of the track. Under Device it is a fader: a well cut into the aluminium with engraved ticks beneath it, a key for a cap that sinks its whole 2px under your finger, the fill lit like a meter, and the value on an LCD in the mono. The cap jumps under reduced motion in every body.",
   movesByWorld: {
+    device: "Take the key and it follows the hand one to one, with no easing, sinking its whole 2px onto its skirt while held. Press the well, or use an arrow key, and the key moves there on the responsive tier, 200ms with no bounce. A fader is a mechanism, so it never tips into a fast push. Home holds the key a little, at its longer tick. Reduced motion sends the key straight to its value.",
     rack: "Take the box anywhere and the line and the bar follow the hand one to one, with no easing. Press the box, or use an arrow key, and the bar moves there on the responsive tier. There is no cap to grab, so nothing is held up, sinks or leans. The default holds the value a little, at the longer tick. Reduced motion sends the bar straight to its value.",
     flat: "Take the knob and it follows the hand one to one, with no easing, swelling a little under the finger. Press the track, or use an arrow key, and the knob and the ink fill move there on the responsive tier, 200ms with no bounce. Home holds the knob a little, at its larger dot. There is nothing to sink into and nothing leans. Reduced motion sends the knob straight to its value.",
     heat: "Take the row and a thin marker follows the hand one to one, lighting each dash it passes on the instant tier, 100ms. Press the row, or use an arrow key, and the marker cuts there at once: nothing glides or leans. While it is held or has the keys, four brackets frame the row. The default holds the value a little, at the longer notch. Under reduced motion the dashes light at once.",
@@ -164,6 +167,15 @@ export const study: PageStudy = {
     { name: "The end words", selector: ".text-caption" },
   ],
   partsByWorld: {
+    device: [
+      { name: "The label", selector: "[id$=\"-label\"]" },
+      { name: "The readout", selector: "[id$=\"-label\"] + span" },
+      { name: "The well", selector: "[data-part=slot]" },
+      { name: "The lit part", selector: "[data-no-drag] > span:first-child > span > span" },
+      { name: "The ticks", selector: "[data-no-drag] > span:nth-child(2)" },
+      { name: "The key", selector: "[data-part=cap]" },
+      { name: "The end words", selector: ".text-caption" },
+    ],
     rack: [
       { name: "The label", selector: "[id$=\"-label\"]" },
       { name: "The value", selector: "[id$=\"-label\"] + span" },

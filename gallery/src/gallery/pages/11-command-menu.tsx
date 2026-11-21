@@ -36,6 +36,9 @@ export const meta: PageMeta = {
   tiers: ["instant", "responsive"],
   mechanism:
     "The hand opens it with a press or the shortcut, then types. The field keeps focus the whole time, and the rows only light. One highlight moves to the row you point at or arrow to, and a keyboard move adds a focus ring. Opened by the shortcut, it appears and leaves at once, because something opened hundreds of times a day must not make you wait. Opened by a click, it opens on the responsive tier, 200ms with no bounce, the way its world's body opens a panel. Typing is instant, and the list never animates its height. Under reduced motion the panel appears at once and the highlight jumps to the row.",
+  movesByWorld: {
+    device: "The hand opens it with a press or the shortcut, then types. The field keeps focus the whole time, and the rows only light. One highlight jumps to the row you point at or arrow to, and a keyboard move adds a focus ring. Opened by the shortcut, it appears and leaves at once. Opened by a click, it switches on where it stands, in steps, with no slide. The search and the rows are set in the mono. Typing is instant, and the list never animates its height. Under reduced motion the panel appears at once.",
+  },
 };
 
 export const docs: PageDocs = {
