@@ -30,10 +30,13 @@ export const docs: PageDocs = {
     "A tabular data sheet. Use Table.",
   ],
   keyboard: [
-    [["Tab"], "Moves across Stop all, individual clip slots, empty stop slots, and Master scene launch buttons."],
-    [["Enter", "Space"], "Launches or stops the focused clip, or triggers the entire scene row."],
+    [["Tab"], "Moves to Stop all, then into the session grid as one stop, on the cell focused last, then out of it."],
+    [["←", "→", "↑", "↓"], "Moves one cell at a time across the clips, the empty slots and the Master column, without wrapping."],
+    [["Home", "End"], "Goes to the first or last cell of the scene's row. With Ctrl or ⌘, to the first or last cell of the grid."],
+    [["Enter", "Space"], "Launches or stops the focused clip, stops the track from an empty slot, or fires the scene from Master."],
   ],
   a11y: [
+    "The session is a grid: its first row names the tracks and Master as column headers, and each scene is a row. It is one tab stop, and the arrows move in it.",
     "Every clip and scene button is a native button with aria-pressed and a descriptive aria-label naming the track, clip, bar length, and live state.",
     "Playing state is never color alone: the clip icon flips from play triangle to stop square and the header live count updates.",
     "Every launch and stop announces once in a polite live status region.",

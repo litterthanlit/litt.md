@@ -8,9 +8,13 @@
  *   bar (`bg-data-*`); inactive steps rest in `--tray` with subtle beat-group alternation.
  * - Starts stopped (R2/R4: nothing animates on mount). Pressing `Play` steps the playhead column across the 8 beats at
  *   the current BPM; clicking any step toggles it immediately on the frame. Includes `Pattern` cycler and `Clear`.
+ * - Keys (principle 5, one tab stop per composite): the steps are a grid (role grid, a row per lane, its name the row
+ *   header) and one Tab stop, on the step focused last (the first to start with). ← → ↑ ↓ move a step at a time without
+ *   wrapping, Home and End go to the lane's first and last step, Ctrl (or ⌘) with them to the grid's first and last
+ *   step, Enter or Space toggles the step. Tab leaves the grid. The beat ruler above it is drawn for the eye only.
  * - Zero `--accent` fills (R6).
  */
-import { useEffect, useId, useState, type ReactNode } from "react";
+import { useEffect, useId, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import { Button } from "@/components/button";
 
 export type StepHue = "amber" | "blue" | "teal" | "violet" | "rose";
@@ -94,6 +98,31 @@ export function StepSequencer({
   const [cursor, setCursor] = useState<number>(0);
   const [patternIdx, setPatternIdx] = useState(0);
   const [live, setLive] = useState("");
+  /* The grid's one tab stop: the step focused last, as row (lane) and column (step). */
+  const [stop, setStop] = useState({ r: 0, c: 0 });
+  const cells = useRef(new Map<string, HTMLButtonElement>());
+  const at = { r: Math.min(stop.r, Math.max(0, lanes.length - 1)), c: Math.min(stop.c, STEPS - 1) };
+  const cellOf = (target: EventTarget | null) => {
+    const el = (target as HTMLElement | null)?.closest?.("[data-r]") as HTMLElement | null;
+    return el ? { r: Number(el.dataset.r), c: Number(el.dataset.c) } : null;
+  };
+  /* Arrows a step at a time without wrapping, Home and End along the lane, Ctrl or ⌘ with them across the grid. */
+  function onGridKeyDown(e: KeyboardEvent<HTMLDivElement>) {
+    const from = cellOf(e.target);
+    if (!from) return;
+    const lastR = lanes.length - 1;
+    const across = e.ctrlKey || e.metaKey;
+    let to: { r: number; c: number } | null = null;
+    if (e.key === "ArrowRight") to = { r: from.r, c: Math.min(STEPS - 1, from.c + 1) };
+    else if (e.key === "ArrowLeft") to = { r: from.r, c: Math.max(0, from.c - 1) };
+    else if (e.key === "ArrowDown") to = { r: Math.min(lastR, from.r + 1), c: from.c };
+    else if (e.key === "ArrowUp") to = { r: Math.max(0, from.r - 1), c: from.c };
+    else if (e.key === "Home") to = across ? { r: 0, c: 0 } : { r: from.r, c: 0 };
+    else if (e.key === "End") to = across ? { r: lastR, c: STEPS - 1 } : { r: from.r, c: STEPS - 1 };
+    if (!to) return;
+    e.preventDefault();
+    cells.current.get(`${to.r}:${to.c}`)?.focus();
+  }
 
   useEffect(() => {
     if (!playing) return;
@@ -175,35 +204,42 @@ export function StepSequencer({
       {/* Step grid */}
       <div className="overflow-x-auto p-2">
         <div
-          role="group"
+          role="grid"
           aria-labelledby={headingId}
+          onKeyDown={onGridKeyDown}
+          onFocus={(e) => {
+            const c = cellOf(e.target);
+            if (c && (c.r !== stop.r || c.c !== stop.c)) setStop(c);
+          }}
           className="grid min-w-[17rem] gap-1 sm:min-w-[22rem] sm:gap-1.5"
           style={{ gridTemplateColumns: `minmax(3.25rem, 4.5rem) repeat(${STEPS}, minmax(1.375rem, 1fr))` }}
         >
-          {/* Step index ruler */}
-          <span className="self-center px-1 font-mono text-caption text-fg-subtle">Steps</span>
-          {Array.from({ length: STEPS }, (_, i) => {
-            const isNow = playing && cursor === i;
-            return (
-              <span
-                key={i}
-                aria-hidden="true"
-                className={
-                  "flex h-5 items-center justify-center rounded-control font-mono text-caption tabular-nums " +
-                  (isNow ? "bg-fg font-title text-canvas" : i < 4 ? "bg-surface-2 text-fg-subtle" : "bg-canvas text-fg-subtle")
-                }
-              >
-                {i + 1}
-              </span>
-            );
-          })}
+          {/* Step index ruler, for the eye: each step's name says its number */}
+          <div aria-hidden="true" className="contents">
+            <span className="self-center px-1 font-mono text-caption text-fg-subtle">Steps</span>
+            {Array.from({ length: STEPS }, (_, i) => {
+              const isNow = playing && cursor === i;
+              return (
+                <span
+                  key={i}
+                  className={
+                    "flex h-5 items-center justify-center rounded-control font-mono text-caption tabular-nums " +
+                    (isNow ? "bg-fg font-title text-canvas" : i < 4 ? "bg-surface-2 text-fg-subtle" : "bg-canvas text-fg-subtle")
+                  }
+                >
+                  {i + 1}
+                </span>
+              );
+            })}
+          </div>
 
           {/* Instrument rows */}
-          {lanes.map((lane) => {
+          {lanes.map((lane, laneIdx) => {
             const tone = HUE[lane.hue];
             return (
-              <div key={lane.id} className="contents">
+              <div key={lane.id} role="row" className="contents">
                 <span
+                  role="rowheader"
                   className={
                     "flex items-center truncate rounded-control border px-1.5 text-caption font-title sm:px-2 " +
                     tone.tint +
@@ -218,29 +254,37 @@ export function StepSequencer({
                 {lane.steps.map((on, i) => {
                   const isNow = playing && cursor === i;
                   return (
-                    <button
-                      key={i}
-                      type="button"
-                      aria-pressed={on}
-                      aria-label={`${lane.name}, step ${i + 1}${on ? ", active" : ""}`}
-                      onClick={() => toggleStep(lane.id, i)}
-                      className={
-                        "relative flex h-control-sm min-w-0 cursor-pointer items-center justify-center overflow-hidden rounded-control border transition-colors duration-(--dur-instant) ease-litt pointer-coarse:h-control-md " +
-                        "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus forced-colors:border " +
-                        (on
-                          ? isNow
-                            ? "border-fg bg-fg text-canvas forced-colors:bg-[Highlight]"
-                            : `${tone.tint} ${tone.border} hover:border-fg`
-                          : isNow
-                            ? "border-fg bg-surface-2"
-                            : i < 4
-                              ? "border-line bg-tray hover:border-line-strong"
-                              : "border-line bg-canvas hover:border-line-strong")
-                      }
-                    >
-                      {on && !isNow && <span aria-hidden="true" className={"absolute inset-x-0 top-0 h-1 " + tone.bar} />}
-                      {on && <span aria-hidden="true" className={"size-1.5 rounded-pill " + (isNow ? "bg-canvas" : tone.bar)} />}
-                    </button>
+                    <div key={i} role="gridcell" className="grid min-w-0">
+                      <button
+                        ref={(el) => {
+                          if (el) cells.current.set(`${laneIdx}:${i}`, el);
+                          else cells.current.delete(`${laneIdx}:${i}`);
+                        }}
+                        data-r={laneIdx}
+                        data-c={i}
+                        tabIndex={at.r === laneIdx && at.c === i ? 0 : -1}
+                        type="button"
+                        aria-pressed={on}
+                        aria-label={`${lane.name}, step ${i + 1}${on ? ", active" : ""}`}
+                        onClick={() => toggleStep(lane.id, i)}
+                        className={
+                          "relative flex h-control-sm min-w-0 cursor-pointer items-center justify-center overflow-hidden rounded-control border transition-colors duration-(--dur-instant) ease-litt pointer-coarse:h-control-md " +
+                          "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus forced-colors:border " +
+                          (on
+                            ? isNow
+                              ? "border-fg bg-fg text-canvas forced-colors:bg-[Highlight]"
+                              : `${tone.tint} ${tone.border} hover:border-fg`
+                            : isNow
+                              ? "border-fg bg-surface-2"
+                              : i < 4
+                                ? "border-line bg-tray hover:border-line-strong"
+                                : "border-line bg-canvas hover:border-line-strong")
+                        }
+                      >
+                        {on && !isNow && <span aria-hidden="true" className={"absolute inset-x-0 top-0 h-1 " + tone.bar} />}
+                        {on && <span aria-hidden="true" className={"size-1.5 rounded-pill " + (isNow ? "bg-canvas" : tone.bar)} />}
+                      </button>
+                    </div>
                   );
                 })}
               </div>

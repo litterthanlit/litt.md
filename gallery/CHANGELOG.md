@@ -4,6 +4,13 @@ Every change to the litt registry at https://littmd.vercel.app/r/, newest first.
 
 To update an item, read the entries since your version, then reinstall it with `--overwrite`. A **breaking** entry says what to change in your code.
 
+## 2026-11-21 · Rack
+
+Rack's audit, fixed (plans/audits/rack-fixes.md, Buildable now): the grids take the arrows, small controls keep a finger's target, color is owned, and nothing eases. Nothing changes outside Rack unless a line says so.
+
+- **changed** `clip-launcher`, `rack-clip-launcher`: the session is a grid (`role="grid"`, the tracks and Master as column headers, a row per scene) and one tab stop instead of one per cell. The arrows move a cell at a time without wrapping, Home and End go to the row's ends (with Ctrl or ⌘, the grid's), and Enter or Space launches, stops or fires the scene as before. Tab leaves the grid. Every launch is still announced. Props are unchanged.
+- **changed** `step-sequencer`, `rack-step-sequencer`: the steps are a grid (`role="grid"`, a row per lane with its name as the row header) and one tab stop instead of 32. The arrows move a step at a time without wrapping, Home and End go to the lane's ends (with Ctrl or ⌘, the grid's), and Enter or Space toggles the step. Tab leaves the grid. The beat ruler is hidden from screen readers, since each step's name says its number. Props are unchanged.
+
 ## 2026-11-20 · Press deploy-dashboard identity, and Heat's keycaps are keys
 
 Press identity (plans/024, Press; taste/litt-principles.md, Press): adds three minimal Press-only product/deploy components (`deploy-status`, `env-switch`, `release-rail`) built strictly from Press's warm stone recessed trays, cut-in slots and raised blocks with zero button outlines, brings deploy-dashboard voice demos across `SET.press`, and adds Press to `test:materials`. Nothing changes outside Press.

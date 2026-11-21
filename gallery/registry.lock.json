@@ -1,6 +1,6 @@
 {
   "$comment": "Written by scripts/gen-registry.mjs. What each registry item installs, hashed, and the release that last changed it. Commit it with the change.",
-  "latest": "2026.11.20",
+  "latest": "2026.11.21",
   "items": {
     "accordion": {
       "version": "2026.11.18",
@@ -83,8 +83,8 @@
       "hash": "7222ff7d39f40f70"
     },
     "clip-launcher": {
-      "version": "2026.11.19",
-      "hash": "ac3b189145c28825"
+      "version": "2026.11.21",
+      "hash": "1d9c3fdceb2f8e9c"
     },
     "code-block": {
       "version": "2026.11.06",
@@ -2359,8 +2359,8 @@
       "hash": "cebafadff0e0af77"
     },
     "rack-clip-launcher": {
-      "version": "2026.11.19",
-      "hash": "ac3b189145c28825"
+      "version": "2026.11.21",
+      "hash": "1d9c3fdceb2f8e9c"
     },
     "rack-code-block": {
       "version": "2026.11.16",
@@ -2627,8 +2627,8 @@
       "hash": "e936fa049ab202dd"
     },
     "rack-step-sequencer": {
-      "version": "2026.11.19",
-      "hash": "da8c1f3d4a74af52"
+      "version": "2026.11.21",
+      "hash": "e9ee12e73f82229c"
     },
     "rack-steps": {
       "version": "2026.11.16",
@@ -2791,8 +2791,8 @@
       "hash": "e936fa049ab202dd"
     },
     "step-sequencer": {
-      "version": "2026.11.19",
-      "hash": "da8c1f3d4a74af52"
+      "version": "2026.11.21",
+      "hash": "e9ee12e73f82229c"
     },
     "steps": {
       "version": "2026.11.06",
