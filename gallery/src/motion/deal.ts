@@ -34,8 +34,9 @@
  *           still under Plain, so `reduced` is true).
  *   Rack    things cut in on the beat: a set appears in place column by column, left to right, each column at once
  *           and a --stagger apart, like a scene launching across tracks, on the instant tier's ease-out; it stops all
- *           at once, quicker than it came. An overlay cuts in where it stands with no growth and no slide. A tool you
- *           touch all day answers on the frame (proposals/rack.md).
+ *           at once, quicker than it came. An overlay cuts in where it stands with no growth and no slide, and a value
+ *           let go of stops where it lands (useSettles). A tool you touch all day answers on the frame
+ *           (proposals/rack.md).
  *   Heat    things arrive at speed: a set whips in from the left over --travel, one after another in reading order
  *           on the responsive spring (no bounce), and leaves to the right all at once, quicker than it came. An
  *           overlay slides in from the side it opens on and never grows (proposals/heat.md).
@@ -120,6 +121,17 @@ export function useMaterial(): Material {
  */
 export function byWorld<T>(material: Material, bodies: { press: T; flat?: T; device?: T; plain?: T; rack?: T; heat?: T }): T {
   return bodies[material] ?? bodies.press;
+}
+
+/**
+ * Whether something let go of settles into place on its tier, or stops where it lands on the frame it is let go. Rack's
+ * language stops (things cut in and stop at once, and nothing eases: proposals/rack.md; plans/audits/rack.md, finding
+ * 14); every other material settles. A part that settles after a release (a ruler, a thumb that snaps to a step) reads
+ * this rather than naming a world, and when it is false it puts the value where it lands with no transition and skips
+ * any throw or rubber band.
+ */
+export function useSettles(): boolean {
+  return useMaterial() !== "rack";
 }
 
 /* Device's step: three even steps, as a display's segments light, never a fade. */

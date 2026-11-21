@@ -4,7 +4,7 @@ Every change to the litt registry at https://littmd.vercel.app/r/, newest first.
 
 To update an item, read the entries since your version, then reinstall it with `--overwrite`. A **breaking** entry says what to change in your code.
 
-## 2026-11-21 · Press and Flat
+## 2026-11-21 · Press, Flat and Rack
 
 Press's audit (plans/audits/press.md, findings 2, 3 and 14; plans/audits/press-fixes.md, Buildable now): Press's own parts keep the contracts they announce. Nothing changes outside Press, and nothing looks different at rest.
 
@@ -18,6 +18,19 @@ Flat's audit, finding 3 (plans/audits/flat.md): Flat's six own parts said what t
 - **changed** `reading-progress`, `flat-reading-progress`: the defaults are a post a site would publish. `title` defaults to "A week on the coast" (was "Field notes on motion") and `DEFAULT_CHAPTERS` to Getting there, Low tide, The lighthouse and Coming home (was Opening, Springs, Tactile feel and Closing notes), with the same minutes. Pass `title` and `chapters` to keep the old ones. The default chapters' ids changed too (`intro`, `springs`, `tactile`, `closing` are now `leaving`, `tide`, `lighthouse`, `home`), so a host that keyed state on them should pass its own `chapters`.
 - **changed** `goal-ring`, `flat-goal-ring`: `title` defaults to "Books read in 2026", in sentence case (was "2026 Reading goal").
 - **changed** `poll`, `flat-poll`, `kudos`, `flat-kudos`, `reaction-bar`, `flat-reaction-bar`: the doc comments say what the part is for, in plain words. No behavior or prop changed.
+
+Rack's audit, fixed (plans/audits/rack-fixes.md, Buildable now): the grids take the arrows, small controls keep a finger's target, color is owned, and nothing eases. Nothing changes outside Rack unless a line says so.
+
+- **changed** `clip-launcher`, `rack-clip-launcher`: the session is a grid (`role="grid"`, the tracks and Master as column headers, a row per scene) and one tab stop instead of one per cell. The arrows move a cell at a time without wrapping, Home and End go to the row's ends (with Ctrl or ⌘, the grid's), and Enter or Space launches, stops or fires the scene as before. Tab leaves the grid. Every launch is still announced. Props are unchanged.
+- **changed** `step-sequencer`, `rack-step-sequencer`: the steps are a grid (`role="grid"`, a row per lane with its name as the row header) and one tab stop instead of 32. The arrows move a step at a time without wrapping, Home and End go to the lane's ends (with Ctrl or ⌘, the grid's), and Enter or Space toggles the step. Tab leaves the grid. The beat ruler is hidden from screen readers, since each step's name says its number. Props are unchanged.
+- **changed** `motion`, `press-motion`, `flat-motion`, `device-motion`, `plain-motion`, `rack-motion`, `heat-motion`: adds `useSettles()`, which says whether something let go of settles on its tier (every material) or stops where it lands on the frame (Rack: things cut in and stop at once). Nothing else changes.
+- **changed** `time-scrubber`, `press-time-scrubber`, `flat-time-scrubber`, `device-time-scrubber`, `plain-time-scrubber`, `rack-time-scrubber`, `heat-time-scrubber`: under Rack the ruler stops on its step or event on the frame it is let go, and a key or a press puts it there at once, instead of settling for 400ms on the responsive tier; fun mode's throw and rubber band are off there. Every other world settles as before. Props are unchanged.
+- **changed** `device-rack`, `rack-device-rack`: names in sentence case, as litt writes everywhere. The default `title` is "Dub echo rack" and the default presets are Dub tape, Warm wash, Acid ping and Init. Pass your own `title` and `presets` to keep the old names.
+- **changed** `step-sequencer`, `rack-step-sequencer`: the default `title` is "Drum rack · Pattern A", in sentence case. Pass your own `title` to keep the old one.
+- **fixed** `clip-launcher`, `rack-clip-launcher`: in a narrow panel a clip's name wraps to two lines instead of being cut on one ("Hat p…"), and the scene's row grows to hold them; a name that needs a third still ends in an ellipsis. Slots are at least 32px tall (44px under a finger) rather than exactly that. Props are unchanged.
+- **fixed** `step-sequencer`, `rack-step-sequencer`: under a finger (`pointer: coarse`) each step is 44 by 44 instead of 22 wide, and the grid scrolls sideways inside its panel rather than shrink a step. Nothing changes under a mouse.
+- **fixed** `device-rack`, `rack-device-rack`: the 24px bypass keeps a 44px touch target (`litt-target relative`). Nothing looks different.
+- **breaking** `device-rack`, `rack-device-rack`: each default macro has a color of its own. Cutoff and Dry/Wet both drew orange, so one color meant two things; the default device is now five macros (Cutoff, Resonance, Feedback, Drive, Dry/Wet), one per clip color, with Dry/Wet in violet, and Width is gone from `DEFAULT_MACROS` and from `width` in every default preset, so `<DeviceRack />` draws one dial fewer and `DEFAULT_MACROS.find((m) => m.id === "width")` is `undefined`. Five macros lay out in five columns from `md` up. Migrate: to keep Width, pass your own `macros` and `presets` that hold it (its old macro was `{ id: "width", label: "Width", hue: "violet", min: 0, max: 100, step: 2, defaultValue: 78, unit: "%" }`).
 
 ## 2026-11-20 · Press deploy-dashboard identity, and Heat's keycaps are keys
 

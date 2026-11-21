@@ -13,12 +13,14 @@
  * select, combobox, command menu and context menu it opens the page's first trigger by keyboard (Enter, ArrowDown
  * into a combobox, Shift+F10 on the context menu's target), presses ArrowDown, and screenshots the lit row and a row
  * two away. On tabs it takes the selected tab and another tab in its list; on code input, the current
- * cell of a focused, empty field and its last cell. A highlight is seen when one shot has at least MIN of its
+ * cell of a focused, empty field and its last cell; on Rack's player (#rack), Index's launched clip and the clip two
+ * below it. A highlight is seen when one shot has at least MIN of its
  * pixels in colors the other barely has (each channel in 8 steps, so text antialiasing falls into a handful of
  * bins and both shots carry the same text colors). Two rows that differ only in their words stay well under it.
  *
  * The self-test injects CSS that puts the highlights back as they were (the glide ring with no fill, the lit rows in
- * CanvasText and the tab's mark (the folder tab's face, the bubble or the lamp) with its Highlight border, left to forced-color-adjust: auto, no outline on the current cell) and fails if any
+ * CanvasText and the tab's mark (the folder tab's face, the bubble or the lamp) with its Highlight border, left to forced-color-adjust: auto, no outline on the current cell, Rack's launched
+ * clip in CanvasText on nothing with an outlined triangle) and fails if any
  * page still passes.
  *
  * Needs Playwright, found as a11y.mjs finds it (A11Y_TOOLS, then here, then the cloud container's global copy).
@@ -68,6 +70,8 @@ const BROKEN = [
   "[data-highlighted],[data-active],[data-highlighted] *,[data-active] *{forced-color-adjust:auto!important;color:CanvasText!important}",
   '[role="tab"]>[aria-hidden="true"]{forced-color-adjust:auto!important;background:transparent!important;border-width:0!important}',
   'main [aria-hidden="true"]>span{outline:none!important}',
+  "[data-play-index] button[data-current],[data-play-index] button[data-current] *{forced-color-adjust:auto!important;background:transparent!important;color:CanvasText!important}",
+  "[data-play-index] button[data-current] path{fill:none!important;stroke:currentColor!important}",
 ].join("\n");
 
 /**
@@ -113,6 +117,18 @@ const CASES = {
       const other = [...tab.closest('[role="tablist"]').querySelectorAll('[role="tab"]')].find((t) => t !== tab);
       tab.setAttribute("data-fc", "lit");
       other.setAttribute("data-fc", "other");
+      return "";
+    }),
+  },
+  /* Rack's Index, a session (bodies/rack.tsx): the launched clip against a clip two below it. */
+  rack: {
+    clip: (b) => b,
+    arrange: (pg) => pg.evaluate(() => {
+      const rows = [...document.querySelectorAll("[data-play-index] button")];
+      const i = rows.findIndex((r) => r.hasAttribute("data-current"));
+      if (i < 0) return "no clip is launched on Rack's Index";
+      rows[i].setAttribute("data-fc", "lit");
+      (rows[i + 2] ?? rows[i - 2]).setAttribute("data-fc", "other");
       return "";
     }),
   },

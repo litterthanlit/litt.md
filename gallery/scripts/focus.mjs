@@ -13,13 +13,16 @@
  *   focus (a disabled button drops it; the busy button is aria-disabled).
  * - type-to-confirm: on #settings, "Or type to confirm", the studio's name typed, Enter; focus is not on the body.
  * - slide-confirm: Enter on #slide-confirm's thumb; focus is not on the body (the confirmed thumb is aria-disabled).
+ * - grid-clip-launcher, grid-step-sequencer: Rack's two grids are one tab stop each (principle 5; plans/audits/rack.md,
+ *   finding 5). From the control just before the lead's grid, one Tab lands in the grid, → moves focus to another cell
+ *   in it, and one more Tab leaves it.
  * And on a 412 by 823 phone with the CPU slowed 4x:
  * - cls-button, cls-table: the layout shift score of #button and #table over their first 5s, shifts after input
  *   left out, is at most 0.1, Google's good.
  *
  * The self-test breaks each one in the page, as it used to be or as a regression would: a blur after the route
- * focuses its h1, a submit that disables its button, a blur after Enter, and a 300px block put on top of main
- * 800ms in. It fails if any scenario still passes.
+ * focuses its h1, a submit that disables its button, a blur after Enter, a 300px block put on top of main
+ * 800ms in, and every cell of a grid put back in the tab order. It fails if any scenario still passes.
  *
  * Needs Playwright, found as a11y.mjs finds it (A11Y_TOOLS, then here, then the cloud container's global copy).
  */
@@ -105,6 +108,41 @@ const cls = (route) => ({
       }, 800);
     }, 50);
   },
+});
+
+/* A grid is one tab stop: Tab from the control before it lands inside, → moves within, and one more Tab leaves. */
+const grid = (route) => ({
+  context: DESKTOP,
+  async run(pg) {
+    await open(pg, route);
+    const before = await pg.evaluate(() => {
+      const g = document.querySelector("main [role=grid]");
+      if (!g) return "no grid";
+      const tabbable = [...document.querySelectorAll("a[href], button, input, select, textarea, [tabindex]")].filter(
+        (el) => el.tabIndex >= 0 && !el.disabled && el.getClientRects().length && !el.closest("[inert]"),
+      );
+      const prev = tabbable.filter((el) => !g.contains(el) && el.compareDocumentPosition(g) & Node.DOCUMENT_POSITION_FOLLOWING).pop();
+      if (!prev) return "nothing before the grid to tab from";
+      prev.setAttribute("data-focus-before", "");
+      return "";
+    });
+    if (before) return `#${route}: ${before}`;
+    await pg.locator("[data-focus-before]").focus();
+    const inGrid = () => pg.evaluate(() => {
+      const a = document.activeElement;
+      return a && a.closest("[role=grid]") === document.querySelector("main [role=grid]") ? (a.getAttribute("aria-label") || a.textContent || "").trim() : null;
+    });
+    await pg.keyboard.press("Tab");
+    const first = await inGrid();
+    if (first === null) return `#${route}: Tab from the control before the grid went to ${await active(pg)}, not into the grid`;
+    await pg.keyboard.press("ArrowRight");
+    const next = await inGrid();
+    if (next === null || next === first) return `#${route}: → from "${first}" left focus on ${next === null ? await active(pg) : `"${next}"`}, not the next cell`;
+    await pg.keyboard.press("Tab");
+    const out = await inGrid();
+    return out === null ? "" : `#${route}: one Tab from "${next}" stayed in the grid, on "${out}"`;
+  },
+  broken: () => setInterval(() => document.querySelectorAll('[role=grid] [tabindex="-1"]').forEach((el) => { el.tabIndex = 0; }), 100),
 });
 
 /* Each scenario returns what went wrong, or "" when focus and layout held. broken runs in the page in the self-test. */
@@ -201,6 +239,8 @@ const SCENARIOS = {
     },
     broken: blurAfterEnter,
   },
+  "grid-clip-launcher": grid("rack/clip-launcher"),
+  "grid-step-sequencer": grid("rack/step-sequencer"),
   "cls-button": cls("button"),
   "cls-table": cls("table"),
 };

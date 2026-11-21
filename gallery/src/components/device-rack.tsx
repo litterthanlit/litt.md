@@ -1,13 +1,15 @@
 /**
- * DeviceRack, a Rack part (proposals/rack.md; taste/litt-principles.md, Rack): an Ableton Live Audio Effect Rack with
- * color-coded rotary Macro Dials, a device power bypass toggle, and instant preset recall.
+ * DeviceRack, a Rack part (proposals/rack.md; taste/litt-principles.md, Rack): an Ableton Live audio effect rack with
+ * color-coded rotary macro dials, a device power bypass toggle, and instant preset recall.
  *
  * - Each macro dial is a compact square parameter box (`bg-surface-2 border border-line rounded-control`) holding a
  *   color-coded SVG rotary arc (`amber`, `blue`, `teal`, `violet`, `rose`), a crisp indicator needle, and its tabular
- *   value in words underneath.
+ *   value in words underneath. Give each macro its own hue: one color means one thing (Rack), so five macros is the
+ *   most a device colors without repeating one.
  * - Drag vertically on any dial (1:1 pointer capture, just like Live), step with arrow keys (`role="slider"`), or
  *   double-click to reset to its default value. Presets cut all dials to their stored values on the frame ("on the
  *   beat", zero bounce).
+ * - The bypass is a 24px dot that keeps a 44px target for a finger (`litt-target`).
  * - Zero `--accent` fills (R6) and zero auto-animation on mount; every coordinate is rounded to 2 decimals for SSR.
  */
 import { useId, useRef, useState, type KeyboardEvent, type PointerEvent, type ReactNode } from "react";
@@ -39,7 +41,7 @@ export type DevicePreset = {
 };
 
 export type DeviceRackProps = {
-  /** Device title in the rack header, e.g. "Dub Echo Rack". */
+  /** Device title in the rack header, e.g. "Dub echo rack". */
   title?: ReactNode;
   /** Macro dials to render in the device strip. */
   macros?: DeviceMacro[];
@@ -49,20 +51,20 @@ export type DeviceRackProps = {
   className?: string;
 };
 
+/* Each macro its own clip color (one color means one thing, Rack's line): five macros, Rack's five hues. */
 export const DEFAULT_MACROS: DeviceMacro[] = [
   { id: "cutoff", label: "Cutoff", hue: "amber", min: 80, max: 12000, step: 120, defaultValue: 3400, unit: "Hz" },
   { id: "res", label: "Resonance", hue: "blue", min: 0, max: 100, step: 2, defaultValue: 38, unit: "%" },
   { id: "feedback", label: "Feedback", hue: "teal", min: 0, max: 100, step: 2, defaultValue: 54, unit: "%" },
   { id: "drive", label: "Drive", hue: "rose", min: 0, max: 24, step: 1, defaultValue: 6, unit: "dB" },
-  { id: "width", label: "Width", hue: "violet", min: 0, max: 100, step: 2, defaultValue: 78, unit: "%" },
-  { id: "drywet", label: "Dry/Wet", hue: "amber", min: 0, max: 100, step: 2, defaultValue: 42, unit: "%" },
+  { id: "drywet", label: "Dry/Wet", hue: "violet", min: 0, max: 100, step: 2, defaultValue: 42, unit: "%" },
 ];
 
 export const DEFAULT_PRESETS: DevicePreset[] = [
-  { name: "Dub Tape", values: { cutoff: 3400, res: 38, feedback: 54, drive: 6, width: 78, drywet: 42 } },
-  { name: "Warm Wash", values: { cutoff: 1800, res: 24, feedback: 76, drive: 4, width: 92, drywet: 64 } },
-  { name: "Acid Ping", values: { cutoff: 6200, res: 74, feedback: 62, drive: 14, width: 60, drywet: 50 } },
-  { name: "Init", values: { cutoff: 12000, res: 0, feedback: 0, drive: 0, width: 50, drywet: 0 } },
+  { name: "Dub tape", values: { cutoff: 3400, res: 38, feedback: 54, drive: 6, drywet: 42 } },
+  { name: "Warm wash", values: { cutoff: 1800, res: 24, feedback: 76, drive: 4, drywet: 64 } },
+  { name: "Acid ping", values: { cutoff: 6200, res: 74, feedback: 62, drive: 14, drywet: 50 } },
+  { name: "Init", values: { cutoff: 12000, res: 0, feedback: 0, drive: 0, drywet: 0 } },
 ];
 
 const HUE: Record<MacroHue, { stroke: string; badge: string; text: string }> = {
@@ -213,9 +215,9 @@ function MacroDial({
   );
 }
 
-/** Rack's Ableton-style Audio Effect Rack with rotary macro dials, bypass toggle, and instant preset recall. */
+/** Rack's Ableton-style audio effect rack with rotary macro dials, bypass toggle, and instant preset recall. */
 export function DeviceRack({
-  title = "Dub Echo Rack",
+  title = "Dub echo rack",
   macros = DEFAULT_MACROS,
   presets = DEFAULT_PRESETS,
   className = "",
@@ -258,7 +260,7 @@ export function DeviceRack({
               setLive(next ? "Device active." : "Device bypassed.");
             }}
             className={
-              "grid size-6 cursor-pointer place-items-center rounded-pill border transition-colors duration-(--dur-instant) ease-litt " +
+              "litt-target relative grid size-6 cursor-pointer place-items-center rounded-pill border transition-colors duration-(--dur-instant) ease-litt " +
               "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus forced-colors:border " +
               (enabled ? "border-fg bg-fg text-canvas forced-colors:bg-[Highlight] forced-colors:text-[HighlightText]" : "border-line-strong bg-canvas text-fg-subtle")
             }
@@ -304,7 +306,11 @@ export function DeviceRack({
         aria-labelledby={headingId}
         className={
           "grid gap-1.5 p-2 " +
-          (macros.length <= 4 ? "grid-cols-2 sm:grid-cols-4" : "grid-cols-2 sm:grid-cols-3 md:grid-cols-6")
+          (macros.length <= 4
+            ? "grid-cols-2 sm:grid-cols-4"
+            : macros.length === 5
+              ? "grid-cols-2 sm:grid-cols-3 md:grid-cols-5"
+              : "grid-cols-2 sm:grid-cols-3 md:grid-cols-6")
         }
       >
         {macros.map((m) => (
