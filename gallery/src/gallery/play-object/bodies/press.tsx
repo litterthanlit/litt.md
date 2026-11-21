@@ -18,9 +18,9 @@
  * - Then the screen.
  * - No accent fill in the body (R6): the take on the screen holds the view's one primary fill.
  */
-import type { PointerEvent } from "react";
+import { useLayoutEffect, useRef, useState, type PointerEvent } from "react";
 import { useHand } from "@/motion/hand";
-import type { PlayObjectBody, PlayObjectBodyProps } from "../body";
+import type { PartScale, PlayObjectBody, PlayObjectBodyProps, PlayObjectHomeProps } from "../body";
 import { COMPACT_BOX, COMPACT_SCREEN, SCREEN_HEIGHT } from "../body";
 
 const keyBase =
@@ -192,9 +192,126 @@ function PressBody({ takes, at, selector, pick, step, index, play, readout, scre
   );
 }
 
+/* A row of Index's tray: the full width of the tray's floor, 2px in from its wall, so its corners are the tray's less
+   2px (concentric). At rest it lies on the floor in the muted ink; current, it is raised as a block (lit top edge and
+   its cast), as the selected cell of every Press tray is; pressed, it sinks by the press depth. No outline. Under forced
+   colors the tray keeps its border and the current row is filled with Highlight, drawn in system colors alone and kept
+   off the text backplate, so its words stay HighlightText on Highlight. */
+const HOME_ROW =
+  "litt-target relative flex h-control-sm w-full min-w-0 cursor-pointer items-center gap-3 rounded-[calc(var(--radius-control)-2px)] px-3 text-left text-small select-none " +
+  "transition-[background-color,color,box-shadow,transform] duration-(--dur-instant) ease-litt motion-reduce:transition-none " +
+  "active:shadow-(--block-press) active:[transform:translateY(var(--press-depth))] " +
+  "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus pointer-coarse:h-control-md";
+const ROW_AT_REST = "bg-transparent font-normal text-fg-muted";
+const ROW_RAISED =
+  "bg-block font-title text-fg shadow-[var(--highlight),var(--block-lift)] " +
+  "forced-colors:bg-[Highlight] forced-colors:text-[HighlightText] forced-colors:forced-color-adjust-none forced-colors:focus-visible:outline-[CanvasText]";
+
+/* How large the live part stands: the largest size the kit offers at which the part and its line still fit the space
+   beside the tray, read from that space and the part itself, never the window. Each part starts at the largest and
+   steps down before it paints (a layout effect), so a table stands smaller than a switch and nothing is cut off. */
+const SCALES: PartScale[] = [1.5, 1.25, 1, 0.75];
+function useStageScale(take: string, compact: boolean) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [fit, setFit] = useState<{ take: string; scale: PartScale }>({ take, scale: SCALES[0] });
+  const scale = fit.take === take ? fit.scale : SCALES[0];
+  useLayoutEffect(() => {
+    /* On a phone there is no stage (the tray stands alone); back at a desktop width the stage mounts, and this runs. */
+    if (compact) return;
+    const stage = ref.current;
+    if (!stage) return;
+    const over = () => stage.scrollHeight > stage.clientHeight + 1 || stage.scrollWidth > stage.clientWidth + 1;
+    const smaller = () => {
+      if (!over()) return;
+      const next = SCALES[SCALES.indexOf(scale) + 1];
+      if (next) setFit({ take, scale: next });
+    };
+    smaller();
+    /* A part that loads late, or a stage that changes size, is fitted again: from the top when the stage resizes. At
+       the top already, the state does not change and this effect does not run again, so the part is measured here. */
+    let size = `${stage.clientWidth}x${stage.clientHeight}`;
+    const seen = new ResizeObserver(() => {
+      const now = `${stage.clientWidth}x${stage.clientHeight}`;
+      if (now !== size && scale !== SCALES[0]) {
+        size = now;
+        setFit({ take, scale: SCALES[0] });
+      } else {
+        size = now;
+        smaller();
+      }
+    });
+    seen.observe(stage);
+    const live = stage.querySelector("[data-play-live]");
+    if (live) seen.observe(live);
+    return () => seen.disconnect();
+  }, [take, scale, compact]);
+  return [ref, scale] as const;
+}
+
+/**
+ * Index, Press's way (plans/audits/press.md, finding 4): the set as rows seated in one recessed tray, the current row
+ * raised out of it as a block, and that part standing live on the screen's floor beside the tray, with its line under
+ * it. The contract owns the list, its keys, the pick and the link; this only draws. On a phone the tray stands alone
+ * (`phonePart` "none"): a touch on a row opens its take at once, so a live part above would only push the list down.
+ */
+function PressHome({ takes, current, list, row, everything, part, compact }: PlayObjectHomeProps) {
+  const { children: words, ...link } = everything;
+  const cued = takes[current];
+  const [stage, scale] = useStageScale(cued?.id ?? "", compact);
+  return (
+    <div
+      className={
+        /* The scroller keeps its scrollbar's gutter whether or not it scrolls, so a part spilling for a moment at the
+           largest scale does not narrow the stage, which would start the fit again from the top, in a loop. */
+        "grid h-full min-h-0 overflow-auto overscroll-contain [scrollbar-gutter:stable] " +
+        (compact ? "content-start gap-4 p-4" : "grid-cols-[minmax(0,17rem)_minmax(0,1fr)] grid-rows-[minmax(0,1fr)] gap-8 p-6 lg:gap-12")
+      }
+    >
+      {/* The tray and the link fit the screen's floor (30rem) with nothing over them: the readout and the top row already
+          name the world. */}
+      <div className="flex min-h-0 min-w-0 flex-col gap-3">
+        <nav {...list} data-part="tray" className="rounded-control bg-tray p-0.5 shadow-(--tray-shade) forced-colors:border">
+          <ul className="grid">
+            {takes.map((t, i) => {
+              const on = i === current;
+              return (
+                <li key={t.id} className="grid min-w-0">
+                  <button {...row(i)} data-part={on ? "block" : "tray"} className={HOME_ROW + " " + (on ? ROW_RAISED : ROW_AT_REST)}>
+                    <span className="min-w-0 flex-1 truncate">{t.title}</span>
+                    <span aria-hidden="true" className={"shrink-0 font-mono text-caption tabular-nums " + (on ? "text-fg-muted forced-colors:text-[HighlightText]" : "text-fg-subtle")}>
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
+        <a
+          {...link}
+          className="litt-target relative mt-auto self-start rounded-control px-1 text-small text-fg underline decoration-line-strong underline-offset-4 hover:decoration-current focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+        >
+          {words}
+        </a>
+      </div>
+      {!compact && (
+        <div ref={stage} className="grid min-h-0 min-w-0 content-center justify-items-center gap-6">
+          {part({ scale })}
+          <div className="grid max-w-[52ch] justify-items-center gap-1 text-center">
+            <p className="text-body font-title text-fg">{cued?.title}</p>
+            <p className="text-small text-fg-muted">{cued?.lede}</p>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export const press: PlayObjectBody = {
   name: "press",
   shape: (compact) => (compact ? COMPACT_SCREEN : SCREEN_HEIGHT + " w-full rounded-[calc(var(--radius-control)-2px)]"),
   rail: false,
   Body: PressBody,
+  Home: PressHome,
+  phonePart: "none",
 };
