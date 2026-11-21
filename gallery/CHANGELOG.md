@@ -4,7 +4,13 @@ Every change to the litt registry at https://littmd.vercel.app/r/, newest first.
 
 To update an item, read the entries since your version, then reinstall it with `--overwrite`. A **breaking** entry says what to change in your code.
 
-## 2026-11-21 · Rack
+## 2026-11-21 · Press and Rack
+
+Press's audit (plans/audits/press.md, findings 2, 3 and 14; plans/audits/press-fixes.md, Buildable now): Press's own parts keep the contracts they announce. Nothing changes outside Press, and nothing looks different at rest.
+
+- **fixed** `env-switch`, `press-env-switch`: the environments are a radio group a keyboard can work. The group is one tab stop, on the chosen environment; the arrow keys move to the next or previous environment and choose it, wrapping at the ends, and Home and End go to the first and the last. Each choice is announced as before. Props are unchanged.
+- **fixed** `release-rail`, `press-release-rail`: the releases are a radio group a keyboard can work. They are one tab stop, on the selected release; the arrow keys move to the newer or older release and select it, wrapping at the ends, and Home and End go to the newest and the oldest. Promote to live stays its own tab stop. Props are unchanged.
+- **fixed** `deploy-status`, `press-deploy-status`: Deploy status is a readout. The stages are a read-only list (`role="list"`, the current one `aria-current="step"`), no longer buttons or tab stops, so a click on a stage no longer rewrites the deploy; Rebuild and Next stage (Promote before the last stage) are the only keys. The header says the state in words ("Edge, running", or "Live" once it is reached), each stage tells a screen reader whether it is done, running or pending, and the live region announces the same words. When a press disables the key it was on (Promote reaching the last stage, Rebuild the first), focus moves to the other key instead of falling to the page. Reached stages look as they did. Props are unchanged; `onStageChange` now fires only from the keys.
 
 Rack's audit, fixed (plans/audits/rack-fixes.md, Buildable now): the grids take the arrows, small controls keep a finger's target, color is owned, and nothing eases. Nothing changes outside Rack unless a line says so.
 

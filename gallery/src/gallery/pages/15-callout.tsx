@@ -13,7 +13,7 @@ export const meta: PageMeta = {
   group: "Layout",
   verbs: ["press"],
   summary:
-    "An inline note in the page flow: a tip, a heads-up or a result to act on. A raised surface with an icon, a title, a line of detail and an optional action. Only the icon takes the status color, and a hidden word says the same thing. It measures its own width, and nothing about it moves.",
+    "An inline note in the page flow: a tip, a heads-up or a result to act on. A surface with an icon, a title, a line of detail and an optional action. Only the icon takes the status color, and a hidden word says the same thing. It measures its own width, and nothing about it moves.",
   tiers: [],
 };
 
@@ -58,7 +58,7 @@ import { Kbd } from "@/components/kbd";
   a11y: [
     "A callout is a note landmark by default. With live it is a status, or an alert for danger, so a screen reader announces it when it appears.",
     "Color is never the only signal. A tone adds a hidden \"Warning: \", \"Error: \" or \"Success: \" before the title, and the icon is hidden from assistive tech.",
-    "The status colors reach 3:1 as an icon on the raised surface in light and dark, and the words are in fg and fg-subtle, which reach 4.5:1.",
+    "The status colors reach 3:1 as an icon on its surface in light and dark, and the words are in fg and fg-subtle, which reach 4.5:1.",
     "The close button is named \"Dismiss\", is 32px and grows to 44px on a coarse pointer. The callout does not hide itself, so remove it in the handler, and if focus was on the button, move it somewhere sensible.",
     "A Button action grows to 44px on a coarse pointer. A Kbd action is hidden there, like every key hint.",
     "Write the title so it makes sense alone, and the description as one line of detail. Do not put a second action in the description.",

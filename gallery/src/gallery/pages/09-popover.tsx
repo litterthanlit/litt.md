@@ -13,7 +13,7 @@ export const meta: PageMeta = {
   order: 5.02, group: "Overlays",
   verbs: ["open"],
   summary:
-    "A floating glass panel for a small form, a share link or a detail card. It grows from its trigger's corner and slides in from the side it really opens on. On a phone it becomes a bottom sheet.",
+    "A panel over the page for a small form, a share link or a detail card. It opens from its trigger's corner, on the side it really opens on. On a phone it becomes a bottom sheet.",
   tiers: ["instant", "responsive", "expressive"],
 };
 
@@ -51,7 +51,7 @@ import { Popover, PopoverClose, PopoverContent, PopoverTrigger } from "@/compone
     "A phone, with no change from you. Below 640px the same content opens as a bottom sheet that can be dragged away, with label as its heading, because a form or a picker needs the width and a place above the keyboard.",
   ],
   skip: [
-    "A list of commands. Use Menu, which has typeahead, arrow keys and a gliding highlight.",
+    "A list of commands. Use Menu, which has typeahead, arrow keys and a highlight that follows them.",
     "A hint for an icon or a shortcut. Use Tooltip, which has no controls inside it.",
     "A decision that needs the whole page's attention, or a confirmation. Use a Dialog.",
     "A long form, or one with several steps. Give it a page or a Dialog, because the panel is at most 384px wide and scrolls when it is tall.",
@@ -73,12 +73,12 @@ import { Popover, PopoverClose, PopoverContent, PopoverTrigger } from "@/compone
     "Focus moves into the panel on open and back to the trigger on close. If you click somewhere else to close it, focus stays where you clicked instead of jumping back.",
     "Mark the control a person should reach first with data-autofocus: the Copy button in a share panel, not the read-only field. Opened by pointer, a button shows no ring until a key is pressed; a text field always shows its own.",
     "The panel is drawn at the end of the page, not next to its trigger. Focus moves into it, so a screen reader reads it right away. Do not depend on reading order.",
-    "The surface is glass over the page, and solid when its trigger sits inside glass, such as a dialog or the header, or inside another popover, because glass never sits on glass. Pass solid to force it.",
+    "Where the surface is see-through it turns solid when its trigger sits inside another overlay, such as a dialog or the header, or inside another popover, so its words keep their contrast. Pass solid to force it.",
     "Nothing opens on hover, so keyboard and touch get the same thing. The padding and the sizes sit on the 8px grid. Make your own buttons and rows 44px, and fields 16px on touch, as the gallery's fields do.",
     "On a phone the panel is a sheet, and the sheet is a modal dialog named by label, which it also shows as its heading. A caller must pass a label that works as a title, and should not repeat it as a heading in the content. The page behind is inert, focus is trapped, and the sheet is labelled by that heading.",
     "A sheet can be dragged down to close it, and every drag has a button that does the same thing: the Close button (44px on touch), Esc and a tap on the dimmed page all close it too. The grabber at the top is decoration and is hidden from screen readers. A drag never starts in a focused text field, a slider, a region marked data-no-drag, or a body scrolled away from its top.",
     "On a touch screen focus lands on the sheet, or on the control marked data-autofocus, so the keyboard does not open while the sheet is still rising. Mark a field data-autofocus when typing is the point. With a mouse or keyboard the rule above applies. Closing returns focus to the trigger.",
-    "A popover opened from inside a sheet, a dialog or the header is solid on a phone too, because glass never sits on glass.",
+    "A popover opened from inside a sheet, a dialog or the header is solid on a phone too, so one overlay never shows through another.",
     "Under reduced motion the panel appears and leaves at once, with no travel. A dragged sheet still follows the finger, and letting go is instant.",
   ],
 };

@@ -74,10 +74,16 @@ const PAGES = fs.readdirSync(pagesDir).filter((f) => f.endsWith(".tsx")).map((f)
     id: /\bid:\s*"([^"]+)"/.exec(src)?.[1],
     study: at >= 0,
     mechanism: /\bmechanism\s*:/.test(src),
+    /* The shared mechanism as meta writes it (one string literal), what gen-llms puts under How it moves in the docs. */
+    sharedMoves: (() => { const m = /\bmechanism\s*:\s*"((?:[^"\\]|\\.)*)"/.exec(src)?.[1]; return m === undefined ? null : JSON.parse(`"${m}"`); })(),
     states: /\bstates\s*:\s*\{\s*[a-z]/i.test(rest),
     replay: /\breplay\s*:/.test(rest),
     /* The worlds a part is in, when fewer than all (meta.worlds); null is every world. */
     worlds: (() => { const w = /\bworlds:\s*\[([^\]]*)\]/.exec(src)?.[1]; return w ? [...w.matchAll(/"([^"]+)"/g)].map((m) => m[1]) : null; })(),
+    /* The worlds that show How it moves in their own words (meta.movesByWorld), so not the shared mechanism the docs carry.
+       The regex holds only while the map is one level of `world: "line"` pairs with no brace inside it, the layout
+       .claude/CLAUDE.md asks for: a nested object or a "}" in a line would end the map early. */
+    ownMoves: [...(/\bmovesByWorld:\s*\{([^}]*)\}/.exec(src)?.[1] ?? "").matchAll(/(?:^|[{,])\s*([a-z]+):\s*"/g)].map((m) => m[1]),
   };
 }).filter((p) => p.id);
 const only = get("only");
@@ -257,8 +263,9 @@ if (selfTest) {
 /* ---------- every study, in every world: Flat and Device at both sizes and themes, the rest at 1440 light ---------- */
 for (const page of STUDIES) {
   let mechanism = "";
-  /* The page's home: Flat, the gallery's world, or the first world a world-only part is in. */
-  const home = !page.worlds || page.worlds.includes("flat") ? "flat" : page.worlds[0];
+  /* The page's home, where it shows the shared mechanism the docs carry: Flat, the gallery's world, or else the first
+     world it is in whose How it moves is not its own (meta.movesByWorld). */
+  const home = ["flat", ...WORLDS].find((w) => (!page.worlds || page.worlds.includes(w)) && !page.ownMoves.includes(w));
   for (const world of WORLDS) {
     if (page.worlds && !page.worlds.includes(world)) continue;
     const full = world === "flat" || world === "device";
@@ -267,11 +274,17 @@ for (const page of STUDIES) {
       if (world === home && size.label === "1440" && scheme === "light") mechanism = r.mechanism;
     }
   }
-  await docs(page, mechanism);
+  /* Every world the page is in has its own How it moves, so none shows the shared mechanism the docs carry: compare the
+     docs with meta's own string instead, or say so if it cannot be read, rather than blame the docs. */
+  if (!home && page.mechanism) {
+    if (page.sharedMoves) mechanism = page.sharedMoves;
+    else claim(C.docs, `${page.id}: every world it is in has its own How it moves (meta.movesByWorld) and meta's shared mechanism is not one string literal, so nothing shows the mechanism the docs carry`);
+  }
+  if (home || !page.mechanism || page.sharedMoves) await docs(page, mechanism);
 
   /* 320 wide */
   for (const scheme of ["light", "dark"]) {
-    const { ctx, pg } = await open(page, { width: 320, height: 640, scheme, world: home, phone: true });
+    const { ctx, pg } = await open(page, { width: 320, height: 640, scheme, world: home ?? ["flat", ...WORLDS].find((w) => !page.worlds || page.worlds.includes(w)), phone: true });
     const wide = await pg.evaluate(() => document.documentElement.scrollWidth - innerWidth);
     claim(C.wide, wide > 0 ? `${page.id} · ${scheme} · 320: the page is ${wide}px wider than the screen` : null);
     await ctx.close();

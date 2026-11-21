@@ -150,7 +150,7 @@ const [search, setSearch] = useUrlParam("q");
     "Rows live on a server and there are too many to load at once. Give TableVirtualBody hasMore and onLoadMore, and it asks for each page as the view nears the end.",
     "People come back to a filtered view, or send it to someone. Hold the filters, the search and the sort with useUrlFilter and useUrlParam, so they live in the page address.",
     "A table wider than its space. stickyColumns keeps the box and the row's name in view while it scrolls sideways, and resizable lets people give a long column room.",
-    "Rows can be sorted, filtered or inserted. Turn on animateChanges and they glide to their new places.",
+    "Rows can be sorted, filtered or inserted. Turn on animateChanges and they move to their new places.",
     "You need a table on a phone. It scrolls sideways inside its own labelled region and never widens the page.",
   ],
   skip: [

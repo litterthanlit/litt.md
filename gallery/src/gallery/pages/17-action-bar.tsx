@@ -14,7 +14,7 @@ export const meta: PageMeta = {
   group: "Navigation",
   verbs: ["select", "press"],
   summary:
-    "A glass bar that floats at the bottom of the view while something is selected: the count in words, the actions as small buttons, and Clear. It rises by the travel token on the responsive tier when the selection starts and drops away when it ends. It is a toolbar: one Tab stop, the arrow keys between its buttons, and Esc clears.",
+    "A bar at the bottom of the view while something is selected: the count in words, the actions as small buttons, and Clear. It rises by the travel token on the responsive tier when the selection starts and drops away when it ends. It is a toolbar: one Tab stop, the arrow keys between its buttons, and Esc clears.",
   tiers: ["responsive"],
 };
 
