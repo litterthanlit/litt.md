@@ -211,7 +211,7 @@ function Loaded({ material, dark, lead, actions }: Props) {
     selector: {
       role: "slider",
       tabIndex: 0,
-      "aria-label": "Components",
+      "aria-label": "Take",
       "aria-valuemin": 0,
       "aria-valuemax": n,
       "aria-valuenow": at === null ? 0 : at + 1,
@@ -221,7 +221,7 @@ function Loaded({ material, dark, lead, actions }: Props) {
     },
     pick: go,
     step: (by) => ({ type: "button", tabIndex: -1, "aria-label": by > 0 ? "Next" : "Previous", onClick: () => go(along(by)) }),
-    index: { type: "button", tabIndex: -1, "aria-label": "Index", onClick: () => go(null) },
+    index: { type: "button", tabIndex: -1, "aria-label": "Index", "data-play-to": "index", onClick: () => go(null) },
     everything: { href: `#${material}/components`, tabIndex: -1, "aria-label": `Every component in ${world.name}` },
     turn: (by) => go(along(by)),
     play: { type: "button", "aria-label": "Play", "aria-pressed": playing, onClick: () => setPlaying((p) => !p) },
@@ -283,7 +283,7 @@ function Loaded({ material, dark, lead, actions }: Props) {
         {lead}
         <div className="flex flex-wrap items-center gap-1">
           {actions}
-          <Button size="sm" variant="ghost" aria-current={at === null ? "page" : undefined} onClick={() => go(null)}>
+          <Button size="sm" variant="ghost" data-play-to="index" aria-current={at === null ? "page" : undefined} onClick={() => go(null)}>
             Index
           </Button>
           <Button size="sm" variant="ghost" aria-expanded={details} aria-controls={`${id}-details`} onClick={() => (setPlaying(false), setDetails((d) => !d))}>

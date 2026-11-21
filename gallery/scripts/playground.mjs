@@ -18,6 +18,8 @@
  *   sits above the one before it and not to its right (focus runs with the eye),
  * - more than one control on the page is named Home (the top row's way out of the world; inside the object the list is
  *   Index everywhere), or a link named Source points inside the gallery (the top row's link to a part's page is Page),
+ * - on Index or on a take, two controls of the player share a name but go to different places (not the same href or
+ *   the same data-play-to): the selector is Take, never Components, the top row's link beside it,
  * - a world's set in play-object/takes.ts is not twelve parts, each a component page in that world, or a page's id is
  *   components, about or take, which would hide behind the world's own addresses,
  * - the screen does not open on Index, the world's set (a row each, as many as the slider runs to and takes.ts lists),
@@ -47,7 +49,8 @@
  * out of Device's gallery view, adds a part Heat does not have to Heat's set, and on Device puts back a second control
  * named Home and a Source link into the gallery, centres Index's rows again with one line wrapping, draws Heat's
  * menu strip under its screen again, takes Heat's live part off its Index and marks a second row current, and sets
- * Heat's screen to the other worlds' height, and puts Device's address back to the bare player after a step; it fails
+ * Heat's screen to the other worlds' height, puts Device's address back to the bare player after a step, and names
+ * Device's selector Components again; it fails
  * if the check misses any.
  *
  * Needs Playwright, found as worlds.mjs finds it.
@@ -107,7 +110,7 @@ const claim = (name, bad) => {
 
 const WORLDS = [["Press", "press", undefined], ["Flat", "flat", "flat"], ["Device", "device", "device"], ["Plain", "plain", "plain"], ["Rack", "rack", "rack"], ["Heat", "heat", "heat"]];
 const FRAME = "[data-play-frame]";
-const SLIDER = "[data-play-object] [role=slider][aria-label=Components]";
+const SLIDER = "[data-play-object] [role=slider][aria-label=Take]";
 /* The takes that open something, and what they open. */
 const OPENERS = ["Dialog", "Menu", "Popover", "Select", "Context menu", "Toast", "Tooltip"];
 const OVERLAYS = "[role=dialog], [role=alertdialog], [role=menu], [role=listbox], [role=tooltip], [data-toast-id]";
@@ -195,6 +198,23 @@ function showing(pg) {
     });
     return { id: take.dataset.playTake, draws };
   }, FRAME);
+}
+
+/* No two controls on a player share a name unless they go to the same place: the same href, or the same
+   data-play-to (the contract's two Index controls). What a take or Index's live part draws is the part's, not the
+   player's, so it is left out. */
+const NAMES_CLAIM = "no two controls on a player share a name unless they go to the same place";
+function sharedNames(pg) {
+  return pg.evaluate(() => {
+    const name = (el) => (el.getAttribute("aria-label") ?? el.textContent ?? "").replace(/\s+/g, " ").trim();
+    const shown = (el) => el.getClientRects().length > 0 && !el.closest("[aria-hidden=true], [inert]");
+    const part = (el) => el.closest("[data-play-live]") || el.closest("[data-play-take]:not([data-play-take=home])");
+    const controls = [...document.querySelectorAll("a[href], button, [role=button], [role=link], [role=slider], [role=tab], [role=menuitem], [role=option]")].filter((el) => shown(el) && !part(el) && name(el));
+    const byName = new Map();
+    for (const el of controls) byName.set(name(el), [...(byName.get(name(el)) ?? []), el]);
+    const to = (el) => (el.getAttribute("href") ? new URL(el.href, location.href).href : el.dataset.playTo ? `to:${el.dataset.playTo}` : null);
+    return [...byName].filter(([, els]) => els.length > 1 && (els.some((el) => !to(el)) || new Set(els.map(to)).size > 1)).map(([n, els]) => `"${n}" on ${els.map((el) => el.getAttribute("role") ?? el.tagName.toLowerCase()).join(", ")}`);
+  });
 }
 
 const readout = (pg) => pg.evaluate(() => document.querySelector("[data-play-readout]")?.textContent?.replace(/\s+/g, " ").trim() ?? null);
@@ -329,6 +349,13 @@ for (const [world, id, attribute] of RUN) {
   claim("on every player exactly one control is named Home, the way out", names.home.length === 1 ? null : `${world}: ${names.home.length} controls named Home${names.home.length ? `: ${names.home.join(", ")}` : ""}`);
   claim("no link named Source points inside the gallery", names.source.length === 0 ? null : `${world}: Source links to ${names.source.join(", ")}`);
   if (selfTest) await pg.evaluate(() => document.querySelectorAll("[data-self-test]").forEach((el) => el.remove()));
+
+  /* One name, one place (plans/audits/shared-fixes.md, Track 2 step 3): the selector is Take, not Components, the top
+     row's link beside it that goes to the gallery view. The break, on Device: the selector named Components again. */
+  if (selfTest && id === "device") await pg.evaluate(() => document.querySelector("[data-play-object] [role=slider]")?.setAttribute("aria-label", "Components"));
+  const twins = await sharedNames(pg);
+  claim(NAMES_CLAIM, twins.length ? `${world} on Index: ${twins.join("; ")}` : null);
+  if (selfTest && id === "device") await pg.evaluate(() => document.querySelector("[data-play-object] [role=slider]")?.setAttribute("aria-label", "Take"));
 
   /* The keyboard: Page, then the selector, Play and the screen. */
   await pg.locator("[data-play-object]").getByRole("link", { name: "Page", exact: true }).focus();
@@ -491,6 +518,8 @@ for (const [world, id, attribute] of RUN) {
     };
   });
   const title = await readout(pg);
+  const takeTwins = await sharedNames(pg);
+  claim(NAMES_CLAIM, takeTwins.length ? `${world} on ${title}: ${takeTwins.join("; ")}` : null);
   /* A world with an object of its own holds the take alone on its screen (plans/024, breach 17): no rail there, and the
      set stays on Index, behind its key (claimed below). A bare object keeps the rail. */
   if (OBJECTS.includes(id)) claim("an object's screen holds the take alone, with no rail inside it", rail === null ? null : `${world}: a rail of ${rail.rows.length} rows inside the screen`);
@@ -681,8 +710,10 @@ if (selfTest) {
   if (!sizeCaught) console.error("playground --self-test: Heat's screen at the other worlds' height, and the check missed the take's size.");
   const addressCaught = (claims.get("the take is in the address, written in place as you step, and Back from its page returns to it") ?? []).some((f) => f.startsWith("Device:"));
   if (!addressCaught) console.error("playground --self-test: Device's player kept its take out of the address, and the check missed it.");
-  if (!addressCaught || !caught|| !bareCaught || !tileCaught || !setCaught || !homeCaught || !sourceCaught || !topsCaught || !orderCaught || !sizeCaught || !menuCaught) process.exit(1);
-  console.log("playground --self-test: a dialog escaped to <body> leaves the screen, with the recorder kept from loading Device draws bare, a tile missing from Device's gallery view is seen, a set naming a part outside its world is seen, a second Home and a Source link into the gallery are seen, Index's rows centred off their tops are seen, Heat's strip under its screen is seen, a small take on Heat's screen is seen, Heat's Index with no live part and two current rows is seen, and a take kept out of the address is seen; the check catches all eleven.");
+  const namesCaught = (claims.get(NAMES_CLAIM) ?? []).some((f) => f.startsWith("Device"));
+  if (!namesCaught) console.error("playground --self-test: Device's selector named Components, like the link beside it, and the check missed it.");
+  if (!namesCaught || !addressCaught || !caught || !bareCaught || !tileCaught || !setCaught || !homeCaught || !sourceCaught || !topsCaught || !orderCaught || !sizeCaught || !menuCaught) process.exit(1);
+  console.log("playground --self-test: a dialog escaped to <body> leaves the screen, with the recorder kept from loading Device draws bare, a tile missing from Device's gallery view is seen, a set naming a part outside its world is seen, a second Home and a Source link into the gallery are seen, Index's rows centred off their tops are seen, Heat's strip under its screen is seen, a small take on Heat's screen is seen, Heat's Index with no live part and two current rows is seen, a take kept out of the address is seen, and a selector sharing the Components link's name is seen; the check catches all twelve.");
   process.exit(0);
 }
 if (bad) {

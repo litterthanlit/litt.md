@@ -13,8 +13,9 @@ export type PlayObjectBodyProps = {
   takes: Take[];
   /** The take showing, or null on Index: the world's introduction and its set, inside the screen. */
   at: number | null;
-  /** Spread on the element that picks the take, the tape or its stand-in: role="slider" over Home (0) and the takes,
-      its name, value and keys (Right and Down to the next, Left and Up to the previous, wrapping through Index; the
+  /** Spread on the element that picks the take, the tape or its stand-in: role="slider" over Index (0) and the takes,
+      named Take (never Components, the top row's link beside it that goes elsewhere), its spoken value ("Poll, 2 of
+      12"), and keys (Right and Down to the next, Left and Up to the previous, wrapping through Index; the
       Home key for Index, End for the last). One tab stop. */
   selector: HTMLAttributes<HTMLElement>;
   /** Take the hand to take i, as a press or drag along the selector does. Stops Play. */
@@ -23,8 +24,9 @@ export type PlayObjectBodyProps = {
   step: (by: 1 | -1) => ButtonHTMLAttributes<HTMLButtonElement>;
   /** Spread on a key that goes to Index, where a body draws one, as an iPod's Menu does. Its visible word is Index (the
       top row's Home is the way out of the world, and no other control may share that name). Out of the tab order: the
-      top row's Index and the selector's Home key do this. */
-  index: ButtonHTMLAttributes<HTMLButtonElement>;
+      top row's Index and the selector's Home key do this. It carries data-play-to="index", as the top row's Index does,
+      so the checks know the two controls named Index go to the same place. */
+  index: ButtonHTMLAttributes<HTMLButtonElement> & { "data-play-to": "index" };
   /** Spread on a link to the world's gallery view (#<world>/components), where a body draws one. Out of the tab order:
       Home and the rail link there too. */
   everything: AnchorHTMLAttributes<HTMLAnchorElement> & { href: string };
