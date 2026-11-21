@@ -24,8 +24,11 @@
  *   the eye reads: the top row, the selector, Play, then the screen (finding 6, as Heat's body does).
  *
  * Index, inside the screen, is a table of pills on the ground (plans/audits/flat.md, finding 2; flat-fixes.md, The front
- * door): the grey ground as a rounded table on the sheet, the set on it as white pills in two columns, each a part's
- * name, and the pill under the keys or the pointer in the ink (what is on). Beside the table, on the sheet, that pill's
+ * door): the grey ground as a rounded table on the sheet, the set on it as pills in two columns, read down the first
+ * column and then the second, each a part's name. On the ground, chosen is white: the pill under the keys or the
+ * pointer is paper, its name in the ink at the title weight, and the rest sit a step back into the ground (paper
+ * thinned towards the grey) with their names in the quiet ink. No pill is filled with the ink, and nothing is outlined
+ * at rest, since in Flat an outline means off. Beside the table, on the sheet, that pill's
  * part stands live at one and a half times its size (one and a quarter on a short screen) with its line under it,
  * springing up on Flat's expressive spring (0.28) each time the hand moves to another pill; nothing moves on load and,
  * under reduced motion, it simply appears.
@@ -173,10 +176,12 @@ const TABLE_PILL =
   "transition-colors duration-(--dur-instant) ease-litt pointer-coarse:h-control-md " +
   "group-focus-visible/cell:outline-2 group-focus-visible/cell:outline-offset-2 group-focus-visible/cell:outline-focus " +
   "forced-colors:group-focus-visible/cell:outline-[CanvasText]";
-/* The current pill is in the ink, its words in paper. Under forced colors the fills go, so it keeps a Highlight edge
-   inside it and its neighbours none. */
-const PILL_ON = "bg-fg text-(--flat-paper) forced-colors:border-2 forced-colors:border-[Highlight]";
-const PILL_OFF = "bg-(--flat-paper) text-fg";
+/* The current pill is paper (on the ground, chosen is white) with its name in the ink at the title weight; the rest
+   step back into the ground with their names in the quiet ink. Never the ink as a fill: under Flat it is the accent,
+   and the view's one is the part's own (R6). Under forced colors the fills go, so the current pill keeps a Highlight
+   edge inside it and its neighbours none. */
+const PILL_ON = "bg-(--flat-paper) font-title text-fg forced-colors:border-2 forced-colors:border-[Highlight]";
+const PILL_OFF = "bg-[color-mix(in_oklab,var(--flat-paper),transparent_70%)] text-fg-muted";
 
 /** The current pill's part, live, springing up as the hand reaches its pill. Still on the first draw. */
 function LivePart({ id, still, children }: { id: string; still: boolean; children: ReactNode }) {
