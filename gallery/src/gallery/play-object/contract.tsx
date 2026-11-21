@@ -109,6 +109,8 @@ function Loaded({ material, dark, lead, actions }: Props) {
   const [details, setDetails] = useState(false);
   /* On a body's own Index (body.Home), the row under the keys or the pointer, whose part is live beside the list. */
   const [cue, setCue] = useState(0);
+  /* The row under the pointer now, or null: a body may draw it apart from the current row. */
+  const [pointer, setPointer] = useState<number | null>(null);
   const rows = useRef<(HTMLButtonElement | null)[]>([]);
   const [host] = useState(() => Object.assign(document.createElement("div"), { className: "contents" }));
   const n = takes.length;
@@ -237,21 +239,26 @@ function Loaded({ material, dark, lead, actions }: Props) {
 
   /* A body's own Index: the contract owns the list, its order, its keys and what each row opens; the body only draws. */
   const cued = takes[Math.min(cue, n - 1)];
+  /* On a phone the live part is drawn above the list only where the body asks for it (body.phonePart). */
+  const livePart = !compact || body.phonePart === "above";
   const homeProps: PlayObjectHomeProps | null =
     body.Home && cued
       ? {
           world,
           takes,
           current: cue,
+          pointer,
           list: { "aria-label": `The set in ${world.name}`, "data-play-index": "" },
           row: (i) => ({
             type: "button",
             ref: (el: HTMLButtonElement | null) => void (rows.current[i] = el),
             tabIndex: i === cue ? 0 : -1,
             "data-current": i === cue ? "" : undefined,
+            "data-pointer": i === pointer ? "" : undefined,
             onClick: () => go(i),
             onFocus: () => setCue(i),
-            onPointerEnter: () => setCue(i),
+            onPointerEnter: () => (setCue(i), setPointer(i)),
+            onPointerLeave: () => setPointer((p) => (p === i ? null : p)),
             onKeyDown: (e) => {
               const to = ({ ArrowDown: (i + 1) % n, ArrowUp: (i - 1 + n) % n, Home: 0, End: n - 1 } as Record<string, number>)[e.key];
               if (to === undefined) return;
@@ -261,15 +268,19 @@ function Loaded({ material, dark, lead, actions }: Props) {
             },
           }),
           everything: { href: `#${material}/components`, "data-play-everything": "", children: `Every component, ${total} in ${shelves.length} groups` },
-          part: (
-            <div key={cued.id} data-play-live={cued.id} aria-label={`${cued.title}, live`} role="group" className="grid w-full min-w-0 justify-items-center">
-              <PreviewContext.Provider value="tile">
-                <Suspense fallback={null}>
-                  <cued.Component />
-                </Suspense>
-              </PreviewContext.Provider>
-            </div>
-          ),
+          part: ({ scale = 1, className = "" } = {}) =>
+            livePart ? (
+              <div key={cued.id} data-play-live={cued.id} aria-label={`${cued.title}, live`} role="group" className={"grid w-full min-w-0 justify-items-center " + className}>
+                {/* zoom, not a transform, so the part's box, its hit areas and its overlays scale with what is drawn. */}
+                <div className="grid w-full min-w-0 justify-items-center" style={scale === 1 ? undefined : { zoom: scale }}>
+                  <PreviewContext.Provider value="tile">
+                    <Suspense fallback={null}>
+                      <cued.Component />
+                    </Suspense>
+                  </PreviewContext.Provider>
+                </div>
+              </div>
+            ) : null,
           compact,
         }
       : null;
@@ -311,7 +322,7 @@ function Loaded({ material, dark, lead, actions }: Props) {
               </div>
             </div>
           ) : body.Home && homeProps ? (
-            <div data-play-take="home" className="h-full min-h-0">
+            <div data-play-take="home" data-play-home="body" className="h-full min-h-0">
               <body.Home {...homeProps} />
             </div>
           ) : (
@@ -395,7 +406,7 @@ const FLAT_HOME = {
 function HomeView({ material, takes, total, groups, open }: { material: Material; takes: Take[]; total: number; groups: number; open: (i: number) => void }) {
   const world = materialOf(material);
   return (
-    <div data-play-take="home" className={"grid h-full min-h-0 content-start gap-8 overflow-auto overscroll-contain p-6 sm:p-10 " + FLAT_HOME.view}>
+    <div data-play-take="home" data-play-home="contract" className={"grid h-full min-h-0 content-start gap-8 overflow-auto overscroll-contain p-6 sm:p-10 " + FLAT_HOME.view}>
       <header className="grid gap-2">
         <h2 className={"text-h3 text-fg " + FLAT_HOME.name}>{world.name}</h2>
         <p className="max-w-[48ch] text-body text-fg-muted">{world.tagline}</p>
