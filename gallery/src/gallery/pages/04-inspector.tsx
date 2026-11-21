@@ -16,12 +16,12 @@ import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 export const meta: PageMeta = {
   id: "inspector",
   title: "Inspector",
-  lede: "A floating panel for tuning one thing live.",
+  lede: "A panel for tuning one thing live.",
   order: 4.06,
   group: "Tools",
   verbs: ["drag", "press"],
   summary:
-    "A floating glass panel for tuning one thing live, built from litt's own controls: groups that fold, versions you save and go back to, a check against your rules with a Fits or Change row each, and Copy tokens. Put a Slider, a Switch, a Pad, a Spring editor or a Curve editor in each group. The chevrons turn on the responsive tier and a group's body snaps open and fades in; nothing animates a height.",
+    "A panel for tuning one thing live, built from litt's own controls: groups that fold, versions you save and go back to, a check against your rules with a Fits or Change row each, and Copy tokens. Put a Slider, a Switch, a Pad, a Spring editor or a Curve editor in each group. The chevrons turn on the responsive tier and a group's body snaps open and fades in; nothing animates a height.",
   tiers: ["responsive"],
 };
 
@@ -58,7 +58,7 @@ const [card, setCard] = useState(DEFAULT);
     "A settings page people visit to set preferences. Use a Form with Switches and Selects in the page itself.",
     "The motion of litt's own interface. Its springs and radii are tokens in tokens.css; tune them on the Playground and lock them there.",
     "One control. Put the Slider or the Spring editor beside what it changes.",
-    "A panel the person must not lose. The inspector folds to its header and floats over the page; a form that has to be finished belongs in a dialog.",
+    "A panel the person must not lose. The inspector folds to its header and sits over the page; a form that has to be finished belongs in a dialog.",
   ],
   keyboard: [
     [["Tab"], "Moves through the header's buttons, the version list and Save, each group's row and the controls inside it."],

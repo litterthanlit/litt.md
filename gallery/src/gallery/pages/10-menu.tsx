@@ -32,7 +32,7 @@ export const meta: PageMeta = {
   order: 5.04, group: "Overlays",
   verbs: ["open", "select"],
   summary:
-    "A glass dropdown with one highlight that glides from row to row. It grows from its trigger and travels from the side it really opens on. On a phone a submenu replaces the list in the same panel.",
+    "A dropdown of actions with one highlight that follows the keys and the pointer. It opens from its trigger, on the side it really opens on. On a phone a submenu replaces the list in the same panel.",
   summaryByWorld: {
     heat: "A square slab of actions in a 1px line. The row under the keys or the pointer takes a darker cell, corner brackets and lit words, and nothing glides between rows. It slides out from the side it really opens on and never grows. On a phone a submenu replaces the list in the same slab.",
   },
@@ -109,7 +109,7 @@ import {
     "Radix supplies the roles: menu, menuitem, menuitemcheckbox, menuitemradio and separator. Checkbox and radio rows set aria-checked, and the check mark shows it too, so the state is never color alone.",
     "The menu takes its name from label, or from its trigger when there is no label. An icon-only trigger needs its own aria-label either way.",
     "The menu is modal. Focus stays inside it, the rest of the page is inert and hidden from screen readers, and Esc or a choice returns focus to the trigger.",
-    "Rows keep real DOM focus, and the gliding highlight is aria-hidden, so a screen reader hears the row and never the highlight. A pointer open lights nothing until the pointer moves. A keyboard open lights the first row with an inset 1px focus ring, because a faint fill alone is too weak to see.",
+    "Rows keep real DOM focus, and the highlight is aria-hidden, so a screen reader hears the row and never the highlight. A pointer open lights nothing until the pointer moves. A keyboard open lights the first row with an inset 1px focus ring, because a faint fill alone is too weak to see.",
     "Rows are 44px tall. The icon or check sits in a fixed 16px cell, so toggling an option never shifts a label.",
     "The shortcut prop is text only. It does not bind the key, so wire the real shortcut yourself. A screen reader reads the hint after the label. On touch screens the hint is hidden, so a shortcut must never be the only way to reach an action.",
     "A disabled row is skipped by the arrow keys. If the reason is not obvious, say it in text elsewhere.",

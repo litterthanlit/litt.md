@@ -10,7 +10,7 @@ export const meta: PageMeta = {
   lede: "The key cap for a real shortcut.",
   order: 1.03, group: "Actions",
   summary:
-    "The key cap for a real shortcut: the smallest raised block, 20px tall, in Geist. It is a real <kbd>, it is static, and every shortcut hint in the gallery is this one component.",
+    "The key cap for a real shortcut: the smallest key, 20px tall. It is a real <kbd>, it is static, and every shortcut hint in the gallery is this one component.",
   tiers: [],
 };
 
@@ -53,7 +53,7 @@ import { Kbd } from "@/components/kbd";
     "A shortcut is an extra, never the only way. The action it runs must also be reachable with a plain Tab and Enter.",
     "Hints are for people with a keyboard. On a phone they take room and teach nothing, so hide them there when space is tight.",
     "Fg-subtle on the block reaches 4.5:1 in light and dark, at the 12px caption size.",
-    "In forced colors the cap keeps a real border, so it is still a key without its cast.",
+    "In forced colors it keeps a real border, so it still reads as a key.",
     "Nothing moves, so there is nothing to reduce under reduced motion.",
   ],
 };
