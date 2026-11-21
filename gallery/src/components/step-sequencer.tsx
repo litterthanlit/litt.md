@@ -16,7 +16,7 @@
  *   step, Enter or Space toggles the step. Tab leaves the grid. The beat ruler above it is drawn for the eye only.
  * - Zero `--accent` fills (R6).
  */
-import { useEffect, useId, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
+import { useEffect, useId, useRef, useState, type CSSProperties, type KeyboardEvent, type ReactNode } from "react";
 import { Button } from "@/components/button";
 
 export type StepHue = "amber" | "blue" | "teal" | "violet" | "rose";
@@ -213,11 +213,12 @@ export function StepSequencer({
             const c = cellOf(e.target);
             if (c && (c.r !== stop.r || c.c !== stop.c)) setStop(c);
           }}
+          style={{ "--seq-steps": STEPS } as CSSProperties}
           className={
             "grid min-w-[17rem] gap-1 sm:min-w-[22rem] sm:gap-1.5 " +
-            /* The lane's name, then the STEPS (8) steps. Under a finger each step keeps 44px, and the grid scrolls sideways
-               inside its panel instead of shrinking them. */
-            "grid-cols-[minmax(3.25rem,4.5rem)_repeat(8,minmax(1.375rem,1fr))] pointer-coarse:grid-cols-[minmax(3.25rem,4.5rem)_repeat(8,minmax(2.75rem,1fr))]"
+            /* The lane's name, then STEPS steps (`--seq-steps`, so the columns follow the constant). Under a finger each step
+               keeps 44px, and the grid scrolls sideways inside its panel instead of shrinking them. */
+            "grid-cols-[minmax(3.25rem,4.5rem)_repeat(var(--seq-steps),minmax(1.375rem,1fr))] pointer-coarse:grid-cols-[minmax(3.25rem,4.5rem)_repeat(var(--seq-steps),minmax(2.75rem,1fr))]"
           }
         >
           {/* Step index ruler, for the eye: each step's name says its number */}
