@@ -17,11 +17,12 @@
  *   top (Index, as an iPod's Menu), Every component below (the world's gallery view) and Play at its centre, a key (`key`)
  *   in a well cut through the cap, that latches down while it plays. Keys, a pick and Play turn it too, so it always
  *   stands at the take showing. Radii nest: the well at --radius-well, the glass 4px in, the chip at --radius-chip.
- * - The dial says what its edges do (plans/audits/device.md, finding 6): under the hand or on focus, an edge's word shows
- *   in the readout's own chip (`chip`), set under the collar on the plate, PREVIOUS, NEXT, INDEX or EVERY COMPONENT. It
- *   switches on and off where it stands, as the chip does, and is hidden from screen readers, which hear the edge's own
- *   name from the contract. A chip, not the Tooltip part: a tooltip is a panel that floats over the page, and Device's
- *   words for a state are the chip's.
+ * - The dial says what its edges do (plans/audits/device.md, finding 6): under the pointer, an edge's word shows in the
+ *   readout's own chip (`chip`), set under the collar on the plate, PREVIOUS, NEXT, INDEX or EVERY COMPONENT. It
+ *   switches on and off where it stands, as the chip does, and is hidden from screen readers. The edges take no Tab
+ *   stop (the contract gives them tabIndex -1), so the keyboard never shows a legend: keyboard and screen reader users
+ *   get the same names from the contract, on the edges' labels and the selector's keys. A chip, not the Tooltip part:
+ *   a tooltip is a panel that floats over the page, and Device's words for a state are the chip's.
  * - At a short window (a laptop's 768 or 800) the screen keeps SCREEN_HEIGHT's 30rem floor and the deck gives up height
  *   instead: a lower tape, a smaller dial and tighter margins, so the frame and the whole dial stay in the first screen
  *   (finding 6). At 1366 by 768 the frame ends at the window's foot. The command menu's list is capped there so its
@@ -257,13 +258,13 @@ function RecorderMute({ compact = false, className = "" }: { compact?: boolean; 
 
 const DETENT = 15; // degrees of turn per component, as the player's dial clicks
 
-/* An edge's word, in the readout's chip, under the collar: shown while that edge is under the hand or has focus. Each
+/* An edge's word, in the readout's chip, under the collar: shown while that edge is under the pointer. Each
    rule is its own string, so no two classes on one chip set the same property under the same variant. */
 const LEGEND_ON = {
-  prev: "group-has-[[data-side=prev]:is(:hover,:focus-visible)]/dial:flex",
-  next: "group-has-[[data-side=next]:is(:hover,:focus-visible)]/dial:flex",
-  up: "group-has-[[data-side=up]:is(:hover,:focus-visible)]/dial:flex",
-  down: "group-has-[[data-side=down]:is(:hover,:focus-visible)]/dial:flex",
+  prev: "group-has-[[data-side=prev]:hover]/dial:flex",
+  next: "group-has-[[data-side=next]:hover]/dial:flex",
+  up: "group-has-[[data-side=up]:hover]/dial:flex",
+  down: "group-has-[[data-side=down]:hover]/dial:flex",
 } as const;
 const legend =
   "pointer-events-none absolute top-[calc(100%+0.25rem)] left-1/2 z-10 hidden -translate-x-1/2 items-center whitespace-nowrap rounded-chip bg-chip px-1.5 py-0.5 " +

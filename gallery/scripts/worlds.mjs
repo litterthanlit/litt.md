@@ -97,6 +97,14 @@ const ownParts = (world) => WORLD_ONLY.filter((p) => p.worlds.includes(world.id)
 const NOT_CLAIMS = {
   device: ["orange as its own accent", "As Press", "dark LCD screens for panels and overlays"],
 };
+/** The claims a text makes, each matched as whole words, any case and across a line break: "As Press" is not "was
+    pressed". */
+const claimsIn = (id, text) =>
+  (NOT_CLAIMS[id] ?? []).filter((w) => new RegExp(`\\b${w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/ /g, "\\s+")}\\b`, "i").test(text));
+if (claimsIn("device", "The key was pressed.").length || !claimsIn("device", "Shaped as press is.").length) {
+  console.error("worlds: NOT_CLAIMS matches a word inside another, or misses a whole one.");
+  process.exit(1);
+}
 const FOUNDATIONS = [["color", "Color"], ["type", "Type"], ["light", "Light"], ["shape", "Shape"], ["motion", "Motion"]];
 
 const types = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".svg": "image/svg+xml", ".json": "application/json", ".woff2": "font/woff2", ".md": "text/markdown", ".txt": "text/plain" };
@@ -191,13 +199,18 @@ async function audit(world, size, scheme, mutate) {
   const copy = pg.getByRole("button", { name: "Copy prompt" });
   if (size.width >= 1280 && (await copy.isVisible())) {
     await copy.click();
-    said.push({ what: "its Copy prompt", text: await pg.evaluate(() => navigator.clipboard.readText()) });
+    /* The write is a promise the click starts: read the clipboard until it holds the prompt, up to 3s. */
+    const prompt = await pg
+      .waitForFunction(() => navigator.clipboard.readText().then((t) => t || null), null, { timeout: 3000, polling: 100 })
+      .then((h) => h.jsonValue())
+      .catch(() => "");
+    said.push({ what: "its Copy prompt", text: prompt });
   }
   for (const { what, text } of said) {
-    const hits = (NOT_CLAIMS[world.id] ?? []).filter((w) => text.toLowerCase().includes(w.toLowerCase()));
+    const hits = claimsIn(world.id, text);
     claim("a world's page and its Copy prompt claim nothing that world may not (NOT_CLAIMS)", hits.length ? `${where}: ${what} says ${hits.map((h) => `"${h}"`).join(", ")}` : null);
   }
-  if (size.width >= 1280) claim("a world's Copy prompt can be read back from the clipboard", said.length === 2 ? null : `${where}: no Copy prompt in the rail`);
+  if (size.width >= 1280) claim("a world's Copy prompt can be read back from the clipboard", said.length === 2 && said[1].text ? null : `${where}: ${said.length === 2 ? "the clipboard stayed empty after Copy prompt" : "no Copy prompt in the rail"}`);
 
   claim("a world page has one main and one h1", r.mains === 1 && r.h1s === 1 ? null : `${where}: ${r.mains} mains, ${r.h1s} h1s`);
   claim("a world's page wears the world: its data-material on <html> (none for Press)", r.material === attr ? null : `${where}: data-material is ${r.material ?? "absent"} (want ${attr ?? "absent"})`);
