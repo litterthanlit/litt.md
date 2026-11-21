@@ -3,15 +3,16 @@
  * median build time. Compose a row of them in a StatGroup.
  *
  * - Bodies (proposals/worlds.md): this file resolves the state once into StatBodyProps and renders the body the
- *   material picks (byWorld). Press, here, is a plate (--block, --plate-lift) with the label along its top and the
- *   figure on a raised face set into it (--block, --block-lift). Flat (worlds/flat/stat.tsx) is the figure in ink on
+ *   material picks (byWorld). Press, here, is a calm surface (.litt-raised: hairline and top highlight, zero cast)
+ *   with the quiet label along its top and the figure standing directly on the stone in text-figure (no raised
+ *   button box around a read-only number). Flat (worlds/flat/stat.tsx) is the figure in ink on
  *   the page with no box. Device (worlds/device/stat.tsx) is a plate with the label engraved above an LCD window that
  *   shows the figure in seven segments. Rack (worlds/rack/stat.tsx) is a panel with a value box (a light cut in the
  *   control line) for the figure and the delta as a small flat key. Never glass (R3), never an accent rail. A tile links nowhere, so it has no
  *   hover and no motion.
- * - Type: the label is the small size in fg-subtle, the value is the h3 size in fg in the sans with tabular
- *   numbers (a figure that updates does not wobble), and a unit follows the value at the same size in fg-subtle.
- *   The value carries the title weight that comes with the h3 step, and the label stays at the text weight (R8).
+ * - Type: the label is the small size in fg-subtle, the value is the figure step (18px in Press, 40px in Flat) in fg
+ *   in the sans with tabular numbers (a figure that updates does not wobble), and a unit follows the value at the same
+ *   size in regular fg-subtle. The value carries the title weight, and the label and delta stay at the text weight (R8).
  * - Delta: a word and the number ("Up 12% on last week") at the caption size. The word says the direction. The
  *   color says whether it is news: success for good, danger for bad, fg-subtle for neither. Hidden text repeats
  *   the judgment ("good news"), so color is never the only signal. No arrow glyph, no dot.
@@ -81,18 +82,22 @@ export type StatBodyProps = {
   className: string;
 };
 
-/** Press: a plate, the label along its top, the figure on a raised face set into it. */
+/** Press: a calm warm-stone surface (.litt-raised), the label quiet along the top, and the figure standing directly on it with no raised button box. */
 function PressBody({ label, figure, unit, delta, toneClass, toneWord, trend, className }: StatBodyProps) {
   return (
-    <div data-body="press" className={"flex h-full min-w-0 flex-col gap-3 rounded-surface bg-block p-4 shadow-(--plate-lift) forced-colors:border @min-[48rem]:p-6 " + className}>
-      <dt className="text-small text-fg-subtle">{label}</dt>
-      <dd className="m-0 flex flex-1 flex-col gap-2">
-        <span className="w-fit rounded-control bg-block px-3 py-2 text-h3 tabular-nums text-fg shadow-(--block-lift) forced-colors:border">
+    <div
+      data-body="press"
+      data-part="surface"
+      className={"litt-raised flex h-full min-w-0 flex-col gap-1.5 rounded-surface p-4 forced-colors:border @min-[48rem]:p-5 " + className}
+    >
+      <dt data-part="lettering" className="text-small text-fg-subtle">{label}</dt>
+      <dd className="m-0 flex flex-1 flex-col gap-1.5">
+        <span data-part="lettering" className="text-figure tabular-nums text-fg">
           {figure}
-          {unit && <span className="text-fg-subtle">{unit}</span>}
+          {unit && <span className="font-normal text-fg-subtle">{unit}</span>}
         </span>
         {delta && (
-          <span className={"text-caption " + toneClass}>
+          <span data-part="lettering" className={"text-caption font-normal " + toneClass}>
             {delta}
             <span className="sr-only">{toneWord}</span>
           </span>

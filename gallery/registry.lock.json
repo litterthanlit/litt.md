@@ -479,8 +479,8 @@
       "hash": "1925454f8d693be6"
     },
     "device-stat": {
-      "version": "2026.11.16",
-      "hash": "ef537258ea7ea509"
+      "version": "2026.11.20",
+      "hash": "91724af970e7eff0"
     },
     "device-states": {
       "version": "2026.11.18",
@@ -903,8 +903,8 @@
       "hash": "1925454f8d693be6"
     },
     "flat-stat": {
-      "version": "2026.11.18",
-      "hash": "7b4124f734be8536"
+      "version": "2026.11.20",
+      "hash": "8f8a8ee97849530e"
     },
     "flat-states": {
       "version": "2026.11.18",
@@ -1327,8 +1327,8 @@
       "hash": "1925454f8d693be6"
     },
     "heat-stat": {
-      "version": "2026.11.19",
-      "hash": "9f3b00c43544b5bf"
+      "version": "2026.11.20",
+      "hash": "163840d37f10dd4a"
     },
     "heat-states": {
       "version": "2026.11.18",
@@ -1803,8 +1803,8 @@
       "hash": "1925454f8d693be6"
     },
     "plain-stat": {
-      "version": "2026.11.16",
-      "hash": "eb373e3c3fc672b0"
+      "version": "2026.11.20",
+      "hash": "335deb639322c24b"
     },
     "plain-states": {
       "version": "2026.11.18",
@@ -2207,8 +2207,8 @@
       "hash": "1925454f8d693be6"
     },
     "press-stat": {
-      "version": "2026.11.16",
-      "hash": "eb373e3c3fc672b0"
+      "version": "2026.11.20",
+      "hash": "335deb639322c24b"
     },
     "press-states": {
       "version": "2026.11.18",
@@ -2619,8 +2619,8 @@
       "hash": "1925454f8d693be6"
     },
     "rack-stat": {
-      "version": "2026.11.16",
-      "hash": "c67cf96c7c7c988f"
+      "version": "2026.11.20",
+      "hash": "517e9ca087ce0367"
     },
     "rack-states": {
       "version": "2026.11.18",
@@ -2783,8 +2783,8 @@
       "hash": "1925454f8d693be6"
     },
     "stat": {
-      "version": "2026.11.19",
-      "hash": "5f95cc1ea6d57159"
+      "version": "2026.11.20",
+      "hash": "922c81378381e846"
     },
     "states": {
       "version": "2026.11.18",
