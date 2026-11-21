@@ -288,13 +288,23 @@ function RackHome({ takes, current, list, row, everything, part, compact }: Play
   const runs = sessionOf(takes);
   const panel = useRef<HTMLDivElement>(null);
   const [box, setBox] = useState({ width: 0, height: 0 });
-  useEffect(() => {
+  /* The panel's content box. Seeded here, in a layout effect, so the re-render at the real size happens before the
+     first paint (an observer's first callback lands after it, and its update with it, so the part would paint once
+     at the smallest scale and then grow); the observer takes over from there. */
+  useLayoutEffect(() => {
     const p = panel.current;
-    if (!p || typeof ResizeObserver === "undefined") return;
-    const seen = new ResizeObserver(([e]) => {
-      const next = { width: Math.round(e.contentRect.width), height: Math.round(e.contentRect.height) };
+    if (!p) return;
+    const keep = (width: number, height: number) => {
+      const next = { width: Math.round(width), height: Math.round(height) };
       setBox((b) => (b.width === next.width && b.height === next.height ? b : next));
-    });
+    };
+    const s = getComputedStyle(p);
+    keep(
+      p.clientWidth - parseFloat(s.paddingLeft) - parseFloat(s.paddingRight),
+      p.clientHeight - parseFloat(s.paddingTop) - parseFloat(s.paddingBottom),
+    );
+    if (typeof ResizeObserver === "undefined") return;
+    const seen = new ResizeObserver(([e]) => keep(e.contentRect.width, e.contentRect.height));
     seen.observe(p);
     return () => seen.disconnect();
   }, [compact]);
