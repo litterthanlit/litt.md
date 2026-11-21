@@ -22,11 +22,22 @@
  * - No fill in the ink (it is Flat's accent): the take on the screen holds the view's one primary action (R6).
  * - The caption, the selector and Play sit above the screen at every width, in the DOM and on screen, so focus runs as
  *   the eye reads: the top row, the selector, Play, then the screen (finding 6, as Heat's body does).
+ *
+ * Index, inside the screen, is a table of pills on the ground (plans/audits/flat.md, finding 2; flat-fixes.md, The front
+ * door): the grey ground as a rounded table on the sheet, the set on it as white pills in two columns, each a part's
+ * name, and the pill under the keys or the pointer in the ink (what is on). Beside the table, on the sheet, that pill's
+ * part stands live at one and a half times its size (one and a quarter on a short screen) with its line under it,
+ * springing up on Flat's expressive spring (0.28) each time the hand moves to another pill; nothing moves on load and,
+ * under reduced motion, it simply appears.
+ * Color arrives with the part: the table is grey, white and the ink, and holds no accent fill, so the view's one is the
+ * part's own. On a phone the table is the whole screen and stands alone (`phonePart` "none"): a touch on a pill opens
+ * its take, so a live part above would only push the set down. The contract owns the list, its keys, the pick and the
+ * link (FlatHome only draws).
  */
-import { useEffect, useId, useRef } from "react";
+import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { LayoutGroup, motion } from "motion/react";
-import { useTransition } from "@/motion";
-import type { PlayObjectBody, PlayObjectBodyProps } from "../body";
+import { useMotionDial, useTransition, useTravel } from "@/motion";
+import type { PartScale, PlayObjectBody, PlayObjectBodyProps, PlayObjectHomeProps } from "../body";
 import { COMPACT_BOX, COMPACT_SCREEN, SCREEN_HEIGHT } from "../body";
 
 /* A pill in the row: the words in the quiet ink, the ink under a hand or when chosen. */
@@ -148,9 +159,103 @@ function FlatBody({ takes, at, selector, pick, index, play, readout, screen, com
   );
 }
 
+/* A cell of Index's table: the whole cell is the button, so cells touch and a pointer between two pills is on one
+   (test:gaps); the pill is drawn inside it. */
+const CELL =
+  "group/cell litt-target relative grid w-full min-w-0 cursor-pointer p-1 text-left outline-none select-none";
+/* The pill: white on the ground (paper), its name at body size. */
+const TABLE_PILL =
+  "flex h-control-sm min-w-0 items-center rounded-control px-4 text-body whitespace-nowrap " +
+  "transition-colors duration-(--dur-instant) ease-litt pointer-coarse:h-control-md " +
+  "group-focus-visible/cell:outline-2 group-focus-visible/cell:outline-offset-2 group-focus-visible/cell:outline-focus " +
+  "forced-colors:group-focus-visible/cell:outline-[CanvasText]";
+/* The current pill is in the ink, its words in paper. Under forced colors the fills go, so it keeps a Highlight edge
+   inside it and its neighbours none. */
+const PILL_ON = "bg-fg text-(--flat-paper) forced-colors:border-2 forced-colors:border-[Highlight]";
+const PILL_OFF = "bg-(--flat-paper) text-fg";
+
+/** The current pill's part, live, springing up as the hand reaches its pill. Still on the first draw. */
+function LivePart({ id, still, children }: { id: string; still: boolean; children: ReactNode }) {
+  const enter = useTransition("expressive");
+  const travel = useTravel();
+  return (
+    <motion.div
+      key={id}
+      initial={still ? false : { scale: 0.9, y: travel }}
+      animate={{ scale: 1, y: 0 }}
+      transition={enter}
+      className="grid w-full min-w-0 origin-bottom justify-items-center"
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+function FlatHome({ takes, current, list, row, everything, part, compact }: PlayObjectHomeProps) {
+  const { children: words, ...link } = everything;
+  const { reduced } = useMotionDial();
+  /* Nothing moves on load: the first part (and the one shown when Index is reached from a take) is simply there. */
+  const drawn = useRef(false);
+  useEffect(() => void (drawn.current = true), []);
+  /* The part reads as the main thing at one and a half times its size; where the screen is short (a laptop's 30rem) or
+     narrow (a tablet's), at one and a quarter, so the tallest (Card) and the widest still stand whole on it, and at
+     real size where the screen is narrower still. */
+  const box = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState<PartScale>(1.5);
+  useEffect(() => {
+    const el = box.current;
+    if (!el) return;
+    const ro = new ResizeObserver(() => setScale(el.clientWidth < 800 ? 1 : el.clientHeight < 600 || el.clientWidth < 1000 ? 1.25 : 1.5));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [compact]);
+  const take = takes[current];
+  const half = Math.ceil(takes.length / 2);
+  const table = (
+    <div className={"grid min-w-0 content-start gap-3 p-3 " + (compact ? "" : "self-center rounded-surface bg-(--flat-ground)")}>
+      <nav {...list}>
+        {/* Down runs down a column, then on to the next, as the keys move. */}
+        <ul className="grid grid-flow-col grid-cols-2" style={{ gridTemplateRows: `repeat(${half}, auto)` }}>
+          {takes.map((t, i) => (
+            <li key={t.id} className="grid min-w-0">
+              <button {...row(i)} className={CELL}>
+                <span className={TABLE_PILL + " " + (i === current ? PILL_ON : PILL_OFF)}>
+                  <span className="min-w-0 truncate">{t.title}</span>
+                </span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      </nav>
+      <a
+        {...link}
+        className="litt-target relative justify-self-start rounded-control px-4 py-1 text-small text-fg underline decoration-line-strong underline-offset-4 hover:decoration-current focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+      >
+        {words}
+      </a>
+    </div>
+  );
+  if (compact) return <div className="h-full min-h-0 overflow-auto overscroll-contain bg-(--flat-ground)">{table}</div>;
+  return (
+    <div ref={box} className="grid h-full min-h-0 grid-cols-[minmax(0,22rem)_minmax(0,1fr)] gap-6 overflow-auto overscroll-contain p-6">
+      {table}
+      <div className="grid min-h-0 min-w-0 content-center justify-items-center gap-6 py-4">
+        {take && (
+          <LivePart id={take.id} still={reduced || !drawn.current}>
+            {part({ scale })}
+          </LivePart>
+        )}
+        <p className="max-w-[44ch] text-center text-body text-fg-muted">{take?.lede}</p>
+      </div>
+    </div>
+  );
+}
+
 export const flat: PlayObjectBody = {
   name: "flat",
   shape: (compact) => "flat-screen " + (compact ? COMPACT_SCREEN : SCREEN_HEIGHT + " w-full rounded-[var(--object-radius)]"),
   rail: false,
   Body: FlatBody,
+  Home: FlatHome,
+  phonePart: "none",
 };
