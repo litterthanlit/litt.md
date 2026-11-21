@@ -5,7 +5,7 @@
 # The page checks run as a matrix of parallel jobs, each on its own build, so the run takes as long as its slowest
 # shard rather than the sum: in series they take well over an hour. GitHub's free plan runs at most 20 jobs at once, so
 # more shards than that only queue; make a check faster before giving it another shard. A job that grows past about
-# 6 minutes gets rebalanced (a11y.mjs, reduced-motion.mjs, wall.mjs, study.mjs and playground.mjs take --shard k/n).
+# 6 minutes gets rebalanced (a11y.mjs, reduced-motion.mjs, wall.mjs, study.mjs, playground.mjs and jump.mjs take --shard k/n).
 # Read the job's steps before rebalancing: a slow job is often a slow install, not a slow check.
 #
 # a11y.mjs and reduced-motion.mjs deal pages by weight (scripts/shard.mjs): each page weighs the seconds it took last
@@ -112,7 +112,8 @@ jobs:
           # The WCAG regressions and the page checks, each with its self-test, paired to about five minutes a job.
           # One command a line under set -e, so any failure fails the job (a failure inside `a && b` in a loop does not).
           # Seconds of each check on 2026-11-18, with its self-test, to pair them: reflow and forced colors 245, text zoom
-          # and focus 278, corners 317, gaps 276, home 13, worlds 74, materials 115, sound 61, studies 253 and 171.
+          # and focus 278, corners 317, gaps 276, home 13, worlds 74, materials 115, sound 61, studies 253 and 171, and
+          # (2026-11-20, locally) words 75.
           - name: Reflow, forced colors and worlds
             run: |
               set -e
@@ -131,13 +132,26 @@ jobs:
               npm run test:focus --prefix gallery -- --self-test
               npm run test:sound --prefix gallery
               npm run test:sound --prefix gallery -- --self-test
-          - { name: "Corners", run: "npm run test:corners --prefix gallery && npm run test:corners --prefix gallery -- --self-test" }
-          - name: Gaps and home
+          # Jump (every part's page links to Install in its first screen at 390, about 200s in all) rides in halves on the
+          # two lightest jobs, since the matrix is full.
+          - name: Corners, jump 2/2 and targets
+            run: |
+              set -e
+              npm run test:corners --prefix gallery
+              npm run test:corners --prefix gallery -- --self-test
+              npm run test:jump --prefix gallery -- --shard 2/2
+              npm run test:targets --prefix gallery
+              npm run test:targets --prefix gallery -- --self-test
+          - name: Gaps, home, words and jump 1/2
             run: |
               set -e
               npm run test:gaps --prefix gallery
               npm run test:gaps --prefix gallery -- --self-test
               npm run test:home --prefix gallery
+              npm run test:words --prefix gallery
+              npm run test:words --prefix gallery -- --self-test
+              npm run test:jump --prefix gallery -- --shard 1/2
+              npm run test:jump --prefix gallery -- --self-test
           # Each world's player; the self-test opens only the worlds its breaks land in.
           - { name: "Playground", run: "npm run test:playground --prefix gallery && npm run test:playground --prefix gallery -- --self-test" }
           # The wall: every material, size and theme with every tile mounted, one accent fill, nothing sideways or empty.

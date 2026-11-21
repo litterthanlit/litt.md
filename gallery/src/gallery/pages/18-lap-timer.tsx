@@ -36,6 +36,9 @@ export const docs: PageDocs = {
   keyboard: [
     [["Tab"], "Moves across the sector rows and the Start lap, Record split, and Reset buttons."],
     [["Enter", "Space"], "Selects a sector row or activates the focused timer key."],
+    [["S"], "Starts or pauses the lap while focus is inside the part, like Start lap."],
+    [["L"], "Records the next sector split while focus is inside the part, like Record split."],
+    [["R"], "Resets to the reference lap while focus is inside the part, like Reset."],
   ],
   a11y: [
     "Starts paused with reference splits so nothing moves or counts on its own on mount.",

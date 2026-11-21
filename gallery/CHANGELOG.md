@@ -4,14 +4,19 @@ Every change to the litt registry at https://littmd.vercel.app/r/, newest first.
 
 To update an item, read the entries since your version, then reinstall it with `--overwrite`. A **breaking** entry says what to change in your code.
 
-## 2026-11-20 · Press deploy-dashboard identity
+## 2026-11-20 · Press deploy-dashboard identity, and Heat's keycaps are keys
 
 Press identity (plans/024, Press; taste/litt-principles.md, Press): adds three minimal Press-only product/deploy components (`deploy-status`, `env-switch`, `release-rail`) built strictly from Press's warm stone recessed trays, cut-in slots and raised blocks with zero button outlines, brings deploy-dashboard voice demos across `SET.press`, and adds Press to `test:materials`. Nothing changes outside Press.
+
+Heat's audit, finding 11 (plans/audits/heat.md): a keycap under a Heat part named a button, not a key. Now each part answers real keys while focus is inside it, and its foot row shows those keys with the action in words. The buttons stay, and nothing changes outside Heat.
 
 - **added** `deploy-status`, `press-deploy-status`: Deploy status, a tactile deployment pipeline where reached stages rise as stone blocks out of a recessed tray and pending stages stay flush, with Rebuild and Promote keys.
 - **added** `env-switch`, `press-env-switch`: Environment switch, a tactile Production / Preview / Development selector lifting the active target out of a recessed stone tray above its host readout and cut-in load slot.
 - **added** `release-rail`, `press-release-rail`: Release rail, a selectable release history resting inside one recessed stone tray where only the selected commit lifts as a raised block, with Promote to live when inspecting an older deploy.
 - **changed** `stat`, `press-stat`, `flat-stat`, `device-stat`, `plain-stat`, `rack-stat`, `heat-stat`: replaces Press's double-raised fake button box on `Stat` (`PressBody` in `stat.tsx`) with a calm warm-stone surface (`.litt-raised`, zero outer cast), standing `text-figure` (18px) value directly on the stone, and `font-normal` delta caption. Props are unchanged and Flat, Device, Rack and Heat bodies are unchanged.
+- **changed** `pursuit-meter`, `heat-pursuit-meter`: `-` cools down one condition and `+` or `=` raises it, while focus is inside the part and no Ctrl, Alt or Meta is held, doing what Cooldown and Raise heat do, stopping at ×1 and ×5 and announcing each step. The foot row's keycaps read `-` and `+`, the buttons carry `aria-keyshortcuts`, and when a step disables the focused button focus moves to the other one. Props are unchanged.
+- **changed** `lap-timer`, `heat-lap-timer`: `S` starts or pauses the lap, `L` records a split and `R` resets, while focus is inside the part, doing what the three buttons do. The foot row's keycaps read `S`, `L` and `R`, and the buttons carry `aria-keyshortcuts`. Props are unchanged.
+- **fixed** `goal-ring`, `flat-goal-ring`, `reading-progress`, `flat-reading-progress`, `streak`, `flat-streak`, `legend`, `flat-legend`, `rack-legend`, `deploy-status`, `press-deploy-status`, `env-switch`, `press-env-switch`, `release-rail`, `press-release-rail`: on a phone a tap lands on the control under the finger. Each control carried the 44px touch target (`litt-target`) without being positioned, so the target's invisible box grew to the nearest positioned ancestor and one control could take its neighbours' taps. The controls are now `relative`. Nothing looks different and no prop changed.
 
 ## 2026-11-19 · Flat expansion, Rack Ableton identity & Heat complete
 

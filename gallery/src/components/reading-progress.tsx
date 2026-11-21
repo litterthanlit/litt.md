@@ -131,7 +131,7 @@ export function ReadingProgress({
               aria-current={isCurrent ? "step" : undefined}
               aria-label={`Chapter ${i + 1}: ${ch.title}, ${ch.minutes} min${isCurrent ? ", current" : ""}`}
               onClick={() => go(i)}
-              className="litt-target group flex h-6 cursor-pointer items-center rounded-pill focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+              className="litt-target relative group flex h-6 cursor-pointer items-center rounded-pill focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
             >
               <motion.span
                 aria-hidden="true"

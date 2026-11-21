@@ -8,10 +8,15 @@
  * - Shows Heat condition (`×1` through `×5`), status in plain words (`Cooldown`, `Active`, `Evade`, `Busted`, never
  *   color alone, R5), tabular bounty readout, and a 16-dash amber pursuit meter (`role="meter"`) that steps across
  *   levels (turning `--danger` on `Busted` or condition `×5` while the word says so).
- * - Optional interactive controls (`Step heat`, `Cooldown`) let a player or tester drive condition levels directly;
+ * - Optional interactive controls (`Cooldown`, `Raise heat`) let a player or tester drive condition levels directly;
  *   every change announces once in a polite status region. Zero accent fills (R6) and zero auto-animation on mount.
+ * - Keys (heat-fixes, Track D): while focus is inside the part, `-` cools down one condition and `+` or `=` raises it,
+ *   doing exactly what the two buttons do and stopping at their disabled ends. The handler sits on the part, not the
+ *   window; it ignores a held Ctrl, Alt or Meta (so browser zoom keeps its keys) and a key typed into a text field.
+ *   The foot row shows those real keys with the action in words, and each button names its key in aria-keyshortcuts.
+ *   When a step disables the focused button, focus moves to the other one so it never falls to the page.
  */
-import { useId, useState, type ReactNode } from "react";
+import { useId, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import { Button } from "@/components/button";
 import { Kbd } from "@/components/kbd";
 import { Tag, type TagStatus } from "@/components/tag";
@@ -35,7 +40,7 @@ export type PursuitMeterProps = {
   bountyLabel?: string;
   /** Optional count of pursuing units shown in the telemetry footer. */
   units?: number;
-  /** Show interactive Raise heat / Cooldown controls under the meter. Defaults to true. */
+  /** Show the Cooldown and Raise heat buttons under the meter and answer their keys while focus is inside the part: `-` cools down one condition, `+` or `=` raises it. Defaults to true. */
   interactive?: boolean;
   /** Extra classes on the outer container. */
   className?: string;
@@ -70,6 +75,12 @@ const STATUS_META: Record<PursuitStatus, { word: string; tag: TagStatus }> = {
 };
 
 const clampLevel = (n: number) => Math.max(1, Math.min(5, Math.round(n)));
+const KEY_STEP: Record<string, number> = { "-": -1, "+": 1, "=": 1 };
+
+/** A key typed into a text field is the field's, never the part's. */
+const isTyping = (t: EventTarget) =>
+  t instanceof HTMLElement && (t.isContentEditable || t.matches("input, textarea, select"));
+
 const groupDigits = (n: number) => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 
 /** Heat's pursuit condition and bounty readout: striped bracketed slab with a 16-dash heat meter. */
@@ -88,6 +99,8 @@ export function PursuitMeter({
   const titleId = useId();
   const [innerLevel, setInnerLevel] = useState(() => clampLevel(defaultLevel));
   const [live, setLive] = useState("");
+  const downRef = useRef<HTMLButtonElement>(null);
+  const upRef = useRef<HTMLButtonElement>(null);
 
   const level = clampLevel(levelProp ?? innerLevel);
   const status: PursuitStatus = statusProp ?? (level === 1 ? "cooldown" : level === 5 ? "evade" : "active");
@@ -103,10 +116,20 @@ export function PursuitMeter({
     if (levelProp === undefined) setInnerLevel(clamped);
     onLevelChange?.(clamped);
     setLive(`Heat level ×${clamped}, ${LEVEL_NAMES[clamped]}.`);
+    /* The end's button is about to be disabled: hand its focus to the other one. */
+    if (clamped === 1 && document.activeElement === downRef.current) upRef.current?.focus();
+    if (clamped === 5 && document.activeElement === upRef.current) downRef.current?.focus();
+  }
+
+  function onKey(e: KeyboardEvent<HTMLDivElement>) {
+    const step = KEY_STEP[e.key];
+    if (!step || e.ctrlKey || e.altKey || e.metaKey || e.nativeEvent.isComposing || isTyping(e.target)) return;
+    e.preventDefault();
+    stepTo(level + step);
   }
 
   return (
-    <div data-body="heat" className={"grid w-full min-w-0 gap-3 p-2 " + className}>
+    <div data-body="heat" onKeyDown={interactive ? onKey : undefined} className={"grid w-full min-w-0 gap-3 p-2 " + className}>
       <div className="relative min-w-0">
         <span aria-hidden="true" className={FRAME} />
         <div className="grid min-w-0 border border-line-strong bg-canvas forced-colors:border">
@@ -175,10 +198,10 @@ export function PursuitMeter({
               </span>
               {interactive && (
                 <div className="flex items-center gap-1.5">
-                  <Button size="sm" variant="secondary" disabled={level <= 1} onClick={() => stepTo(level - 1)}>
+                  <Button ref={downRef} size="sm" variant="secondary" disabled={level <= 1} aria-keyshortcuts="-" onClick={() => stepTo(level - 1)}>
                     Cooldown
                   </Button>
-                  <Button size="sm" variant="secondary" disabled={level >= 5} onClick={() => stepTo(level + 1)}>
+                  <Button ref={upRef} size="sm" variant="secondary" disabled={level >= 5} aria-keyshortcuts="+ =" onClick={() => stepTo(level + 1)}>
                     Raise heat
                   </Button>
                 </div>
@@ -193,12 +216,12 @@ export function PursuitMeter({
       {interactive && (
         <div aria-hidden="true" className="flex flex-wrap items-center gap-x-4 gap-y-1 text-caption text-fg-muted">
           <span className="inline-flex items-center gap-1.5">
-            <Kbd>Cooldown</Kbd>
-            <span>Drop condition</span>
+            <Kbd>-</Kbd>
+            <span>Cooldown</span>
           </span>
           <span className="inline-flex items-center gap-1.5">
-            <Kbd>Raise heat</Kbd>
-            <span>Escalate pursuit</span>
+            <Kbd>+</Kbd>
+            <span>Raise heat</span>
           </span>
         </div>
       )}

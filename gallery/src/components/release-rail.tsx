@@ -100,7 +100,7 @@ export function ReleaseRail({
               data-part={isSelected ? "block" : "tray"}
               onClick={() => select(entry)}
               className={
-                "litt-target flex min-h-control-md w-full min-w-0 cursor-pointer items-center justify-between gap-3 rounded-control px-3 py-2 text-left select-none " +
+                "litt-target relative flex min-h-control-md w-full min-w-0 cursor-pointer items-center justify-between gap-3 rounded-control px-3 py-2 text-left select-none " +
                 "transition-[background-color,color,box-shadow,transform] duration-(--dur-instant) ease-litt " +
                 "active:[transform:translateY(var(--press-depth))] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus forced-colors:border " +
                 (isSelected
@@ -135,7 +135,7 @@ export function ReleaseRail({
             data-part="block"
             onClick={promote}
             className={
-              "litt-target inline-flex h-control-sm cursor-pointer items-center justify-center rounded-control bg-block px-3 text-caption font-title text-fg select-none " +
+              "litt-target relative inline-flex h-control-sm cursor-pointer items-center justify-center rounded-control bg-block px-3 text-caption font-title text-fg select-none " +
               "shadow-[var(--highlight),var(--block-lift)] transition-[background-color,box-shadow,transform] duration-(--dur-instant) ease-litt " +
               "hover:bg-(--block-hover) active:shadow-(--block-press) active:[transform:translateY(var(--press-depth))] " +
               "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus forced-colors:border"

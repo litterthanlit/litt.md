@@ -6,7 +6,7 @@
  * (meta.worlds) are among them. The Blocks, the world pages and the site's pages are not.
  */
 import type { ComponentType } from "react";
-import { PAGE_GROUPS } from "../kit";
+import { lineIn, PAGE_GROUPS } from "../kit";
 import type { Material } from "../look";
 import { inWorld, pages, type PageEntry } from "../registry";
 
@@ -14,7 +14,7 @@ export type Take = {
   /** The component's page id: its anchor in the world, #device/button. */
   id: string;
   title: string;
-  /** The page's one line, for Details and Home. */
+  /** The page's one line in this world (lineIn: its ledeByWorld, or the shared lede), for Details and Home. */
   lede: string;
   /** The page's group. */
   group: string;
@@ -32,7 +32,7 @@ const SET: Record<Material, string[]> = {
   device: ["composer", "agent-indicator", "tool-call", "message", "seven-segment", "tape-progress", "switch", "slider", "gauge", "copy-button", "button", "command-menu"],
   plain: ["form", "input", "select", "checkbox", "button", "table", "details", "callout", "breadcrumb", "pagination", "tabs", "dialog"],
   rack: ["clip-launcher", "device-rack", "step-sequencer", "slider", "curve-editor", "pad", "time-scrubber", "inspector", "number-field", "segmented", "switch", "button"],
-  heat: ["pursuit-meter", "tune-menu", "lap-timer", "menu", "tabs", "segmented", "button", "slider", "stat", "progress", "table", "toast"],
+  heat: ["pursuit-meter", "lap-timer", "tune-menu", "menu", "tabs", "segmented", "button", "slider", "stat", "progress", "table", "toast"],
 };
 
 /** Every component page in the world, in the sidebar's order. */
@@ -48,7 +48,7 @@ export function takesOf(material: Material): Take[] {
   const parts = partsOf(material);
   got = SET[material].flatMap((id) => {
     const p = parts.find((q) => q.id === id);
-    return p ? [{ id: p.id, title: p.title, lede: p.lede, group: p.group!, Component: p.Component }] : [];
+    return p ? [{ id: p.id, title: p.title, lede: lineIn(p, "lede", material), group: p.group!, Component: p.Component }] : [];
   });
   taken.set(material, got);
   return got;

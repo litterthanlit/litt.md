@@ -10,13 +10,20 @@ export const meta: PageMeta = {
   id: "button",
   title: "Button",
   lede: "The action, answered without moving its box.",
+  ledeByWorld: { heat: "A square key whose corner brackets snap on under the hand." },
   order: 1.01, group: "Actions",
   verbs: ["press"],
   summary: "Roomy and slightly rounded, with the label at the title weight. Under Press, secondary is a block raised once by its cast, with no outline, and danger is the same block with red words. Hover changes the fill on the instant tier, and a press sinks the block half a pixel, so the button answers without ever changing its size.",
+  summaryByWorld: {
+    heat: "A square key with the label at the title weight. Primary is the one accent fill; secondary is a flat cell in a 1px line, and danger the same cell with red words. Hover steps the fill and four corner brackets snap on, on the instant tier, and a press draws the key in a touch on the frame, so the button answers without ever changing its size.",
+  },
   fun: "Press and let go: the button goes deeper and springs back with a little life.",
   tiers: ["instant"],
   mechanism:
     "Hover swaps the fill on the instant tier, 100ms. A press sinks the block half a pixel and tightens its cast at once, with no fade, so the hand feels it land. The box never changes size: loading keeps the label mounted at opacity 0 and the spinner turns inside the same width. Reduced motion sets the sink to 0 and the fill still answers. Each world has its own body, so the hand feels each differently. In Press the hand meets a block standing on the surface: its cast tightens and the label drops half a pixel. In Flat there is no block to push: the pill goes a step darker under the hand and does not move, like pressing paper, and a ghost is words alone. In Device the hand meets a key: the face sinks the whole 2px onto its skirt, which is the travel of a real key, and a ghost button sinks into a well.",
+  movesByWorld: {
+    heat: "Hover steps the fill and snaps four corner brackets onto the key on the instant tier, 100ms, and keyboard focus brings the brackets too. A press answers on the frame: the key draws in to 98% of its size, with no depth to push into. The box keeps its size: loading keeps the label in place at opacity 0 and the spinner turns inside the same width. Reduced motion holds the key at full size, and the fill and the brackets still answer.",
+  },
 };
 
 export const docs: PageDocs = {

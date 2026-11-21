@@ -196,7 +196,7 @@ export function Streak({
                 onFocus={() => setInspectIdx(i)}
                 onBlur={() => setInspectIdx((cur) => (cur === i ? null : cur))}
                 className={
-                  "litt-target block h-10 w-full cursor-pointer rounded-pill transition-colors duration-(--dur-instant) ease-litt [-webkit-tap-highlight-color:transparent] " +
+                  "litt-target relative block h-10 w-full cursor-pointer rounded-pill transition-colors duration-(--dur-instant) ease-litt [-webkit-tap-highlight-color:transparent] " +
                   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus " +
                   (slot.done
                     ? "forced-colors:border forced-colors:bg-[CanvasText]!"

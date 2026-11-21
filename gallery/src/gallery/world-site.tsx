@@ -4,7 +4,7 @@
  * litt.design/systems/.
  *
  * - #device: the player alone (play-object/contract.tsx), its screen running the world's set. Its top row is Home, the
- *   world's name, Components and About, then Index, Details and Source.
+ *   world's name, Components and About, then Index, Details and Page.
  * - #device/components: the world's gallery view (world-gallery.tsx), every component in the world as a live tile.
  * - #device/<component>: that component's page, drawn in the world, with a row back to the player.
  * - #device/about: the world's system page (world.tsx): its scenes, foundations, Only here and Install.
@@ -31,7 +31,7 @@ import { SoundPage } from "./sound-page";
 export const HOME = "https://www.litt.design/systems/";
 
 const LINK =
-  "litt-target inline-flex h-control-sm items-center rounded-control px-2 text-small font-title text-fg-muted hover:text-fg " +
+  "litt-target relative inline-flex h-control-sm items-center rounded-control px-2 text-small font-title text-fg-muted hover:text-fg " +
   "aria-[current=page]:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus pointer-coarse:h-control-md";
 
 /** A world's pages of the gallery's own beside about and components: Device's voices (plans/021). No page id may be one. */

@@ -8,7 +8,8 @@
  * Hierarchy comes from weight and ink, and spacing follows foundations.md (Text spacing):
  * sections 48px apart, blocks 16px apart, and a section's title 4px above its first content.
  */
-import type { ReactNode } from "react";
+import { useId, useState, type ReactNode } from "react";
+import { ChevronDownIcon } from "@/components/icons";
 import { Kbd } from "@/components/kbd";
 import type { PageDocs } from "../kit";
 import { useCustomize } from "../customize-state";
@@ -19,13 +20,55 @@ import { CopyButton } from "./copy";
 import { documentedExports, installCommand, installCommands, REGISTRIES_ENTRY, SITE, usageSnippet, worldInstallWords } from "./copy-prompt";
 import { PropsTable } from "./props-table";
 
+/* A title takes focus after a jump from the row under the h1 (jump-row.tsx), so it has tabindex -1, as the h1 does. */
+const HEADING = "-mb-3 scroll-mt-24 text-small font-title text-fg-muted text-balance outline-none";
+
 function Section({ id, title, children }: { id: string; title: string; children: ReactNode }) {
   return (
     <section aria-labelledby={id} className="grid content-start gap-4">
-      <h2 id={id} className="-mb-3 scroll-mt-24 text-small font-title text-fg-muted text-balance">
+      <h2 id={id} tabIndex={-1} className={HEADING}>
         {title}
       </h2>
       {children}
+    </section>
+  );
+}
+
+/**
+ * Props, which runs for thousands of pixels on a phone: below 640px it starts closed behind a button with
+ * aria-expanded, and from 640px up it is open under a plain title (the button is hidden there, so no one meets a
+ * control that does nothing). A jump to Props focuses its title, which opens it. Page checks open it in openVariants
+ * (scripts/routes.mjs). The chevron turns on the responsive tier, as Variants' does; what it opens appears at once.
+ */
+function PropsSection({ children }: { children: ReactNode }) {
+  const [open, setOpen] = useState(false);
+  const panel = useId();
+  return (
+    <section aria-labelledby="props" className="grid content-start gap-4">
+      <h2
+        id="props"
+        tabIndex={-1}
+        onFocus={(e) => {
+          if (e.target === e.currentTarget) setOpen(true);
+        }}
+        className={HEADING}
+      >
+        <button
+          type="button"
+          data-props=""
+          aria-expanded={open}
+          aria-controls={panel}
+          onClick={() => setOpen((o) => !o)}
+          className="group/props litt-target relative -mx-2 flex h-control-sm items-center gap-1 rounded-control px-2 select-none [-webkit-tap-highlight-color:transparent] transition-colors duration-(--dur-instant) ease-litt hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus pointer-coarse:h-control-md sm:hidden"
+        >
+          Props
+          <ChevronDownIcon className="transition-[rotate] duration-(--dur-responsive) ease-responsive group-aria-expanded/props:rotate-180" />
+        </button>
+        <span className="max-sm:hidden">Props</span>
+      </h2>
+      <div id={panel} className={open ? "grid gap-12" : "grid gap-12 max-sm:hidden"}>
+        {children}
+      </div>
     </section>
   );
 }
@@ -129,13 +172,11 @@ export function DocsSections({ docs, needs }: { docs: PageDocs; needs?: string }
         <CodeBlock code={usageSnippet(docs, components)} label="Usage code" />
       </Section>
 
-      <Section id="props" title="Props">
-        <div className="grid gap-12">
-          {exportDocs.map((e) => (
-            <PropsTable key={e.name} doc={e} />
-          ))}
-        </div>
-      </Section>
+      <PropsSection>
+        {exportDocs.map((e) => (
+          <PropsTable key={e.name} doc={e} />
+        ))}
+      </PropsSection>
 
       {docs.keyboard && docs.keyboard.length > 0 && (
         <Section id="keyboard" title="Keyboard">

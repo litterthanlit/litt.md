@@ -9,10 +9,14 @@ export const meta: PageMeta = {
   id: "tabs",
   title: "Tabs",
   lede: "Views that slide into place.",
+  ledeByWorld: { heat: "Views in a strip of square cells, the open one in brackets." },
   order: 3.07, group: "Selection",
   verbs: ["select"],
   summary:
     "Underline or segmented. The chosen face slides between tabs, the label only changes color, and the panel fades in from the side of the tab you picked. Press cuts them as folder tabs on a plate; Flat sets them as words with a grey bubble.",
+  summaryByWorld: {
+    heat: "Underline or segmented. Each tab is a square cell, and the chosen one is lit and framed in corner brackets with ‹ › beside its label. Nothing slides between tabs: the label changes color on the instant tier, and the panel fades in from the side of the tab you picked.",
+  },
   fun: "Pick a tab far away: the standing tab, or the bubble, glides over on a looser spring.",
   tiers: ["instant", "responsive"],
 };

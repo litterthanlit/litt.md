@@ -143,7 +143,7 @@ export function GoalRing({
             aria-label={`Decrease ${unit} by 1`}
             disabled={current === 0}
             onClick={() => update(current - 1)}
-            className="litt-target grid size-9 cursor-pointer place-items-center rounded-pill text-body font-title text-fg-muted shadow-[inset_0_0_0_1.5px_var(--line-control)] transition-colors duration-(--dur-instant) ease-litt hover:text-fg disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus forced-colors:border"
+            className="litt-target relative grid size-9 cursor-pointer place-items-center rounded-pill text-body font-title text-fg-muted shadow-[inset_0_0_0_1.5px_var(--line-control)] transition-colors duration-(--dur-instant) ease-litt hover:text-fg disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus forced-colors:border"
           >
             <span aria-hidden="true">−</span>
           </button>
@@ -153,7 +153,7 @@ export function GoalRing({
             aria-label={`Add 1 to ${unit}`}
             disabled={current >= safeTarget}
             onClick={() => update(current + 1)}
-            className="litt-target grid size-9 cursor-pointer place-items-center rounded-pill bg-block text-body font-title text-fg transition-colors duration-(--dur-instant) ease-litt hover:bg-(--block-hover) disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus forced-colors:border"
+            className="litt-target relative grid size-9 cursor-pointer place-items-center rounded-pill bg-block text-body font-title text-fg transition-colors duration-(--dur-instant) ease-litt hover:bg-(--block-hover) disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus forced-colors:border"
           >
             <span aria-hidden="true">+</span>
           </button>

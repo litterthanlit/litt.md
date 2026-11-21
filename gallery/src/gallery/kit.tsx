@@ -15,6 +15,7 @@ import { Framed } from "@/components/framed";
 import { ChevronDownIcon, SparkleIcon } from "@/components/icons";
 import type { Material } from "./look";
 import { Tabs, TabsList, TabsPanel, TabsPanels, TabsTrigger } from "@/components/tabs";
+import { JumpRow } from "./jump-row";
 
 /** The sidebar's groups, in the order they appear. */
 /** Blocks come last: whole screens built from the components in the groups above them. */
@@ -41,6 +42,12 @@ export type PageMeta = {
    * agents and the About section under the demos.
    */
   lede: string;
+  /**
+   * The lede in a world's own words, by world: what the part is in that world's body, where the shared line names
+   * another world's material (plans/audits/heat-fixes.md, Track B). The player's Home and Details read it through
+   * `lineIn`; a world without one reads `lede`. The generators read only `lede`.
+   */
+  ledeByWorld?: Partial<Record<Material, string>>;
   /** Sidebar order. 0 is the overview. */
   order: number;
   /** The sidebar group. Overview and Playground have none, so they sit above and below the groups. */
@@ -49,6 +56,8 @@ export type PageMeta = {
   verbs?: Verb[];
   /** One sentence: what the component is and what its motion does. */
   summary: string;
+  /** The summary in a world's own words, by world, as `ledeByWorld` is for the lede: About on a part's page reads it through `lineIn`. */
+  summaryByWorld?: Partial<Record<Material, string>>;
   /**
    * What fun mode changes here, as something to try: "Throw the thumb: it coasts to the end and confirms." Set it on
    * every page whose component moves differently in fun mode. With fun mode on, the gallery leads with these pages:
@@ -84,6 +93,8 @@ export type PageMeta = {
    * gen-llms.mjs ships it to agents. Set it with `study`.
    */
   mechanism?: string;
+  /** How it moves in a world's own body, by world, as `ledeByWorld` is for the lede: a study's How it moves reads it through `lineIn`. */
+  movesByWorld?: Partial<Record<Material, string>>;
   /**
    * The page may override the locked tokens with the motion dial. Every page
    * leaves this off except the Playground; the dial's CSS variables exist only
@@ -158,6 +169,20 @@ export type PageDocs = {
  * overview's wall), which draw the shared demos.
  */
 export const WorldContext = createContext<Material | null>(null);
+
+/**
+ * A page's line in a world: its lede, its summary, or How it moves (`mechanism`), in that world's own words where meta
+ * gives them (`ledeByWorld`, `summaryByWorld`, `movesByWorld`), and the shared line where it does not or where there is
+ * no world.
+ */
+type Lines = Pick<PageMeta, "lede" | "ledeByWorld" | "summary" | "summaryByWorld" | "mechanism" | "movesByWorld">;
+export function lineIn(meta: Lines, line: "lede" | "summary", world: Material | null): string;
+export function lineIn(meta: Lines, line: "moves", world: Material | null): string | undefined;
+export function lineIn(meta: Lines, line: "lede" | "summary" | "moves", world: Material | null): string | undefined {
+  if (line === "lede") return (world && meta.ledeByWorld?.[world]) || meta.lede;
+  if (line === "summary") return (world && meta.summaryByWorld?.[world]) || meta.summary;
+  return (world && meta.movesByWorld?.[world]) || meta.mechanism;
+}
 
 /**
  * Device's plate (plans/024, phase 2): under Device a stage and a wall tile are a part's plate, not a dark screen and
@@ -332,6 +357,8 @@ export function Page({
             </h1>
             <FunHint text={meta.fun} />
           </header>
+          {/* A jump to each docs section, so a phone is not fifteen screens with no way down (jump-row.tsx). */}
+          {docs && <JumpRow docs={docs} />}
           {slotted}
           {study && (
             <Suspense fallback={<div aria-hidden="true" className="min-h-[40svh]" />}>
@@ -342,7 +369,7 @@ export function Page({
             <h2 id={`about-${meta.id}`} className={QUIET_HEADING}>
               About
             </h2>
-            <p className="max-w-(--measure) text-small text-fg-muted">{meta.summary}</p>
+            <p className="max-w-(--measure) text-small text-fg-muted">{lineIn(meta, "summary", world)}</p>
             {(docs || meta.block) && (
               <div className="flex flex-wrap items-center gap-x-6 gap-y-4">
                 {docs && (

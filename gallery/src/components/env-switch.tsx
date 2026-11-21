@@ -90,7 +90,7 @@ export function EnvSwitch({
               data-part={selected ? "block" : "tray"}
               onClick={() => pick(env)}
               className={
-                "litt-target flex h-control-sm min-w-0 cursor-pointer items-center justify-center rounded-[calc(var(--radius-control)-2px)] px-2.5 text-caption select-none " +
+                "litt-target relative flex h-control-sm min-w-0 cursor-pointer items-center justify-center rounded-[calc(var(--radius-control)-2px)] px-2.5 text-caption select-none " +
                 "transition-[background-color,color,box-shadow,transform] duration-(--dur-instant) ease-litt " +
                 "active:[transform:translateY(var(--press-depth))] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus forced-colors:border " +
                 (selected

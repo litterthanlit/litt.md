@@ -8,10 +8,14 @@ export const meta: PageMeta = {
   id: "toast",
   title: "Toast",
   lede: "News from the corner that leaves sideways.",
+  ledeByWorld: { heat: "News on a square slab in the corner, which leaves sideways." },
   order: 5.09, group: "Overlays",
   verbs: ["press", "watch"],
   summary:
     "Toasts arrive from just below the corner and settle, and they leave sideways by the same small distance. Older ones stack behind the newest and open into a list when you hover or tab into them. On a phone they drop away on a timeout, and a swipe sends them off sideways.",
+  summaryByWorld: {
+    heat: "Each toast is a square slab in a 1px line. Toasts arrive from just below the corner and settle, and they leave sideways by the same small distance. Older ones stack behind the newest and open into a list when you hover or tab into them. On a phone they drop away on a timeout, and a swipe sends them off sideways.",
+  },
   fun: "Fire a toast, then throw it away with the mouse; let one go short and it springs home.",
   tiers: ["instant", "responsive", "expressive"],
 };

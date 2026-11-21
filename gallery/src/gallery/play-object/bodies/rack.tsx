@@ -35,7 +35,7 @@ function clipBars(id: string): number[] {
 }
 
 const rackKey =
-  "litt-target inline-flex h-control-sm shrink-0 cursor-pointer items-center justify-center rounded-control bg-block text-fg " +
+  "litt-target relative inline-flex h-control-sm shrink-0 cursor-pointer items-center justify-center rounded-control bg-block text-fg " +
   "shadow-(--block-lift) transition-colors duration-(--dur-instant) ease-litt " +
   "hover:bg-(--block-hover) active:shadow-(--block-press) " +
   "aria-pressed:bg-fg aria-pressed:text-canvas " +
@@ -105,7 +105,7 @@ function ClipLane({ takes, at, selector, pick, index }: Pick<PlayObjectBodyProps
             : "bg-block text-fg-subtle hover:bg-(--block-hover) hover:text-fg forced-colors:border")
         }
       >
-        Home
+        Index
       </button>
       <div
         {...selector}
