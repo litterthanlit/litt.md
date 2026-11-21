@@ -5,7 +5,9 @@
  * - The plate (`bg-surface-1`, lit top edge `--highlight` + `--plate-lift`, `rounded-surface`) holds the screen inside
  *   a subtle cut bay (`bg-tray`, `--tray-shade`) at concentric radius, with no rail inside the screen (`rail: false`).
  * - Under the screen, the instrument deck:
- *   - Readout: a raised nameplate (`bg-block`, `--block-lift`) carrying the tabular count and the take's title.
+ *   - Readout: a value, so it is set into the plate as a cut (`bg-cut`, `--cut-shade` inside a `--line` hairline), not
+ *     raised: in Press raised means press, and the readout does nothing when pressed (plans/audits/press.md,
+ *     finding 7). It carries the tabular count and the take's title.
  *   - Selector: a recessed tray (`bg-tray`, `--tray-shade`) holding Index and the 12 takes as stepped blocks; the
  *     current take stands up as a raised block (`bg-block`, `--block-lift`), and dragging along the tray scrubs takes.
  *   - Transport: tactile raised blocks for Previous, Play (sinks into the tray while running) and Next.
@@ -31,8 +33,9 @@ function Readout({ readout, compact = false, className = "" }: Pick<PlayObjectBo
   return (
     <div
       {...readout.props}
+      data-part="cut"
       className={
-        "flex min-w-0 items-baseline gap-2.5 rounded-control bg-block text-fg shadow-[var(--highlight),var(--block-lift)] forced-colors:border " +
+        "flex min-w-0 items-baseline gap-2.5 rounded-control bg-cut text-fg shadow-[inset_0_0_0_1px_var(--line),var(--cut-shade)] forced-colors:border " +
         (compact ? "px-2.5 py-1.5" : "px-3.5 py-2") +
         " " +
         className
