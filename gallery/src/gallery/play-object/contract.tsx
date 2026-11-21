@@ -429,7 +429,7 @@ function HomeView({ material, takes, total, groups, open }: { material: Material
       <a
         href={`#${material}/components`}
         data-play-everything=""
-        className={"justify-self-start rounded-control text-small text-fg underline decoration-line-strong underline-offset-4 hover:decoration-current focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus " + FLAT_HOME.everything}
+        className={"litt-target relative justify-self-start rounded-control text-small text-fg underline decoration-line-strong underline-offset-4 hover:decoration-current focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus " + FLAT_HOME.everything}
       >
         Every component, {total} in {groups} groups
       </a>
