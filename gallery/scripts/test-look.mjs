@@ -97,7 +97,7 @@ function paint(search, saved, hash = "") {
 const modelOf = (hash) => `none/${L.worldOfHash(hash)}`;
 const saves = [null, { accent: "pink" }, { accent: "blue4", material: "press" }, { accent: "mono", material: "device" }, { material: "heat" }, { radius: 28, face: { id: "x", stack: "serif" } }];
 const links = ["", ...L.LOOKS.map((l) => `?look=${L.encodeLook(l)}`), "?look=blue4", "?look=PINK", "?look=pink-fun-x"];
-const hashes = ["", "#overview", "#press", "#flat", "#device", "#plain", "#rack", "#heat", "#device/button", "#flat/take/poll", "#rack/select","#playground/device", "#button", "#heat-x", "#devices"];
+const hashes = ["", "#overview", "#press", "#flat", "#device", "#plain", "#rack", "#heat", "#device/button", "#flat/take/poll", "#rack/select", "#playground/device", "#button", "#heat-x", "#devices"];
 check(scripts.length >= 1, `index.html paints with ${scripts.length} scripts before #root`);
 let firstPaintOk = 0;
 for (const hash of hashes)

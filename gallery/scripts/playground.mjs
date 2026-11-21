@@ -42,6 +42,8 @@
  *   or, for the tooltip, a held pointer) is not inside the screen's box, under the screen's world (1px tolerance),
  * - the take changes within 6s with no hand on it (nothing plays on load), Play does not move it within 5s, or a press
  *   on the screen does not stop it,
+ * - following the world's name in the top row (#<world>, outside the screen) while Play runs does not stop Play, open
+ *   Index and say so in the live region, or, on a body's own Index, does not make the take just left the current row,
  * - Home's Every component link does not open #<world>/components, or that page does not hold a tile for every
  *   component in the world (read from src/gallery/pages), or a tile's name does not link to #<world>/<id>,
  * - at 1366 by 768, a laptop's window, what a Device take opens (the openers above and the Command menu) is not inside
@@ -56,7 +58,8 @@
  * break swallows Down on its rows so neither the lit row nor the live part moves), and sets
  * Heat's screen to the other worlds' height, puts Device's address back to the bare player after a step, names
  * Device's selector Components again, and at 1366 by 768 lowers Device's screen to 25rem, as it once was, so the
- * command menu's panel runs past its foot; it fails if the check misses any.
+ * command menu's panel runs past its foot, and presses Play again on
+ * Heat just after its world's name opened Index; it fails if the check misses any.
  *
  * Needs Playwright, found as worlds.mjs finds it.
  */
@@ -305,7 +308,7 @@ const SETS = Object.fromEntries(
   [...fs.readFileSync(path.join(here, "..", "src", "gallery", "play-object", "takes.ts"), "utf8").matchAll(/^\s+(\w+): \[([^\]]*)\],$/gm)].map((m) => [m[1], [...m[2].matchAll(/"([^"]+)"/g)].map((x) => x[1])]),
 );
 const shadowed = pageMetas().filter((p) => ["components", "about", "take"].includes(p.id)).map((p) => p.id);
-claim("no page id is components, about or take, the world's own addresses",shadowed.length ? `pages named ${shadowed.join(", ")}` : null);
+claim("no page id is components, about or take, the world's own addresses", shadowed.length ? `pages named ${shadowed.join(", ")}` : null);
 if (selfTest) SETS.heat =[...(SETS.heat ?? []), "seven-segment"];
 for (const [, id] of WORLDS) {
   const set = SETS[id] ?? [];
@@ -605,7 +608,7 @@ for (const [world, id, attribute] of RUN) {
     );
   }
 
-  /* A take's size (finding 7):on Heat's shorter screen the pursuit meter's drawn box (every element in the take that
+  /* A take's size (finding 7): on Heat's shorter screen the pursuit meter's drawn box (every element in the take that
      paints: text, a fill, an edge, an image) covers at least TAKE_FLOOR of the screen's area. A quarter is not reachable
      without scaling the part or moving the take off the screen's middle (see TAKE_FLOOR). The break: the screen at the
      other worlds' height on a tall window again (46rem). */
@@ -685,6 +688,48 @@ for (const [world, id, attribute] of RUN) {
   await pg.waitForTimeout(5000);
   const still = await now(pg);
   claim("Play steps through the takes, and a press on the screen stops it", still === held ? null : `${world}: after a press on the screen the take went ${held} to ${still}`);
+
+  /* The world's name in the top row (#<world>) sits outside the screen, so no hand on the screen stops Play there.
+     Followed while Play runs, it still stops Play and brings Index, with the take just left as Index's current row
+     where the body draws its own Index, and says so in the live region. The break, on Heat: Play pressed again just
+     after, as a reader of the address that skips the hand's path leaves it running. */
+  {
+    await inView(pg);
+    const play = pg.locator("[data-play-object]").getByRole("button", { name: "Play", exact: true });
+    await play.click();
+    await pg.waitForFunction((S) => Number(document.querySelector(S)?.getAttribute("aria-valuenow")) >= 2, SLIDER, { timeout: 6000 }).catch(() => {});
+    /* By the keys, with the pointer off the page, so a row the page scrolls under a still pointer is not made current.
+       The take just left is read from the address it moves off: Play may step once more between any
+       earlier read and the key. */
+    await pg.mouse.move(0, 0);
+    await pg.evaluate(() => {
+      window.__left = null;
+      window.addEventListener("hashchange", (e) => (window.__left ??= new URL(e.oldURL).hash.split("/take/")[1] ?? ""), { once: true });
+    });
+    await pg.locator(`a[href="#${id}"]`).first().focus();
+    await pg.keyboard.press("Enter");
+    await pg.waitForFunction(() => window.__left !== null, null, { timeout: 2000 }).catch(() => {});
+    const left = (SETS[id] ?? []).indexOf(await pg.evaluate(() => window.__left)) + 1;
+    if (selfTest && id === "heat") await play.click();
+    await pg.waitForTimeout(300);
+    const named = await pg.evaluate((F) => ({
+      said: document.querySelector("[data-play-object] > [role=status]")?.textContent ?? "",
+      current: [...document.querySelectorAll(`${F} [data-play-take=home][data-play-home=body] [data-play-index] button[data-current]`)].map((b) => b.textContent.trim()),
+      own: !!document.querySelector(`${F} [data-play-take=home][data-play-home=body]`),
+    }), FRAME);
+    const stopped = await play.getAttribute("aria-pressed");
+    const atIndex = await now(pg);
+    await pg.waitForTimeout(5000);
+    const stays = await now(pg);
+    const title = set[left - 1];
+    claim(
+      "the world's name in the top row stops Play, opens Index on the take just left, and says so",
+      left >= 1 && stopped === "false" && atIndex === 0 && stays === 0 && named.said.startsWith("Index") && (!named.own || (named.current.length === 1 && named.current[0].includes(title)))
+        ? null
+        : `${world}: left take ${left} (${title}) by the world's name; Play pressed ${stopped}, the slider at ${atIndex}, then ${stays} 5s on; said "${named.said}"${named.own ? `, current row ${JSON.stringify(named.current)}` : ""}`,
+    );
+    if (selfTest && id === "heat" && (await play.getAttribute("aria-pressed")) === "true") await play.click();
+  }
 
   /* Index's way to every component: the world's gallery view, a tile for every component in the world, each named by a
      link to its page in the world. */
@@ -815,10 +860,12 @@ if (selfTest) {
   if (!addressCaught) console.error("playground --self-test: Device's player kept its take out of the address, and the check missed it.");
   const namesCaught = (claims.get(NAMES_CLAIM) ?? []).some((f) => f.startsWith("Device"));
   if (!namesCaught) console.error("playground --self-test: Device's selector named Components, like the link beside it, and the check missed it.");
+  const nameCaught = (claims.get("the world's name in the top row stops Play, opens Index on the take just left, and says so") ?? []).some((f) => f.startsWith("Heat:"));
+  if (!nameCaught) console.error("playground --self-test: Play left running on Heat after the world's name opened Index, and the check missed it.");
   const shortCaught = (claims.get("at 1366x768 what a take opens stays on Device's screen") ?? []).some((f) => f.startsWith("Device · Command menu: "));
   if (!shortCaught) console.error("playground --self-test: Device's screen at 25rem on a 1366x768 window cuts the command menu's panel, and the check missed it.");
-  if (!downCaught || !shortCaught || !namesCaught || !addressCaught || !caught || !bareCaught || !tileCaught || !setCaught || !homeCaught || !sourceCaught || !topsCaught || !orderCaught || !sizeCaught || !menuCaught || !fileListCaught) process.exit(1);
-  console.log("playground --self-test: a dialog escaped to <body> leaves the screen, with the recorder kept from loading Device draws bare, a tile missing from Device's gallery view is seen, a set naming a part outside its world is seen, a second Home and a Source link into the gallery are seen, Index's rows centred off their tops are seen, Heat's strip under its screen is seen, a small take on Heat's screen is seen, Heat's Index and the recorder's with no live part and two current rows are seen, a recorder Index where Down moves nothing is seen, a take kept out of the address is seen, a selector sharing the Components link's name is seen, and Device's screen at 25rem cutting the command menu at 1366x768 is seen; the check catches all fifteen.")
+  if (!nameCaught || !downCaught || !shortCaught || !namesCaught || !addressCaught || !caught || !bareCaught || !tileCaught || !setCaught || !homeCaught || !sourceCaught || !topsCaught || !orderCaught || !sizeCaught || !menuCaught || !fileListCaught) process.exit(1);
+  console.log("playground --self-test: a dialog escaped to <body> leaves the screen, with the recorder kept from loading Device draws bare, a tile missing from Device's gallery view is seen, a set naming a part outside its world is seen, a second Home and a Source link into the gallery are seen, Index's rows centred off their tops are seen, Heat's strip under its screen is seen, a small take on Heat's screen is seen, Heat's Index and the recorder's with no live part and two current rows are seen, a recorder Index where Down moves nothing is seen, a take kept out of the address is seen, a selector sharing the Components link's name is seen, and Device's screen at 25rem cutting the command menu at 1366x768 is seen, and Play left running after the world's name opened Index is seen; the check catches all sixteen.")
   process.exit(0);
 }
 if (bad) {
