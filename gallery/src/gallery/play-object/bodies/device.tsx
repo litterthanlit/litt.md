@@ -506,6 +506,7 @@ const LIVE_SCALE: Record<string, PartScale> = {
 function DeviceHome({ world, takes, current, list, row, everything, part, compact }: PlayObjectHomeProps) {
   const { children: words, ...link } = everything;
   const n = takes.length;
+  /* The contract's own pad for the readout's count (contract.tsx); keep the two the same, so a row's number reads as the readout's. */
   const pad = (i: number) => String(i).padStart(Math.max(2, String(n).length), "0");
   const cued = takes[current];
   return (
