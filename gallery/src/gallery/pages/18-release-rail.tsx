@@ -77,15 +77,15 @@ export default function ReleaseRailPage() {
         title="Release selector"
         tier="instant"
         code="HarborReleasesDemo"
-        caption="All releases rest quietly inside one recessed tray; click any older commit to lift it up and reveal Promote to live."
+        caption="The last four deploys of harbor-web, newest first. Pick an older one to see its build, and Promote to live puts it back in production."
       >
         <HarborReleasesDemo />
       </Stage>
       <Stage
-        title="Pinned previous release"
+        title="Rolled back"
         tier="instant"
         code="RollbackInspectDemo"
-        caption="Live is stated in plain words on the right — no green status chips."
+        caption="harbor-api is serving an older release, 9a2b810. Pick 4f9c2e1 to promote the newer build to live again."
       >
         <RollbackInspectDemo />
       </Stage>

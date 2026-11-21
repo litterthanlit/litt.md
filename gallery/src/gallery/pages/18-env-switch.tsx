@@ -79,15 +79,15 @@ export default function EnvSwitchPage() {
         title="Production target"
         tier="instant"
         code="HarborEnvDemo"
-        caption="Select Production, Preview or Development: the chosen block rises out of the tray and the cut-in slot updates immediately."
+        caption="Choose where you are working: Production, Preview or Development. The host, region, latency and load under it follow the choice."
       >
         <HarborEnvDemo />
       </Stage>
       <Stage
-        title="Preview branch"
+        title="Preview deploy"
         tier="instant"
         code="PreviewEnvDemo"
-        caption="Zero outer boxes and zero colored badges — host, region, latency and load read cleanly on warm stone."
+        caption="A pull request's preview: pr-148.harbor.app in iad1, answering in 31 ms with 28% of its capacity in use."
       >
         <PreviewEnvDemo />
       </Stage>
