@@ -12,7 +12,8 @@
  *   node scripts/world-words.mjs --shard 1/2                every other page
  *   node scripts/world-words.mjs --json found.json          also writes every hit, for working through them
  *   node scripts/world-words.mjs --self-test                puts a sentence of Press's materials back on every world's
- *                                                           Button page and player's Home; fails if one is missed
+ *                                                           Button page and player's Home, and on Plain's Select; fails
+ *                                                           if one is missed or only a KNOWN entry holds it
  *
  * Every world (WORDS): every page under #<world> and the player's Home, at 1440 by 1000, with Variants closed (it reads what
  * a visitor sees first, so `openVariants` is not called). It reads the text of `main` that is rendered (shown, or said to
@@ -117,7 +118,7 @@ const NAME =
 const TUNE = "the demo names litt's radius scale, whose last step is the pill";
 const k = (page, words, why) => ({ page, words, why });
 const KNOWN = [
-  ...["flat", "rack", "heat"].flatMap((w) => [
+  ...["flat", "rack", "heat", "plain"].flatMap((w) => [
     k(`${w}/header`, ["glass"], NAME),
     k(`${w}/breadcrumb`, ["glass"], NAME),
     k(`${w}/components`, ["glass"], NAME + "; the gallery view lists it by name" + (w === "rack" ? ", and the clip launcher's preset Glass Pad is a name in Rack's demo (rack-fixes.md, step 8)" : "")),
@@ -125,12 +126,49 @@ const KNOWN = [
   ...["device", "rack", "heat"].map((w) => k(`${w}/tune`, ["pill"], TUNE)),
   k("device/about", ["pill"], "About's foundations come from Device's row in look.ts, which device-fixes.md step 1 rewrites"),
   k("rack/inspector", ["floats"], "the lead stage is the toast tuner (Floats, A toast floats), which rack-fixes.md step 4 replaces with a device's parameters"),
-  /* Plain's words are Nick's (litt-principles.md, Plain: nothing changes without asking): every Plain page waits on the
-     draft in plans/audits/plain-words.md. It holds whatever Plain says, and fails when Plain says none of it. */
-  k("plain/*", ["*"], "Plain's lines are Nick's: drafted in plans/audits/plain-words.md, not landed"),
+  /* Plain's words are Nick's (litt-principles.md, Plain: nothing changes without asking): each page below waits on its
+     row in the draft, plans/audits/plain-words.md, and names only the words that row replaces, so a new word on a Plain
+     page, or another world named on one the draft does not cover, fails. When a row lands, its entry goes. */
+  ...Object.entries({
+    plain: ["expressive"],
+    "plain/about": ["slides", "cast"],
+    "plain/accordion": ["fades"],
+    "plain/action-bar": ["rises"],
+    "plain/app-shell": ["rises", "expressive"],
+    "plain/button": ["cast", "sinks", "fades", "another world"],
+    "plain/carousel": ["slides"],
+    "plain/case-study": ["expressive"],
+    "plain/code-input": ["fades"],
+    "plain/date-picker": ["slides"],
+    "plain/dialog": ["fades", "expressive", "rises", "settles"],
+    "plain/file-changes": ["settles", "fades"],
+    "plain/form": ["expressive"],
+    "plain/inspector": ["settles"],
+    "plain/lightbox": ["rises", "settles", "expressive"],
+    "plain/list": ["expressive"],
+    "plain/media": ["fades"],
+    "plain/message": ["fades", "rises"],
+    "plain/pad": ["fades"],
+    "plain/plan": ["fades"],
+    "plain/range-chart": ["rises"],
+    "plain/rolling-number": ["fades", "rises"],
+    "plain/rule-builder": ["settles"],
+    "plain/settings": ["expressive"],
+    "plain/shopify": ["settles"],
+    "plain/slide-confirm": ["slides"],
+    "plain/slider": ["plate", "cap", "cast", "raised", "sinks", "glides", "another world"],
+    "plain/spring-editor": ["settles", "expressive"],
+    "plain/switch": ["tray", "cast", "sinks", "another world"],
+    "plain/table": ["expressive"],
+    "plain/tabs": ["slides"],
+    "plain/thinking": ["fades"],
+    "plain/time-scrubber": ["settles"],
+    "plain/tune": ["settles"],
+  }).map(([page, words]) => k(page, words, "Plain's lines are Nick's: this page's row in plans/audits/plain-words.md, not landed")),
+  k("plain/inspector", ["fades"], "the shared About says a group fades open; plans/audits/plain-words.md has no line for it yet, so it waits with the draft"),
 ];
 const inEntry = (k, id) => k.page === id || (k.page.endsWith("/*") && id.split("/")[0] === k.page.slice(0, -2));
-const knownFor = (f) => KNOWN.find((k) => inEntry(k, f.id) && (k.words.includes(f.word) || k.words[0] === "*"));
+const knownFor = (f) => KNOWN.find((k) => inEntry(k, f.id) && k.words.includes(f.word));
 
 const roots = [process.env.A11Y_TOOLS, path.join(here, ".."), "/opt/node22/lib"].filter(Boolean);
 function resolveTool(id) {
@@ -148,8 +186,9 @@ if (!fs.existsSync(path.join(dist, "index.html"))) {
 
 /* Every address in a checked world: its player, About, gallery view, own pages and every part in it. */
 const worlds = (get("worlds", "") || Object.keys(WORDS).join(",")).split(",").filter((w) => WORDS[w]);
-/* The self-test reads each world's Button page and its player's Home. */
-const only = (get("pages", selfTest ? worlds.flatMap((w) => [`${w}/button`, w]).join(",") : "") || "").split(",").filter(Boolean);
+/* The self-test reads each world's Button page and its player's Home, and Plain's Select, a page whose words wait on
+   Nick (KNOWN), so a KNOWN entry that held any word on it would be seen. */
+const only = (get("pages", selfTest ? [...worlds.flatMap((w) => [`${w}/button`, w]), ...(worlds.includes("plain") ? ["plain/select"] : [])].join(",") : "") || "").split(",").filter(Boolean);
 const inWorlds = routes().filter((r) => worlds.includes(r.split("/")[0]));
 const chosen = only.length ? inWorlds.filter((r) => only.includes(r) || only.some((o) => !o.includes("/") && r.endsWith(`/${o}`))) : inWorlds;
 const pages = chosen.filter((_, i) => i % shards === shard - 1);
@@ -236,7 +275,8 @@ const took = `${Math.round((Date.now() - started) / 1000)}s`;
 if (get("json")) fs.writeFileSync(get("json"), JSON.stringify(found, null, 1));
 
 if (selfTest) {
-  const caught = new Set(found.filter((f) => f.injected).map((f) => f.id));
+  /* Caught means caught as a fresh hit: one a KNOWN entry holds would pass the real run unseen. */
+  const caught = new Set(found.filter((f) => f.injected && !knownFor(f)).map((f) => f.id));
   const missed = pages.filter((id) => !caught.has(id));
   const broken = found.filter((f) => !f.word);
   console.log(`words self-test: "${INJECTED}" was caught on ${caught.size} of ${pages.length} pages in ${worlds.join(", ")} (${took}).`);
@@ -249,9 +289,9 @@ const known = found.filter(knownFor);
 const fresh = found.filter((f) => !knownFor(f));
 for (const k of KNOWN.filter((k) => pages.some((id) => inEntry(k, id)))) {
   const hits = known.filter((f) => knownFor(f) === k);
-  const gone = k.words[0] === "*" ? (hits.length ? [] : ["any"]) : k.words.filter((w) => !hits.some((f) => f.word === w));
-  const said = k.words[0] === "*" ? [...new Set(hits.map((f) => f.word))] : k.words.filter((w) => !gone.includes(w));
-  const where = k.words[0] === "*" ? ` on ${new Set(hits.map((f) => f.id)).size} pages` : "";
+  const gone = k.words.filter((w) => !hits.some((f) => f.word === w));
+  const said = k.words.filter((w) => !gone.includes(w));
+  const where = k.page.endsWith("/*") ? ` on ${new Set(hits.map((f) => f.id)).size} pages` : "";
   if (hits.length) console.log(`· known, ${k.page} says ${said.join(", ")}${where} (${hits.length}): ${k.why}.`);
   for (const w of gone) fresh.push({ id: k.page, word: w, what: `the known word "${w}" no longer shows (${k.why}): take it out of KNOWN` });
 }

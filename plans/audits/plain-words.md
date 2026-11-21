@@ -1,6 +1,6 @@
 # Plain's words, drafted for Nick
 
-Track 1 of `shared-fixes.md`, step 2, for Plain. Nick's rule is that nothing in Plain changes without asking, so nothing here is built: each row is a line a visitor reads under `#plain/…` today, what it says, and what is proposed in its place. Say yes to a row (or rewrite it) and it lands as written, through the maps in `meta`, `docs` and `study` (`ledeByWorld`, `summaryByWorld`, `movesByWorld`, `useByWorld`, `skipByWorld`, `a11yByWorld`, `partsByWorld`). Until then `test:words` holds every Plain page in its `KNOWN` list under one entry, `plain/*`.
+Track 1 of `shared-fixes.md`, step 2, for Plain. Nick's rule is that nothing in Plain changes without asking, so nothing here is built: each row is a line a visitor reads under `#plain/…` today, what it says, and what is proposed in its place. Say yes to a row (or rewrite it) and it lands as written, through the maps in `meta`, `docs` and `study` (`ledeByWorld`, `summaryByWorld`, `movesByWorld`, `useByWorld`, `skipByWorld`, `a11yByWorld`, `partsByWorld`). Until then `test:words` holds each Plain page in its `KNOWN` list with the words that page's row replaces, so a new word, or another world named on a page no row covers, still fails.
 
 Drafted 2026-11-21 from Plain's bodies (`gallery/src/worlds/plain/`), `litt-principles.md` (Plain: no UI, still, the reader's own page) and `plain.md`, finding 2.
 
