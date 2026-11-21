@@ -4,20 +4,24 @@
  *
  * - The plate (`bg-surface-1`, lit top edge `--highlight` + `--plate-lift`, `rounded-surface`) holds the screen inside
  *   a subtle cut bay (`bg-tray`, `--tray-shade`) at concentric radius, with no rail inside the screen (`rail: false`).
- * - Under the screen, the instrument deck:
- *   - Readout: a value, so it is set into the plate as a cut (`bg-cut`, `--cut-shade` inside a `--line` hairline), not
- *     raised: in Press raised means press, and the readout does nothing when pressed (plans/audits/press.md,
- *     finding 7). It carries the tabular count and the take's title.
- *   - Selector: a recessed tray (`bg-tray`, `--tray-shade`) holding Index and the 12 takes as stepped blocks; the
- *     current take stands up as a raised block (`bg-block`, `--block-lift`), and dragging along the tray scrubs takes.
- *   - Transport: tactile raised blocks for Previous, Play (sinks into the tray while running) and Next.
+ *
+ * Top to bottom, in the order read and the order tabbed, at every width (plans/audits/press.md, finding 6), the deck
+ * sits above the screen (`data-press-deck`, which `test:playground` holds above it):
+ * - Readout: a value, so it is set into the plate as a cut (`bg-cut`, `--cut-shade` inside a `--line` hairline), not
+ *   raised: in Press raised means press, and the readout does nothing when pressed (finding 7). It carries the tabular
+ *   count and the take's title.
+ * - Selector: a recessed tray (`bg-tray`, `--tray-shade`) holding Index and the 12 takes; the current take stands up as
+ *   a raised block (`bg-block`, `--block-lift`), and a press or a drag along the tray picks the take under the hand.
+ *   Where the tray has the room (desktop widths) each cell carries its part's name, so a hand can aim at a part; where
+ *   it has not, the cells carry their numbers, as the readout counts (finding 11). Index has a 44px touch target
+ *   (finding 12). Then the transport: Previous, Play (sinks into the tray while running) and Next, as raised blocks.
+ * - Then the screen.
  * - No accent fill in the body (R6): the take on the screen holds the view's one primary fill.
- * - DOM puts the deck (selector, then Play) before the screen so Tab reaches slider -> play -> screen; flex order puts
- *   the screen on top.
  */
+import type { PointerEvent } from "react";
+import { useHand } from "@/motion/hand";
 import type { PlayObjectBody, PlayObjectBodyProps } from "../body";
 import { COMPACT_BOX, COMPACT_SCREEN, SCREEN_HEIGHT } from "../body";
-import { useScrub } from "../scrub";
 
 const keyBase =
   "litt-target relative inline-flex shrink-0 cursor-pointer items-center justify-center rounded-control bg-block text-fg " +
@@ -28,6 +32,32 @@ const keyBase =
 const keyLatched =
   "aria-pressed:bg-tray aria-pressed:shadow-(--tray-shade) aria-pressed:[transform:translateY(var(--press-depth))] " +
   "forced-colors:aria-pressed:border-[Highlight]";
+
+/** Scrubbing the selector by its cells: a press picks the cell under it and a drag picks every cell it passes. The
+    cells are as wide as their names, so the take under the hand is found by the cells' own edges, not by dividing the
+    tray evenly (scrub.ts does that for equal cells). */
+function useCellScrub(pick: (i: number) => void) {
+  const hand = useHand();
+  return (e: PointerEvent<HTMLElement>) => {
+    const cells = Array.from(e.currentTarget.children, (c) => c.getBoundingClientRect());
+    const under = (x: number) => {
+      let i = 0;
+      cells.forEach((r, k) => {
+        if (x >= r.left) i = k;
+      });
+      return i;
+    };
+    const x0 = e.clientX;
+    hand.begin(e, {
+      axis: "x",
+      slop: 2,
+      onMove: (p) => pick(under(p.x)),
+      onRelease: (r) => {
+        if (!r.cancelled && !r.claimed) pick(under(x0));
+      },
+    });
+  };
+}
 
 function Readout({ readout, compact = false, className = "" }: Pick<PlayObjectBodyProps, "readout"> & { compact?: boolean; className?: string }) {
   return (
@@ -48,16 +78,15 @@ function Readout({ readout, compact = false, className = "" }: Pick<PlayObjectBo
 }
 
 function TraySelector({ takes, at, selector, pick, index, compact = false }: Pick<PlayObjectBodyProps, "takes" | "at" | "selector" | "pick" | "index"> & { compact?: boolean }) {
-  const n = takes.length;
-  const scrub = useScrub(n, pick);
+  const scrub = useCellScrub(pick);
   return (
-    <div className="flex min-w-0 flex-1 items-center gap-1 rounded-control bg-tray p-0.5 shadow-(--tray-shade) forced-colors:border">
+    <div className="@container flex min-w-0 flex-1 items-center gap-1 rounded-control bg-tray p-0.5 shadow-(--tray-shade) forced-colors:border">
       <button
         {...index}
         aria-label={undefined}
         title="Index"
         className={
-          "inline-flex h-7 shrink-0 cursor-pointer items-center justify-center rounded-[calc(var(--radius-control)-2px)] px-2 text-caption font-title select-none " +
+          "litt-target relative inline-flex h-7 shrink-0 cursor-pointer items-center justify-center rounded-[calc(var(--radius-control)-2px)] px-2 text-caption font-title select-none " +
           "transition-[background-color,color,box-shadow] duration-(--dur-instant) ease-litt " +
           (at === null
             ? "bg-block text-fg shadow-[var(--highlight),var(--block-lift)] forced-colors:bg-[Highlight] forced-colors:text-[HighlightText]"
@@ -71,11 +100,13 @@ function TraySelector({ takes, at, selector, pick, index, compact = false }: Pic
         onPointerDown={scrub}
         className={
           "grid min-w-0 flex-1 cursor-ew-resize touch-pan-y grid-flow-col auto-cols-fr items-stretch gap-0.5 rounded-[calc(var(--radius-control)-2px)] select-none " +
+          (compact ? "" : "@min-[57rem]:auto-cols-auto ") +
           "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus"
         }
       >
         {takes.map((t, i) => {
           const active = i === at;
+          const number = String(i + 1).padStart(2, "0");
           return (
             <span
               key={t.id}
@@ -83,14 +114,21 @@ function TraySelector({ takes, at, selector, pick, index, compact = false }: Pic
               title={t.title}
               onClick={() => pick(i)}
               className={
-                "grid h-7 min-w-0 place-items-center rounded-[calc(var(--radius-control)-2px)] font-mono text-caption tabular-nums " +
+                "grid h-7 min-w-0 place-items-center rounded-[calc(var(--radius-control)-2px)] text-caption whitespace-nowrap " +
                 "transition-[background-color,color,box-shadow] duration-(--dur-instant) ease-litt " +
                 (active
                   ? "bg-block font-title text-fg shadow-[var(--highlight),var(--block-lift)] forced-colors:bg-[Highlight] forced-colors:text-[HighlightText]"
                   : "text-fg-subtle hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] hover:text-fg")
               }
             >
-              {compact ? <span className={"h-2 w-0.5 " + (active ? "bg-fg" : "bg-line-strong")} /> : String(i + 1).padStart(2, "0")}
+              {compact ? (
+                <span className="font-mono tabular-nums">{number}</span>
+              ) : (
+                <>
+                  <span className="font-mono tabular-nums @min-[57rem]:hidden">{number}</span>
+                  <span className="hidden px-2 @min-[57rem]:inline">{t.title}</span>
+                </>
+              )}
             </span>
           );
         })}
@@ -115,11 +153,11 @@ function PressBody({ takes, at, selector, pick, step, index, play, readout, scre
     return (
       <div className={COMPACT_BOX}>
         <div className="grid shrink-0 gap-2 border-b border-line bg-surface-1 px-gutter py-2.5">
+          <Readout readout={readout} compact />
           <div className="flex min-w-0 items-center gap-2">
-            <Readout readout={readout} compact className="min-w-0 flex-1" />
+            <TraySelector takes={takes} at={at} selector={selector} pick={pick} index={index} compact />
             <PlayBlock play={play} className="size-9" />
           </div>
-          <TraySelector takes={takes} at={at} selector={selector} pick={pick} index={index} compact />
         </div>
         {screen}
       </div>
@@ -127,25 +165,27 @@ function PressBody({ takes, at, selector, pick, step, index, play, readout, scre
   }
   return (
     <div className="flex w-full min-w-0 flex-col gap-3 rounded-surface bg-surface-1 p-3 shadow-[var(--highlight),var(--plate-lift)] forced-colors:border">
-      {/* DOM order: deck (selector, then Play) before screen so Tab reaches slider -> play -> screen. */}
-      <div className="order-2 flex min-w-0 flex-wrap items-center gap-3">
-        <Readout readout={readout} className="w-48 shrink-0" />
-        <TraySelector takes={takes} at={at} selector={selector} pick={pick} index={index} />
-        <div className="flex shrink-0 items-center gap-1.5">
-          <button {...step(-1)} className={keyBase + " size-control-sm"}>
-            <svg aria-hidden="true" viewBox="0 0 16 16" className="size-3 fill-current">
-              <path d="M10.5 3.5 5 8l5.5 4.5z" />
-            </svg>
-          </button>
-          <PlayBlock play={play} className="size-control-sm" />
-          <button {...step(1)} className={keyBase + " size-control-sm"}>
-            <svg aria-hidden="true" viewBox="0 0 16 16" className="size-3 fill-current">
-              <path d="M5.5 3.5 11 8l-5.5 4.5z" />
-            </svg>
-          </button>
+      {/* Top to bottom, as the order read and the order tabbed: the readout, the selector, the transport, the screen. */}
+      <div data-press-deck="" className="grid min-w-0 gap-2">
+        <Readout readout={readout} />
+        <div className="flex min-w-0 items-center gap-3">
+          <TraySelector takes={takes} at={at} selector={selector} pick={pick} index={index} />
+          <div className="flex shrink-0 items-center gap-1.5">
+            <button {...step(-1)} className={keyBase + " size-control-sm"}>
+              <svg aria-hidden="true" viewBox="0 0 16 16" className="size-3 fill-current">
+                <path d="M10.5 3.5 5 8l5.5 4.5z" />
+              </svg>
+            </button>
+            <PlayBlock play={play} className="size-control-sm" />
+            <button {...step(1)} className={keyBase + " size-control-sm"}>
+              <svg aria-hidden="true" viewBox="0 0 16 16" className="size-3 fill-current">
+                <path d="M5.5 3.5 11 8l-5.5 4.5z" />
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
-      <div className="order-1 flex rounded-control bg-tray p-0.5 shadow-(--tray-shade) forced-colors:border">
+      <div className="flex rounded-control bg-tray p-0.5 shadow-(--tray-shade) forced-colors:border">
         {screen}
       </div>
     </div>
