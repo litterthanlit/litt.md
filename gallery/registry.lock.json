@@ -140,7 +140,7 @@
     },
     "deploy-status": {
       "version": "2026.11.21",
-      "hash": "894da2fddd2020be"
+      "hash": "95d1bb989b2e4ef4"
     },
     "deployment": {
       "version": "2026.11.03",
@@ -560,7 +560,7 @@
     },
     "env-switch": {
       "version": "2026.11.21",
-      "hash": "7dedc3e8deb011b5"
+      "hash": "0a07ceedc0353720"
     },
     "file-changes": {
       "version": "2026.11.18",
@@ -1984,7 +1984,7 @@
     },
     "press-deploy-status": {
       "version": "2026.11.21",
-      "hash": "894da2fddd2020be"
+      "hash": "95d1bb989b2e4ef4"
     },
     "press-details": {
       "version": "2026.11.18",
@@ -2000,7 +2000,7 @@
     },
     "press-env-switch": {
       "version": "2026.11.21",
-      "hash": "7dedc3e8deb011b5"
+      "hash": "0a07ceedc0353720"
     },
     "press-file-changes": {
       "version": "2026.11.18",
@@ -2140,7 +2140,7 @@
     },
     "press-release-rail": {
       "version": "2026.11.21",
-      "hash": "bfc111f5e6b1c6ed"
+      "hash": "00fdca0876b9bebc"
     },
     "press-resizable": {
       "version": "2026.11.16",
@@ -2704,7 +2704,7 @@
     },
     "release-rail": {
       "version": "2026.11.21",
-      "hash": "bfc111f5e6b1c6ed"
+      "hash": "00fdca0876b9bebc"
     },
     "resizable": {
       "version": "2026.11.06",

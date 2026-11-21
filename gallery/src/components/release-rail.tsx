@@ -70,6 +70,7 @@ export function ReleaseRail({
   function onKeyDown(e: KeyboardEvent<HTMLDivElement>) {
     const at = releases.findIndex((r) => r.sha === selected.sha);
     const n = releases.length;
+    if (n === 0) return;
     const rtl = getComputedStyle(e.currentTarget).direction === "rtl";
     const fwd = e.key === "ArrowDown" || e.key === (rtl ? "ArrowLeft" : "ArrowRight");
     const back = e.key === "ArrowUp" || e.key === (rtl ? "ArrowRight" : "ArrowLeft");
