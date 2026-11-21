@@ -146,8 +146,15 @@ async function open(hash, { theme, scale = 1 } = {}) {
   return { ctx, pg, errors };
 }
 
+/** The object's own Play key: never a part on its screen that is also named Play (Rack's transport on its Index). */
+const PLAY = '[data-play-object] button[aria-label="Play"]:not([data-play-take] *)';
+
 /** Scrolls the page so the object is whole in the window, under the header. */
-const inView = (pg) => pg.evaluate(() => window.scrollBy(0, document.querySelector("[data-play-object]").getBoundingClientRect().top - 80));
+const inView = async (pg) => {
+  /* The object's body loads on demand, so after a reload it may not be in the page yet. */
+  await pg.waitForSelector("[data-play-object]", { state: "attached", timeout: 10000 });
+  await pg.evaluate(() => window.scrollBy(0, document.querySelector("[data-play-object]").getBoundingClientRect().top - 80));
+};
 
 /** Where every visible element matching the selector sits against the screen, in the box and in the DOM. */
 function place(pg, selector) {
@@ -681,10 +688,10 @@ for (const [world, id, attribute] of RUN) {
   /* Play, only when pressed, and a hand on the screen stops it. */
   await inView(pg);
   const before = await now(pg);
-  await pg.locator("[data-play-object]").getByRole("button", { name: "Play", exact: true }).click();
+  await pg.locator(PLAY).click();
   await pg.waitForTimeout(5000);
   const after = await now(pg);
-  const pressed = await pg.locator("[data-play-object]").getByRole("button", { name: "Play", exact: true }).getAttribute("aria-pressed");
+  const pressed = await pg.locator(PLAY).getAttribute("aria-pressed");
   claim("Play steps through the takes, and a press on the screen stops it", after !== before && pressed === "true" ? null : `${world}: after Play the take went ${before} to ${after}, Play pressed ${pressed}`);
   const sb = await pg.locator(FRAME).boundingBox();
   await pg.mouse.click(sb.x + 8, sb.y + 8);
@@ -699,7 +706,7 @@ for (const [world, id, attribute] of RUN) {
      after, as a reader of the address that skips the hand's path leaves it running. */
   {
     await inView(pg);
-    const play = pg.locator("[data-play-object]").getByRole("button", { name: "Play", exact: true });
+    const play = pg.locator(PLAY);
     await play.click();
     await pg.waitForFunction((S) => Number(document.querySelector(S)?.getAttribute("aria-valuenow")) >= 2, SLIDER, { timeout: 6000 }).catch(() => {});
     /* By the keys, with the pointer off the page, so a row the page scrolls under a still pointer is not made current.
