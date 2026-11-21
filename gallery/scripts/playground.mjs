@@ -24,8 +24,9 @@
  *   components, about or take, which would hide behind the world's own addresses,
  * - the screen does not open on Index, the world's set (a row each, as many as the slider runs to and takes.ts lists),
  *   or a name in a row of Index's grid sits above or below another name in that row (rows hold to their tops), or, on
- *   Heat, Index (its own menu, body.Home) does not show the current row's part live on the screen with exactly one row
- *   current, Down moving both,
+ *   any world whose body draws its own Index (body.Home, data-play-home="body"; Heat's today), Index does not show the
+ *   current row's part live on the screen with exactly one row current, Down and the pointer on a row moving both
+ *   (a world that keeps the contract's Index passes),
  * - Right and Down do not go to the next take, Left and Up to the previous, wrapping through Index, or End and Home do
  *   not go to the last take and to Index, with aria-valuenow and the readout's count following,
  * - a take (each in the set) draws nothing inside the screen's box, or anything in the body (the object outside its
@@ -203,6 +204,7 @@ function showing(pg) {
 /* No two controls on a player share a name unless they go to the same place: the same href, or the same
    data-play-to (the contract's two Index controls). What a take or Index's live part draws is the part's, not the
    player's, so it is left out. */
+const OWN_INDEX_CLAIM = "on a body's own Index a live part is on the screen and exactly one row is current, and Down or the pointer moves both";
 const NAMES_CLAIM = "no two controls on a player share a name unless they go to the same place";
 function sharedNames(pg) {
   return pg.evaluate(() => {
@@ -415,11 +417,14 @@ for (const [world, id, attribute] of RUN) {
     home.id === "home" && (await readout(pg))?.includes("Index") && set.length === n && n === (SETS[id] ?? []).length ? null : `${world}: showing ${home.id}, readout "${await readout(pg)}", ${set.length} in the set on Index, the slider runs to ${n}`,
   );
 
-  /* Heat's Index is its menu (finding 1): the current row's part is live on the screen beside the list, and exactly one
-     row is current. Down makes the next row current and brings its part. The break: the live part taken away and a
-     second row marked current. */
-  if (id === "heat") {
-    if (selfTest)
+  /* A body's own Index (body.Home, plans/audits/shared-fixes.md, Track 3; Heat's first, finding 1): the current row's
+     part is live on the screen, and exactly one row is current. Down makes the next row current and brings its part,
+     and the pointer on a row does the same. A body that keeps the contract's Index has nothing to show here and
+     passes. The break, on Heat: the live part taken away and a second row marked current. */
+  const ownIndex = await pg.locator(`${FRAME} [data-play-take=home][data-play-home=body]`).count();
+  claim(OWN_INDEX_CLAIM, null);
+  if (ownIndex) {
+    if (selfTest && id === "heat")
       await pg.evaluate((F) => {
         document.querySelector(`${F} [data-play-live]`)?.remove();
         document.querySelectorAll(`${F} [data-play-index] button`)[3]?.setAttribute("data-current", "");
@@ -436,7 +441,7 @@ for (const [world, id, attribute] of RUN) {
         return { live: live?.dataset.playLive ?? null, draws, current };
       }, FRAME);
     const atRest = await menu();
-    let moved = null;
+    let moved = null, pointed = null;
     if (!selfTest) {
       await pg.locator(`${FRAME} [data-play-index] button[data-current]`).focus();
       await pg.keyboard.press("ArrowDown");
@@ -444,12 +449,23 @@ for (const [world, id, attribute] of RUN) {
       moved = await menu();
       await pg.keyboard.press("ArrowUp");
       await pg.waitForTimeout(200);
+      const third = await pg.locator(`${FRAME} [data-play-index] button`).nth(2).boundingBox();
+      if (third) {
+        await pg.mouse.move(third.x + third.width / 2, third.y + third.height / 2);
+        await pg.waitForTimeout(300);
+        pointed = await menu();
+        await pg.mouse.move(0, 0);
+      }
+      await pg.locator(`${FRAME} [data-play-index] button`).first().focus();
+      await pg.waitForTimeout(200);
     }
+    const ids = SETS[id] ?? [];
+    const ok = (m, k) => m.draws && m.current.length === 1 && m.live === ids[k];
     claim(
-      "on Heat's Index a live part is on the screen and exactly one row is current, and Down moves both",
-      atRest.draws && atRest.current.length === 1 && atRest.live === SETS.heat?.[0] && (!moved || (moved.current.length === 1 && moved.live === SETS.heat?.[1] && moved.draws))
+      OWN_INDEX_CLAIM,
+      ok(atRest, 0) && (!moved || ok(moved, 1)) && (!pointed || ok(pointed, 2))
         ? null
-        : `${world}: at rest ${JSON.stringify(atRest)}${moved ? `, after Down ${JSON.stringify(moved)}` : ""}`,
+        : `${world}: at rest ${JSON.stringify(atRest)}${moved ? `, after Down ${JSON.stringify(moved)}` : ""}${pointed ? `, with the pointer on the third row ${JSON.stringify(pointed)}` : ""}`,
     );
     if (selfTest) await pg.reload({ waitUntil: "networkidle" }).then(() => pg.waitForTimeout(300)).then(() => inView(pg));
   }
@@ -704,7 +720,7 @@ if (selfTest) {
   if (!topsCaught) console.error("playground --self-test: Index's rows centred with a wrapping line on Device, and the check missed it.");
   const orderCaught = (claims.get("on Heat's player each tab stop is at or below the one before it, or to its right") ?? []).some((f) => f.startsWith("Heat:"));
   if (!orderCaught) console.error("playground --self-test: Heat's menu strip drawn under its screen again, and the check missed it.");
-  const menuCaught = (claims.get("on Heat's Index a live part is on the screen and exactly one row is current, and Down moves both") ?? []).some((f) => f.startsWith("Heat:"));
+  const menuCaught = (claims.get(OWN_INDEX_CLAIM) ?? []).some((f) => f.startsWith("Heat:"));
   if (!menuCaught) console.error("playground --self-test: Heat's Index lost its live part and gained a second current row, and the check missed it.");
   const sizeCaught = [...claims].some(([name, fails]) => name.startsWith("on Heat's player the pursuit meter covers") && fails.some((f) => f.startsWith("Heat:")));
   if (!sizeCaught) console.error("playground --self-test: Heat's screen at the other worlds' height, and the check missed the take's size.");
