@@ -18,7 +18,7 @@
  *   takes' tracks.
  * - Instant cuts only (`duration-(--dur-instant)`), nothing glides.
  */
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { PlayObjectBody, PlayObjectBodyProps } from "../body";
 import { COMPACT_BOX, COMPACT_SCREEN, SCREEN_HEIGHT } from "../body";
 
@@ -87,66 +87,98 @@ const RING =
   "group-has-[[role=slider]:focus-visible]/lane:z-10 group-has-[[role=slider]:focus-visible]/lane:outline-2 " +
   "group-has-[[role=slider]:focus-visible]/lane:outline-offset-2 group-has-[[role=slider]:focus-visible]/lane:outline-focus";
 
-function ClipLane({ takes, at, selector, pick, index }: Pick<PlayObjectBodyProps, "takes" | "at" | "selector" | "pick" | "index">) {
+/* The lane's cut edges (finding 13, as Heat's strip): where the lane has more to scroll, its edge fades out into the
+   ground it sits on (`ground`, a `from-*` class), so the set visibly goes on. Drawn over the scroller, never in it; gone
+   under forced colors, where the gradient would not hold. */
+const CUT = "pointer-events-none absolute inset-y-0 w-8 to-transparent forced-colors:hidden";
+
+function ClipLane({
+  takes,
+  at,
+  selector,
+  pick,
+  index,
+  ground,
+}: Pick<PlayObjectBodyProps, "takes" | "at" | "selector" | "pick" | "index"> & { ground: string }) {
   const lane = useRef<HTMLDivElement>(null);
+  /* Which ends have more to scroll to. */
+  const [more, setMore] = useState({ start: false, end: false });
+  const measure = () => {
+    const l = lane.current;
+    if (!l) return;
+    const start = l.scrollLeft > 1;
+    const end = l.scrollLeft + l.clientWidth < l.scrollWidth - 1;
+    setMore((m) => (m.start === start && m.end === end ? m : { start, end }));
+  };
   useEffect(() => {
     const l = lane.current;
     const on = l?.querySelector<HTMLElement>("[data-chosen]");
-    if (!l || !on || l.scrollWidth <= l.clientWidth) return;
-    l.scrollTo({ left: on.offsetLeft - (l.clientWidth - on.offsetWidth) / 2 });
+    if (l && on && l.scrollWidth > l.clientWidth) l.scrollTo({ left: on.offsetLeft - (l.clientWidth - on.offsetWidth) / 2 });
+    measure();
   }, [at]);
+  useEffect(() => {
+    const l = lane.current;
+    if (!l || typeof ResizeObserver === "undefined") return;
+    const seen = new ResizeObserver(measure);
+    seen.observe(l);
+    return () => seen.disconnect();
+  }, []);
 
   return (
-    <div ref={lane} className="group/lane flex min-w-0 flex-1 items-stretch gap-1 overflow-x-auto overscroll-x-contain p-1 [scrollbar-width:none]">
-      <button
-        {...index}
-        aria-label={undefined}
-        data-chosen={at === null ? "" : undefined}
-        className={
-          "relative inline-flex h-control-sm shrink-0 cursor-pointer items-center rounded-control px-2.5 text-caption font-title select-none pointer-coarse:h-control-md " +
-          "shadow-(--block-lift) transition-colors duration-(--dur-instant) ease-litt " +
-          (at === null
-            ? "bg-fg text-canvas forced-colors:border forced-colors:bg-[Highlight] forced-colors:text-[HighlightText] " + RING
-            : "bg-block text-fg-subtle hover:bg-(--block-hover) hover:text-fg forced-colors:border")
-        }
-      >
-        Index
-      </button>
-      <div
-        {...selector}
-        className="flex shrink-0 items-stretch gap-1 outline-none"
-      >
-        {takes.map((t, i) => {
-          const active = i === at;
-          const bars = clipBars(t.id);
-          return (
-            <span
-              key={t.id}
-              aria-hidden="true"
-              data-chosen={active ? "" : undefined}
-              onClick={() => pick(i)}
-              className={
-                "relative inline-flex h-control-sm shrink-0 cursor-pointer items-center gap-1.5 overflow-hidden rounded-control px-2.5 text-caption font-title whitespace-nowrap select-none pointer-coarse:h-control-md " +
-                "shadow-(--block-lift) transition-colors duration-(--dur-instant) ease-litt forced-colors:border " +
-                (active
-                  ? "bg-fg text-canvas forced-colors:bg-[Highlight] forced-colors:text-[HighlightText] " + RING
-                  : "bg-block text-fg-muted hover:bg-(--block-hover) hover:text-fg")
-              }
-            >
-              <span aria-hidden="true" className="inline-flex h-3 items-end gap-px">
-                {bars.map((pct, b) => (
-                  <span
-                    key={b}
-                    className={"w-0.5 " + (active ? "bg-canvas opacity-75" : "bg-fg-subtle")}
-                    style={{ height: `${pct}%` }}
-                  />
-                ))}
+    <div className="relative flex min-w-0 flex-1">
+      <div ref={lane} onScroll={measure} className="group/lane flex min-w-0 flex-1 items-stretch gap-1 overflow-x-auto overscroll-x-contain p-1 [scrollbar-width:none]">
+        <button
+          {...index}
+          aria-label={undefined}
+          data-chosen={at === null ? "" : undefined}
+          className={
+            "relative inline-flex h-control-sm shrink-0 cursor-pointer items-center rounded-control px-2.5 text-caption font-title select-none pointer-coarse:h-control-md " +
+            "shadow-(--block-lift) transition-colors duration-(--dur-instant) ease-litt " +
+            (at === null
+              ? "bg-fg text-canvas forced-colors:border forced-colors:bg-[Highlight] forced-colors:text-[HighlightText] " + RING
+              : "bg-block text-fg-subtle hover:bg-(--block-hover) hover:text-fg forced-colors:border")
+          }
+        >
+          Index
+        </button>
+        <div
+          {...selector}
+          className="flex shrink-0 items-stretch gap-1 outline-none"
+        >
+          {takes.map((t, i) => {
+            const active = i === at;
+            const bars = clipBars(t.id);
+            return (
+              <span
+                key={t.id}
+                aria-hidden="true"
+                data-chosen={active ? "" : undefined}
+                onClick={() => pick(i)}
+                className={
+                  "relative inline-flex h-control-sm shrink-0 cursor-pointer items-center gap-1.5 overflow-hidden rounded-control px-2.5 text-caption font-title whitespace-nowrap select-none pointer-coarse:h-control-md " +
+                  "shadow-(--block-lift) transition-colors duration-(--dur-instant) ease-litt forced-colors:border " +
+                  (active
+                    ? "bg-fg text-canvas forced-colors:bg-[Highlight] forced-colors:text-[HighlightText] " + RING
+                    : "bg-block text-fg-muted hover:bg-(--block-hover) hover:text-fg")
+                }
+              >
+                <span aria-hidden="true" className="inline-flex h-3 items-end gap-px">
+                  {bars.map((pct, b) => (
+                    <span
+                      key={b}
+                      className={"w-0.5 " + (active ? "bg-canvas opacity-75" : "bg-fg-subtle")}
+                      style={{ height: `${pct}%` }}
+                    />
+                  ))}
+                </span>
+                <span>{t.title}</span>
               </span>
-              <span>{t.title}</span>
-            </span>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
+      {more.start && <span aria-hidden="true" data-rack-cut="start" className={CUT + " left-0 bg-linear-to-r " + ground} />}
+      {more.end && <span aria-hidden="true" data-rack-cut="end" className={CUT + " right-0 bg-linear-to-l " + ground} />}
     </div>
   );
 }
@@ -170,7 +202,7 @@ function RackBody({ takes, at, selector, pick, step, index, play, readout, scree
         <div className="grid shrink-0 border-b border-line-strong bg-surface-1">
           <TitleBar readout={readout} at={at} n={takes.length} playing={playing} compact />
           <div className="flex min-w-0 items-center gap-1.5 px-gutter py-2">
-            <ClipLane takes={takes} at={at} selector={selector} pick={pick} index={index} />
+            <ClipLane takes={takes} at={at} selector={selector} pick={pick} index={index} ground="from-surface-1" />
             <PlayRackKey play={play} className="w-control-sm" />
           </div>
         </div>
@@ -184,7 +216,7 @@ function RackBody({ takes, at, selector, pick, step, index, play, readout, scree
           bar (no tab stop), the clip lane and the transport (the selector, then Play), then the screen. */}
       <TitleBar readout={readout} at={at} n={takes.length} playing={playing} />
       <div data-rack-lane="" className="flex min-w-0 items-center gap-2 border-b border-line bg-surface-2 px-3 py-1">
-        <ClipLane takes={takes} at={at} selector={selector} pick={pick} index={index} />
+        <ClipLane takes={takes} at={at} selector={selector} pick={pick} index={index} ground="from-surface-2" />
         <div className="flex shrink-0 items-center gap-1">
           <button {...step(-1)} className={rackKey + " w-control-sm"}>
             <svg aria-hidden="true" viewBox="0 0 16 16" className="size-3 fill-current">

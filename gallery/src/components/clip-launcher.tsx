@@ -9,6 +9,8 @@
  *   clip stops it. Clicking a scene button launches the entire row across every track at once.
  * - Active clips cut cleanly to lit ink (`bg-fg text-canvas`) with their track hue stripe preserved on the left rail,
  *   while resting clips show their rich Rack clip tint (`bg-data-*-tint`), text tone, and seeded mini-waveform bars.
+ * - A clip's name is never cut short in a narrow panel: it wraps to a second line and the row grows to hold it (every
+ *   value in reach), and its accessible name carries it whole.
  * - Keys (principle 5, one tab stop per composite): the session is a grid (role grid, a row of column headers for the
  *   tracks and Master, then a row per scene) and one Tab stop, on the cell focused last (the first clip to start
  *   with). ← → ↑ ↓ move a cell at a time without wrapping, Home and End go to the row's ends, Ctrl (or ⌘) with them to
@@ -326,7 +328,7 @@ export function ClipLauncher({
                         <svg aria-hidden="true" viewBox="0 0 12 12" className="size-2.5 shrink-0 fill-current">
                           {isOn ? <rect x="2.5" y="2.5" width="7" height="7" /> : <path d="M3 2v8l7-4z" />}
                         </svg>
-                        <span className="min-w-0 flex-1 truncate text-caption font-title">{clip.name}</span>
+                        <span className="line-clamp-2 min-w-0 flex-1 text-caption font-title break-words">{clip.name}</span>
                         <span aria-hidden="true" className="hidden h-3 shrink-0 items-end gap-px sm:inline-flex">
                           {wave.map((pct, k) => (
                             <span
