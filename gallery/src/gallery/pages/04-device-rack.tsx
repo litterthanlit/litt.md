@@ -73,7 +73,7 @@ export default function DeviceRackPage() {
         tier="instant"
         size="lg"
         code="EchoRackDemo"
-        caption="Drag vertically on any macro dial, step with arrow keys, or double-click a dial to reset it. Switch between Dub Tape, Warm Wash, Acid Ping and Init to snap all six macros at once."
+        caption="Drag vertically on any macro dial, step with arrow keys, or double-click a dial to reset it. Switch between Dub Tape, Warm Wash, Acid Ping and Init to snap all five macros at once."
       >
         <EchoRackDemo />
       </Stage>

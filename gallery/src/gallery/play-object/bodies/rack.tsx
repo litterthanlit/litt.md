@@ -1,30 +1,25 @@
 /**
  * Rack's object, a module (plans/018, Rack's row; proposals/rack.md, after Ableton Live): a grey device panel in a 1px
- * outline with a title bar, a live value bar readout, and a lane of color-coded clips.
+ * outline with a title bar, a live value bar readout, and a lane of clips, one per part in the set.
  *
  * - Outer module (`bg-surface-1`, 1px `--line-strong` outline, `rounded-surface`, `overflow-hidden`):
  *   - Title bar (`order-1`, non-focusable): module name, transport indicator dot, and a Rack value bar filled to the
  *     take's place in the set (`--slot` + `--slot-fill` + 2px `--fg` line) beside the tabular count and title.
  *   - Screen bay (`order-2`): the screen recessed inside a 1px rule, holding the take alone (`rail: false`).
- *   - Clip lane (`order-3`, DOM child 1): a dense lane of clips in Rack's five clip colors (`--data-*-tint` / `-text` /
- *     mark), each with a subtle seeded waveform silhouette; the active clip cuts cleanly to lit ink (`bg-fg text-canvas`,
- *     as Rack's Tabs do), beside square outlined transport keys.
+ *   - Clip lane (`order-3`, DOM child 1): a dense lane of clips, one per part in the set, each grey (`bg-block`) with a
+ *     subtle seeded waveform silhouette in `--fg-subtle`; the active clip cuts cleanly to lit ink (`bg-fg text-canvas`,
+ *     as Rack's Tabs do), beside square outlined transport keys. Color is owned, not dealt (plans/audits/rack.md,
+ *     finding 4): a clip color in Rack stands for a track inside a take (Drums, Bass, a macro), so the lane, which
+ *     holds parts, not tracks, takes none; a hue dealt by place would mean two things on one screen.
  * - Under a finger the lane's Index and its clips grow to 44px tall, a finger's target (a 44px ::before would be cut off
  *   by the lane's scroller), and the transport keys keep theirs with `litt-target relative`.
- * - Zero accent fill in the body (R6): yellow stays reserved for the take inside the screen; clip colors belong to data.
+ * - Zero accent fill in the body (R6): yellow stays reserved for the take inside the screen; clip colors belong to the
+ *   takes' tracks.
  * - Instant cuts only (`duration-(--dur-instant)`), nothing glides.
  */
 import { useEffect, useRef } from "react";
 import type { PlayObjectBody, PlayObjectBodyProps } from "../body";
 import { COMPACT_BOX, COMPACT_SCREEN, SCREEN_HEIGHT } from "../body";
-
-const CLIP_HUES = [
-  { bg: "bg-data-amber-tint", ink: "text-data-amber-text", bar: "bg-data-amber" },
-  { bg: "bg-data-blue-tint", ink: "text-data-blue-text", bar: "bg-data-blue" },
-  { bg: "bg-data-teal-tint", ink: "text-data-teal-text", bar: "bg-data-teal" },
-  { bg: "bg-data-violet-tint", ink: "text-data-violet-text", bar: "bg-data-violet" },
-  { bg: "bg-data-rose-tint", ink: "text-data-rose-text", bar: "bg-data-rose" },
-] as const;
 
 /** Deterministic mini-waveform heights (4 bars per clip) seeded from take id. */
 function clipBars(id: string): number[] {
@@ -115,7 +110,6 @@ function ClipLane({ takes, at, selector, pick, index }: Pick<PlayObjectBodyProps
       >
         {takes.map((t, i) => {
           const active = i === at;
-          const hue = CLIP_HUES[i % CLIP_HUES.length]!;
           const bars = clipBars(t.id);
           return (
             <span
@@ -128,14 +122,14 @@ function ClipLane({ takes, at, selector, pick, index }: Pick<PlayObjectBodyProps
                 "shadow-(--block-lift) transition-colors duration-(--dur-instant) ease-litt forced-colors:border " +
                 (active
                   ? "bg-fg text-canvas forced-colors:bg-[Highlight] forced-colors:text-[HighlightText]"
-                  : `${hue.bg} ${hue.ink} hover:shadow-(--block-press)`)
+                  : "bg-block text-fg-muted hover:bg-(--block-hover) hover:text-fg")
               }
             >
               <span aria-hidden="true" className="inline-flex h-3 items-end gap-px">
                 {bars.map((pct, b) => (
                   <span
                     key={b}
-                    className={"w-0.5 " + (active ? "bg-canvas opacity-75" : hue.bar)}
+                    className={"w-0.5 " + (active ? "bg-canvas opacity-75" : "bg-fg-subtle")}
                     style={{ height: `${pct}%` }}
                   />
                 ))}

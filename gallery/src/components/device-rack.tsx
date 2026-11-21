@@ -4,7 +4,8 @@
  *
  * - Each macro dial is a compact square parameter box (`bg-surface-2 border border-line rounded-control`) holding a
  *   color-coded SVG rotary arc (`amber`, `blue`, `teal`, `violet`, `rose`), a crisp indicator needle, and its tabular
- *   value in words underneath.
+ *   value in words underneath. Give each macro its own hue: one color means one thing (Rack), so five macros is the
+ *   most a device colors without repeating one.
  * - Drag vertically on any dial (1:1 pointer capture, just like Live), step with arrow keys (`role="slider"`), or
  *   double-click to reset to its default value. Presets cut all dials to their stored values on the frame ("on the
  *   beat", zero bounce).
@@ -50,20 +51,20 @@ export type DeviceRackProps = {
   className?: string;
 };
 
+/* Each macro its own clip color (one color means one thing, Rack's line): five macros, Rack's five hues. */
 export const DEFAULT_MACROS: DeviceMacro[] = [
   { id: "cutoff", label: "Cutoff", hue: "amber", min: 80, max: 12000, step: 120, defaultValue: 3400, unit: "Hz" },
   { id: "res", label: "Resonance", hue: "blue", min: 0, max: 100, step: 2, defaultValue: 38, unit: "%" },
   { id: "feedback", label: "Feedback", hue: "teal", min: 0, max: 100, step: 2, defaultValue: 54, unit: "%" },
   { id: "drive", label: "Drive", hue: "rose", min: 0, max: 24, step: 1, defaultValue: 6, unit: "dB" },
-  { id: "width", label: "Width", hue: "violet", min: 0, max: 100, step: 2, defaultValue: 78, unit: "%" },
-  { id: "drywet", label: "Dry/Wet", hue: "amber", min: 0, max: 100, step: 2, defaultValue: 42, unit: "%" },
+  { id: "drywet", label: "Dry/Wet", hue: "violet", min: 0, max: 100, step: 2, defaultValue: 42, unit: "%" },
 ];
 
 export const DEFAULT_PRESETS: DevicePreset[] = [
-  { name: "Dub Tape", values: { cutoff: 3400, res: 38, feedback: 54, drive: 6, width: 78, drywet: 42 } },
-  { name: "Warm Wash", values: { cutoff: 1800, res: 24, feedback: 76, drive: 4, width: 92, drywet: 64 } },
-  { name: "Acid Ping", values: { cutoff: 6200, res: 74, feedback: 62, drive: 14, width: 60, drywet: 50 } },
-  { name: "Init", values: { cutoff: 12000, res: 0, feedback: 0, drive: 0, width: 50, drywet: 0 } },
+  { name: "Dub Tape", values: { cutoff: 3400, res: 38, feedback: 54, drive: 6, drywet: 42 } },
+  { name: "Warm Wash", values: { cutoff: 1800, res: 24, feedback: 76, drive: 4, drywet: 64 } },
+  { name: "Acid Ping", values: { cutoff: 6200, res: 74, feedback: 62, drive: 14, drywet: 50 } },
+  { name: "Init", values: { cutoff: 12000, res: 0, feedback: 0, drive: 0, drywet: 0 } },
 ];
 
 const HUE: Record<MacroHue, { stroke: string; badge: string; text: string }> = {
@@ -305,7 +306,11 @@ export function DeviceRack({
         aria-labelledby={headingId}
         className={
           "grid gap-1.5 p-2 " +
-          (macros.length <= 4 ? "grid-cols-2 sm:grid-cols-4" : "grid-cols-2 sm:grid-cols-3 md:grid-cols-6")
+          (macros.length <= 4
+            ? "grid-cols-2 sm:grid-cols-4"
+            : macros.length === 5
+              ? "grid-cols-2 sm:grid-cols-3 md:grid-cols-5"
+              : "grid-cols-2 sm:grid-cols-3 md:grid-cols-6")
         }
       >
         {macros.map((m) => (

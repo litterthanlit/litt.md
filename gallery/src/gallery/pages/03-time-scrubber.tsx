@@ -203,20 +203,22 @@ function SendingLogDemo() {
 
 /* ---------- Rack's own (proposals/rack.md): arrangement playhead scrubbing bars & cue markers ---------- */
 
+/* A cue is a marker, not a status (plans/audits/rack.md, finding 4): every cue is neutral, the one marker color, and its
+   line says what it is. Warning amber and its "Warning:" stay for a warning, and success green for something done. */
 const CUE_LOG: (LogLine & { at: number })[] = [
   { at: 1, time: "Bar 1", text: "Intro · Percussion pulse enters at 124 BPM" },
   { at: 9, time: "Bar 9", text: "Verse · Bass sub pulse locked to grid" },
   { at: 17, time: "Bar 17", text: "Build · Synth low-pass filter sweep opens" },
-  { at: 25, time: "Bar 25", level: "warn", text: "Drop · Full drum kit & acid bass line" },
-  { at: 41, time: "Bar 41", text: "Break · Keys Rhodes VII solo + Dub Echo" },
-  { at: 49, time: "Bar 49", level: "success", text: "Outro · Master bus fade out complete" },
+  { at: 25, time: "Bar 25", text: "Drop · Full drum kit and acid bass line" },
+  { at: 41, time: "Bar 41", text: "Break · Keys Rhodes VII solo through the dub echo" },
+  { at: 49, time: "Bar 49", text: "Outro · Master bus fades out" },
 ];
 
 const CUE_MARKS: TimeScrubberMark[] = [
   { at: 9, label: "Verse" },
-  { at: 25, label: "Drop", tone: "warning" },
+  { at: 25, label: "Drop" },
   { at: 41, label: "Break" },
-  { at: 49, label: "Outro", tone: "success" },
+  { at: 49, label: "Outro" },
 ];
 
 function ArrangementPlayheadDemo() {
@@ -269,7 +271,7 @@ export default function TimeScrubberPage() {
             title: "Arrangement playhead",
             code: "ArrangementPlayheadDemo",
             caption:
-              "Scrub the playhead across bars 1 to 57 of Ghost town. Page Up and Page Down jump cleanly between arrangement cue markers: Verse, Drop, Break, and Outro.",
+              "Scrub the playhead across bars 1 to 57 of Ghost town. Every cue is a marker in the one marker grey, named beside the reading when the needle is on it. Page Up and Page Down jump between the cues: Verse, Drop, Break and Outro.",
           },
         }}
       >

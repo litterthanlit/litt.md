@@ -12,6 +12,7 @@ Rack's audit, fixed (plans/audits/rack-fixes.md, Buildable now): the grids take 
 - **changed** `step-sequencer`, `rack-step-sequencer`: the steps are a grid (`role="grid"`, a row per lane with its name as the row header) and one tab stop instead of 32. The arrows move a step at a time without wrapping, Home and End go to the lane's ends (with Ctrl or ⌘, the grid's), and Enter or Space toggles the step. Tab leaves the grid. The beat ruler is hidden from screen readers, since each step's name says its number. Props are unchanged.
 - **fixed** `step-sequencer`, `rack-step-sequencer`: under a finger (`pointer: coarse`) each step is 44 by 44 instead of 22 wide, and the grid scrolls sideways inside its panel rather than shrink a step. Nothing changes under a mouse.
 - **fixed** `device-rack`, `rack-device-rack`: the 24px bypass keeps a 44px touch target (`litt-target relative`). Nothing looks different.
+- **changed** `device-rack`, `rack-device-rack`: each default macro has a color of its own. Cutoff and Dry/Wet both drew orange, so one color meant two things; the default device is now five macros (Cutoff, Resonance, Feedback, Drive, Dry/Wet), one per clip color, with Dry/Wet in violet, and Width is gone from `DEFAULT_MACROS` and the default presets. Five macros lay out in five columns from `md` up. Pass your own `macros` to keep a sixth.
 
 ## 2026-11-20 · Press deploy-dashboard identity, and Heat's keycaps are keys
 
