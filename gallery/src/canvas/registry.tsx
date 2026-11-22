@@ -34,6 +34,7 @@ import { FlatDirectionPreview, FlatNewParts, type FlatDirection } from "./flat-d
 import { FlatDataPalette, FlatDataScreen, FlatDataToday } from "./flat-data";
 import type { DataPaletteId } from "./flat-data-palettes";
 import { FEEL_OPTIONS, FlatFeelIntro, FlatFeelOption } from "./flat-feel";
+import { FlatStudies } from "./flat-studies";
 import { NoUiPreview, type NoUiColumn, type NoUiScreen } from "./no-ui";
 import { StreakCuts, StreakHero, StreakPairs, StreakPalettes, StreakPrints } from "./streaks";
 import {
@@ -283,6 +284,9 @@ const FLAT_DATA: { palette: DataPaletteId; name: string }[] = [
    vivid."): right of the data study (which ends at x 15040), on its row: the intro, then each option that would bend an
    approved call, light beside dark, one under another. */
 const FEEL = { x: DATA.x + 5 * (DATA.width + DATA.gap) + 120, y: DATA.y, width: 1240, intro: 240, height: 560, gap: 120 };
+/* Flat studies, the list (flat-studies.tsx, plans/027, phase 0's stop): at the top, right of the hand and the bounce
+   (which end at x 8520), where nothing else sits above y 18720: light beside dark. */
+const STUDIES = { x: BOUNCE_X + BOUNCE.width + BOUNCE.gap + BOUNCE.responsiveWidth + 240, y: 0, width: 1760, gap: 120, height: 3720 };
 const flatRowY =(row: number) => FLAT_Y + FLAT.together + FLAT.gap + FLAT.heights.slice(0, row).reduce((sum, h) => sum + h + FLAT.gap, 0);
 const callRowY = (row: number) => CALLS_Y + CALL.heights.slice(0, row).reduce((sum, h) => sum + h + CALL.gap, 0);
 export const ITEMS: CanvasItem[] = [
@@ -508,4 +512,6 @@ export const ITEMS: CanvasItem[] = [
   { id: "flat-icons-pairs", name: "Flat icons · today and fun, side by side", x: ICONS.width + ICONS.gap, y: ICONS_Y, width: ICONS.width, height: 1100, render: () => <FlatIconPairs /> },
   { id: "flat-icons-in-use", name: "Flat icons · in use", x: 2 * (ICONS.width + ICONS.gap), y: ICONS_Y, width: ICONS.width, height: 1580, render: () => <FlatIconsInUse /> },
   { id: "flat-icons-composition", name: "Flat icons · the composition", x: 3 * (ICONS.width + ICONS.gap), y: ICONS_Y, width: ICONS.width, height: 880, render: () => <FlatIconComposition /> },
+  { id: "flat-studies-light", name: "Flat studies · the list, light", x: STUDIES.x, y: STUDIES.y, width: STUDIES.width, height: STUDIES.height, render: () => <FlatStudies dark={false} /> },
+  { id: "flat-studies-dark", name: "Flat studies · the list, dark", x: STUDIES.x + STUDIES.width + STUDIES.gap, y: STUDIES.y, width: STUDIES.width, height: STUDIES.height, render: () => <FlatStudies dark /> },
 ];
