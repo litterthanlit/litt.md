@@ -73,10 +73,13 @@ function PropsSection({ children }: { children: ReactNode }) {
   );
 }
 
-/** Hairline rows, like every other list in the gallery. */
+/* Under Flat, which draws no lines between things, space alone holds the docs apart (plans/audits/flat.md, finding 9). */
+const FLAT_ROWS = "in-[[data-material=flat]]:divide-y-0 in-[[data-material=flat]]:border-y-0";
+
+/** Hairline rows, like every other list in the gallery; under Flat, rows held apart by space. */
 function Rows({ items, label }: { items: string[]; label?: string }) {
   return (
-    <ul aria-label={label} className="max-w-[65ch] divide-y divide-line border-y border-line">
+    <ul aria-label={label} className={"max-w-[65ch] divide-y divide-line border-y border-line " + FLAT_ROWS}>
       {items.map((item) => (
         <li key={item} className="py-3 text-small text-fg-muted">
           {item}
@@ -90,14 +93,14 @@ function Keyboard({ rows }: { rows: NonNullable<PageDocs["keyboard"]> }) {
   return (
     <table className="w-full max-w-[65ch] border-collapse text-left">
       <thead>
-        <tr className="border-b border-line text-caption text-fg-subtle">
+        <tr className="border-b border-line text-caption text-fg-subtle in-[[data-material=flat]]:border-b-0">
           <th scope="col" className="w-2/5 py-3 pr-6">Keys</th>
           <th scope="col" className="py-3">What it does</th>
         </tr>
       </thead>
       <tbody>
         {rows.map(([keys, does]) => (
-          <tr key={keys.join("+") + does} className="border-b border-line align-top">
+          <tr key={keys.join("+") + does} className="border-b border-line align-top in-[[data-material=flat]]:border-b-0">
             <th scope="row" className="py-3 pr-6 text-left">
               <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
                 {keys.map((k, i) => (
@@ -129,7 +132,7 @@ export function DocsSections({ docs, needs }: { docs: PageDocs; needs?: string }
   const note = world ? null : lookNote(look);
 
   return (
-    <div className="grid gap-12 border-t border-line pt-12">
+    <div className="grid gap-12 border-t border-line pt-12 in-[[data-material=flat]]:border-t-0">
       <Section id="install" title="Install">
         <CodeBlock code={installCommands(components, world?.id)} lang="shell" label="Install command" />
         {needs && <p className="max-w-[65ch] text-small text-fg-subtle">{needs}</p>}

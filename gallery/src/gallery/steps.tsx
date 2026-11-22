@@ -54,7 +54,9 @@ export function Start({ material }: { material?: Material }) {
         <span className="text-fg">Build with your agent.</span>{" "}
         <span className="font-normal text-fg-subtle">The taste comes with the parts: Claude reads the rules, installs the components and checks its own work.</span>
       </h2>
-      <ol className="grid divide-y divide-line border-y border-line">
+      {/* Under Flat, space alone holds the steps apart: Flat draws no lines between things (plans/audits/flat.md, finding 9).
+          Outside any world <html> is Flat too, so the gallery's own overview loses these lines as well, on purpose. */}
+      <ol className="grid divide-y divide-line border-y border-line in-[[data-material=flat]]:divide-y-0 in-[[data-material=flat]]:border-y-0">
         {attribute && (
           <Step
             n={1}
