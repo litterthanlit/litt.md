@@ -6,16 +6,16 @@ import { Page, Stage, TryIt, type PageDocs, type PageMeta, type PageStudy } from
 export const meta: PageMeta = {
   id: "reaction-bar",
   title: "Reaction bar",
-  lede: "Minimal cotton-candy reaction pills that pop on Flat's bounce.",
+  lede: "Quick reactions to a post, each with how many readers chose it.",
   order: 1.04,
   group: "Actions",
   verbs: ["press"],
   worlds: ["flat"],
   summary:
-    "Minimal reader reaction pills for essays, newsletters and portfolio notes. Each pill carries only its glyph and count — zero redundant dots or word clutter. Untouched pills rest in Flat's 1.5px outline; toggling any pill washes it in its soft Candy tint (bubblegum, sky, violet, teal), pops on Flat's 0.28 bounce, and floats a tiny +1 badge upward. It belongs to Flat.",
+    "Reactions at the foot of a post, a letter or a portfolio note. Each pill holds a symbol and its count, and the reaction's name is read out and shown on hover. A reaction nobody here has chosen yet is outlined; choosing one tints the pill, colors its symbol and sends a small +1 up, and choosing it again takes it back. It belongs to Flat.",
   tiers: ["instant", "expressive"],
   mechanism:
-    "Each reaction is a native button with aria-pressed. Toggling switches between Flat's outline-off and soft Candy tint-on without taking an accent fill, lights the glyph in its vivid Candy hue, pops on the expressive spring (350ms, bounce 0.28), and announces the updated count in a polite status region.",
+    "Each reaction is a native button with aria-pressed. Choosing one moves it from the outline (off) to its tint (on) without taking an accent fill, colors the symbol in its data hue, pops on the expressive spring (350ms), and announces the updated count in a polite status region.",
 };
 
 export const docs: PageDocs = {
@@ -32,8 +32,8 @@ export const docs: PageDocs = {
     "Lightweight editorial feedback that stays playful, uncluttered and free of accent fills.",
   ],
   skip: [
-    "Another world's page. ReactionBar uses Flat's 0.28 bounce, outline-means-off pills and Candy hues; it needs data-material=\"flat\" on <html>.",
-    "A single multi-tap cheer counter. Use Kudos.",
+    "Another world's page. ReactionBar uses Flat's outline-means-off pills and data hues; it needs data-material=\"flat\" on <html>.",
+    "A single cheer a reader can give up to five times. Use Kudos.",
     "A formal mutually exclusive vote with share bars. Use Poll.",
   ],
   keyboard: [
@@ -44,7 +44,7 @@ export const docs: PageDocs = {
     "Grouped in role=\"group\" with an accessible name carrying the subject.",
     "Each pill is a native button with aria-pressed, title and an accessible label carrying the full reaction name and count.",
     "Every toggle announces once in a polite live status region; decorative floating +1 badges are hidden from assistive tech.",
-    "Under reduced motion nothing bounces or floats; pill state and count update immediately.",
+    "Under reduced motion nothing springs or floats; pill state and count update immediately.",
   ],
 };
 
@@ -53,7 +53,7 @@ function EssayReactionsDemo() {
 }
 
 function CompactReactionsDemo() {
-  return <ReactionBar subject="Field notes" defaultValue={[]} />;
+  return <ReactionBar subject="Dusk tide" defaultValue={[]} />;
 }
 
 function ReplayReactions() {
@@ -85,7 +85,7 @@ export const study: PageStudy = {
   },
   replay: {
     label: "Replay two reactions",
-    caption: "Watch each pill pop on Flat's 0.28 bounce and light its Candy hue dot.",
+    caption: "Watch each pill pop and take its color as a reader reacts.",
     run: () => <ReplayReactions />,
   },
 };
@@ -102,7 +102,7 @@ export default function ReactionBarPage() {
         title="Essay reactions"
         tier="expressive"
         code="EssayReactionsDemo"
-        caption="Standing 40px combined total above the pills. Selected reactions lift onto crisp white paper with their Candy data dot."
+        caption="The total stands above the pills. A reaction you chose is tinted, with its symbol in color."
       >
         <EssayReactionsDemo />
       </Stage>
@@ -110,14 +110,14 @@ export default function ReactionBarPage() {
         title="Inline footer bar"
         tier="expressive"
         code="CompactReactionsDemo"
-        caption="Without the standing figure: untouched pills rest in Flat's 1.5px outline until tapped."
+        caption="Without the total: every reaction is outlined until you choose it."
       >
         <CompactReactionsDemo />
       </Stage>
       <TryIt
         of="ReactionBar"
         component={ReactionBar}
-        props={{ subject: "Field notes", defaultValue: ["love"], prominent: true }}
+        props={{ subject: "Dusk tide", defaultValue: ["love"], prominent: true }}
         controls={[{ name: "prominent", type: "boolean" }]}
       />
     </Page>

@@ -6,16 +6,16 @@ import { Page, Stage, TryIt, type PageDocs, type PageMeta, type PageStudy } from
 export const meta: PageMeta = {
   id: "goal-ring",
   title: "Goal ring",
-  lede: "A minimal cotton-candy radial goal tracker with circular stepper keys.",
+  lede: "Progress toward one goal you can count, such as books read this year.",
   order: 1.06,
   group: "Data",
   verbs: ["press"],
   worlds: ["flat"],
   summary:
-    "A minimal centered radial milestone tracker built with Dieter Rams restraint: one cotton-candy SVG ring (sky through violet to bubblegum) holding Flat's 40px standing figure inside, the quiet title beneath, and two balanced circular − / + keys directly on Flat's ground. It belongs to Flat.",
+    "One goal you can count: a ring that fills as you get closer, the count inside it, the goal's name beneath, and round − and + keys to step it. It sits on the page with no box around it. It belongs to Flat.",
   tiers: ["instant", "expressive"],
   mechanism:
-    "An SVG ring maps current over target to strokeDashoffset across Flat's vivid cotton-candy gradient (--data-sky, --data-violet, --data-bubblegum). Two circular keys beneath step the count on Flat's expressive spring (350ms, bounce 0.28) without taking an accent fill, announcing each step once.",
+    "An SVG ring maps the count over the target to its strokeDashoffset, stroked with a gradient across --data-sky, --data-violet and --data-bubblegum. The − and + keys beneath step the count, and the ring and the figure follow on the expressive spring (350ms) without taking an accent fill, announcing each step once.",
 };
 
 export const docs: PageDocs = {
@@ -24,17 +24,17 @@ export const docs: PageDocs = {
   usage: `import { GoalRing } from "@/components/goal-ring";
 
 <GoalRing
-  title="2026 Reading goal"
+  title="Books read in 2026"
   target={24}
   unit="books"
   defaultValue={18}
 />`,
   use: [
     "Personal sites, portfolios, creator dashboards and reading logs under Flat.",
-    "Tracking a single countable goal with centered geometry and quiet circular controls.",
+    "One goal you can count, such as books read, issues sent or readers reached.",
   ],
   skip: [
-    "Another world's page. GoalRing uses Flat's 40px figure, cotton-candy arc, circular keys and 0.28 bounce; it needs data-material=\"flat\" on <html>.",
+    "Another world's page. GoalRing uses Flat's large figure, colored ring and round keys; it needs data-material=\"flat\" on <html>.",
     "A live hardware or telemetry meter. Use Gauge.",
     "A multi-series comparison. Use Chart.",
   ],
@@ -50,11 +50,11 @@ export const docs: PageDocs = {
 };
 
 function ReadingGoalDemo() {
-  return <GoalRing title="2026 Reading goal" target={24} unit="books" defaultValue={18} />;
+  return <GoalRing title="Books read in 2026" target={24} unit="books" defaultValue={18} />;
 }
 
 function NewsletterGoalDemo() {
-  return <GoalRing title="Spring issue" target={500} unit="readers" defaultValue={420} />;
+  return <GoalRing title="Readers of the spring issue" target={500} unit="readers" defaultValue={420} />;
 }
 
 function ReplayGoal() {
@@ -69,24 +69,24 @@ function ReplayGoal() {
       window.clearTimeout(t2);
     };
   }, [reduced]);
-  return <GoalRing title="2026 Reading goal" target={24} unit="books" value={val} onChange={setVal} />;
+  return <GoalRing title="Books read in 2026" target={24} unit="books" value={val} onChange={setVal} />;
 }
 
 export const study: PageStudy = {
-  object: <GoalRing title="2026 Reading goal" target={24} unit="books" defaultValue={18} />,
+  object: <GoalRing title="Books read in 2026" target={24} unit="books" defaultValue={18} />,
   parts: [
-    { name: "The cotton-candy ring", selector: "[role=progressbar]" },
+    { name: "The ring", selector: "[role=progressbar]" },
     { name: "The figure", selector: "[data-part=figure]" },
     { name: "The circular keys", selector: "[data-part=circle]" },
   ],
   states: {
-    empty: <GoalRing title="2026 Reading goal" target={24} unit="books" defaultValue={5} />,
-    default: <GoalRing title="2026 Reading goal" target={24} unit="books" defaultValue={18} />,
-    pressed: <GoalRing title="2026 Reading goal" target={24} unit="books" defaultValue={24} />,
+    empty: <GoalRing title="Books read in 2026" target={24} unit="books" defaultValue={5} />,
+    default: <GoalRing title="Books read in 2026" target={24} unit="books" defaultValue={18} />,
+    pressed: <GoalRing title="Books read in 2026" target={24} unit="books" defaultValue={24} />,
   },
   replay: {
     label: "Replay logging books",
-    caption: "Watch the cotton-candy ring spring forward on Flat's 0.28 bounce.",
+    caption: "Watch the ring fill as books are logged.",
     run: () => <ReplayGoal />,
   },
 };
@@ -97,13 +97,13 @@ export default function GoalRingPage() {
       meta={meta}
       docs={docs}
       study={study}
-      tile={<GoalRing title="2026 Reading goal" target={24} unit="books" defaultValue={18} />}
+      tile={<GoalRing title="Books read in 2026" target={24} unit="books" defaultValue={18} />}
     >
       <Stage
         title="Reading goal"
         tier="expressive"
         code="ReadingGoalDemo"
-        caption="Open cotton-candy arc, single 40px figure, and round − / + keys. Everything redundant stripped away."
+        caption="A ring that fills toward the goal, the count inside it, and round − and + keys."
       >
         <ReadingGoalDemo />
       </Stage>
@@ -111,14 +111,14 @@ export default function GoalRingPage() {
         title="Newsletter milestone"
         tier="expressive"
         code="NewsletterGoalDemo"
-        caption="Works for any countable creator milestone: books, issues, readers or runs."
+        caption="Any goal you can count works: books, issues, readers or runs."
       >
         <NewsletterGoalDemo />
       </Stage>
       <TryIt
         of="GoalRing"
         component={GoalRing}
-        props={{ title: "2026 Reading goal", target: 24, unit: "books", defaultValue: 14 }}
+        props={{ title: "Books read in 2026", target: 24, unit: "books", defaultValue: 14 }}
         controls={[{ name: "target", type: "number", min: 10, max: 50, step: 2 }]}
       />
     </Page>

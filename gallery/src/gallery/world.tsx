@@ -240,7 +240,8 @@ function SectionHead({ id, title, line }: { id: string; title: string; line?: st
 
 /**
  * One scene on its stage: the page's ground with a hairline, the scene centred in it at most 28rem wide. The stage is
- * a labelled group, so a screen reader hears which scene it is in.
+ * a labelled group, so a screen reader hears which scene it is in. Under Flat, which draws no lines between things, the
+ * stage is the sheet a wall tile is (.flat-sheet in app.css), held by its fill alone (plans/audits/flat.md, finding 9).
  */
 export function SceneStage({ world, scene }: { world: string; scene: Scene }) {
   const { Render } = scene;
@@ -248,7 +249,7 @@ export function SceneStage({ world, scene }: { world: string; scene: Scene }) {
     <div
       role="group"
       aria-label={`${world} in use: ${scene.title}`}
-      className="grid min-w-0 justify-items-center rounded-surface bg-canvas px-4 py-10 outline-1 -outline-offset-1 outline-line sm:px-10 sm:py-14"
+      className="flat-sheet grid min-w-0 justify-items-center rounded-surface bg-canvas px-4 py-10 outline-1 -outline-offset-1 outline-line in-[[data-material=flat]]:outline-0 sm:px-10 sm:py-14"
     >
       <div className="grid w-full max-w-md min-w-0">
         <Render />

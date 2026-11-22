@@ -4,7 +4,7 @@ Every change to the litt registry at https://littmd.vercel.app/r/, newest first.
 
 To update an item, read the entries since your version, then reinstall it with `--overwrite`. A **breaking** entry says what to change in your code.
 
-## 2026-11-21 · Press and Rack
+## 2026-11-21 · Press, Flat and Rack
 
 Press's audit (plans/audits/press.md, findings 2, 3 and 14; plans/audits/press-fixes.md, Buildable now): Press's own parts keep the contracts they announce. Nothing changes outside Press, and nothing looks different at rest.
 
@@ -24,6 +24,13 @@ Rack's audit, fixed (plans/audits/rack-fixes.md, Buildable now): the grids take 
 - **fixed** `step-sequencer`, `rack-step-sequencer`: under a finger (`pointer: coarse`) each step is 44 by 44 instead of 22 wide, and the grid scrolls sideways inside its panel rather than shrink a step. Nothing changes under a mouse.
 - **fixed** `device-rack`, `rack-device-rack`: the 24px bypass keeps a 44px touch target (`litt-target relative`). Nothing looks different.
 - **breaking** `device-rack`, `rack-device-rack`: each default macro has a color of its own. Cutoff and Dry/Wet both drew orange, so one color meant two things; the default device is now five macros (Cutoff, Resonance, Feedback, Drive, Dry/Wet), one per clip color, with Dry/Wet in violet, and Width is gone from `DEFAULT_MACROS` and from `width` in every default preset, so `<DeviceRack />` draws one dial fewer and `DEFAULT_MACROS.find((m) => m.id === "width")` is `undefined`. Five macros lay out in five columns from `md` up. Migrate: to keep Width, pass your own `macros` and `presets` that hold it (its old macro was `{ id: "width", label: "Width", hue: "violet", min: 0, max: 100, step: 2, defaultValue: 78, unit: "%" }`).
+
+Flat's audit, finding 3 (plans/audits/flat.md): Flat's six own parts said what they were made of, not what they are for. Their words now speak to a reader: no palette or spring names, no instruction lines, and sentence case. Nothing looks or moves differently.
+
+- **changed** `streak`, `flat-streak`: the line under the pills no longer tells the reader what to press. With the current slot open it reads the action and "Not done yet" ("Send Issue 14 · Not done yet"), and once logged the slot's label and "Done" ("W14 · Done"), where it read "press the outlined pill to light it up" and "click again to undo". Props are unchanged.
+- **changed** `reading-progress`, `flat-reading-progress`: the defaults are a post a site would publish. `title` defaults to "A week on the coast" (was "Field notes on motion") and `DEFAULT_CHAPTERS` to Getting there, Low tide, The lighthouse and Coming home (was Opening, Springs, Tactile feel and Closing notes), with the same minutes. Pass `title` and `chapters` to keep the old ones. The default chapters' ids changed too (`intro`, `springs`, `tactile`, `closing` are now `leaving`, `tide`, `lighthouse`, `home`), so a host that keyed state on them should pass its own `chapters`.
+- **changed** `goal-ring`, `flat-goal-ring`: `title` defaults to "Books read in 2026", in sentence case (was "2026 Reading goal").
+- **changed** `poll`, `flat-poll`, `kudos`, `flat-kudos`, `reaction-bar`, `flat-reaction-bar`: the doc comments say what the part is for, in plain words. No behavior or prop changed.
 
 ## 2026-11-20 · Press deploy-dashboard identity, and Heat's keycaps are keys
 
