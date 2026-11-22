@@ -33,7 +33,7 @@ honor its STOP conditions, and update your row when done.
 | 023  | [Flat bounces more than the other worlds](023-flat-bounces-more.md) | P2 | M | — | DONE (0.28 at 350ms in Flat, responsive 0) |
 | 024  | [Each world is dialled in to the components repo's bar: its materials written, every part built from them, its own studies, then its player body](024-dial-in-each-world.md) | P1 | XL | — | IN PROGRESS (phase 0, the presentation pass, done; STOP for Nick before Device; STOP after every world) |
 | 025  | [Components are interactive: every part does what it shows, once the design is settled](025-components-are-interactive.md) | P1 | L | 024 (every world done) | TODO (waits for 024; phase 0 agrees the scope with Nick) |
-| 026  | [Step into the room (Device `#canvas` prototype) and the Taste Engine direction](026-device-room-and-taste-engine.md) | P1 | M | — (Phase 3 waits on 024 Device + Flat) | TODO (awaiting Fable's review; Phase 1 lives in `#canvas` alone and stops for Nick's hand check) |
+| 026  | [Step into the room (Device `#canvas` prototype) and the Taste Engine direction](026-device-room-and-taste-engine.md) | P1 | M | 024 (Phase 3 only) | TODO (revised after Fable's review on PR #165; Phase 1 lives in `#canvas` plus `PlayOptions.root` in `sound.ts` and stops for Nick's hand check) |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale — finding fixed independently or approach abandoned)
 
@@ -87,7 +87,7 @@ The screens themselves are not redesigned per world: they are built from these p
 
 - 018 follows Nick, 2026-11-15: "I reckon components is stronger than litt.md" and "we should make a device for each world just like components that looks like the world itself that would be playground". It says object, not device, since Device is a world. It is gallery chrome only: no part, token or registry item changes. It leans on two questions `taste/litt-principles.md` leaves open (does anything run by itself; is there sound) and recommends litt's current answer to both. If 017 has not started, record its phase 0 baselines for `#playground` after 018's phase 1, or record that page again.
 
-- 026 follows the 2026-11-21 grill-me after Fable's review and Nick's look at DialKit and Graphical. Phase 1 prototypes the isometric Device Room + Step In (`0°` crisp 2D) + Explode + lean Feel Bench strictly inside `gallery/src/canvas/` so zero registry or component files change while the feel is judged by hand. Plan 024 (Device and Flat) stays next in line; only after both worlds pass does Phase 3 extract a clean Taste Engine repo and settle Base UI vs. UI SDK. Radix stays untouched in `litt.md` and 017 stays deferred.
+- 026 follows the 2026-11-21 grill-me after Fable's review and Nick's look at DialKit and Graphical. Phase 1 prototypes the isometric Device Room + Step In (`0°` crisp 2D at 100% zoom) + Explode + lean Feel Bench in `gallery/src/canvas/`, with one additive `root` option on `PlayOptions` in `gallery/src/motion/sound.ts` so Device voices resolve inside a scoped `#canvas` frame, plus `gallery/scripts/test-plane.mjs` in `verify`. Plan 024 (Device and Flat) stays next in line; only after both worlds pass does Phase 3 extract a clean Taste Engine repo and settle Base UI vs. UI SDK. Radix stays untouched in `litt.md` and 017 stays deferred.
 
 ## Audit findings not yet planned
 
