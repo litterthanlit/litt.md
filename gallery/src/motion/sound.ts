@@ -48,6 +48,8 @@ export type PlayOptions = {
   gain?: number;
   /** Values to play instead of the tokens', for tuning by ear (#device/sound). */
   values?: Partial<VoiceValues>;
+  /** Element to read Device's voice tokens from when Device is nested inside another world; defaults to <html>. */
+  root?: Element | null;
 };
 
 /* ------------------------------------------------------------------------ */
@@ -369,7 +371,7 @@ export function play(name: VoiceName, options: PlayOptions = {}): void {
   try {
     if (typeof window === "undefined" || !(name in SHAPES)) return;
     if (!handIsRecent() || document.visibilityState === "hidden") return;
-    const tokens = readVoice(name);
+    const tokens = readVoice(name, options.root ?? undefined);
     const values = tokens ? { ...tokens, ...options.values } : null;
     if (!values) return;
     const now = performance.now();

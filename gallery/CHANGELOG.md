@@ -4,7 +4,11 @@ Every change to the litt registry at https://littmd.vercel.app/r/, newest first.
 
 To update an item, read the entries since your version, then reinstall it with `--overwrite`. A **breaking** entry says what to change in your code.
 
-## 2026-11-21 · Press
+## 2026-11-21 · Press and Device sound root
+
+Device room prototype (plans/026, Phase 1a): allows `play()` in `motion/sound.ts` to read Device's `--sound-*` tokens from a nested Device element via an optional `root` on `PlayOptions`, defaulting to `<html>` when omitted. Existing callers are unchanged.
+
+- **changed** `motion`, `press-motion`, `flat-motion`, `device-motion`, `plain-motion`, `rack-motion`, `heat-motion`: `PlayOptions` in `motion/sound.ts` accepts an optional `root?: Element | null` passed to `readVoice(name, options.root)` so Device voices resolve inside a nested `[data-material="device"]` container (such as `#canvas`). Default behavior when omitted is unchanged.
 
 Press's audit (plans/audits/press.md, findings 2, 3 and 14; plans/audits/press-fixes.md, Buildable now): Press's own parts keep the contracts they announce. Nothing changes outside Press, and nothing looks different at rest.
 
