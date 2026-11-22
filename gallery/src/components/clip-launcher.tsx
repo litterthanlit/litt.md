@@ -9,10 +9,17 @@
  *   clip stops it. Clicking a scene button launches the entire row across every track at once.
  * - Active clips cut cleanly to lit ink (`bg-fg text-canvas`) with their track hue stripe preserved on the left rail,
  *   while resting clips show their rich Rack clip tint (`bg-data-*-tint`), text tone, and seeded mini-waveform bars.
+ * - A clip's name wraps to two lines in a narrow panel and the row grows to hold them; a name that needs a third ends
+ *   in an ellipsis there, and its accessible name carries it whole.
+ * - Keys (principle 5, one tab stop per composite): the session is a grid (role grid, a row of column headers for the
+ *   tracks and Master, then a row per scene) and one Tab stop, on the cell focused last (the first clip to start
+ *   with). ← → ↑ ↓ move a cell at a time without wrapping, Home and End go to the row's ends, Ctrl (or ⌘) with them to
+ *   the grid's first and last cell, Enter or Space launches or stops the clip, stops the track from an empty slot, or
+ *   fires the scene from Master. Tab leaves the grid.
  * - Zero `--accent` fills (R6) and zero auto-animation on mount (R2/R4). Every launch announces once in a polite live
  *   status region.
  */
-import { useId, useState, type ReactNode } from "react";
+import { useId, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import { Button } from "@/components/button";
 
 export type ClipHue = "amber" | "blue" | "teal" | "violet" | "rose";
@@ -137,6 +144,42 @@ export function ClipLauncher({
     return idx >= 0 ? idx : null;
   });
   const [live, setLive] = useState("");
+  /* The grid's one tab stop: the cell focused last, as row (scene) and column (track, then Master). */
+  const [stop, setStop] = useState({ r: 0, c: 0 });
+  const cells = useRef(new Map<string, HTMLButtonElement>());
+  const cols = tracks.length + 1;
+  const at = { r: Math.min(stop.r, Math.max(0, scenes.length - 1)), c: Math.min(stop.c, cols - 1) };
+  const cellRef = (r: number, c: number) => (el: HTMLButtonElement | null) => {
+    if (el) cells.current.set(`${r}:${c}`, el);
+    else cells.current.delete(`${r}:${c}`);
+  };
+  const cellOf = (target: EventTarget | null) => {
+    const el = (target as HTMLElement | null)?.closest?.("[data-r]") as HTMLElement | null;
+    return el ? { r: Number(el.dataset.r), c: Number(el.dataset.c) } : null;
+  };
+  /* Arrows a cell at a time without wrapping, Home and End along the row, Ctrl or ⌘ with them across the grid. */
+  function onGridKeyDown(e: KeyboardEvent<HTMLDivElement>) {
+    const from = cellOf(e.target);
+    if (!from) return;
+    const lastR = scenes.length - 1;
+    const across = e.ctrlKey || e.metaKey;
+    let to: { r: number; c: number } | null = null;
+    if (e.key === "ArrowRight") to = { r: from.r, c: Math.min(cols - 1, from.c + 1) };
+    else if (e.key === "ArrowLeft") to = { r: from.r, c: Math.max(0, from.c - 1) };
+    else if (e.key === "ArrowDown") to = { r: Math.min(lastR, from.r + 1), c: from.c };
+    else if (e.key === "ArrowUp") to = { r: Math.max(0, from.r - 1), c: from.c };
+    else if (e.key === "Home") to = across ? { r: 0, c: 0 } : { r: from.r, c: 0 };
+    else if (e.key === "End") to = across ? { r: lastR, c: cols - 1 } : { r: from.r, c: cols - 1 };
+    if (!to) return;
+    e.preventDefault();
+    cells.current.get(`${to.r}:${to.c}`)?.focus();
+  }
+  const cellProps = (r: number, c: number) => ({
+    ref: cellRef(r, c),
+    "data-r": r,
+    "data-c": c,
+    tabIndex: at.r === r && at.c === c ? 0 : -1,
+  });
 
   const playingCount = Object.values(playing).filter(Boolean).length;
 
@@ -206,107 +249,122 @@ export function ClipLauncher({
       {/* Scrollable session grid */}
       <div className="overflow-x-auto p-2">
         <div
-          role="group"
+          role="grid"
           aria-labelledby={headingId}
+          onKeyDown={onGridKeyDown}
+          onFocus={(e) => {
+            const c = cellOf(e.target);
+            if (c && (c.r !== stop.r || c.c !== stop.c)) setStop(c);
+          }}
           className="grid min-w-[26rem] gap-1"
           style={{ gridTemplateColumns: `repeat(${tracks.length}, minmax(0, 1fr)) minmax(4.75rem, 6rem)` }}
         >
           {/* Track color headers */}
-          {tracks.map((t) => {
-            const tone = HUE[t.hue];
-            const isTrackLive = Boolean(playing[t.id]);
-            return (
-              <div
-                key={t.id}
-                className={"flex items-center justify-between gap-1.5 rounded-control border px-2 py-1.5 " + tone.tint + " " + tone.border}
-              >
-                <span className={"truncate text-caption font-title " + tone.text}>{t.name}</span>
-                <span
-                  aria-hidden="true"
-                  className={"size-1.5 shrink-0 rounded-pill " + (isTrackLive ? tone.bar : "bg-line-strong opacity-60")}
-                />
-              </div>
-            );
-          })}
-          <div className="flex items-center justify-center rounded-control border border-line bg-surface-2 px-2 py-1.5 text-caption font-label text-fg-muted">
-            Master
+          <div role="row" className="contents">
+            {tracks.map((t) => {
+              const tone = HUE[t.hue];
+              const isTrackLive = Boolean(playing[t.id]);
+              return (
+                <div
+                  key={t.id}
+                  role="columnheader"
+                  className={"flex items-center justify-between gap-1.5 rounded-control border px-2 py-1.5 " + tone.tint + " " + tone.border}
+                >
+                  <span className={"truncate text-caption font-title " + tone.text}>{t.name}</span>
+                  <span
+                    aria-hidden="true"
+                    className={"size-1.5 shrink-0 rounded-pill " + (isTrackLive ? tone.bar : "bg-line-strong opacity-60")}
+                  />
+                </div>
+              );
+            })}
+            <div role="columnheader" className="flex items-center justify-center rounded-control border border-line bg-surface-2 px-2 py-1.5 text-caption font-label text-fg-muted">
+              Master
+            </div>
           </div>
 
           {/* Scene rows */}
           {scenes.map((scene, rowIdx) => {
             const isSceneActive = activeScene === rowIdx;
             return (
-              <div key={scene} className="contents">
-                {tracks.map((track) => {
+              <div key={scene} role="row" className="contents">
+                {tracks.map((track, colIdx) => {
                   const clip = track.clips[rowIdx] ?? null;
                   const tone = HUE[track.hue];
                   if (!clip) {
                     return (
-                      <button
-                        key={track.id + rowIdx}
-                        type="button"
-                        aria-label={`Stop ${track.name} in ${scene}`}
-                        onClick={() => stopTrack(track)}
-                        className="group flex h-control-sm min-w-0 cursor-pointer items-center justify-center rounded-control border border-line bg-tray text-fg-subtle transition-colors duration-(--dur-instant) ease-litt pointer-coarse:h-control-md hover:border-line-strong hover:text-fg focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus forced-colors:border"
-                      >
-                        <span aria-hidden="true" className="size-2 border border-current opacity-50 group-hover:opacity-100" />
-                      </button>
+                      <div key={track.id + rowIdx} role="gridcell" className="grid min-w-0">
+                        <button
+                          {...cellProps(rowIdx, colIdx)}
+                          type="button"
+                          aria-label={`Stop ${track.name} in ${scene}`}
+                          onClick={() => stopTrack(track)}
+                          className="group flex min-h-control-sm min-w-0 cursor-pointer items-center justify-center rounded-control border border-line bg-tray text-fg-subtle transition-colors duration-(--dur-instant) ease-litt pointer-coarse:min-h-control-md hover:border-line-strong hover:text-fg focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus forced-colors:border"
+                        >
+                          <span aria-hidden="true" className="size-2 border border-current opacity-50 group-hover:opacity-100" />
+                        </button>
+                      </div>
                     );
                   }
                   const isOn = playing[track.id] === clip.id;
                   const wave = miniWave(clip.id);
                   return (
-                    <button
-                      key={clip.id}
-                      type="button"
-                      aria-pressed={isOn}
-                      aria-label={`${track.name}, ${clip.name}, ${clip.bars} bars${isOn ? ", playing" : ""}`}
-                      onClick={() => toggleClip(track, clip)}
-                      className={
-                        "relative flex h-control-sm min-w-0 cursor-pointer items-center gap-1.5 overflow-hidden rounded-control border pr-2 pl-2 text-left transition-colors duration-(--dur-instant) ease-litt pointer-coarse:h-control-md " +
-                        "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus forced-colors:border " +
-                        (isOn
-                          ? "border-fg bg-fg text-canvas forced-colors:bg-[Highlight] forced-colors:text-[HighlightText]"
-                          : `${tone.tint} ${tone.border} ${tone.text} hover:border-fg`)
-                      }
-                    >
-                      <span aria-hidden="true" className={"absolute inset-y-0 left-0 w-1 " + tone.bar} />
-                      <svg aria-hidden="true" viewBox="0 0 12 12" className="size-2.5 shrink-0 fill-current">
-                        {isOn ? <rect x="2.5" y="2.5" width="7" height="7" /> : <path d="M3 2v8l7-4z" />}
-                      </svg>
-                      <span className="min-w-0 flex-1 truncate text-caption font-title">{clip.name}</span>
-                      <span aria-hidden="true" className="hidden h-3 shrink-0 items-end gap-px sm:inline-flex">
-                        {wave.map((pct, k) => (
-                          <span
-                            key={k}
-                            className={"w-0.5 " + (isOn ? "bg-canvas opacity-75" : tone.bar)}
-                            style={{ height: `${pct}%` }}
-                          />
-                        ))}
-                      </span>
-                    </button>
+                    <div key={clip.id} role="gridcell" className="grid min-w-0">
+                      <button
+                        {...cellProps(rowIdx, colIdx)}
+                        type="button"
+                        aria-pressed={isOn}
+                        aria-label={`${track.name}, ${clip.name}, ${clip.bars} bars${isOn ? ", playing" : ""}`}
+                        onClick={() => toggleClip(track, clip)}
+                        className={
+                          "relative flex min-h-control-sm min-w-0 cursor-pointer items-center gap-1.5 overflow-hidden rounded-control border py-1 pr-2 pl-2 text-left transition-colors duration-(--dur-instant) ease-litt pointer-coarse:min-h-control-md " +
+                          "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus forced-colors:border " +
+                          (isOn
+                            ? "border-fg bg-fg text-canvas forced-colors:bg-[Highlight] forced-colors:text-[HighlightText]"
+                            : `${tone.tint} ${tone.border} ${tone.text} hover:border-fg`)
+                        }
+                      >
+                        <span aria-hidden="true" className={"absolute inset-y-0 left-0 w-1 " + tone.bar} />
+                        <svg aria-hidden="true" viewBox="0 0 12 12" className="size-2.5 shrink-0 fill-current">
+                          {isOn ? <rect x="2.5" y="2.5" width="7" height="7" /> : <path d="M3 2v8l7-4z" />}
+                        </svg>
+                        <span className="line-clamp-2 min-w-0 flex-1 text-caption font-title break-words">{clip.name}</span>
+                        <span aria-hidden="true" className="hidden h-3 shrink-0 items-end gap-px sm:inline-flex">
+                          {wave.map((pct, k) => (
+                            <span
+                              key={k}
+                              className={"w-0.5 " + (isOn ? "bg-canvas opacity-75" : tone.bar)}
+                              style={{ height: `${pct}%` }}
+                            />
+                          ))}
+                        </span>
+                      </button>
+                    </div>
                   );
                 })}
 
                 {/* Master scene launch button */}
-                <button
-                  type="button"
-                  aria-pressed={isSceneActive}
-                  aria-label={`Launch scene ${scene}`}
-                  onClick={() => launchScene(rowIdx)}
-                  className={
-                    "flex h-control-sm min-w-0 cursor-pointer items-center justify-between gap-1 rounded-control border px-2 text-caption font-title transition-colors duration-(--dur-instant) ease-litt pointer-coarse:h-control-md " +
-                    "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus forced-colors:border " +
-                    (isSceneActive
-                      ? "border-fg bg-fg text-canvas forced-colors:bg-[Highlight] forced-colors:text-[HighlightText]"
-                      : "border-line-strong bg-block text-fg hover:bg-(--block-hover)")
-                  }
-                >
-                  <svg aria-hidden="true" viewBox="0 0 12 12" className="size-2.5 shrink-0 fill-current">
-                    <path d="M3 2v8l7-4z" />
-                  </svg>
-                  <span className="min-w-0 truncate">{scene}</span>
-                </button>
+                <div role="gridcell" className="grid min-w-0">
+                  <button
+                    {...cellProps(rowIdx, tracks.length)}
+                    type="button"
+                    aria-pressed={isSceneActive}
+                    aria-label={`Launch scene ${scene}`}
+                    onClick={() => launchScene(rowIdx)}
+                    className={
+                      "flex min-h-control-sm min-w-0 cursor-pointer items-center justify-between gap-1 rounded-control border px-2 text-caption font-title transition-colors duration-(--dur-instant) ease-litt pointer-coarse:min-h-control-md " +
+                      "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus forced-colors:border " +
+                      (isSceneActive
+                        ? "border-fg bg-fg text-canvas forced-colors:bg-[Highlight] forced-colors:text-[HighlightText]"
+                        : "border-line-strong bg-block text-fg hover:bg-(--block-hover)")
+                    }
+                  >
+                    <svg aria-hidden="true" viewBox="0 0 12 12" className="size-2.5 shrink-0 fill-current">
+                      <path d="M3 2v8l7-4z" />
+                    </svg>
+                    <span className="min-w-0 truncate">{scene}</span>
+                  </button>
+                </div>
               </div>
             );
           })}
