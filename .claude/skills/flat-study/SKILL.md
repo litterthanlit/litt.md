@@ -22,8 +22,11 @@ before the first has passed and is committed.
 - [ ] 1. **One arrival, then still.** One arrival when it first comes into view, on `useTransition("expressive")`.
       No loop and no timer after it. Nothing when `useMotionDial().reduced`.
 - [ ] 2. **It fits.** Its wall tile and the player's screen hold it at 320px with nothing spilling.
-- [ ] 3. **Built from the materials, and marked.** Ground, then paper, then part. Every part carries `data-part` with
-      one of `FLAT_KINDS` (`gallery/scripts/materials.mjs`).
+- [ ] 3. **Built from the materials, and marked.** Ground, then paper, then part. A widget sits on a paper card
+      (`litt-paper rounded-surface bg-surface-1 p-6`, `data-part="paper"`); a lone pill, circle or switch may stand
+      on the ground. Tags are frameless dots at weight 400 with a hover wash only. Every part carries `data-part`
+      with one of `FLAT_KINDS` (`gallery/scripts/materials.mjs`). Context budget is the reference (Nick, 2026-11-22:
+      "this is what it should look like, simplicity + color + ease of use").
 - [ ] 4. **Colour by Flat's table.** One ink fill per view. Candy hues on data only. How much, and how far along, is
       the sunset ramp (`--data-seq-1..4`) and no other gradient.
 - [ ] 5. **The hand moves it.** A continuous value follows a drag 1:1 through `useHand` and settles with `useSettle`.
@@ -53,8 +56,8 @@ before the first has passed and is committed.
 
 ## Steps
 
-1. Run the check in study mode on the part as it is, and list what fails (the CLI is in the header of
-   `gallery/scripts/materials.mjs`).
+1. Run the check in study mode on the part as it is, and list what fails:
+   `npm run test:materials --prefix gallery -- --study <id>` (after a build).
 2. Mark the parts, then fix rule 4.
 3. Give it the hand and the keys (rules 5 and 6), then the arrival (rule 1).
 4. Words, live region and `study` (rules 7, 8 and 9).
