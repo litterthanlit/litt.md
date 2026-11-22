@@ -8,12 +8,12 @@ import { useLoop } from "../tile";
 export const meta: PageMeta = {
   id: "tabs",
   title: "Tabs",
-  lede: "Views that slide into place.",
+  lede: "Views of one thing, one open at a time.",
   ledeByWorld: { heat: "Views in a strip of square cells, the open one in brackets." },
   order: 3.07, group: "Selection",
   verbs: ["select"],
   summary:
-    "Underline or segmented. The chosen face slides between tabs, the label only changes color, and the panel fades in from the side of the tab you picked. Press cuts them as folder tabs on a plate; Flat sets them as words with a grey bubble.",
+    "Underline or segmented. The chosen tab is marked by its line or its face, the label only changes color, and the panel shows the tab you picked.",
   summaryByWorld: {
     heat: "Underline or segmented. Each tab is a square cell, and the chosen one is lit and framed in corner brackets with ‹ › beside its label. Nothing slides between tabs: the label changes color on the instant tier, and the panel fades in from the side of the tab you picked.",
   },

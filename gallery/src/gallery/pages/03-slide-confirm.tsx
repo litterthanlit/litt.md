@@ -12,11 +12,11 @@ export const meta: PageMeta = {
   group: "Selection",
   verbs: ["drag", "press"],
   summary:
-    "A track and a thumb to slide to the end, for an action that cannot be undone, such as deleting a project on a phone. The thumb follows the finger one to one; let go early and it springs back on the responsive tier, reach the end and it confirms. The thumb is also a button, so Enter, Space or a screen reader confirms too, and with confirmText anyone who cannot drag can type the name instead.",
+    "A track and a thumb to slide to the end, for an action that cannot be undone, such as deleting a project on a phone. The thumb follows the finger one to one; let go early and it goes back to the start, reach the end and it confirms. The thumb is also a button, so Enter, Space or a screen reader confirms too, and with confirmText anyone who cannot drag can type the name instead.",
   fun: "Throw the thumb: with enough speed it coasts to the end, squashes against it and confirms.",
   tiers: ["responsive"],
   mechanism:
-    "Press the cap and it follows the finger one to one, with no easing, while the words fade by its position and the part it has passed fills at fg 6%. Let go early and it springs home on the responsive tier, 200ms with no bounce. Reach the end and it confirms once: a check replaces the chevron and the words change. Enter and Space confirm too. Each world has its own body. Under Press a gripped cap rides in a slot cut into a plate, its words in the slot's floor, to a raised end stop. Under Flat the track is a grey pill and the thumb a plain ink circle, with the words in ink; once confirmed the whole pill turns ink. Under Device the thumb is a latch key pushed along a well to an end stop: the words sit on an LCD strip in the well, a lamp at the stop lights once it confirms, and a key let go short goes home in three steps on the instant tier, never a spring, though under your hand it still follows 1:1. Reduced motion snaps the thumb back in every body.",
+    "Press the thumb and it follows the finger one to one, with no easing. Let go early and it goes home; reach the end and it confirms once, and the words change. Enter and Space confirm too. Reduced motion sends the thumb home at once.",
 };
 
 export const docs: PageDocs = {
@@ -54,7 +54,7 @@ export const docs: PageDocs = {
     "With confirmText, \"Or type to confirm\" opens a labelled field and a danger button that waits for the exact words, so a mouse, a pen or a switch that cannot drag still has a way (WCAG 2.5.7). Pasting works.",
     "Once it confirms, the thumb is aria-disabled rather than disabled, so focus stays on it, and a polite status says the confirmed label.",
     "The words in the track are hidden from screen readers, because the thumb's name already says them.",
-    "Under reduced motion the thumb snaps back instead of springing.",
+    "Under reduced motion the thumb goes back at once.",
   ],
 };
 

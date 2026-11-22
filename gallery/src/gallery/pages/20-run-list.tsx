@@ -11,7 +11,7 @@ export const meta: PageMeta = {
   group: "Agents",
   verbs: ["press", "select", "watch"],
   summary:
-    "An agent's runs for a sidebar or an inbox: each run's title, its status in words and a mark, where it has got and when it last changed. The runs that need you come first, a Select filters by status with counts, and Stop or Archive sits on the row. The open run is the raised block, which glides to the row you press, and a filter glides the rows to their new places. A run the agent changes moves at once.",
+    "An agent's runs for a sidebar or an inbox: each run's title, its status in words and a mark, where it has got and when it last changed. The runs that need you come first, a Select filters by status with counts, and Stop or Archive sits on the row. The open run's row has a block behind it, which moves to the row you press, and a filter moves the rows to their new places. A run the agent changes moves at once.",
   fun: "Press another run: the block glides over on a springier spring. Replay the agent's runs and each one that finishes, fails or needs you pops its mark.",
   tiers: ["instant", "responsive"],
 };
@@ -40,7 +40,7 @@ const [runId, setRunId] = useState("world");
   use: [
     "An app runs agents in the background and the person needs to see them all: in a sidebar beside the chat, or as an inbox of their own.",
     "Some runs wait on the person, for an approval or a question. The list lifts them above the rest under Needs you, in your order, and says so in words.",
-    "One run is open beside the list. Pass its id as selectedId and its row is the raised block, which glides to the next row the person presses.",
+    "One run is open beside the list. Pass its id as selectedId and its row takes the block behind it, which moves to the next row the person presses.",
     "Runs can be stopped or put away. Pass onStop and onArchive, and Stop shows on running rows and Archive on finished ones.",
   ],
   skip: [
@@ -58,7 +58,7 @@ const [runId, setRunId] = useState("world");
   ],
   a11y: [
     "The rows are a list named by the label (\"Runs 6\"), or two lists named by their headings, Needs you and Runs, when both have runs. Each row is a button, or a link with an href, named by its title, its status line and its updated words: \"Fix the Halo build, Needs you, Approve npm run deploy, 1m ago\".",
-    "The open run's row has aria-current=\"true\". The raised block behind it is decorative.",
+    "The open run's row has aria-current=\"true\". The block behind it is decorative.",
     "Every status is said in words at the start of the status line, never by the mark's shape or color alone. Only the failed mark takes a status color.",
     "The rows are one Tab stop with a roving focus, so a long list costs one press to cross. Stop and Archive are named with the run (\"Stop Creating your world\"), reached with the right arrow, and shown while their row has focus.",
     "One polite status says \"Fix the Halo build needs you\", \"Move the Northwind site failed\" or \"Import the Cosmos catalog is done\" when a run changes into one of those. It never speaks on the first render, so a list loaded from history is quiet, and never for a run that only appears.",

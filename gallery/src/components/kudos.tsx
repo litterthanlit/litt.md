@@ -1,14 +1,14 @@
 /**
- * Kudos, a Flat part (skills/litt-md/taste/litt-principles.md, Flat): a multi-tap reader appreciation pill powered by
- * Flat's 0.28 expressive spring and sunset heatwave progress dots.
+ * Kudos, a Flat part (skills/litt-md/taste/litt-principles.md, Flat): a reader's cheer for a post, given up to max times,
+ * on the expressive spring with progress dots on the sequential ramp (--data-seq-1 to --data-seq-4).
  *
- * - Untapped (mine === 0), the pill carries Flat's 1.5px outline ("an outline means off", Flat rule 2). Tapping it turns
- *   it into crisp white paper (never an accent fill, R6) and pops it on Flat's 0.28 expressive bounce.
- * - Each tap up to max lights the next heatwave dot along Flat's sunset ramp (gold to plum in light, plum to gold in
- *   dark — progress warmth, R7), warms the heart glyph to that step, increments the total count, and floats a tiny "+1"
+ * - Before any kudos (mine === 0), the pill carries Flat's 1.5px outline ("an outline means off", Flat rule 2). Giving
+ *   one turns it into white paper (never an accent fill, R6) and pops it on the expressive spring.
+ * - Each kudos up to max lights the next dot along the sequential ramp (gold to plum in light, plum to gold in dark:
+ *   progress warmth, R7), warms the heart glyph to that step, increments the total count, and floats a small "+1"
  *   pill upward on the expressive spring before fading on the exit tween.
- * - Tapping again once at max clears your kudos back to zero so a reader can always undo ("a hand always wins").
- * - Reduced motion removes all bounce and floating badges and updates the count and heatwave dots at once.
+ * - One more at max clears your kudos back to zero, so a reader can always undo ("a hand always wins").
+ * - Reduced motion removes the spring and the floating badges and updates the count and dots at once.
  * - Accessibility: native button with full readable count and remaining taps, plus a polite live region announcing each
  *   change in words.
  */
@@ -17,17 +17,17 @@ import { AnimatePresence, motion } from "motion/react";
 import { useExit, useMotionDial, useTransition } from "@/motion";
 
 export type KudosProps = {
-  /** Starting count from other readers before this reader taps. */
+  /** Kudos from other readers before this reader gives any. */
   count: number;
   /** Accessible subject being cheered, such as "Dusk tide" or "Issue 14". */
   subject: string;
-  /** Maximum taps one reader can give. Defaults to 5. */
+  /** The most kudos one reader can give. Defaults to 5. */
   max?: number;
-  /** Controlled number of taps given by this reader (0 to max). */
+  /** Controlled kudos given by this reader (0 to max). */
   value?: number;
-  /** Initial number of taps when uncontrolled. Defaults to 0. */
+  /** Initial kudos from this reader when uncontrolled. Defaults to 0. */
   defaultValue?: number;
-  /** Called with the updated tap count (0 to max) on each press. */
+  /** Called with the reader's updated kudos (0 to max) each time it changes. */
   onChange?: (mine: number) => void;
   /** Show the total count as Flat's standing 40px figure above the pill. Defaults to false. */
   prominent?: boolean;
@@ -44,7 +44,7 @@ function rampAt(t: number) {
   return `color-mix(in oklab, ${SEQ[k + 1]} ${u}%, ${SEQ[k]})`;
 }
 
-/** A tactile Flat reader kudos pill: dips and pops on Flat's 0.28 bounce as heatwave progress dots warm up. */
+/** A reader's cheer for a post: an outlined pill until they give kudos, then white, with a dot warming for each one. */
 export function Kudos({
   count,
   subject,

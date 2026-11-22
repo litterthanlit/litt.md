@@ -13,7 +13,7 @@ export const meta: PageMeta = {
   group: "Selection",
   verbs: ["select"],
   summary:
-    "One choice shown as cards: tiles of a picture over a word, or cards with a title, a line and a price. In Press the cards are plates in a tray and the picked one rises out of it; in Flat the picked one sits in a grey bubble with an ink tick; in Device each plate has a lamp and the picked one is set down into a well.",
+    "One choice shown as cards: tiles of a picture over a word, or cards with a title, a line and a price. The picked one shows it in more than color.",
   fun: "Pick another card in Flat: the grey bubble springs to it and settles a hair past its mark.",
   tiers: ["instant", "responsive"],
 };
@@ -60,10 +60,10 @@ const [plan, setPlan] = useState("pro");
     "It is a fieldset with a legend and native radio inputs, so a screen reader says the question and reads each card as, for example, Pro, radio button 2 of 3, checked.",
     "A card's radio is named by its title alone, and its line and detail are read after it as its description: Pro, then Unlimited projects and previews, $12 a month.",
     "Pictures are hidden from screen readers. The title must stand alone.",
-    "The picked card is raised (Press), in a grey bubble with an ink tick (Flat) or set down with its lamp lit (Device), never color alone, and in forced colors it takes a border.",
+    "The picked card shows it by its shape and its mark, never color alone, and in forced colors it takes a border.",
     "A stacked card is at least 64px tall, and a tile is about 70px, past the 44px touch floor.",
     "A disabled card is muted and skipped by the arrow keys. Its line stays readable, since it says why.",
-    "An error is linked to the group and marks every radio invalid. Under reduced motion Flat's bubble jumps to the pick without gliding.",
+    "An error is linked to the group and marks every radio invalid. Under reduced motion the pick moves at once.",
   ],
 };
 

@@ -15,7 +15,7 @@ export const meta: PageMeta = {
     "The agent's reasoning as a quiet disclosure above its answer. It reads \"Thinking\" with a clock that counts whole seconds, then \"Thought for 12s\", and it folds itself away when the answer starts unless you opened it. No shimmer, no pulse, no spinner: the clock is the only live signal.",
   tiers: ["instant", "responsive"],
   mechanism:
-    "No hand moves this; the agent does. While it thinks, the row reads Thinking and a clock counts whole seconds, the only live signal. The reasoning streams in with no fade per word. When the thought ends the clock stops and the body folds away. A reader's choice always wins. The chevron turns a quarter on the instant tier, and the body fades in and travels a little on the responsive tier. Its height snaps. Press keeps the plain row, Flat sets it in a grey card, and Device lights it in steps. Under reduced motion the body appears and leaves at once.",
+    "No hand moves this; the agent does. While it thinks, the row reads Thinking and a clock counts whole seconds, the only live signal. The reasoning streams in with no fade per word. When the thought ends the clock stops and the body folds away. A reader's choice always wins. The chevron turns a quarter on the instant tier, and the body fades in and travels a little on the responsive tier. Its height snaps. Under reduced motion the body appears and leaves at once.",
 };
 
 export const docs: PageDocs = {
@@ -46,7 +46,7 @@ export const docs: PageDocs = {
   use: [
     "An agent reasons before it answers and you want to show it without letting it crowd the answer. The reasoning is there to read, and out of the way once it has been read.",
     "The reasoning streams in. Open while the agent works, it lets the reader watch, and when the answer starts it folds away by itself.",
-    "An app on Device wants the row to say what the agent is doing as well as how long. Pass an Agent indicator as the indicator, and it sits beside the clock while the thought runs.",
+    "The row should say what the agent is doing as well as how long, in a world that has an Agent indicator. Pass an Agent indicator as the indicator, and it sits beside the clock while the thought runs.",
     "A saved conversation. Pass the seconds the thought took as duration and it reads \"Thought for 12s\", closed, ready to open.",
     "The reader should always win. A thought they opened stays open, and one they closed stays closed, whatever the agent does next.",
   ],

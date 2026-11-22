@@ -13,8 +13,9 @@ export const meta: PageMeta = {
   ledeByWorld: { heat: "A square key whose corner brackets snap on under the hand." },
   order: 1.01, group: "Actions",
   verbs: ["press"],
-  summary: "Roomy and slightly rounded, with the label at the title weight. Under Press, secondary is a block raised once by its cast, with no outline, and danger is the same block with red words. Hover changes the fill on the instant tier, and a press sinks the block half a pixel, so the button answers without ever changing its size.",
+  summary: "Roomy, with the label at the title weight. Primary is the view's one strong fill, secondary and ghost are quieter, and danger says the loss in red words. Hover changes the fill on the instant tier, and a press answers under the hand without the button ever changing its size.",
   summaryByWorld: {
+    press: "Roomy and slightly rounded, with the label at the title weight. Under Press, secondary is a block raised once by its cast, with no outline, and danger is the same block with red words. Hover changes the fill on the instant tier, and a press sinks the block half a pixel, so the button answers without ever changing its size.",
     heat: "A square key with the label at the title weight. Primary is the one accent fill; secondary is a flat cell in a 1px line, and danger the same cell with red words. Hover steps the fill and four corner brackets snap on, on the instant tier, and a press draws the key in a touch on the frame, so the button answers without ever changing its size.",
   },
   fun: "Press and let go: the button goes deeper and springs back with a little life.",
@@ -22,6 +23,10 @@ export const meta: PageMeta = {
   mechanism:
     "Hover swaps the fill on the instant tier, 100ms. A press sinks the block half a pixel and tightens its cast at once, with no fade, so the hand feels it land. The box never changes size: loading keeps the label mounted at opacity 0 and the spinner turns inside the same width. Reduced motion sets the sink to 0 and the fill still answers. Each world has its own body, so the hand feels each differently. In Press the hand meets a block standing on the surface: its cast tightens and the label drops half a pixel. In Flat there is no block to push: the pill goes a step darker under the hand and does not move, like pressing paper, and a ghost is words alone. In Device the hand meets a key: the face sinks the whole 2px onto its skirt, which is the travel of a real key, and a ghost button sinks into a well.",
   movesByWorld: {
+    press: "Hover swaps the fill on the instant tier, 100ms. The hand meets a block standing on the surface: a press sinks it half a pixel and tightens its cast at once, with no fade, so the hand feels it land. The box never changes size: loading keeps the label mounted at opacity 0 and the spinner turns inside the same width. Reduced motion sets the sink to 0 and the fill still answers.",
+    device: "Hover lightens the key on the instant tier. A press sinks the face and its label the whole 2px onto the skirt, the travel of a real key, and the lit edge gives way to the shade of a key that is down; with sound on it clicks going down and coming up. A ghost button is a label with no key, and pressed it sinks into a well. Loading keeps the label in place at opacity 0 and turns the spinner behind a small window of LCD glass, so the width holds. Reduced motion sets the travel to 0, and the face still darkens.",
+    rack: "Hover steps the fill on the instant tier, 100ms. A press answers on the frame: the outline darkens and the fill takes a step, and the label stays where it is. The key never travels or sinks. The box keeps its size: loading keeps the label in place at opacity 0 behind the spinner, so the width holds. Reduced motion changes nothing, since nothing moves.",
+    flat: "Hover moves the pill's fill one step on the instant tier, 100ms, and a finger's press does the same. Nothing moves: there is no depth to push into, so a press is like pressing paper. A ghost button is words alone, and only its words darken. The box never changes size: loading keeps the label in place at opacity 0 and the spinner turns inside the same width. Reduced motion changes nothing here, since only the fill answers.",
     heat: "Hover steps the fill and snaps four corner brackets onto the key on the instant tier, 100ms, and keyboard focus brings the brackets too. A press answers on the frame: the key draws in to 98% of its size, with no depth to push into. The box keeps its size: loading keeps the label in place at opacity 0 and the spinner turns inside the same width. Reduced motion holds the key at full size, and the fill and the brackets still answer.",
   },
 };
@@ -43,9 +48,9 @@ import { PlusIcon, SettingsIcon } from "@/components/icons";
 <Button variant="danger" icon={<TrashIcon />}>Delete project</Button>`,
   use: [
     "A person does something: save, create, send, start a project.",
-    "The main action in a view. Make it primary, because the accent fill appears once per view.",
+    "The main action in a view. Make it primary, because one action per view takes the primary fill.",
     "Other important actions (secondary), and quiet ones like Cancel or a toolbar action (ghost).",
-    "An action that destroys something, such as Delete project or Revoke key. Use danger: the block says it in red words. The confirm in the dialog that asks is the same variant, and only there does it fill red.",
+    "An action that destroys something, such as Delete project or Revoke key. Use danger: the button says it in red words. The confirm in the dialog that asks is the same variant, and only there does it fill red.",
     "A page form's submit and its paired Cancel. Keep both md, like the fields, in a page form and in a dialog. lg is for a hero CTA.",
     "A compact, familiar action such as copy, settings or more. Use iconOnly and give it an aria-label.",
   ],
@@ -67,10 +72,10 @@ import { PlusIcon, SettingsIcon } from "@/components/icons";
     "Loading sets aria-busy and aria-disabled and ignores presses, so it cannot be pressed twice, and a submit does not send the form again. It is not disabled, so it keeps focus and its place in the tab order while it waits.",
     "A disabled button leaves the tab order, so say why somewhere else, such as a status line next to it.",
     "Keyboard focus draws a 2px outline at a 2px offset. Mouse and touch presses do not show it.",
-    "A press sinks the button half a pixel and tightens its cast, by mouse or finger, and the OS tap flash is off so a touch press does not show two things. Touch has no hover, so a pressed button also takes its hover fill. Under reduced motion the button does not sink, and the fill still shows the press.",
+    "A press shows by mouse or finger, and the OS tap flash is off so a touch press does not show two things. Touch has no hover, so a pressed button also takes its hover fill. Under reduced motion nothing moves, and the fill still shows the press.",
     "Small is 32px tall and medium is 44px. Use medium or large for primary actions on touch screens.",
     "A disabled button is muted and exempt from contrast rules. If the reason is not obvious, say it in text next to the button.",
-    "Danger says it in words, not only in red: the label names the loss (Delete project, not OK). The red words reach 4.5:1 on the block, and the confirm's words reach it on the red fill, in light and dark.",
+    "Danger says it in words, not only in red: the label names the loss (Delete project, not OK). The red words reach 4.5:1 on the button, and the confirm's words reach it on the red fill, in light and dark.",
   ],
 };
 
@@ -88,7 +93,7 @@ function ReplayLoading({ label = "View work" }: { label?: string }) {
 export const study: PageStudy = {
   object: <Button>View work</Button>,
   parts: [
-    { name: "The block", selector: "button" },
+    { name: "The button", selector: "button" },
     { name: "The row", selector: "button > span" },
     { name: "The label", selector: "button .litt-trim" },
   ],
@@ -99,7 +104,7 @@ export const study: PageStudy = {
   },
   replay: {
     label: "Replay loading",
-    caption: "Watch the width: the label fades out under the spinner, and the block does not move.",
+    caption: "Watch the width: the label fades out under the spinner, and the button keeps its size.",
     run: () => <ReplayLoading />,
   },
   /* Under Device the study speaks the recorder, as its lead stage does (ExportTakeDemo). */

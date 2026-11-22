@@ -113,8 +113,8 @@ jobs:
           # One command a line under set -e, so any failure fails the job (a failure inside `a && b` in a loop does not).
           # Seconds of each check on 2026-11-18, with its self-test, to pair them: reflow and forced colors 245, text zoom
           # and focus 278, corners 317, gaps 276, home 13, worlds 74, materials 115, sound 61, studies 253 and 171, and
-          # (2026-11-20, locally) words 75.
-          - name: Reflow, forced colors and worlds
+          # words (2026-11-21, locally, every world's 650 pages) about 330 alone and 550 beside other runs, so in halves.
+          - name: Reflow, forced colors, worlds and words 2/2
             run: |
               set -e
               npm run test:reflow --prefix gallery
@@ -123,6 +123,8 @@ jobs:
               npm run test:forced-colors --prefix gallery -- --self-test
               npm run test:worlds --prefix gallery
               npm run test:worlds --prefix gallery -- --self-test
+              npm run test:words --prefix gallery -- --shard 2/2
+              npm run test:words --prefix gallery -- --self-test
           - name: Text zoom, focus and sound
             run: |
               set -e
@@ -142,14 +144,12 @@ jobs:
               npm run test:jump --prefix gallery -- --shard 2/2
               npm run test:targets --prefix gallery
               npm run test:targets --prefix gallery -- --self-test
-          - name: Gaps, home, words and jump 1/2
+          - name: Gaps, home and jump 1/2
             run: |
               set -e
               npm run test:gaps --prefix gallery
               npm run test:gaps --prefix gallery -- --self-test
               npm run test:home --prefix gallery
-              npm run test:words --prefix gallery
-              npm run test:words --prefix gallery -- --self-test
               npm run test:jump --prefix gallery -- --shard 1/2
               npm run test:jump --prefix gallery -- --self-test
           # Each world's player; the self-test opens only the worlds its breaks land in.
@@ -159,10 +159,11 @@ jobs:
           # Every study page has its sections, anatomy parts resolve, the material frame matches pixel for pixel.
           # The self-test runs unsharded, on the Button study.
           - { name: "Studies 1/2", run: "npm run test:study --prefix gallery -- --shard 1/2 && npm run test:study --prefix gallery -- --self-test" }
-          - name: Studies 2/2 and materials
+          - name: Studies 2/2, materials and words 1/2
             run: |
               set -e
               npm run test:study --prefix gallery -- --shard 2/2
+              npm run test:words --prefix gallery -- --shard 1/2
               npm run test:materials --prefix gallery
               npm run test:materials --prefix gallery -- --self-test
     steps:

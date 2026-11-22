@@ -11,7 +11,7 @@ export const meta: PageMeta = {
   group: "Selection",
   verbs: ["select"],
   summary:
-    "A short choice in one track. The selected surface glides to your pick on the responsive tier, and color changes are instant, so the control answers without ever resizing.",
+    "A short choice in one track. Your pick takes the selected face and the stronger ink, and color changes are instant, so the control answers without ever resizing.",
   summaryByWorld: {
     heat: "A short choice in a row of square cells divided by 1px rules. The chosen cell takes a darker fill, corner brackets and ‹ › around its label at once, and colors change on the instant tier, so the control answers without ever resizing.",
   },
@@ -59,12 +59,12 @@ const [theme, setTheme] = useState<"system" | "light" | "dark">("system");
   a11y: [
     "It is a fieldset with a legend and native radio inputs, so a screen reader says the group's name and reads each option as, for example, radio button 2 of 3, checked.",
     "The legend is visually hidden unless you pass showLegend, but it is always read. Give it a real name.",
-    "The selected option is a raised surface and a stronger text color, not color alone.",
+    "The selected option has its own face and a stronger text color, not color alone.",
     "Keyboard focus draws a 2px outline inside the segment, so the track never clips it. Mouse and touch presses do not show it.",
     "The small track is 32px tall and the medium track is 44px. On touch screens the small one grows to 44px.",
     "Touch has no hover, so on a touch screen a segment held down fills and takes the stronger text color, on the instant tier. The OS tap flash is off, and the segment never moves.",
     "A disabled option is muted and skipped by the arrow keys. Say why in text nearby when it is not obvious.",
-    "Under reduced motion the selected surface jumps to the new option without gliding.",
+    "Under reduced motion the selected face appears on the new option at once.",
   ],
 };
 

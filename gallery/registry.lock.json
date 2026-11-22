@@ -1,6 +1,6 @@
 {
   "$comment": "Written by scripts/gen-registry.mjs. What each registry item installs, hashed, and the release that last changed it. Commit it with the change.",
-  "latest": "2026.11.20",
+  "latest": "2026.11.21",
   "items": {
     "accordion": {
       "version": "2026.11.18",
@@ -139,8 +139,8 @@
       "hash": "bbb0a9c7e30a528b"
     },
     "deploy-status": {
-      "version": "2026.11.20",
-      "hash": "b81d370b6c089cc8"
+      "version": "2026.11.21",
+      "hash": "95d1bb989b2e4ef4"
     },
     "deployment": {
       "version": "2026.11.03",
@@ -559,8 +559,8 @@
       "hash": "5348914944485c67"
     },
     "env-switch": {
-      "version": "2026.11.20",
-      "hash": "d480c48ef6583b1a"
+      "version": "2026.11.21",
+      "hash": "0a07ceedc0353720"
     },
     "file-changes": {
       "version": "2026.11.18",
@@ -711,8 +711,8 @@
       "hash": "f50a1e82889db283"
     },
     "flat-goal-ring": {
-      "version": "2026.11.20",
-      "hash": "0e57825b25d040e8"
+      "version": "2026.11.21",
+      "hash": "7553a30548f9b86a"
     },
     "flat-header": {
       "version": "2026.11.16",
@@ -743,8 +743,8 @@
       "hash": "17d1840b1643cf07"
     },
     "flat-kudos": {
-      "version": "2026.11.19",
-      "hash": "4214c05bf4c630c3"
+      "version": "2026.11.21",
+      "hash": "78c8f89f322a5dfb"
     },
     "flat-legend": {
       "version": "2026.11.20",
@@ -807,8 +807,8 @@
       "hash": "df73f4f043b78b69"
     },
     "flat-poll": {
-      "version": "2026.11.19",
-      "hash": "d79815a5c727b626"
+      "version": "2026.11.21",
+      "hash": "a6533f49eb466abd"
     },
     "flat-popover": {
       "version": "2026.11.16",
@@ -831,12 +831,12 @@
       "hash": "3b510b0be4606ccd"
     },
     "flat-reaction-bar": {
-      "version": "2026.11.19",
-      "hash": "50271056ce700abc"
+      "version": "2026.11.21",
+      "hash": "2cc9c2eaa210b7f3"
     },
     "flat-reading-progress": {
-      "version": "2026.11.20",
-      "hash": "c0fcdfd652068772"
+      "version": "2026.11.21",
+      "hash": "ddc30a50822fa502"
     },
     "flat-resizable": {
       "version": "2026.11.16",
@@ -915,8 +915,8 @@
       "hash": "eb874003dc2c37b0"
     },
     "flat-streak": {
-      "version": "2026.11.20",
-      "hash": "539d864a3d20ddb1"
+      "version": "2026.11.21",
+      "hash": "93d1f832f13d7661"
     },
     "flat-switch": {
       "version": "2026.11.16",
@@ -995,8 +995,8 @@
       "hash": "f50a1e82889db283"
     },
     "goal-ring": {
-      "version": "2026.11.20",
-      "hash": "0e57825b25d040e8"
+      "version": "2026.11.21",
+      "hash": "7553a30548f9b86a"
     },
     "growth": {
       "version": "2026.10.26",
@@ -1427,8 +1427,8 @@
       "hash": "17d1840b1643cf07"
     },
     "kudos": {
-      "version": "2026.11.19",
-      "hash": "4214c05bf4c630c3"
+      "version": "2026.11.21",
+      "hash": "78c8f89f322a5dfb"
     },
     "lap-timer": {
       "version": "2026.11.20",
@@ -1875,8 +1875,8 @@
       "hash": "df73f4f043b78b69"
     },
     "poll": {
-      "version": "2026.11.19",
-      "hash": "d79815a5c727b626"
+      "version": "2026.11.21",
+      "hash": "a6533f49eb466abd"
     },
     "popover": {
       "version": "2026.11.15",
@@ -1983,8 +1983,8 @@
       "hash": "bbb0a9c7e30a528b"
     },
     "press-deploy-status": {
-      "version": "2026.11.20",
-      "hash": "b81d370b6c089cc8"
+      "version": "2026.11.21",
+      "hash": "95d1bb989b2e4ef4"
     },
     "press-details": {
       "version": "2026.11.18",
@@ -1999,8 +1999,8 @@
       "hash": "5348914944485c67"
     },
     "press-env-switch": {
-      "version": "2026.11.20",
-      "hash": "d480c48ef6583b1a"
+      "version": "2026.11.21",
+      "hash": "0a07ceedc0353720"
     },
     "press-file-changes": {
       "version": "2026.11.18",
@@ -2139,8 +2139,8 @@
       "hash": "3b510b0be4606ccd"
     },
     "press-release-rail": {
-      "version": "2026.11.20",
-      "hash": "7589accc09cb95e4"
+      "version": "2026.11.21",
+      "hash": "00fdca0876b9bebc"
     },
     "press-resizable": {
       "version": "2026.11.16",
@@ -2695,16 +2695,16 @@
       "hash": "3b510b0be4606ccd"
     },
     "reaction-bar": {
-      "version": "2026.11.19",
-      "hash": "50271056ce700abc"
+      "version": "2026.11.21",
+      "hash": "2cc9c2eaa210b7f3"
     },
     "reading-progress": {
-      "version": "2026.11.20",
-      "hash": "c0fcdfd652068772"
+      "version": "2026.11.21",
+      "hash": "ddc30a50822fa502"
     },
     "release-rail": {
-      "version": "2026.11.20",
-      "hash": "7589accc09cb95e4"
+      "version": "2026.11.21",
+      "hash": "00fdca0876b9bebc"
     },
     "resizable": {
       "version": "2026.11.06",
@@ -2799,8 +2799,8 @@
       "hash": "eb874003dc2c37b0"
     },
     "streak": {
-      "version": "2026.11.20",
-      "hash": "539d864a3d20ddb1"
+      "version": "2026.11.21",
+      "hash": "93d1f832f13d7661"
     },
     "switch": {
       "version": "2026.11.19",

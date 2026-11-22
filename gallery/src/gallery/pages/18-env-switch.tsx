@@ -32,11 +32,14 @@ export const docs: PageDocs = {
     "Choosing among more than four regions or projects. Use Select or Combobox.",
   ],
   keyboard: [
-    [["Tab"], "Moves focus across the environment blocks."],
-    [["Enter", "Space"], "Selects the focused environment and updates the host and load slot."],
+    [["Tab"], "Moves focus into the group, onto the chosen environment, and on out of it. The group is one tab stop."],
+    [["←", "→", "↑", "↓"], "Moves to the previous or next environment and chooses it. At either end it wraps around."],
+    [["Home", "End"], "Chooses the first or the last environment."],
+    [["Enter", "Space"], "Chooses the focused environment and updates the host and load slot."],
   ],
   a11y: [
     "Exposes role=\"radiogroup\" with role=\"radio\" and aria-checked on each environment block.",
+    "The group is one tab stop: only the chosen environment is in the tab order, and the arrow keys move the choice, as a radio group does.",
     "The cut-in slot carries role=\"meter\" with aria-valuemin, aria-valuemax, aria-valuenow and aria-valuetext.",
     "Each switch announces the host, region, latency and capacity percentage once in a polite status region.",
   ],
@@ -76,15 +79,15 @@ export default function EnvSwitchPage() {
         title="Production target"
         tier="instant"
         code="HarborEnvDemo"
-        caption="Select Production, Preview or Development: the chosen block rises out of the tray and the cut-in slot updates immediately."
+        caption="Choose where you are working: Production, Preview or Development. The host, region, latency and load under it follow the choice."
       >
         <HarborEnvDemo />
       </Stage>
       <Stage
-        title="Preview branch"
+        title="Preview deploy"
         tier="instant"
         code="PreviewEnvDemo"
-        caption="Zero outer boxes and zero colored badges — host, region, latency and load read cleanly on warm stone."
+        caption="A pull request's preview: pr-148.harbor.app in iad1, answering in 31 ms with 28% of its capacity in use."
       >
         <PreviewEnvDemo />
       </Stage>

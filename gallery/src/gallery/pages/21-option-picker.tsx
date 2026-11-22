@@ -13,7 +13,7 @@ export const meta: PageMeta = {
   group: "Commerce",
   verbs: ["select"],
   summary:
-    "One option of a product as native radios with a visible legend that names the pick. Words are blocks in a tray in Press and grey pills in Flat; colors and images are small blocks or plain circles. The pick is raised and lit, or an ink pill, or a ringed circle. A value that is sold out stays pickable, steps back and says so in words.",
+    "One option of a product as native radios with a visible legend that names the pick. Words, colors and images each get their own small control, and the pick shows it in more than color. A value that is sold out stays pickable, steps back and says so in words.",
   tiers: ["instant"],
 };
 

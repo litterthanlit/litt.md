@@ -13,7 +13,7 @@ export const meta: PageMeta = {
   group: "Inputs",
   verbs: ["type", "select"],
   summary:
-    "Type to find one value, or several, in a long list. The Input's cut field with the Menu's glass list under it: the list grows from the field as you type, filters at once with the first match lit, and keeps one gliding highlight. Several picks stand up in the field as raised tokens that fade in and out.",
+    "Type to find one value, or several, in a long list. The Input's field with the Menu's list under it: the list opens from the field as you type, filters at once with the first match lit, and keeps one highlight that follows the keys. Several picks stand in the field as tokens you can take out again.",
   fun: "Move through the list: the highlight reaches for the next row, then gathers itself there.",
   tiers: ["instant", "responsive"],
 };
@@ -48,7 +48,7 @@ const [stack, setStack] = useState(["framer", "sanity"]);
     "One value from a list too long to scan: a client, a teammate, a Framer site. A person types a few letters instead of scrolling.",
     "Several values from a known list, such as the frameworks a site is built with. Pass multiple, and the picks become tokens.",
     "A form field. The label, the hint and the error are wired up, and with name every value posts through a hidden input.",
-    "Inside a dialog, a sheet or on a phone, with no change from you. The list turns solid over glass, and on a phone it stays under the field and fits the screen above the keyboard.",
+    "Inside a dialog, a sheet or on a phone, with no change from you. The list stays solid over another overlay, and on a phone it stays under the field and fits the screen above the keyboard.",
   ],
   skip: [
     "A short fixed list, up to about eight options. Use Select, which needs no typing.",
