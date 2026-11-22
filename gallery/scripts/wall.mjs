@@ -185,35 +185,60 @@ for (const { world, material, accent, width, height, label, theme } of COMBOS) {
     await pg.goto(`http://localhost:${port}/index.html#overview`, { waitUntil: "networkidle" });
     await pg.evaluate((a) => (document.body.dataset.accent = a), ACCENT_ATTRIBUTE[accent]);
     await pg.evaluate(() => document.fonts.ready);
-    /* Walk down so every tile mounts (each mounts a screen ahead), then let the last chunks land. */
-    let end = await pg.evaluate(() => document.documentElement.scrollHeight);
-    for (let y = 0; y < end; y += Math.round(height * 0.8)) {
-      await pg.evaluate((y) => scrollTo(0, y), y);
-      await pg.waitForTimeout(120);
-      end = await pg.evaluate(() => document.documentElement.scrollHeight);
-    }
+    await pg.waitForFunction(
+      () => {
+        const items = [...document.querySelectorAll("[data-cosmos-item]")];
+        return items.length > 0 && items.every((el) => el.querySelector("button, input, svg, [role]"));
+      },
+      null,
+      { timeout: 10000 },
+    );
     await pg.waitForLoadState("networkidle");
-    await pg.waitForTimeout(800);
-    const r = await pg.evaluate(inspect, "h2");
+    await pg.waitForTimeout(400);
+    const r = await pg.evaluate(() => {
+      const probe = document.createElement("div");
+      probe.style.background = "var(--accent)";
+      document.body.append(probe);
+      const accentColor = getComputedStyle(probe).backgroundColor;
+      probe.remove();
+      const items = [...document.querySelectorAll("[data-cosmos-item]")];
+      const name = (el) => el.closest("[data-cosmos-item]")?.dataset.cosmosItem ?? "the page";
+      const marks = [];
+      for (const el of document.querySelectorAll("main *")) {
+        if (el.closest("[aria-hidden=true], .sr-only") || getComputedStyle(el).backgroundColor !== accentColor) continue;
+        const box = el.getBoundingClientRect();
+        if (box.width < 24 || box.height < 16) continue;
+        marks.push({ what: `${name(el)} ("${(el.textContent || "").trim().slice(0, 32)}")`, y: box.top + scrollY });
+      }
+      marks.sort((a, b) => a.y - b.y);
+      const close = marks.slice(1).flatMap((m, i) => (m.y - marks[i].y < innerHeight ? [`${marks[i].what} and ${m.what}, ${Math.round(m.y - marks[i].y)}px apart`] : []));
+      const sideways = items.filter((t) => t.firstElementChild.scrollWidth > t.firstElementChild.clientWidth + 1).map((t) => t.dataset.cosmosItem);
+      const empty = items.filter((t) => t.firstElementChild.getBoundingClientRect().height < 8 || (!t.firstElementChild.textContent && !t.firstElementChild.querySelector("svg,img,canvas,[role=img]"))).map((t) => t.dataset.cosmosItem);
+      const worlds = [...new Set(items.map((t) => t.dataset.cosmosItem.split("/")[0]))];
+      const shown = (el) => !el.closest("[aria-hidden=true],[inert]") && el.getClientRects().length > 0;
+      const named = (el) => el.getAttribute("aria-label") || (el.getAttribute("aria-labelledby") && document.getElementById(el.getAttribute("aria-labelledby"))?.textContent?.trim()) || "";
+      const landmarks = [...document.querySelectorAll("nav, section, form, aside, [role=region], [role=navigation]")].filter(shown).map(named).filter(Boolean);
+      const twice = [...new Set(landmarks.filter((n, i) => landmarks.indexOf(n) !== i))];
+      const mains = [...document.querySelectorAll("main, [role=main]")].filter(shown).length;
+      const h1s = [...document.querySelectorAll("h1")].filter(shown).length;
+      const names = items.filter((t) => t.querySelector("figcaption h3 a") === null).map((t) => t.dataset.cosmosItem);
+      const inks = [...document.querySelectorAll("main .litt-ink")].filter((el) => !el.closest("[aria-hidden=true]")).map((el) => name(el));
+      return { material: document.documentElement.dataset.material, count: items.length, worlds, inks, close, sideways, empty, pageWide: document.documentElement.scrollWidth > innerWidth, twice, mains, h1s, names };
+    });
     count = r.count;
     const where = `${material} · ${accent} · ${theme} · ${label}`;
     if (r.material !== ATTRIBUTE[material]) problems.push(`${where}: data-material on <html> is ${r.material ?? "absent"}, expected ${ATTRIBUTE[material] ?? "absent"}`);
-    const outside = WALL_PAGES.filter((p) => !onWall(p, material) && r.tileNames.includes(p.id)).map((p) => p.id);
-    if (outside.length) problems.push(`${where}: tiles for pages outside ${material} (meta.worlds): ${outside.join(", ")}`);
-    const absent = WALL_PAGES.filter((p) => onWall(p, material) && !r.tileNames.includes(p.id)).map((p) => p.id);
-    if (absent.length) problems.push(`${where}: pages in ${material} with no tile: ${absent.join(", ")}`);
-    const worldTiles = r.tileNames.filter((n) => Object.hasOwn(ATTRIBUTE, n.toLowerCase()));
-    if (worldTiles.length) problems.push(`${where}: the wall holds world tiles (${worldTiles.join(", ")}); a world is a page, not a component`);
-    if (r.fills.length > 1) problems.push(`${where}: ${r.fills.length} accent fills, the wall allows one: ${r.fills.join(", ")}`);
-    if (r.inks.length > 1) problems.push(`${where}: ${r.inks.length} ink cards, the wall allows one: ${r.inks.join(", ")}`);
+    const missingWorlds = Object.keys(ATTRIBUTE).filter((w) => !r.worlds.includes(w));
+    if (missingWorlds.length) problems.push(`${where}: overview showcase missing worlds: ${missingWorlds.join(", ")}`);
+    if (r.inks.length > 1) problems.push(`${where}: ${r.inks.length} ink cards, a view allows one: ${r.inks.join(", ")}`);
     for (const c of r.close) problems.push(`${where}: two accent fills within one screen (R6): ${c}`);
     if (r.pageWide) problems.push(`${where}: the page scrolls sideways`);
-    if (r.mains !== 1) problems.push(`${where}: ${r.mains} main landmarks; the page has one (AppShell's mainLandmark={false} in a tile)`);
+    if (r.mains !== 1) problems.push(`${where}: ${r.mains} main landmarks`);
     if (r.h1s !== 1) problems.push(`${where}: ${r.h1s} h1s; the page title is the one`);
     if (r.twice.length) problems.push(`${where}: landmarks share a name: ${r.twice.join(", ")}`);
-    if (r.names.length) problems.push(`${where}: tiles without their name as an h2: ${r.names.join(", ")}`);
-    if (r.sideways.length) problems.push(`${where}: tiles scroll sideways: ${r.sideways.join(", ")}`);
-    if (r.empty.length) problems.push(`${where}: tiles draw nothing: ${r.empty.join(", ")}`);
+    if (r.names.length) problems.push(`${where}: showcase items without an h3 link name: ${r.names.join(", ")}`);
+    if (r.sideways.length) problems.push(`${where}: showcase items scroll sideways: ${r.sideways.join(", ")}`);
+    if (r.empty.length) problems.push(`${where}: showcase items draw nothing: ${r.empty.join(", ")}`);
     for (const e of errors) problems.push(`${where}: ${e}`);
     await ctx.close();
   }
@@ -227,4 +252,4 @@ if (problems.length) {
   process.exit(1);
 }
 if (worldRuns.length) console.log(`wall: ${worldRuns.length} runs of the world gallery views (${[...new Set(worldRuns.map((c) => c.world))].join(", ")}), each in its own look, light and dark, desktop and phone: a tile for every component in the world and none outside it, at most one accent fill and none within a screen of another, nothing sideways or empty, one main and one h1.`);
-console.log(`wall${shards > 1 ? ` (shard ${shard}/${shards}, ${COMBOS.length} of ${ALL.length} runs)` : ""}: ${count} tiles, Press, Flat, Device, Plain and Rack (Flat in Blue 4 and pink, the others in their own), light and dark, desktop and phone: no tile for a page outside its world and a tile for every page in it, one accent fill on the wall and none within a screen of another, no world tile, nothing sideways or empty, one main and one h1, landmarks named apart.`);
+console.log(`wall${shards > 1 ? ` (shard ${shard}/${shards}, ${COMBOS.length} of ${ALL.length} runs)` : ""}: ${count} showcase items on overview (all six worlds) + every world gallery view, light and dark, desktop and phone: at most one accent fill per screen, nothing sideways or empty, one main and one h1, landmarks named apart.`);

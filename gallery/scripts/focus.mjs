@@ -151,12 +151,14 @@ const SCENARIOS = {
     context: DESKTOP,
     async run(pg) {
       await open(pg, "overview");
-      await pg.locator('main a[href="#button"]').first().focus();
+      const link = pg.locator("main [data-cosmos-item] h3 a").first();
+      await link.waitFor();
+      await link.focus();
       await pg.keyboard.press("Enter");
-      await pg.waitForSelector("main h1#page-button", { timeout: 10_000 });
+      await pg.waitForFunction(() => location.hash !== "#overview" && !!document.querySelector("main h1"), null, { timeout: 10_000 });
       await pg.waitForTimeout(500);
       const ok = await pg.evaluate(() => document.activeElement === document.querySelector("main h1"));
-      return ok ? "" : `after Enter on the Button tile, focus is on ${await active(pg)}, not the new page's h1`;
+      return ok ? "" : `after Enter on a showcase link, focus is on ${await active(pg)}, not the new page's h1`;
     },
     broken: () => addEventListener("hashchange", () => document.addEventListener("focusin", (e) => {
       if (e.target.tagName === "H1") e.target.blur();

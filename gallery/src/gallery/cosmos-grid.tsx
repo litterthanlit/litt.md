@@ -1,90 +1,78 @@
 /**
- * A Cosmos-style masonry showcase of the best live components across every world (Press, Flat, Device, Plain, Rack,
- * Heat). Each item wears its own world's material, face, color and body, stands at its natural height so columns
- * stagger organically, and stays still until reached for (StillMotion). No explanatory chrome: the components speak for
- * themselves, with a quiet component title and world link tucked beneath each piece.
+ * An airy, Cosmos-style masonry showcase of the best live components across all six galleries (Press, Flat, Device,
+ * Plain, Rack, Heat). Each component floats directly on the open page ground with no outer card frame or border, wearing
+ * its own world's material, face, color and body, separated by generous whitespace and staggered column offsets so every
+ * piece breathes and speaks for itself.
  */
 import { Suspense, useEffect, useState, useSyncExternalStore } from "react";
 import { MaterialProvider, StillMotion } from "@/motion";
 import { useDark } from "./customize-state";
-import { DEVICE_PLATE, PreviewContext, WorldContext } from "./kit";
+import { PreviewContext, WorldContext } from "./kit";
 import { lookAttributes, materialOf, type Material } from "./look";
 import { pages, type PageEntry } from "./registry";
+
+type Align = "start" | "center" | "end";
 
 type ShowcaseItem = {
   /** Component page id (src/gallery/pages/*.tsx meta.id). */
   id: string;
   /** The gallery/world this piece showcases. */
   world: Material;
+  /** Max width cap so compact objects stay naturally scaled inside their wide column. */
+  width: string;
+  /** Gentle horizontal drift inside the desktop column for an organic Cosmos-board rhythm. */
+  align: Align;
 };
 
 /**
- * Three signature pieces from each of the six worlds, interleaved so the opening six cards introduce every gallery once
- * (Device, Rack, Heat, then Press, Flat, Plain), no column stacks two of the same world back to back, intermediate rows
- * stagger organically in Cosmos rhythm, and the three desktop columns finish balanced at the foot. None carries an
- * accent fill or an ink card, keeping R6 ("one accent fill per view", owned by the hero's Get started) intact.
+ * Twelve signature pieces — two from each of the six galleries — distributed across two wide, staggered columns on
+ * desktop (single column on phone). No two adjacent pieces share a world, every component sits unclipped at its real
+ * size, and none carries an accent fill or an ink card (keeping R6 intact beside the hero's Get started).
  */
 const SHOWCASE: readonly ShowcaseItem[] = [
-  // Row 1: Device, Rack, Heat
-  { id: "tape-progress", world: "device" },
-  { id: "clip-launcher", world: "rack" },
-  { id: "pursuit-meter", world: "heat" },
-  // Row 2: Press, Flat, Plain (all 6 galleries visible in the first 6 cards)
-  { id: "deploy-status", world: "press" },
-  { id: "poll", world: "flat" },
-  { id: "segmented", world: "plain" },
-  // Row 3: Flat, Heat, Device
-  { id: "kudos", world: "flat" },
-  { id: "tune-menu", world: "heat" },
-  { id: "agent-indicator", world: "device" },
-  // Row 4: Rack, Device, Press
-  { id: "device-rack", world: "rack" },
-  { id: "seven-segment", world: "device" },
-  { id: "release-rail", world: "press" },
-  // Row 5: Plain, Flat, Rack
-  { id: "tabs", world: "plain" },
-  { id: "streak", world: "flat" },
-  { id: "step-sequencer", world: "rack" },
-  // Row 6: Heat, Press, Plain
-  { id: "lap-timer", world: "heat" },
-  { id: "env-switch", world: "press" },
-  { id: "checkbox", world: "plain" },
+  // Pair 1: Device (left) & Flat (right, staggered down)
+  { id: "tape-progress", world: "device", width: "w-full max-w-sm", align: "start" },
+  { id: "poll", world: "flat", width: "w-full max-w-sm", align: "center" },
+  // Pair 2: Rack (left) & Press (right)
+  { id: "clip-launcher", world: "rack", width: "w-full max-w-lg", align: "center" },
+  { id: "deploy-status", world: "press", width: "w-full max-w-md", align: "end" },
+  // Pair 3: Heat (left) & Plain (right)
+  { id: "pursuit-meter", world: "heat", width: "w-full max-w-sm", align: "start" },
+  { id: "segmented", world: "plain", width: "w-full max-w-[16rem]", align: "center" },
+  // Pair 4: Flat (left) & Device (right)
+  { id: "kudos", world: "flat", width: "w-fit max-w-full", align: "end" },
+  { id: "agent-indicator", world: "device", width: "w-full max-w-sm", align: "start" },
+  // Pair 5: Press (left) & Rack (right)
+  { id: "env-switch", world: "press", width: "w-full max-w-md", align: "start" },
+  { id: "device-rack", world: "rack", width: "w-full max-w-md", align: "end" },
+  // Pair 6: Plain (left) & Heat (right)
+  { id: "checkbox", world: "plain", width: "w-full max-w-xs", align: "center" },
+  { id: "lap-timer", world: "heat", width: "w-full max-w-sm", align: "start" },
 ];
 
-const SURFACE: Record<Material, string> = {
-  press: "rounded-surface bg-well outline-1 -outline-offset-1 outline-line px-5 py-7 sm:px-6 sm:py-8",
-  flat: "flat-sheet rounded-surface px-5 py-7 sm:px-6 sm:py-8",
-  device: DEVICE_PLATE + " px-5 py-7 sm:px-6 sm:py-8",
-  plain: "rounded-surface bg-canvas outline-1 -outline-offset-1 outline-line-control px-5 py-7 sm:px-6 sm:py-8",
-  rack: "rounded-surface bg-canvas outline-1 -outline-offset-1 outline-line px-4 py-6 sm:px-5 sm:py-7",
-  heat: "rounded-surface bg-canvas outline-1 -outline-offset-1 outline-line px-5 py-7 sm:px-6 sm:py-8",
+const ALIGN_CLASS: Record<Align, string> = {
+  start: "md:justify-self-start",
+  center: "md:justify-self-center",
+  end: "md:justify-self-end",
 };
 
-const MD = "(min-width: 640px)";
-const LG = "(min-width: 1024px)";
+const MD = "(min-width: 768px)";
 
 function readColumns(): number {
-  if (typeof window === "undefined") return 3;
-  if (window.matchMedia(LG).matches) return 3;
-  if (window.matchMedia(MD).matches) return 2;
-  return 1;
+  if (typeof window === "undefined") return 2;
+  return window.matchMedia(MD).matches ? 2 : 1;
 }
 
-/** Explicit column count (1 / 2 / 3) so interactive height changes stay in their own column and never jump sideways. */
+/** Explicit column count (1 / 2) so interactive height changes stay in their own column and never jump sideways. */
 function useColumns(): number {
   return useSyncExternalStore(
     (notify) => {
       const md = window.matchMedia(MD);
-      const lg = window.matchMedia(LG);
       md.addEventListener("change", notify);
-      lg.addEventListener("change", notify);
-      return () => {
-        md.removeEventListener("change", notify);
-        lg.removeEventListener("change", notify);
-      };
+      return () => md.removeEventListener("change", notify);
     },
     readColumns,
-    () => 3,
+    () => 2,
   );
 }
 
@@ -110,35 +98,30 @@ function CosmosCard({ item, page, dark }: { item: ShowcaseItem; page: PageEntry;
       onPointerEnter={(e) => e.pointerType !== "touch" && wake()}
       onPointerDown={(e) => !(e.target as Element).closest("figcaption") && wake()}
       onFocus={(e) => !e.target.closest("figcaption") && wake()}
-      className="group/cosmos m-0 grid min-w-0 gap-2"
+      className={"group/cosmos m-0 grid min-w-0 gap-4 " + item.width + " " + ALIGN_CLASS[item.align]}
     >
-      {/* Each piece sets its own world's tokens, face and React body so all six galleries stand side by side live. */}
+      {/* Floating directly on the open canvas — no outer box, wearing only this world's tokens, face and body. */}
       <div
         {...lookAttributes({ accent: "world", material: item.world }, dark)}
         data-cosmos-world={item.world}
+        inert={!settled}
         className="min-w-0 font-sans text-fg"
       >
         <MaterialProvider material={item.world}>
           <WorldContext.Provider value={item.world}>
-            <div
-              inert={!settled}
-              data-part={item.world === "device" ? "plate" : item.world === "flat" ? "paper" : undefined}
-              className={"grid min-w-0 place-items-center overflow-x-clip " + SURFACE[item.world]}
-            >
-              <StillMotion active={!awake}>
-                <div className="grid w-full min-w-0 place-items-center [&>*]:min-w-0">
-                  <PreviewContext.Provider value="tile">
-                    <Suspense fallback={<div aria-hidden="true" className="h-32 w-full" />}>
-                      <page.Component />
-                    </Suspense>
-                  </PreviewContext.Provider>
-                </div>
-              </StillMotion>
-            </div>
+            <StillMotion active={!awake}>
+              <div className="grid w-full min-w-0 [&>*]:min-w-0">
+                <PreviewContext.Provider value="tile">
+                  <Suspense fallback={<div aria-hidden="true" className="h-32 w-full" />}>
+                    <page.Component />
+                  </Suspense>
+                </PreviewContext.Provider>
+              </div>
+            </StillMotion>
           </WorldContext.Provider>
         </MaterialProvider>
       </div>
-      <figcaption className="flex min-w-0 items-center justify-between gap-4 px-1">
+      <figcaption className="flex min-w-0 items-center justify-between gap-4">
         <h3 className="min-w-0 text-small font-normal">
           <a
             href={`#${item.world}/${item.id}`}
@@ -167,7 +150,7 @@ function CosmosCard({ item, page, dark }: { item: ShowcaseItem; page: PageEntry;
   );
 }
 
-/** Cosmos-style staggered masonry showcase of the best live components from all six galleries. */
+/** Airy Cosmos-style staggered masonry showcase of floating live components from all six galleries. */
 export function CosmosGrid() {
   const dark = useDark();
   const colCount = useColumns();
@@ -186,9 +169,12 @@ export function CosmosGrid() {
       <h2 id="cosmos-showcase-title" className="sr-only">
         Best of each gallery
       </h2>
-      <div className="grid min-w-0 grid-cols-1 items-start gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid min-w-0 grid-cols-1 items-start gap-x-12 gap-y-20 md:grid-cols-2 md:gap-x-16 lg:gap-x-24">
         {columns.map((col, colIndex) => (
-          <div key={colIndex} className="grid min-w-0 content-start gap-7">
+          <div
+            key={colIndex}
+            className={"grid min-w-0 content-start gap-y-20 md:gap-y-28 lg:gap-y-32 " + (colIndex === 1 ? "md:pt-24 lg:pt-32" : "")}
+          >
             {col.map(({ item, page }) => (
               <CosmosCard key={`${item.world}-${item.id}`} item={item} page={page} dark={dark} />
             ))}
