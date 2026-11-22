@@ -143,6 +143,12 @@ export type PageStudy = {
    * reduced motion it mounts at the end state. The caption says what to watch.
    */
   replay?: { label: string; caption: string; run: (n: number) => ReactNode };
+  /**
+   * The study in a world's own demo, as a Stage's `byWorld` is: the same part with the same contract props, in the
+   * copy that world's audience ships (Device's recorder: "Export take", not "View work"). Whatever a world leaves out
+   * is the shared study's, so `parts` stays shared while the object's markup does.
+   */
+  byWorld?: Partial<Record<Material, Partial<Pick<PageStudy, "object" | "parts" | "states" | "replay">>>>;
 };
 
 /**

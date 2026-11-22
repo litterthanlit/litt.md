@@ -45,7 +45,9 @@
  * - following the world's name in the top row (#<world>, outside the screen) while Play runs does not stop Play, open
  *   Index and say so in the live region, or, on a body's own Index, does not make the take just left the current row,
  * - Home's Every component link does not open #<world>/components, or that page does not hold a tile for every
- *   component in the world (read from src/gallery/pages), or a tile's name does not link to #<world>/<id>.
+ *   component in the world (read from src/gallery/pages), or a tile's name does not link to #<world>/<id>,
+ * - at 1366 by 768, a laptop's window, what a Device take opens (the openers above and the Command menu) is not inside
+ *   Device's screen, in its world (run with the shard that runs Device).
  *
  * --self-test moves the Dialog take's open dialog out to <body>, as a portal that missed the screen's OverlayRoot would,
  * so it leaves the screen and its world, keeps the recorder's body from loading, so Device draws bare, and takes a tile
@@ -53,9 +55,10 @@
  * named Home and a Source link into the gallery, centres Index's rows again with one line wrapping, draws Heat's
  * menu strip, Press's deck and Flat's controls under their screens again, takes Heat's and Press's live parts off their
  * Indexes and marks a second row current on each, pushes Flat's live part off its screen and marks a second pill
- * current, and sets Heat's screen to the other worlds' height, puts Device's
- * address back to the bare player after a step, and names Device's selector Components again, and presses Play again
- * on Heat just after its world's name opened Index; it fails if the check misses any.
+ * current, and sets Heat's screen to the other worlds' height, puts Device's address back to the bare player after a
+ * step, names Device's selector Components again, at 1366 by 768 lowers Device's screen to 25rem, as it once was, so
+ * the command menu's panel runs past its foot, and presses Play again on Heat just after its world's name opened
+ * Index; it fails if the check misses any.
  *
  * Needs Playwright, found as worlds.mjs finds it.
  */
@@ -124,11 +127,11 @@ const OPENERS = ["Dialog", "Menu", "Popover", "Select", "Context menu", "Toast",
 const OVERLAYS = "[role=dialog], [role=alertdialog], [role=menu], [role=listbox], [role=tooltip], [data-toast-id]";
 const browser = await chromium.launch();
 
-async function open(hash, { theme, scale = 1 } = {}) {
-  const ctx = await browser.newContext({ viewport: { width: 1440, height: 1000 }, deviceScaleFactor: scale, reducedMotion: "reduce" });
+async function open(hash, { theme, scale = 1, viewport = { width: 1440, height: 1000 }, recorder = !selfTest } = {}) {
+  const ctx = await browser.newContext({ viewport, deviceScaleFactor: scale, reducedMotion: "reduce" });
   await ctx.addInitScript(() => localStorage.setItem("litt-gallery:customize", JSON.stringify({ accent: "blue4" })));
   if (theme) await ctx.addInitScript((t) => localStorage.setItem("litt-gallery:theme", t), theme);
-  if (selfTest)
+  if (!recorder)
     await ctx.route(/\.js$/, async (route) => {
       /* A request still in flight when its context closes is let go. */
       try {
@@ -765,6 +768,40 @@ for (const [world, id, attribute] of RUN) {
   await ctx.close();
 }
 
+/* A laptop's window (finding 6 of plans/audits/device.md, and the review of PR 155): at 1366 by 768 the recorder's
+   screen stands at SCREEN_HEIGHT's 30rem floor and its deck gives up the height, and what a take opens, the command
+   menu's panel above all, still stays on the screen. Run with the recorder's body loaded, even under --self-test, whose
+   break here is the screen lowered to 25rem again, as it once was. */
+if (RUN.some(([, id]) => id === "device")) {
+  const { ctx, pg } = await open("device", { viewport: { width: 1366, height: 768 }, recorder: true });
+  for (const title of [...OPENERS, "Command menu"]) {
+    if (!(await find(pg, title))) continue;
+    if (selfTest) await pg.evaluate((F) => (document.querySelector(F).style.height = "25rem"), FRAME);
+    const button = pg.locator(`${FRAME} [data-play-take] button:visible, ${FRAME} [data-play-take] [role=combobox]:visible`).first();
+    if (title === "Tooltip") {
+      const b = await button.boundingBox();
+      await pg.mouse.move(b.x + b.width / 2, b.y + b.height / 2);
+      await pg.waitForTimeout(1000);
+    } else if (title === "Context menu") {
+      await pg.locator(`${FRAME} [data-play-take] *:visible`).first().click({ button: "right" }).catch(() => {});
+      await pg.waitForTimeout(700);
+    } else {
+      await button.click().catch(() => {});
+      await pg.waitForTimeout(900);
+    }
+    const opened = await place(pg, OVERLAYS);
+    const name = "at 1366x768 what a take opens stays on Device's screen";
+    claim(name, opened.length ? null : `Device · ${title}: nothing opened from its first button`);
+    for (const b of opened) claim(name, b.ok ? null : `Device · ${title}: ${b.what}`);
+    await pg.mouse.move(0, 0);
+    await pg.keyboard.press("Escape");
+    await pg.keyboard.press("Escape");
+    await pg.waitForTimeout(400);
+    if (selfTest) await pg.evaluate((F) => (document.querySelector(F).style.height = ""), FRAME);
+  }
+  await ctx.close();
+}
+
 await browser.close();
 server.close();
 
@@ -812,8 +849,10 @@ if (selfTest) {
   if (!namesCaught) console.error("playground --self-test: Device's selector named Components, like the link beside it, and the check missed it.");
   const nameCaught = (claims.get("the world's name in the top row stops Play, opens Index on the take just left, and says so") ?? []).some((f) => f.startsWith("Heat:"));
   if (!nameCaught) console.error("playground --self-test: Play left running on Heat after the world's name opened Index, and the check missed it.");
-  if (!nameCaught || !namesCaught || !addressCaught || !caught || !bareCaught || !tileCaught || !setCaught || !homeCaught || !sourceCaught || !topsCaught || !orderCaught || !pressOrderCaught || !flatOrderCaught || !sizeCaught || !menuCaught || !pressMenuCaught || !flatMenuCaught) process.exit(1);
-  console.log("playground --self-test: a dialog escaped to <body> leaves the screen, with the recorder kept from loading Device draws bare, a tile missing from Device's gallery view is seen, a set naming a part outside its world is seen, a second Home and a Source link into the gallery are seen, Index's rows centred off their tops are seen, Heat's strip, Press's deck and Flat's controls under their screens are seen, a small take on Heat's screen is seen, Heat's and Press's Indexes with no live part and two current rows are seen, Flat's with its live part off the screen and two current pills is seen, a take kept out of the address is seen, a selector sharing the Components link's name is seen, and Play left running after the world's name opened Index is seen; the check catches all seventeen.");
+  const shortCaught = (claims.get("at 1366x768 what a take opens stays on Device's screen") ?? []).some((f) => f.startsWith("Device · Command menu: "));
+  if (!shortCaught) console.error("playground --self-test: Device's screen at 25rem on a 1366x768 window cuts the command menu's panel, and the check missed it.");
+  if (!nameCaught || !shortCaught || !namesCaught || !addressCaught || !caught || !bareCaught || !tileCaught || !setCaught || !homeCaught || !sourceCaught || !topsCaught || !orderCaught || !pressOrderCaught || !flatOrderCaught || !sizeCaught || !menuCaught || !pressMenuCaught || !flatMenuCaught) process.exit(1);
+  console.log("playground --self-test: a dialog escaped to <body> leaves the screen, with the recorder kept from loading Device draws bare, a tile missing from Device's gallery view is seen, a set naming a part outside its world is seen, a second Home and a Source link into the gallery are seen, Index's rows centred off their tops are seen, Heat's strip, Press's deck and Flat's controls under their screens are seen, a small take on Heat's screen is seen, Heat's and Press's Indexes with no live part and two current rows are seen, Flat's with its live part off the screen and two current pills is seen, a take kept out of the address is seen, a selector sharing the Components link's name is seen, Device's screen at 25rem cutting the command menu at 1366x768 is seen, and Play left running after the world's name opened Index is seen; the check catches all eighteen.");
   process.exit(0);
 }
 if (bad) {

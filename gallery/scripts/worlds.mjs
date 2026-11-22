@@ -30,6 +30,9 @@
  *   system and its line from look.ts, beside its cover scene, inert and hidden, the link the card's one stop, or it
  *   scrolls sideways,
  * - public/llms.txt lacks a Worlds section with Press, Flat and Device, or lists a world page as a component's docs,
+ * - a world's page (its main, at every size and theme) or its Copy prompt (read back from the clipboard at 1440, where
+ *   the rail shows) says a thing that world may not claim (NOT_CLAIMS below: Device is not "orange as its own accent",
+ *   not "As Press" in shape, and has no "dark LCD screens for panels and overlays", plans/audits/device.md, finding 2).
  * - two addresses in routes() share a document.title, or one but the overview (the gallery's own front page) is titled
  *   with the gallery's name alone (plans/audits/shared-fixes.md, S1: "Button · Press · litt.md Gallery").
  *
@@ -92,6 +95,21 @@ const WORLD_ONLY = fs.readdirSync(PAGES_DIR).filter((f) => f.endsWith(".tsx")).f
   return id && list.length > 0 && list.length < WORLDS.length ? [{ id, worlds: list }] : [];
 });
 const ownParts = (world) => WORLD_ONLY.filter((p) => p.worlds.includes(world.id)).map((p) => p.id);
+/**
+ * What a world may not say of itself, on its page or in its prompt, matched without regard to case. Each line was once
+ * true of an older draft and is false of what is built: add one when an audit finds a world describing another.
+ */
+const NOT_CLAIMS = {
+  device: ["orange as its own accent", "As Press", "dark LCD screens for panels and overlays"],
+};
+/** The claims a text makes, each matched as whole words, any case and across a line break: "As Press" is not "was
+    pressed". */
+const claimsIn = (id, text) =>
+  (NOT_CLAIMS[id] ?? []).filter((w) => new RegExp(`\\b${w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/ /g, "\\s+")}\\b`, "i").test(text));
+if (claimsIn("device", "The key was pressed.").length || !claimsIn("device", "Shaped as press is.").length) {
+  console.error("worlds: NOT_CLAIMS matches a word inside another, or misses a whole one.");
+  process.exit(1);
+}
 const FOUNDATIONS = [["color", "Color"], ["type", "Type"], ["light", "Light"], ["shape", "Shape"], ["motion", "Motion"]];
 
 const types = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".svg": "image/svg+xml", ".json": "application/json", ".woff2": "font/woff2", ".md": "text/markdown", ".txt": "text/plain" };
@@ -163,6 +181,7 @@ function inspect() {
 
 async function open(hash, { width, height, scheme = "light", query = "", phone = width < 640 } = {}) {
   const ctx = await browser.newContext({ viewport: { width, height }, colorScheme: scheme, hasTouch: phone, isMobile: phone && width >= 390 });
+  await ctx.grantPermissions(["clipboard-read", "clipboard-write"], { origin: `http://localhost:${port}` });
   const pg = await ctx.newPage();
   const errors = [];
   pg.on("pageerror", (e) => errors.push(String(e)));
@@ -180,6 +199,23 @@ async function audit(world, size, scheme, mutate) {
   const attr = world.attribute ?? undefined;
   if (mutate) await pg.evaluate(mutate);
   const r = await pg.evaluate(inspect);
+  /* What the world says of itself: the page's words, and the prompt an agent is handed (the rail shows from 1280 up). */
+  const said = [{ what: "its page", text: await pg.locator("main").innerText() }];
+  const copy = pg.getByRole("button", { name: "Copy prompt" });
+  if (size.width >= 1280 && (await copy.isVisible())) {
+    await copy.click();
+    /* The write is a promise the click starts: read the clipboard until it holds the prompt, up to 3s. */
+    const prompt = await pg
+      .waitForFunction(() => navigator.clipboard.readText().then((t) => t || null), null, { timeout: 3000, polling: 100 })
+      .then((h) => h.jsonValue())
+      .catch(() => "");
+    said.push({ what: "its Copy prompt", text: prompt });
+  }
+  for (const { what, text } of said) {
+    const hits = claimsIn(world.id, text);
+    claim("a world's page and its Copy prompt claim nothing that world may not (NOT_CLAIMS)", hits.length ? `${where}: ${what} says ${hits.map((h) => `"${h}"`).join(", ")}` : null);
+  }
+  if (size.width >= 1280) claim("a world's Copy prompt can be read back from the clipboard", said.length === 2 && said[1].text ? null : `${where}: ${said.length === 2 ? "the clipboard stayed empty after Copy prompt" : "no Copy prompt in the rail"}`);
 
   claim("a world page has one main and one h1", r.mains === 1 && r.h1s === 1 ? null : `${where}: ${r.mains} mains, ${r.h1s} h1s`);
   claim("a world's page wears the world: its data-material on <html> (none for Press)", r.material === attr ? null : `${where}: data-material is ${r.material ?? "absent"} (want ${attr ?? "absent"})`);
@@ -238,8 +274,9 @@ if (selfTest) {
   claims.clear();
 
   /* Each break is a defect one claim must name: a second fill on the first screen, a missing Foundations card, a wrong
-     line on a card, a page wider than the screen. The world is Press at 1440. */
-  const press = WORLDS.find((w) => w.id === "press");
+     line on a card, a page wider than the screen, an old claim back on Device's page or in its prompt. The world is
+     Press at 1440 unless the break names another. */
+  const NOT = "a world's page and its Copy prompt claim nothing that world may not (NOT_CLAIMS)";
   const breaks = [
     ["the first screen holds exactly one accent fill (the Install button)", () => { const d = document.createElement("div"); d.style.cssText = "position:absolute;top:80px;left:8px;width:120px;height:40px;background:var(--accent)"; document.querySelector("main").append(d); }],
     ["Foundations is five cards, Color, Type, Light, Shape, Motion, each with the world's line from look.ts", () => document.querySelector("section#foundations li").remove()],
@@ -248,11 +285,13 @@ if (selfTest) {
     ["a world page has an Only here section listing the world's abilities from look.ts and exactly its own parts", () => { const a = document.createElement("a"); a.href = "#not-mine"; const li = document.createElement("li"); li.append(a); const ul = document.createElement("ul"); ul.setAttribute("data-only-here-parts", ""); ul.append(li); document.querySelector("section#only-here").append(ul); }],
     ["a world page does not scroll sideways at 1440 or 390", () => { const d = document.createElement("div"); d.style.cssText = "width:3000px;height:4px"; document.querySelector("main").append(d); }],
     ["the hero block is framed and live: a labelled frame, and a named button or link in it takes focus", () => document.querySelectorAll("section[data-world-hero] :is(button, a[href])").forEach((el) => el.remove())],
+    [NOT, () => { document.querySelector("section#foundations li p").textContent = "A cool aluminium body, orange as its own accent."; }, "device"],
+    [NOT, () => { const write = navigator.clipboard.writeText.bind(navigator.clipboard); navigator.clipboard.writeText = (t) => write(`${t} Dark LCD screens for panels and overlays.`); }, "device"],
   ];
   let missed = 0;
-  for (const [name, mutate] of breaks) {
+  for (const [name, mutate, id = "press"] of breaks) {
     claims.clear();
-    await audit(press, SIZES[0], "light", mutate);
+    await audit(WORLDS.find((w) => w.id === id), SIZES[0], "light", mutate);
     const caught = (claims.get(name) ?? []).length > 0;
     if (!caught) missed++;
     console.log(`${caught ? "✓" : "✗"} self-test: "${name.slice(0, 60)}…" ${caught ? "is caught" : "is MISSED"}`);
