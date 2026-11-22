@@ -1,13 +1,15 @@
 /**
- * The overview: a hero you can play, a wall of the components themselves, live, then the steps to build with them.
+ * The overview: a hero, a Cosmos-style masonry showcase of the best live components from every gallery, a wall of every
+ * component live, then the blocks and steps to build with them.
  *
  * After bencho.dev and transitions.dev (2026-10-23, "I like their simplicity"), taken in litt's own terms: a filter by
  * what you do (Press, Type, Drag…, each page's meta.verbs) and every component as a tile you can use right here. No
  * sidebar (meta.wall): the tiles are the way in.
  *
  * Above the wall, after three more references and Nick's "make it intuitive, captivating, fun and easy to use"
- * (2026-10-26, proposals/gallery-wow.md): what litt is in one large line, Get started and search. The deck that tuned
- * the wall left with Customize (plans/019): the wall shows the gallery's own look.
+ * (2026-10-26, proposals/gallery-wow.md): what litt is in one large line, Get started and search, followed directly by
+ * CosmosGrid (cosmos-grid.tsx) so the best components from Press, Flat, Device, Plain, Rack and Heat speak for
+ * themselves. The deck that tuned the wall left with Customize (plans/019): the wall shows the gallery's own look.
  * After the blocks, three steps for building with Claude, which Get started takes focus to.
  *
  * - A tile has no box (Nick, 2026-11-05: "remove the boxes and that icon around the components, leave just the title
@@ -48,8 +50,7 @@ import { inWorld, pages, type PageEntry } from "../registry";
 import { Miniature } from "../miniature";
 import { Button } from "@/components/button";
 import { Start, toStart } from "../steps";
-import { WorldHero } from "../world";
-import { materialOf } from "../look";
+import { CosmosGrid } from "../cosmos-grid";
 import { useCustomize } from "../customize-state";
 import { MosaicHost, openMosaic, pressTile } from "../mosaic";
 import { arriveFrom } from "../arrival";
@@ -66,28 +67,6 @@ export const meta: PageMeta = {
   tiers: ["instant", "responsive", "expressive"],
   wall: true,
 };
-
-/** The current world's block, live at real size, under the hero: the world's name links to its page. */
-function HomeHero() {
-  const { look } = useCustomize();
-  const world = materialOf(look.material);
-  return (
-    <section aria-labelledby="home-hero-title" data-home-hero className="grid gap-4">
-      <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
-        <h2 id="home-hero-title" className="text-h2 text-fg">
-          <a
-            href={`#${world.id}`}
-            className="rounded-control transition-colors duration-(--dur-instant) ease-litt hover:text-fg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
-          >
-            {world.name}
-          </a>
-        </h2>
-        <p className="text-small text-fg-subtle">{world.tagline}</p>
-      </div>
-      <WorldHero material={look.material} />
-    </section>
-  );
-}
 
 const WORDS = ["No", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen", "Twenty",
   ...["One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"].map((n) => `Twenty-${n.toLowerCase()}`), "Thirty",
@@ -317,10 +296,6 @@ export default function Overview() {
   return (
     <article aria-labelledby="page-overview" className="grid gap-12 pb-24">
       <Hero count={count} site={site} />
-      <HomeHero />
-      <h2 className="mt-12 text-h2 text-fg">
-        Every one, live.
-      </h2>
       {blocks.length > 0 && (
         /* As the shell's "Skip to content": out of sight until it has focus, then at the top left. */
         <button
@@ -332,6 +307,10 @@ export default function Overview() {
         </button>
       )}
       <Toaster>
+        <CosmosGrid />
+        <h2 className="mt-12 text-h2 text-fg">
+          Every one, live.
+        </h2>
         <Wall list={wall} />
         {blocks.length > 0 && <Blocks list={blocks} />}
       </Toaster>
