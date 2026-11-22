@@ -35,6 +35,19 @@ const SET: Record<Material, string[]> = {
   heat: ["pursuit-meter", "lap-timer", "tune-menu", "menu", "tabs", "segmented", "button", "slider", "stat", "progress", "table", "toast"],
 };
 
+/**
+ * Each world's studies at its bar (plans/027; Flat first): the ids whose study has passed, in the order they passed,
+ * empty until one does. scripts/materials.mjs reads this list by regex and holds each id's page (#flat/<id>) to the bar's
+ * mechanical rules, so keep each world's list a one-line array literal of string ids. The set and the gallery view do not
+ * read it yet: they switch to it when Flat's list holds twelve.
+ */
+export const BAR: Partial<Record<Material, string[]>> = {
+  flat: [],
+};
+
+/** Whether a part's study has passed its world's bar (BAR). */
+export const atBar = (material: Material, id: string) => BAR[material]?.includes(id) ?? false;
+
 /** Every component page in the world, in the sidebar's order. */
 const partsOf = (material: Material) =>
   pages.filter((p) => p.group && p.group !== "Blocks" && p.group !== "Worlds" && !p.world && inWorld(p, material));
