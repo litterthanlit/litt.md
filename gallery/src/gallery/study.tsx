@@ -7,7 +7,7 @@ import { Fragment, useContext, useEffect, useRef, useState, type ReactNode } fro
 import { Button } from "@/components/button";
 import { CodeBlock } from "@/components/code-block";
 import lock from "../../registry.lock.json";
-import { lineIn, STATES, WorldContext, type PageDocs, type PageMeta, type PageStudy } from "./kit";
+import { lineIn, partsIn, STATES, WorldContext, type PageDocs, type PageMeta, type PageStudy } from "./kit";
 import { Anatomy, FILL_WRAP, useStageBox } from "./study-anatomy";
 
 const sources = import.meta.glob<string>("../components/*.tsx", { query: "?raw", import: "default" });
@@ -122,7 +122,7 @@ export function StudySections({ meta, docs, study: shared }: { meta: PageMeta; d
   return (
     <>
       <Section id={id("anatomy")} title="Anatomy" flush>
-        <Anatomy object={study.object} parts={study.parts} />
+        <Anatomy object={study.object} parts={partsIn(study, world)} />
       </Section>
       {moves && (
         <Section id={id("mechanism")} title="How it moves">

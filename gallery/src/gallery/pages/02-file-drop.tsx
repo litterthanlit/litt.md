@@ -10,7 +10,7 @@ export const meta: PageMeta = {
   group: "Inputs",
   verbs: ["drag", "press"],
   summary:
-    "An area to drop files on or choose them from. Press is a deep tray in a plate with an arrow block, the words and a Choose files button; Flat is a grey sheet with one sentence, \"Drop files or choose\"; Device is a slot with an engraved legend and a Choose key. While files are over it the area changes and the words say what a drop will do. It turns away files of the wrong type or size and says which and why, and the list below shows each file uploading, with Retry for one that failed.",
+    "An area to drop files on or choose them from. It holds the words and a Choose files button. While files are over it the area changes and the words say what a drop will do. It turns away files of the wrong type or size and says which and why, and the list below shows each file uploading, with Retry for one that failed.",
   tiers: ["instant"],
 };
 

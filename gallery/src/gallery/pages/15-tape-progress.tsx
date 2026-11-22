@@ -16,7 +16,7 @@ export const meta: PageMeta = {
     "Progress said as hardware: two reels in a smoked window, the supply emptying and the take-up filling by area, each turning at the pace the tape's constant speed gives its radius, and the value in words beside them as Progress says it. The record light is lit while the work runs. A change eases on a critically damped spring and nothing moves on its own. It belongs to Device.",
   tiers: ["instant"],
   mechanism:
-    "The value drives a critically damped spring, so a change glides rather than steps. Each frame the loop sets the two reels' pack radii by area, the supply from what is left and the take-up from what is done, and turns each by span over K times r times the change, so the emptying reel speeds up and the filling one slows down. The tape is redrawn tangent to both packs. The loop writes properties and an attribute, never React state, and stops when the spring settles. Reduced motion jumps to each value.",
+    "The value drives a critically damped spring, so the reels run smoothly to a change rather than in steps. Each frame the loop sets the two reels' pack radii by area, the supply from what is left and the take-up from what is done, and turns each by span over K times r times the change, so the emptying reel speeds up and the filling one slows down. The tape is redrawn tangent to both packs. The loop writes properties and an attribute, never React state, and stops when the spring settles. Reduced motion jumps to each value.",
 };
 
 export const docs: PageDocs = {

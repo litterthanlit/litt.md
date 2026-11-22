@@ -15,7 +15,7 @@ export const meta: PageMeta = {
   group: "Inputs",
   verbs: ["select", "open"],
   summary:
-    "One value from a short list. You press the trigger, so it is a raised block, the secondary Button's, and it stays pressed while its list is open. The list is a tray of slats in glass, 44px each, with one gliding highlight, and the current slat lifted with a check. The list grows from the trigger and leaves again, and on a phone it stays anchored beside it.",
+    "One value from a short list. You press the trigger, so it looks like the secondary Button, and it stays pressed while its list is open. Each row is 44px, one highlight follows the keys and the pointer, and the current row carries a check. The list opens from the trigger and closes again, and on a phone it stays anchored beside it.",
   summaryByWorld: {
     heat: "One value from a short list. The trigger is a square cell in a 1px line, and corner brackets snap onto it while it is hovered, focused or open. The list is a square slab banded with stripes at its top and foot. The row under the keys or the pointer takes a darker cell, brackets and lit words, and the current value carries a check.",
   },
@@ -49,7 +49,7 @@ const ROLES = [
     "One value from a short list: a role, a region, a plan, a Framer site. Use SelectField, which carries the label, the help and the error.",
     "A sort or a filter in a toolbar. Use Select at size sm with an aria-label, beside an sm Button.",
     "A field beside an lg button. Use size lg, on the same 56px as the button, as Input does.",
-    "Inside a dialog or on a phone, with no change from you. The list turns solid over glass, and on a phone it stays anchored beside the trigger.",
+    "Inside a dialog or on a phone, with no change from you. The list stays solid over another overlay, and on a phone it stays anchored beside the trigger.",
     "A form that submits natively. Pass name and the value travels in a hidden native field.",
   ],
   skip: [
@@ -77,7 +77,7 @@ const ROLES = [
     "The check marks the current option, and the word in the trigger says the same, so the check is never the only signal. The error edge is never alone either: the message under the field says how to fix it.",
     "Opened with the pointer, no row is lit until the pointer moves or a key is pressed. Opened with a key, the highlight carries a 1px focus ring, because a faint fill alone is not enough.",
     "On touch the trigger text is 16px so iOS does not zoom, the sm trigger grows from 32px to 44px, and rows are 44px. A pressed row fills, and a tap opens the list without picking the row under the finger.",
-    "The list is glass, and solid when the trigger sits inside glass, such as a dialog, a sheet, the header or a popover, because glass never sits on glass.",
+    "Where the list is see-through it turns solid when the trigger sits inside another overlay, such as a dialog, a sheet, the header or a popover, so its rows keep their contrast.",
     "Under reduced motion the list appears and leaves at once, with no travel.",
   ],
 };

@@ -126,6 +126,12 @@ export type PageStudy = {
    */
   parts: { name: string; selector: string }[];
   /**
+   * The callouts in a world's own words, by world, as `ledeByWorld` is for the lede: name the parts of the body that
+   * world draws (Device's key and well, not Press's block and tray). Anatomy reads them through `partsIn`; a world
+   * without its own reads `parts`.
+   */
+  partsByWorld?: Partial<Record<Material, { name: string; selector: string }[]>>;
+  /**
    * The part in each R1 state it has, by name; the kit lays them out in STATES order and leaves out the rest. Each is
    * a still rendering through a prop the component has (disabled, loading, error, an empty value); a state the
    * component can only reach under a pointer (hover, pressed) is left out rather than faked.
@@ -167,6 +173,14 @@ export type PageDocs = {
   keyboard?: [keys: string[], does: string][];
   /** What the component guarantees, and what the caller must still do. */
   a11y: string[];
+  /**
+   * Use when, Skip when and Accessibility in a world's own words, by world, as `ledeByWorld` is for the lede: each
+   * replaces that world's whole list. The page reads them through `listIn`; the Copy prompt and the generators read
+   * only the shared lists.
+   */
+  useByWorld?: Partial<Record<Material, string[]>>;
+  skipByWorld?: Partial<Record<Material, string[]>>;
+  a11yByWorld?: Partial<Record<Material, string[]>>;
 };
 
 /**
@@ -188,6 +202,17 @@ export function lineIn(meta: Lines, line: "lede" | "summary" | "moves", world: M
   if (line === "lede") return (world && meta.ledeByWorld?.[world]) || meta.lede;
   if (line === "summary") return (world && meta.summaryByWorld?.[world]) || meta.summary;
   return (world && meta.movesByWorld?.[world]) || meta.mechanism;
+}
+
+/** A page's docs list in a world (Use when, Skip when, Accessibility), as `lineIn` is for a line: the world's own list, or the shared one. */
+type Lists = Pick<PageDocs, "use" | "skip" | "a11y" | "useByWorld" | "skipByWorld" | "a11yByWorld">;
+export function listIn(docs: Lists, list: "use" | "skip" | "a11y", world: Material | null): string[] {
+  return (world && docs[`${list}ByWorld`]?.[world]) || docs[list];
+}
+
+/** A study's Anatomy callouts in a world, as `lineIn` is for a line: the world's own (`partsByWorld`), or the shared ones. */
+export function partsIn(study: Pick<PageStudy, "parts" | "partsByWorld">, world: Material | null): PageStudy["parts"] {
+  return (world && study.partsByWorld?.[world]) || study.parts;
 }
 
 /**
@@ -371,7 +396,8 @@ export function Page({
               <StudySections meta={meta} docs={docs} study={study} />
             </Suspense>
           )}
-          <section aria-labelledby={`about-${meta.id}`} className="grid content-start gap-4 border-t border-line pt-12">
+          {/* Under Flat, space alone parts About from the stage: Flat draws no lines between things (plans/audits/flat.md, finding 9). */}
+          <section aria-labelledby={`about-${meta.id}`} className="grid content-start gap-4 border-t border-line pt-12 in-[[data-material=flat]]:border-t-0">
             <h2 id={`about-${meta.id}`} className={QUIET_HEADING}>
               About
             </h2>

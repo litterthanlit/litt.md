@@ -14,7 +14,7 @@ export const meta: PageMeta = {
   group: "Tools",
   verbs: ["drag"],
   summary:
-    "A spring shaped by hand, as time and bounce: Motion's visualDuration and bounce, Framer's Time and Bounce. It is the Pad with the spring's curve drawn on its floor: drag the cap right for a slower spring and up for more bounce, and the curve follows at once. Under it the spring is said in words, and a dot crosses a rail on the spring you drew when you let go. Pass a tier and litt's limits for it wash the floor beyond them, with a Fits or Change row per rule.",
+    "A spring shaped by hand, as time and bounce: Motion's visualDuration and bounce, Framer's Time and Bounce. It is the Pad with the spring's curve drawn on its floor: drag the handle right for a slower spring and up for more bounce, and the curve follows at once. Under it the spring is said in words, and a dot crosses a rail on the spring you drew when you let go. Pass a tier and litt's limits for it wash the floor beyond them, with a Fits or Change row per rule.",
   tiers: ["instant"],
 };
 
@@ -64,7 +64,7 @@ const [enter, setEnter] = useState<Spring>(dial.expressive);
     "Both inputs say the spring as their value text: \"300ms, bounce 0.1. Settles in 540ms and overshoots 1%.\" The curve, the corner words and the dot are for eyes and are hidden from screen readers.",
     "The words under the well say what the spring does as it changes, so the effect never lives in the curve alone (R5).",
     "With a tier, each rule is a row with Fits or Change in words, not a color alone.",
-    "A press anywhere moves the cap there, so the whole well is the target. It captures the pointer and is marked data-no-drag, so a sheet never moves under it, and touch-action none keeps the page from scrolling under the finger.",
+    "A press anywhere moves the handle there, so the whole of it is the target. It captures the pointer and is marked data-no-drag, so a sheet never moves under it, and touch-action none keeps the page from scrolling under the finger.",
     "The dot crosses on the spring being edited, because feeling it is the point; under reduced motion it lands at once. Nothing else moves.",
   ],
 };

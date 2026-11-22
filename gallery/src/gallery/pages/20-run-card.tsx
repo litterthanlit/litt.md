@@ -16,7 +16,7 @@ export const meta: PageMeta = {
   group: "Agents",
   verbs: ["press", "watch"],
   summary:
-    "An agent run as a flat card: its title, where it is in words (Step 1 of 3), a ring of ticks and a figure for how far it has got, and its steps beside a preview. Hide folds it into a raised block you press to open again. The ring travels between its two seats while the title, the words and the figure glide to theirs, the steps leave first and come back with a short drop, and the height snaps.",
+    "An agent run as a flat card: its title, where it is in words (Step 1 of 3), a ring of ticks and a figure for how far it has got, and its steps beside a preview. Hide folds it into a block you press to open again. The ring travels between its two seats while the title, the words and the figure move to theirs, the steps leave first and come back with a short drop, and the height snaps.",
   fun: "Press Hide: the ring glides across and settles a hair past its place, and its ticks sweep to the figure while the number counts.",
   tiers: ["instant", "responsive"],
 };
@@ -71,7 +71,7 @@ const [steps, setSteps] = useState<PlanStep[]>([
     "The steps are a list named \"Activity\", read as the Plan reads them: each label, its status in hidden text, and aria-current=\"step\" on the running one.",
     "One polite status says \"Step 2 of 3: Populating your world\", \"Step 2 failed: Populating your world\" or \"Done: Creating your world\" when the run moves on, whether the card is open or folded. It never speaks on the first render, so a run loaded from history is quiet. It does not announce each new percent.",
     "Every state is said in words, never by the ring's color alone. A failed run's lit ticks take the danger color, and the words say which step failed.",
-    "Text is the body and small sizes in fg and fg-muted, which pass 4.5:1 on the card and on the block in both themes. The block is 44px tall, and Hide grows to 44px on a finger. Under reduced motion every glide and fade happens at once.",
+    "Text is the body and small sizes in fg and fg-muted, which pass 4.5:1 on the card and on the block in both themes. The block is 44px tall, and Hide grows to 44px on a finger. Under reduced motion every move and fade happens at once.",
   ],
 };
 

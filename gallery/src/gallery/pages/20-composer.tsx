@@ -12,7 +12,10 @@ export const meta: PageMeta = {
   group: "Agents",
   verbs: ["type"],
   summary:
-    "Where the person writes to an agent: a text field that grows a line at a time, file chips, a toolbar and a round Send that turns into Stop while the agent answers. Send is the view's one accent fill. Only colors and the edge fade, on the instant tier, and a file chip enters on the responsive tier.",
+    "Where the person writes to an agent: a text field that grows a line at a time, file chips, a toolbar and a Send that turns into Stop while the agent answers. Send is the view's one primary action. Only colors and the edge fade, on the instant tier, and a file chip enters on the responsive tier.",
+  summaryByWorld: {
+    device: "Where the person writes to an agent: a prompt line on LCD glass set in a bezel, the files as lit cells on the glass, and a row of keys under it, where Send is the ink key and turns into Stop while the agent answers. Focus and a drag over it ring the bezel in steps on the instant tier, and the box never moves.",
+  },
   tiers: ["instant", "responsive"],
 };
 
