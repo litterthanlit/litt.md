@@ -63,3 +63,12 @@
   --field: var(--block);
   --block-hover: color-mix(in oklab, var(--block), var(--flat-fg) 2.5%);
 }
+
+/* Inside the Flat overview, a Press showcase card has no data-material attribute of its own (Press is the default),
+   so it restores the non-theme material tokens that Flat overrides on :root. */
+[data-cosmos-world="press"] {
+  --radius-control: 4px;
+  --radius-surface: 8px;
+  --press-depth: 0.5px;
+  --raised-line: var(--line);
+}

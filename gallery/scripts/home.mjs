@@ -164,13 +164,10 @@ for (const [look, want] of [["press", 1], ["flat", 0]]) {
   check(true, "the header's Search button opens the menu, and Dark theme there sets it");
 
   await pg.goto(`http://localhost:${port}/index.html#overview`, { waitUntil: "networkidle" });
-  await pg.locator("[data-tile=command-menu]").scrollIntoViewIfNeeded();
-  await pg.locator("[data-tile=command-menu] button", { hasText: "Search" }).waitFor();
-  await pg.keyboard.press("Control+k");
-  await pg.getByRole("dialog").first().waitFor();
-  await pg.waitForTimeout(400);
-  check((await dialogs(pg)) === 1, "with the Command menu's tile on screen, ⌘K still opens one menu");
-  await pg.keyboard.press("Escape");
+  await pg.locator("[data-cosmos-item]").first().waitFor();
+  await pg.getByRole("button", { name: "Get started" }).click();
+  await pg.waitForFunction(() => document.activeElement?.id === "start-title");
+  check(true, "Get started takes focus to the start steps");
 
   /* In a world there is no gallery search: ⌘K on the Command menu's page opens only the page's demo. */
   await pg.goto(`http://localhost:${port}/index.html#flat/command-menu`, { waitUntil: "networkidle" });
