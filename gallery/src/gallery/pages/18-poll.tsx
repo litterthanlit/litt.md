@@ -6,16 +6,16 @@ import { Page, Stage, TryIt, type PageDocs, type PageMeta, type PageStudy } from
 export const meta: PageMeta = {
   id: "poll",
   title: "Poll",
-  lede: "A reader poll whose Candy share bars spring open on Flat's bounce.",
+  lede: "A question for your readers, with everyone's share once they vote.",
   order: 9.04,
   group: "Data",
   verbs: ["select"],
   worlds: ["flat"],
   summary:
-    "One question and a stack of paper pills on grey. Each choice carries its own Candy data dot in R7's order; picking a choice springs every share bar open from the left on Flat's 0.28 expressive bounce and shows the total votes as one standing 40px figure. Pressing another choice moves your vote at once, and pressing your pick takes it back. It belongs to Flat.",
+    "One question and its choices as pills, each with a dot in its own color. Once a reader picks one, every choice shows its share as a bar and the total votes stand above them as one large number. Choosing another moves the vote at once, and choosing the same one again takes it back. It belongs to Flat.",
   tiers: ["instant", "expressive"],
   mechanism:
-    "Each option is a native button with aria-pressed. On vote, a full-height tinted layer in the choice's Candy data hue scales from zero to its share along X on Flat's expressive spring (350ms, bounce 0.28). Percentage and vote count appear in ink words beside the label, and a polite live region announces the updated vote. Under reduced motion the bars land at their share at once.",
+    "Each option is a native button with aria-pressed. On a vote, a full-height tinted layer in the choice's data hue grows from zero to its share along X on the expressive spring (350ms). Percentage and vote count appear in ink words beside the label, and a polite live region announces the updated vote. Under reduced motion the bars land at their share at once.",
 };
 
 export const docs: PageDocs = {
@@ -36,7 +36,7 @@ export const docs: PageDocs = {
     "Two to six clear options where seeing everyone else's share is part of the answer.",
   ],
   skip: [
-    "Another world's page. Poll uses Flat's pills, standing figure and Candy hues; it needs data-material=\"flat\" on <html>.",
+    "Another world's page. Poll is drawn in Flat's pills, large figure and data hues; it needs data-material=\"flat\" on <html>.",
     "A form setting that submits with other fields. Use RadioGroup or CardPicker.",
     "A single binary choice. Use Switch or Button.",
   ],
@@ -71,7 +71,7 @@ function ReaderPollDemo() {
       question="Which series for Issue 15?"
       options={NEXT_ISSUE}
       defaultValue="coast"
-      note="Closes Thursday at 18:00 · click any pill to change your vote."
+      note="Closes Thursday at 18:00. You can change your vote until then."
       className="max-w-md"
     />
   );
@@ -83,7 +83,7 @@ function UnvotedPollDemo() {
       question="When do you read the Friday letter?"
       options={READING_TIME}
       showFigure={false}
-      note="Pick a choice to reveal how everyone else reads."
+      note="Pick one to see when everyone else reads it."
       className="max-w-md"
     />
   );
@@ -106,7 +106,7 @@ export const study: PageStudy = {
     { name: "The question", selector: "header > p:first-child" },
     { name: "The figure", selector: "[data-part=figure]" },
     { name: "A choice pill", selector: "button[data-part=pill]" },
-    { name: "The Candy dot", selector: "[data-part=circle]" },
+    { name: "The color dot", selector: "[data-part=circle]" },
     { name: "The share bar", selector: "[data-part=bubble]" },
   ],
   states: {
@@ -115,7 +115,7 @@ export const study: PageStudy = {
   },
   replay: {
     label: "Replay the vote",
-    caption: "Watch the Candy share bars spring open on Flat's 0.28 bounce the moment a choice is picked.",
+    caption: "Watch every share open the moment a choice is picked.",
     run: () => <ReplayPoll />,
   },
 };
@@ -132,7 +132,7 @@ export default function PollPage() {
         title="Reader poll"
         tier="expressive"
         code="ReaderPollDemo"
-        caption="Four choices on grey, each in its own Candy data hue. Pick any pill to move your vote, or press your choice again to clear it."
+        caption="Four choices, each in its own color. Choose another to move your vote, or choose yours again to clear it."
       >
         <ReaderPollDemo />
       </Stage>
@@ -140,7 +140,7 @@ export default function PollPage() {
         title="Before voting"
         tier="expressive"
         code="UnvotedPollDemo"
-        caption="With no default value, the choices wait as plain paper pills until a hand picks one, then the shares bounce open."
+        caption="Before anyone has voted here, the choices wait as plain pills. Once a reader picks one, every share opens."
       >
         <UnvotedPollDemo />
       </Stage>

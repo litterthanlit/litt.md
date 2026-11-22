@@ -1,11 +1,11 @@
 /**
- * ReadingProgress, a Flat part (skills/litt-md/taste/litt-principles.md, Flat): a minimal Dieter Rams reading
- * progress instrument sitting directly on Flat's ground — no outer card box, zero extra chrome.
+ * ReadingProgress, a Flat part (skills/litt-md/taste/litt-principles.md, Flat): how far a reader is through a long post,
+ * sitting directly on Flat's ground with no box around it.
  *
- * - Matches `Poll` and `Streak`'s exact Flat layout rhythm: quiet label above the 40px standing percentage and
- *   remaining read time, followed by directly-clickable cotton-candy chapter segments (`sky` -> `blue` -> `violet`
- *   -> `bubblegum`), and one quiet line naming the active chapter.
- * - Zero outer card wrapper, zero `--accent` fills (R6), and zero auto-animation on mount (R2/R4).
+ * - The same rhythm as `Poll` and `Streak`: the post's title above the 40px standing percentage and the time left, then
+ *   a bar of chapter buttons lit up to the current one (`--data-sky` -> `--data-blue` -> `--data-violet` ->
+ *   `--data-bubblegum`), and one quiet line naming the current chapter.
+ * - No outer box, no `--accent` fills (R6), and nothing moves on mount (R2/R4).
  */
 import { useId, useState, type ReactNode } from "react";
 import { motion } from "motion/react";
@@ -21,39 +21,39 @@ export type ReadingChapter = {
 };
 
 export type ReadingProgressProps = {
-  /** Essay or issue title. */
+  /** The post or issue's title, in sentence case. */
   title?: ReactNode;
-  /** Ordered chapters making up the piece. */
+  /** Ordered chapters making up the post. */
   chapters?: ReadingChapter[];
-  /** Controlled 0-based active chapter index. */
+  /** Controlled 0-based current chapter index. */
   chapterIndex?: number;
-  /** Initial 0-based active chapter index when uncontrolled. Defaults to 2. */
+  /** Initial 0-based current chapter index when uncontrolled. Defaults to 2. */
   defaultChapterIndex?: number;
-  /** Called with the next 0-based chapter index when the reader clicks a segment. */
+  /** Called with the next 0-based chapter index when the reader chooses a chapter. */
   onChapterChange?: (index: number) => void;
   /** Extra classes on the root wrapper. */
   className?: string;
 };
 
 export const DEFAULT_CHAPTERS: ReadingChapter[] = [
-  { id: "intro", title: "Opening", minutes: 2 },
-  { id: "springs", title: "Springs", minutes: 3 },
-  { id: "tactile", title: "Tactile feel", minutes: 3 },
-  { id: "closing", title: "Closing notes", minutes: 2 },
+  { id: "leaving", title: "Getting there", minutes: 2 },
+  { id: "tide", title: "Low tide", minutes: 3 },
+  { id: "lighthouse", title: "The lighthouse", minutes: 3 },
+  { id: "home", title: "Coming home", minutes: 2 },
 ];
 
 /* Literal CSS variable strings so gen-registry renames every data token for host installs. */
-const CANDY_RAMP = ["var(--data-sky)", "var(--data-blue)", "var(--data-violet)", "var(--data-bubblegum)"] as const;
-function candyAt(t: number) {
+const RAMP = ["var(--data-sky)", "var(--data-blue)", "var(--data-violet)", "var(--data-bubblegum)"] as const;
+function rampAt(t: number) {
   const at = Math.max(0, Math.min(1, t)) * 3;
   const k = Math.min(2, Math.floor(at));
   const u = Math.round((at - k) * 100);
-  return `color-mix(in oklab, ${CANDY_RAMP[k + 1]} ${u}%, ${CANDY_RAMP[k]})`;
+  return `color-mix(in oklab, ${RAMP[k + 1]} ${u}%, ${RAMP[k]})`;
 }
 
-/** A minimal Flat reading progress bar sitting directly on the ground with clickable cotton-candy segments. */
+/** How far a reader is through a long post: the percent read, the time left and a bar of chapters to jump between. */
 export function ReadingProgress({
-  title = "Field notes on motion",
+  title = "A week on the coast",
   chapters = DEFAULT_CHAPTERS,
   chapterIndex,
   defaultChapterIndex = 2,
@@ -111,7 +111,7 @@ export function ReadingProgress({
         </p>
       </header>
 
-      {/* Directly-clickable segmented cotton-candy capsule bar */}
+      {/* The chapter bar: a button per chapter, lit up to the current one */}
       <div
         role="group"
         aria-labelledby={headingId}
@@ -122,7 +122,7 @@ export function ReadingProgress({
         {chapters.map((ch, i) => {
           const isLit = i <= index;
           const isCurrent = i === index;
-          const color = candyAt(safeCount <= 1 ? 1 : i / (safeCount - 1));
+          const color = rampAt(safeCount <= 1 ? 1 : i / (safeCount - 1));
           return (
             <button
               key={ch.id}

@@ -6,16 +6,16 @@ import { Page, Stage, TryIt, type PageDocs, type PageMeta, type PageStudy } from
 export const meta: PageMeta = {
   id: "reading-progress",
   title: "Reading progress",
-  lede: "A minimal chapter progress bar stepping through Flat's cotton-candy palette.",
+  lede: "How far a reader is through a long post, chapter by chapter, with the time left.",
   order: 1.05,
   group: "Data",
   verbs: ["select", "press"],
   worlds: ["flat"],
   summary:
-    "A minimal reading progress instrument sitting directly on Flat's ground — no outer card box, zero extra chrome. It pairs a quiet title and Flat's 40px standing completion percentage with directly-clickable cotton-candy chapter segments (sky through blue and violet to bubblegum) and a single-line chapter footer. It belongs to Flat.",
+    "How far through a long post a reader is: the percent read as one large number with the minutes left, a bar of chapters to jump between, and the current chapter's name under it. It sits on the page with no box around it. It belongs to Flat.",
   tiers: ["instant", "expressive"],
   mechanism:
-    "Each chapter is a single clickable capsule segment. Clicking any segment steps the cotton-candy ramp (--data-sky, --data-blue, --data-violet, --data-bubblegum) to that chapter, pops the active segment and 40px figure on Flat's expressive spring (350ms, bounce 0.28), and announces progress in a polite live region.",
+    "Each chapter is a button on the bar. Choosing one lights every chapter up to it, each a step along the ramp (--data-sky, --data-blue, --data-violet, --data-bubblegum), pops the current chapter and the figure on the expressive spring (350ms), and announces progress in a polite live region.",
 };
 
 export const docs: PageDocs = {
@@ -24,15 +24,15 @@ export const docs: PageDocs = {
   usage: `import { ReadingProgress } from "@/components/reading-progress";
 
 <ReadingProgress
-  title="Field notes on motion"
+  title="A week on the coast"
   defaultChapterIndex={2}
 />`,
   use: [
     "Beside or atop long-form essays, multi-part guides and portfolio stories under Flat.",
-    "Where readers benefit from seeing remaining read time and clicking directly into any chapter.",
+    "Where readers want to see the time left and jump straight to any chapter.",
   ],
   skip: [
-    "Another world's page. ReadingProgress uses Flat's 40px figure, cotton-candy segments and 0.28 bounce; it needs data-material=\"flat\" on <html>.",
+    "Another world's page. ReadingProgress uses Flat's large figure and colored chapters; it needs data-material=\"flat\" on <html>.",
     "A background upload or task meter. Use Progress.",
     "A multi-step form wizard with validation. Use Tabs or Breadcrumb.",
   ],
@@ -49,17 +49,17 @@ export const docs: PageDocs = {
 };
 
 function EssayProgressDemo() {
-  return <ReadingProgress title="Field notes on motion" defaultChapterIndex={2} />;
+  return <ReadingProgress title="A week on the coast" defaultChapterIndex={2} />;
 }
 
 function FinishedProgressDemo() {
   return (
     <ReadingProgress
-      title="Designing quiet tools"
+      title="Issue 14: the spring series"
       chapters={[
-        { id: "c1", title: "Calm defaults", minutes: 3 },
-        { id: "c2", title: "Shape & type", minutes: 4 },
-        { id: "c3", title: "Release notes", minutes: 2 },
+        { id: "c1", title: "Why the coast", minutes: 3 },
+        { id: "c2", title: "Twelve pictures", minutes: 4 },
+        { id: "c3", title: "Next Friday", minutes: 2 },
       ]}
       defaultChapterIndex={2}
     />
@@ -78,24 +78,24 @@ function ReplayReading() {
       window.clearTimeout(t2);
     };
   }, [reduced]);
-  return <ReadingProgress title="Field notes on motion" chapterIndex={idx} onChapterChange={setIdx} />;
+  return <ReadingProgress title="A week on the coast" chapterIndex={idx} onChapterChange={setIdx} />;
 }
 
 export const study: PageStudy = {
-  object: <ReadingProgress title="Field notes on motion" defaultChapterIndex={2} />,
+  object: <ReadingProgress title="A week on the coast" defaultChapterIndex={2} />,
   parts: [
     { name: "The figure", selector: "[data-part=figure]" },
     { name: "The chapter segments", selector: "[data-part=bubble]" },
     { name: "The active chapter", selector: "p[data-part=lettering]" },
   ],
   states: {
-    empty: <ReadingProgress title="Field notes on motion" defaultChapterIndex={0} />,
-    default: <ReadingProgress title="Field notes on motion" defaultChapterIndex={2} />,
-    pressed: <ReadingProgress title="Field notes on motion" defaultChapterIndex={3} />,
+    empty: <ReadingProgress title="A week on the coast" defaultChapterIndex={0} />,
+    default: <ReadingProgress title="A week on the coast" defaultChapterIndex={2} />,
+    pressed: <ReadingProgress title="A week on the coast" defaultChapterIndex={3} />,
   },
   replay: {
     label: "Replay chapter advance",
-    caption: "Watch the cotton-candy segments step forward on Flat's 0.28 bounce.",
+    caption: "Watch the chapters light up one by one as the reader moves on.",
     run: () => <ReplayReading />,
   },
 };
@@ -106,13 +106,13 @@ export default function ReadingProgressPage() {
       meta={meta}
       docs={docs}
       study={study}
-      tile={<ReadingProgress title="Field notes on motion" defaultChapterIndex={2} />}
+      tile={<ReadingProgress title="A week on the coast" defaultChapterIndex={2} />}
     >
       <Stage
-        title="Long-form essay tracker"
+        title="A long post"
         tier="expressive"
         code="EssayProgressDemo"
-        caption="Title, 40px standing percent, and directly-clickable cotton-candy segments — click any bar segment to jump."
+        caption="The percent read, the minutes left and a bar of chapters. Choose any chapter to jump to it."
       >
         <EssayProgressDemo />
       </Stage>
@@ -120,14 +120,14 @@ export default function ReadingProgressPage() {
         title="Finished state"
         tier="expressive"
         code="FinishedProgressDemo"
-        caption="At 100%, every segment lights across sky, violet and bubblegum and reads Finished."
+        caption="At the last chapter every segment is lit, and the time left reads Finished."
       >
         <FinishedProgressDemo />
       </Stage>
       <TryIt
         of="ReadingProgress"
         component={ReadingProgress}
-        props={{ title: "Field notes on motion", defaultChapterIndex: 1 }}
+        props={{ title: "A week on the coast", defaultChapterIndex: 1 }}
         controls={[{ name: "defaultChapterIndex", type: "number", min: 0, max: 3, step: 1 }]}
       />
     </Page>
