@@ -16,7 +16,7 @@
 - **Effort**: XL in all (about twenty studies); S for phase 0, M for the pilot, then about S per study
 - **Risk**: MEDIUM. A study's body and page change, so each one moves registry items (`flat-<part>` and the base item,
   which ships every body). The guards are the bar's check, the STOP after the pilot and a STOP every four studies.
-- **Depends on**: none
+- **Depends on**: PR #168 (Flat's showcase wave) merged, for phase 1 on. Phase 0 depends on nothing.
 - **Category**: direction, worlds, interaction
 - **Planned at**: commit `60056e7`, 2026-11-22
 - **Replaces**: plan 024's Flat section and plan 025 for Flat. Plans 024 and 025 wait for the other worlds; plan 026
@@ -41,6 +41,23 @@ Flat today, against that:
 - Flat's six own parts answer a tap only; none follows a drag.
 - Goal ring and Reading progress draw gradients that are not the sunset ramp, against Flat's own colour table.
 - Plan 024 does the look across six worlds and plan 025 adds the hand afterwards, so every part is built twice.
+
+## What PR #168 settles (read 2026-11-22)
+
+PR #168 ("World-native agentic components + Flat showcase wave", open) is the same day's work on Flat, and this plan
+builds on it once it merges.
+
+- **The reference study is Context budget.** Nick, on it: "much better, this is what it should look like, simplicity +
+  color + ease of use! slightly bump % font back up. now let's start building flat".
+- **A Flat widget sits on paper.** A paper card on the grey ground (`litt-paper rounded-surface bg-surface-1 p-6`,
+  `data-part="paper"`), frameless 400-weight dot tags with a hover wash only, and its one standing figure at 28px
+  (`--type-figure-size`, tuned from 40px). #168 frames Flat's own six this way.
+- **Flat's set changes**: context-budget, hold-confirm, agent-run, toast-stack, poll, streak, kudos, reaction-bar,
+  reading-progress, goal-ring, progress, toast. Gauge, heatmap, button and card leave the set.
+
+So the bar's rule 3 reads paper first: a figure or a mark standing on the ground with no paper fails `root`, which is
+how the check was built. Before #168 that one call fails poll, streak, kudos, reaction-bar and goal-ring; #168's frames
+should clear it.
 
 ## Nick's calls (2026-11-22)
 
@@ -88,15 +105,21 @@ review table.
 
 Proposed list:
 
-- **The set**: poll, streak, kudos, reaction-bar, goal-ring, reading-progress, progress, gauge, heatmap, button, card,
-  toast.
-- **Staples**: slider, switch, segmented, checkbox, tabs, input, select, chart.
+- **The set** (as #168 leaves it): context-budget, hold-confirm, agent-run, toast-stack, poll, streak, kudos,
+  reaction-bar, reading-progress, goal-ring, progress, toast.
+- **Staples**: button, slider, switch, segmented, checkbox, tabs, input, select.
+- **Next, if Nick wants more than twenty**: gauge, heatmap, card, chart.
+
+The sheet on `#canvas` was drawn before #168 was read, so it shows the old set. It is redrawn with the four new parts
+once #168 is on `main`, since their pages are not on this branch.
 
 A deviation from the first draft: a page is held to the bar when its id joins `BAR.flat`, not through a `KNOWN` list of
 twenty that shrinks. An id joins when its study passes, so the check is green at every commit.
 
 ## Phase 1. The pilot: poll and slider. STOP for Nick's hand.
 
+- [ ] Merge `main` once #168 is in. Run the check in study mode on **context-budget** first: it is the reference, so
+      a rule it fails is either a rule to fix or a note for Nick, before anything is built against it.
 - [ ] **poll** (Flat's own; a tap only today) and **slider** (a staple with a body and no marks), each to all ten rules.
 - [ ] The audit's findings on them (`plans/audits/flat.md`): poll's note, poll's roles.
 - [ ] One commit each, with its `gallery/CHANGELOG.md` lines and the regenerated `gallery/registry.lock.json`.
@@ -104,9 +127,9 @@ twenty that shrinks. An id joins when its study passes, so the check is green at
 
 ## Phase 2. The rest of the set, four at a time, a sheet and a STOP after each four.
 
+- [ ] context-budget, hold-confirm, agent-run, toast-stack.
 - [ ] streak, kudos, reaction-bar, goal-ring.
-- [ ] reading-progress, progress, gauge, heatmap.
-- [ ] button, card, toast.
+- [ ] reading-progress, progress, toast.
 - Known on the way: goal-ring's and reading-progress's gradients move to the sunset ramp; streak's instructions leave
   the component. Reaction bar's data-hue fill and kudos's tap dip are Nick's calls: shown on the sheet, not shipped
   without a pick.
@@ -114,8 +137,8 @@ twenty that shrinks. An id joins when its study passes, so the check is green at
 
 ## Phase 3. The staples, the same loop.
 
-- [ ] switch, segmented, checkbox, tabs.
-- [ ] input, select, chart.
+- [ ] button, switch, segmented, checkbox.
+- [ ] tabs, input, select.
 
 ## Phase 4. Flat shows only its studies, then the measure. STOP for Nick.
 
@@ -162,3 +185,8 @@ npm run test:motion --prefix gallery
 ## Log
 
 - 2026-11-22. Planned with Nick. Phase 0 started.
+- 2026-11-22. Phase 0 built: `BAR`, the four study rules in `test:materials` with `--study`, the sheet on `#canvas`.
+  The playground check read `BAR`'s list as Flat's set and failed on the PR; it now reads `SET`'s block alone.
+  Today, before #168, all twenty pages fail: the six own parts mostly on `root` alone, the rest for want of marks.
+  Not caught yet: reading-progress paints its off-ramp colours as solid fills, and the gradient rule reads gradients.
+- 2026-11-22. Read PR #168 at Nick's word. The list, the reference and rule 3 follow it (above).
