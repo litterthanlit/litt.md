@@ -7,8 +7,8 @@
  * run it alone under Node. index.html keeps a hand copy of the link's grammar for the first paint, and test-look runs
  * that copy against this one.
  */
-/** "world" is the world's own accent (proposals/worlds.md, decision 14): Blue 4 on Press, the ink on Flat, orange on
-    Device, yellow on Rack, amber on Heat, tokens.css with no data-accent. The others ask for one accent in any world. */
+/** "world" is the world's own accent (proposals/worlds.md, decision 14): Blue 4 on Press, the ink on Flat, the ink with
+    orange only in a lamp on Device (plans/024), yellow on Rack, amber on Heat, tokens.css with no data-accent. The others ask for one accent in any world. */
 export type Accent = "world" | "blue4" | "mono" | "pink";
 /** The depth ladder said in press (raised blocks in sunken trays, lit from the top), flat (fill alone, on greys), device
     (keys, wells and LCD glass on an aluminium body, proposals/device.md), plain (1px lines on white paper, the way HTML
@@ -31,7 +31,7 @@ export type AccentInfo = {
 
 /** The accents a look can ask for, each said in words (R5). The world's own comes first and is named by its world. */
 export const ACCENTS: readonly AccentInfo[] = [
-  { id: "world", name: "The world's own", note: "Blue 4 on Press, the ink on Flat, orange on Device, link blue on Plain, yellow on Rack, amber on Heat", attribute: null },
+  { id: "world", name: "The world's own", note: "Blue 4 on Press, the ink on Flat, the ink and an orange lamp on Device, link blue on Plain, yellow on Rack, amber on Heat", attribute: null },
   { id: "blue4", name: "Blue 4", note: "Litt's cobalt, Press's own", attribute: "blue" },
   { id: "mono", name: "Monochrome", short: "Mono", note: "The primary action in the ink, Flat's own", attribute: "mono" },
   { id: "pink", name: "Pink", note: "A hot raspberry at Blue 4's weight", attribute: "pink" },
@@ -56,7 +56,7 @@ export type MaterialInfo = {
   /** The data-material value tokens.css answers; null for Press, which is tokens.css with no attribute. */
   attribute: "flat" | "device" | "plain" | "rack" | "heat" | null;
   /** The world's own accent, which it shows with no data-accent: an accent a look can ask for, or null for one only
-      this world has (Device's orange). Asking for it in this world is the same as asking for nothing. */
+      this world has (Device's ink, with orange only in a lamp). Asking for it in this world is the same as asking for nothing. */
   ownAccent: Exclude<Accent, "world"> | null;
   /** The own accent's name, said wherever the world's own is picked. */
   accentName: string;
@@ -140,10 +140,10 @@ export const MATERIALS: readonly MaterialInfo[] = [
   {
     id: "device",
     name: "Device",
-    note: "Keys and dark LCD screens on an aluminium body, full mono, an orange accent",
+    note: "Keys in wells on an aluminium plate, LCD glass behind a bezel, every word in the mono, orange only in a lamp",
     attribute: "device",
     ownAccent: null,
-    accentName: "Orange",
+    accentName: "Monochrome with orange lamps",
     face: "Geist Mono",
     tagline: "Hardware. Keys, wells and LCD glass, every word in the mono.",
     audience: "Agents, terminals and tools.",
@@ -151,14 +151,14 @@ export const MATERIALS: readonly MaterialInfo[] = [
     line: "Keys and glass, for agents, terminals and tools",
     hero: "agent",
     foundations: {
-      color: "A cool aluminium body, dark LCD screens for panels and overlays, orange as its own accent, the hues retuned to the body. A project may ask for Blue 4, monochrome or pink.",
+      color: "Monochrome: the aluminium's greys and the ink, and the primary key is the ink key. Four signals, each meaning one thing: red for REC, the playhead and a fault; orange for a hand on it, as a lamp beside its word and the focus ring, never a key's fill, a link or any text; one blue for a selection on the glass. No data hues: a chart is the glass's ink at three levels.",
       type: "Geist Mono for every word, in the three role weights. 12px labels are engraved capitals.",
-      light: "Hardware. Plates on the body, wells cut into it, keys on a 2px skirt that sink the whole 2px, fields behind glass.",
-      shape: "As Press: 4px, 8px and the pill, concentric.",
+      light: "Hardware: plate, then well, then part. Every part, and every stage it stands on, starts from an aluminium plate lit on its top edge; wells are pressed into it; keys on a 2px skirt sink the whole 2px. Glass is only the LCD and the screen, each in a black bezel.",
+      shape: "Its own radii, in em of the part that wears them: plate 1.25, well 1.05, key 0.7 and chip 0.4, each the one outside it less its inset. Lamps, caps and the dial are round.",
       motion: "Things are mechanisms. A set switches on in place in steps, as a display's segments light; an overlay switches on where it stands. Nothing fades or travels.",
     },
     abilities: [
-      "LCD readouts: what you type and what the machine says sit behind dark glass, light ink in the mono.",
+      "LCD readouts: what you type and what the machine says sit in a well behind black glass, light ink in the mono.",
       "Keys on a skirt: every button is a key that sinks its whole 2px when pressed.",
       "Engraved labels: 12px labels are capitals cut into the body.",
       "Mechanisms for an agent at work: segments, a tuner, meters, a dot matrix, step lights and tape reels, moving only while tokens arrive.",
@@ -249,7 +249,7 @@ export const MATERIALS: readonly MaterialInfo[] = [
 export const materialOf = (id: Material) => MATERIALS.find((m) => m.id === id)!;
 /** One spelling per look: the world's own accent asked for by name is the world's own. */
 export const canonicalAccent = (accent: Accent, material: Material): Accent => (accent === materialOf(material).ownAccent ? "world" : accent);
-/** An accent's name in a material: the world's own is named by its world (Blue 4, Monochrome, Orange). */
+/** An accent's name in a material: the world's own is named by its world (Blue 4, Monochrome, Monochrome with orange lamps). */
 export const accentName = (accent: Accent, material: Material, short = false) => {
   const a = canonicalAccent(accent, material);
   if (a === "world") return materialOf(material).accentName;
@@ -374,7 +374,7 @@ function edits(look: Look): string[] {
           ? `   Rack says the depth ladder as a software instrument: grey panels on a darker grey body, keys and wells in 1px outlines, square corners, five clip colours for what you make (each a fill you see: a pastel clip with a dark mark in light, a deep clip with a bright mark in dark), yellow as its own accent (only ever a fill, the light of a switch that is on), and Inter (load it at 400, 500 and 600). Never set it from an effect.`
           : material === "heat"
           ? `   Heat says the depth ladder as a street-racing front end: black slabs at night and bleached sepia paper by day, keys as flat dark cells in 1px outlines, nothing cast or sunk, square corners, amber as its own accent (the light of what is selected: its words at night, only a fill by day with links in the ink), motion that whips in from the side, and Saira (load it at 400, 500 and 600). Never set it from an effect.`
-          : `   Device says the depth ladder in hardware: an aluminium body, keys that sink 2px, dark LCD screens for panels and overlays, orange as its own accent, and every word in Geist Mono (load it at 400, 500 and 600). Never set it from an effect.`,
+          : `   Device says the depth ladder in hardware, plate, then well, then part: an aluminium plate under every part, wells pressed into it, keys on a 2px skirt that sink the whole 2px, glass only for the LCD and the screen, Device's own em radii (plate 1.25, well 1.05, key 0.7, chip 0.4), and every word in Geist Mono (load it at 400, 500 and 600). It is monochrome: the primary key is the ink key. Red is REC and a fault; orange is only a lamp beside its word and the focus ring, never a key's fill, a link or any text; one blue marks a selection on the glass; a chart is the ink at three levels, with no data hues. Never set it from an effect.`,
         `   An element that sets its own theme (class="dark", class="light" or data-theme) needs ${attr} too.`,
       ].join("\n"),
     );

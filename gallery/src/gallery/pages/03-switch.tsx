@@ -95,7 +95,7 @@ export const docs: PageDocs = {
   ],
 };
 
-function ReplayFlip() {
+function ReplayFlip({ label = "Email me about new deploys" }: { label?: string }) {
   const { reduced } = useMotionDial();
   const [on, setOn] = useState(reduced);
   useEffect(() => {
@@ -103,8 +103,11 @@ function ReplayFlip() {
     const t = setTimeout(() => setOn(true), 300);
     return () => clearTimeout(t);
   }, [reduced]);
-  return <Switch label="Email me about new deploys" checked={on} onCheckedChange={setOn} />;
+  return <Switch label={label} checked={on} onCheckedChange={setOn} />;
 }
+
+/* Under Device the study speaks the recorder, as its lead stage does (RecordingSettingsDemo). */
+const SAFETY = "Record a safety track at −12 dB";
 
 export const study: PageStudy = {
   object: <Switch label="Email me about new deploys" defaultChecked />,
@@ -147,6 +150,20 @@ export const study: PageStudy = {
     label: "Replay the flip",
     caption: "Watch it go from Off to On, and the word change with it.",
     run: () => <ReplayFlip />,
+  },
+  byWorld: {
+    device: {
+      object: <Switch label={SAFETY} defaultChecked />,
+      states: {
+        default: <Switch label={SAFETY} defaultChecked />,
+        disabled: <Switch label={SAFETY} defaultChecked disabled />,
+      },
+      replay: {
+        label: "Replay the flip",
+        caption: "Watch the key cross its well in three steps, the lamp light, and the word on the glass turn to On.",
+        run: () => <ReplayFlip label={SAFETY} />,
+      },
+    },
   },
 };
 
