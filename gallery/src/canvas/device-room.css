@@ -1,0 +1,422 @@
+/*
+ * Device Room prototype (plans/026, Phase 1a): CSS 3D machined chassis, laminated extrusion, stratum Z-offsets,
+ * and crisp transform-none settle on Step In.
+ *
+ * Rules kept here:
+ * - Zero hex values: every color and shade reads Device's tokens or color-mix() against them.
+ * - Zero overflow:hidden, opacity < 1, filter or backdrop-filter on any ancestor between the perspective stage
+ *   and the preserve-3d strata (clipping lives only on leaf elements such as the slider fill inside its slot).
+ * - Never animate opacity on any preserve-3d layer during Explode or Step In.
+ */
+
+.dr-stage {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 360px;
+  padding: var(--space-12) var(--space-8);
+  border-radius: var(--radius-surface);
+  background:
+    radial-gradient(
+      ellipse 78% 64% at 50% 24%,
+      color-mix(in oklab, var(--fg) 4%, var(--canvas)),
+      var(--canvas) 74%
+    );
+  box-shadow: inset 0 0 0 1px var(--line);
+  perspective: 1100px;
+  perspective-origin: 50% 46%;
+}
+
+.dr-stage[data-settled-flat="true"] {
+  perspective: none;
+}
+
+/* The 3D camera rig. Driven by Motion's expressive spring on Step In / Room, or cleared to transform:none once flat. */
+.dr-rig {
+  position: relative;
+  transform-style: preserve-3d;
+  transform: rotateX(var(--dr-tilt-x, 38deg)) rotateZ(var(--dr-tilt-z, -24deg));
+}
+
+.dr-rig[data-settled-flat="true"] {
+  transform: none;
+  transform-style: flat;
+}
+
+/* Grounded studio shadow resting on the desk beneath the chassis (dark in both themes). Never holds preserve-3d children. */
+.dr-plinth-shadow {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-plate);
+  background: color-mix(in oklab, var(--bezel) 48%, transparent);
+  filter: blur(20px);
+  transform: translate3d(
+    calc(var(--dr-depth, 14px) * 0.5),
+    calc(var(--dr-depth, 14px) * 1.15),
+    calc(var(--dr-depth, 14px) * -1 - 6px)
+  );
+  transition-property: transform, opacity;
+  transition-duration: var(--dur-expressive);
+  transition-timing-function: var(--ease-out);
+}
+
+.dr-rig[data-flat="true"] .dr-plinth-shadow {
+  opacity: 0;
+  transform: translate3d(0, 0, 0);
+}
+
+/* Stratum 0: machined outer chassis frame (width 360px). */
+.dr-chassis {
+  position: relative;
+  width: 360px;
+  padding: 6px;
+  border-radius: var(--radius-plate);
+  background: var(--frame);
+  box-shadow:
+    inset 0 1px 0 var(--highlight),
+    inset 0 0 0 1px var(--frame-edge);
+  transform-style: preserve-3d;
+}
+
+.dr-rig[data-settled-flat="true"] .dr-chassis {
+  transform-style: flat;
+  box-shadow: var(--plate-lift), inset 0 0 0 1px var(--frame-edge);
+}
+
+/* Laminated CNC-extrusion slices giving rounded corners true physical thickness under tilt (darkened toward --bezel). */
+.dr-slice {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-plate);
+  background: color-mix(in oklab, var(--frame), var(--bezel) calc(var(--dr-slice-shade, 14) * 1%));
+  box-shadow: inset 0 0 0 1px var(--frame-edge);
+  transform: translateZ(calc(var(--dr-depth, 14px) * var(--dr-slice-t, 0) * -1));
+}
+
+.dr-rig[data-settled-flat="true"] .dr-slice {
+  display: none;
+}
+
+/* Stratum 1: brushed aluminium plate (1px resting Z clears coplanar hit-test z-fighting with chassis). */
+.dr-plate {
+  position: relative;
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  border-radius: calc(var(--radius-plate) - 4px);
+  background: var(--plate-face);
+  box-shadow:
+    inset 0 1px 0 var(--highlight),
+    inset 0 0 0 1px var(--plate-edge);
+  transform-style: preserve-3d;
+  transform: translateZ(calc(1px + var(--dr-explode, 0px) * 1));
+  transition-property: transform;
+  transition-duration: var(--dur-expressive);
+  transition-timing-function: var(--ease-out);
+}
+
+.dr-rig[data-settled-flat="true"] .dr-plate {
+  transform: none;
+  transform-style: flat;
+}
+
+/* Stratum 2: wells and fader slot housing. */
+.dr-stratum-well {
+  position: relative;
+  transform-style: preserve-3d;
+  transform: translateZ(calc(1px + var(--dr-explode, 0px) * 0.7));
+  transition-property: transform;
+  transition-duration: var(--dur-expressive);
+  transition-timing-function: var(--ease-out);
+}
+
+.dr-rig[data-settled-flat="true"] .dr-stratum-well {
+  transform: none;
+  transform-style: flat;
+}
+
+/* Stratum 3: LCD glass behind bezel. */
+.dr-lcd-bezel {
+  position: relative;
+  padding: 4px;
+  border-radius: var(--radius-well);
+  background: var(--bezel);
+  box-shadow:
+    inset 0 0 0 1px var(--bezel-edge),
+    var(--tray-shade);
+  transform-style: preserve-3d;
+  transform: translateZ(calc(2px + var(--dr-explode, 0px) * 0.95));
+  transition-property: transform;
+  transition-duration: var(--dur-expressive);
+  transition-timing-function: var(--ease-out);
+}
+
+.dr-rig[data-settled-flat="true"] .dr-lcd-bezel {
+  transform: none;
+  transform-style: flat;
+}
+
+.dr-lcd-glass {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-key);
+  background: var(--lcd), var(--field);
+  color: var(--field-ink);
+  font-family: var(--field-font);
+  box-shadow:
+    inset 0 0 0 1px var(--lcd-edge),
+    var(--field-shade);
+}
+
+/* Fader track + recessed slot (leaf overflow-hidden only on the fill clip). */
+.dr-slider-track {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: var(--control-md);
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  transform-style: preserve-3d;
+  transform: translateZ(1px);
+}
+
+.dr-slider-track[data-held="true"] {
+  cursor: grabbing;
+}
+
+.dr-rig[data-settled-flat="true"] .dr-slider-track {
+  transform: none;
+  transform-style: flat;
+}
+
+.dr-slot {
+  pointer-events: none;
+  position: absolute;
+  top: 14px;
+  left: 8px;
+  right: 8px;
+  height: 16px;
+  overflow: hidden;
+  border-radius: var(--radius-control);
+  background: var(--slot);
+  box-shadow: var(--slot-shade);
+}
+
+.dr-slot-fill {
+  position: absolute;
+  inset-block: 0;
+  left: 0;
+  background: var(--lamp-on);
+  box-shadow: var(--slot-fill-shade);
+}
+
+/* Physical raised slider cap with laminated 3D skirt; sinks along -Z while held. */
+.dr-cap-wrap {
+  position: absolute;
+  top: 6px;
+  width: 18px;
+  height: 32px;
+  margin-left: -9px;
+  transform-style: preserve-3d;
+  transform: translateZ(calc(var(--dr-explode, 0px) * 1.4 + var(--dr-cap-lift, 6px)));
+  transition-property: transform;
+  transition-duration: var(--dur-instant);
+  transition-timing-function: var(--ease-out);
+}
+
+.dr-cap-wrap[data-held="true"] {
+  transform: translateZ(calc(var(--dr-explode, 0px) * 1.4 + var(--dr-cap-lift, 6px) - var(--press-depth)));
+}
+
+.dr-rig[data-settled-flat="true"] .dr-cap-wrap {
+  transform: none;
+  transform-style: flat;
+}
+
+.dr-cap-wrap:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: var(--radius-control);
+}
+
+.dr-cap-skirt {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  border-radius: calc(var(--radius-control) - 1px);
+  background: color-mix(in oklab, var(--cap), var(--bezel) 28%);
+  box-shadow: inset 0 0 0 1px var(--plate-edge);
+  transform: translateZ(calc(var(--dr-cap-skirt-z, -2px)));
+}
+
+.dr-rig[data-settled-flat="true"] .dr-cap-skirt {
+  display: none;
+}
+
+.dr-cap-face {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  border-radius: calc(var(--radius-control) - 1px);
+  background: var(--cap);
+  box-shadow: var(--key-lift);
+  transition-property: background-color, box-shadow, transform;
+  transition-duration: var(--dur-instant);
+  transition-timing-function: var(--ease-out);
+}
+
+.dr-cap-wrap[data-held="true"] .dr-cap-face {
+  background: var(--cap-held);
+  box-shadow: var(--block-press);
+}
+
+.dr-rig[data-settled-flat="true"] .dr-cap-wrap[data-held="true"] .dr-cap-face {
+  transform: translateY(var(--press-depth));
+}
+
+.dr-cap-grip {
+  width: 2px;
+  height: 14px;
+  border-radius: var(--radius-pill);
+  background: var(--cap-grip);
+}
+
+/* Switch well and physical raised key with 3D skirt; sinks along -Z while pressed. */
+.dr-switch-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: 60px;
+  height: 36px;
+  padding: 3px;
+  border-radius: var(--radius-control);
+  background: var(--tray);
+  box-shadow: var(--tray-shade);
+  cursor: pointer;
+  transform-style: preserve-3d;
+  transform: translateZ(1px);
+}
+
+.dr-rig[data-settled-flat="true"] .dr-switch-btn {
+  transform: none;
+  transform-style: flat;
+}
+
+.dr-switch-btn:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.dr-switch-key {
+  pointer-events: none;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  width: 28px;
+  height: 30px;
+  border-radius: calc(var(--radius-control) - 2px);
+  background: var(--block);
+  box-shadow: var(--key-lift);
+  transform-style: preserve-3d;
+  transform: translate3d(
+    var(--dr-sw-x, 0px),
+    0px,
+    calc(var(--dr-explode, 0px) * 1.4 + var(--dr-key-lift, 5px))
+  );
+  transition-property: transform, background-color, box-shadow;
+  transition-duration: var(--dur-instant);
+  transition-timing-function: var(--ease-out);
+}
+
+.dr-switch-btn:active .dr-switch-key,
+.dr-switch-key[data-pressed="true"] {
+  box-shadow: var(--block-press);
+  transform: translate3d(
+    var(--dr-sw-x, 0px),
+    0px,
+    calc(var(--dr-explode, 0px) * 1.4 + var(--dr-key-lift, 5px) - var(--press-depth))
+  );
+}
+
+.dr-rig[data-settled-flat="true"] .dr-switch-key {
+  transform-style: flat;
+  transform: translateX(var(--dr-sw-x, 0px));
+}
+
+.dr-rig[data-settled-flat="true"] .dr-switch-btn:active .dr-switch-key,
+.dr-rig[data-settled-flat="true"] .dr-switch-key[data-pressed="true"] {
+  transform: translate3d(var(--dr-sw-x, 0px), var(--press-depth), 0);
+}
+
+.dr-key-skirt {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  border-radius: calc(var(--radius-control) - 2px);
+  background: color-mix(in oklab, var(--block), var(--bezel) 28%);
+  box-shadow: inset 0 0 0 1px var(--plate-edge);
+  transform: translateZ(-3px);
+}
+
+.dr-rig[data-settled-flat="true"] .dr-key-skirt {
+  display: none;
+}
+
+.dr-lamp {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-pill);
+  background: var(--lamp-off);
+  box-shadow: var(--lamp-recess);
+  transition-property: background-color, box-shadow;
+  transition-duration: var(--dur-instant);
+  transition-timing-function: var(--ease-out);
+}
+
+.dr-lamp[data-lit="true"] {
+  color: var(--accent);
+  background: var(--accent);
+  box-shadow: var(--lamp-recess), var(--lamp-glow);
+}
+
+/* Engraved ticks beneath the fader slot. */
+.dr-tick {
+  pointer-events: none;
+  position: absolute;
+  bottom: 0;
+  width: 1px;
+  height: 5px;
+  background: var(--fg-subtle);
+}
+
+.dr-tick[data-major="true"] {
+  height: 8px;
+  background: var(--fg-muted);
+}
+
+/* Reduced motion: snap camera, explode and key travel instantaneously. */
+@media (prefers-reduced-motion: reduce) {
+  .dr-rig,
+  .dr-plinth-shadow,
+  .dr-slice,
+  .dr-plate,
+  .dr-stratum-well,
+  .dr-lcd-bezel,
+  .dr-cap-wrap,
+  .dr-cap-face,
+  .dr-switch-key,
+  .dr-lamp {
+    transition-duration: 0ms;
+  }
+}
