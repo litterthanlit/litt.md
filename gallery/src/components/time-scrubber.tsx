@@ -21,7 +21,9 @@
  *   not the cap, so the cap never sinks.
  * - Drag: the ruler follows the pointer one to one, as the Slider's thumb does. Let go and it settles on the nearest
  *   step, or on an event within half a step of the needle, on the responsive tier and from rest, so it never passes
- *   either end. A press without a drag goes to the time under the pointer.
+ *   either end. A press without a drag goes to the time under the pointer. Under a world whose motion stops at once
+ *   (Rack; useSettles in motion/deal.ts) nothing eases: the ruler is on its step or event on the frame it is let go, a
+ *   key or a press moves it there at once, and fun mode's throw and rubber band are off.
  * - Keys and assistive tech: the track is the slider (role slider, named by the label), so the reading, the event and
  *   the bounds are read out. ← and → move a step, with Shift ten; Page Up and Page Down go to the next and previous
  *   event (ten steps when there are none); Home and End go to the ends. The value is the time, aria-valuetext says it
@@ -43,7 +45,7 @@
  */
 import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type KeyboardEvent, type PointerEvent, type ReactNode } from "react";
 import { animate, motion, useMotionValue, useMotionValueEvent, type AnimationPlaybackControls } from "motion/react";
-import { useFun, useTransition } from "@/motion";
+import { useFun, useSettles, useTransition } from "@/motion";
 
 export type TimeScrubberTone = "neutral" | "success" | "warning" | "danger";
 
@@ -130,7 +132,11 @@ export function TimeScrubber({
   const labelId = `${id}-label`;
   const hintId = `${id}-hint`;
   const responsive = useTransition("responsive");
-  const fun = useFun();
+  /* A world whose language stops at once (Rack, useSettles) puts the ruler where it lands on the frame it is let go,
+     and has no throw or rubber band. */
+  const settles = useSettles();
+  const funMode = useFun();
+  const fun = settles ? funMode : null;
   const settle = fun ? fun.throw : responsive;
 
   const perUnit = STEP_PX / step;
@@ -165,10 +171,17 @@ export function TimeScrubber({
     onValueChange?.(t);
   };
 
-  /** Settle on `t`, from wherever the ruler is, carrying `velocity` (px/s), then commit it. */
+  /** Settle on `t`, from wherever the ruler is, carrying `velocity` (px/s), then commit it. Where nothing settles, put it
+      there on this frame and commit it now. */
   const settleTo = (t: number, velocity = 0) => {
     run.current?.stop();
     report(t);
+    if (!settles) {
+      run.current = null;
+      x.set(toX(t));
+      onValueCommit?.(t);
+      return;
+    }
     const controls = animate(x, toX(t), { ...settle, velocity });
     run.current = controls;
     void controls.then(() => {
@@ -183,6 +196,11 @@ export function TimeScrubber({
     if (value === said.current) return;
     said.current = value;
     run.current?.stop();
+    if (!settles) {
+      run.current = null;
+      x.set(toX(value));
+      return;
+    }
     run.current = animate(x, toX(value), settle);
     // eslint-disable-next-line react-hooks/exhaustive-deps -- follows the value only
   }, [value]);
