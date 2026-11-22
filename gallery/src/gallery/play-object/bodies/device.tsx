@@ -17,6 +17,24 @@
  *   top (Index, as an iPod's Menu), Every component below (the world's gallery view) and Play at its centre, a key (`key`)
  *   in a well cut through the cap, that latches down while it plays. Keys, a pick and Play turn it too, so it always
  *   stands at the take showing. Radii nest: the well at --radius-well, the glass 4px in, the chip at --radius-chip.
+ * - The dial says what its edges do (plans/audits/device.md, finding 6): under the pointer, an edge's word shows in the
+ *   readout's own chip (`chip`), set under the collar on the plate, PREVIOUS, NEXT, INDEX or EVERY COMPONENT. It
+ *   switches on and off where it stands, as the chip does, and is hidden from screen readers. The edges take no Tab
+ *   stop (the contract gives them tabIndex -1), so the keyboard never shows a legend: keyboard and screen reader users
+ *   get the same names from the contract, on the edges' labels and the selector's keys. A chip, not the Tooltip part:
+ *   a tooltip is a panel that floats over the page, and Device's words for a state are the chip's.
+ * - Index, on the glass, is the recorder's file list (`DeviceHome`, plans/audits/device-fixes.md, The front door): each
+ *   take's number, name and its tape level in the mono, the row under the keys or the pointer lit by the selection blue
+ *   (--select), and that take's part live in a window (`window`) beside the list, under a chip with its number and name,
+ *   as a recorder labels the file selected. Not a cue or a play glyph: from Index, Play starts at take 01 and the dial
+ *   goes to the first or the last take, not to this row, so the chip promises nothing the contract does not do (what
+ *   Play starts from is Nick's to decide). The contract owns the list, its keys, the pick and the link; this only draws. On Index the dial's edges and its turn go along the contract's
+ *   one cycle (Next to the first take, Previous to the last), as the tape does; they do not move the list's lit row.
+ *   The rows are silent: a voice answers a key or a detent, and a row is neither.
+ * - At a short window (a laptop's 768 or 800) the screen keeps SCREEN_HEIGHT's 30rem floor and the deck gives up height
+ *   instead: a lower tape, a smaller dial and tighter margins, so the frame and the whole dial stay in the first screen
+ *   (finding 6). At 1366 by 768 the frame ends at the window's foot. The command menu's list is capped there so its
+ *   panel stays on the 30rem screen (`shape`).
  * - Orange is nowhere at rest; red is the playhead and the chip's lamp while Play runs.
  * - Things are mechanisms: the take, the playhead and the readout switch where they stand; only the dial travels, on the
  *   responsive spring (useSettle), and lands at once under reduced motion.
@@ -26,16 +44,16 @@
  *   set), the readout's group caption (Details says it) and the ring beside the count (the chip says it).
  * - Voice (plan 021): the dial ticks per detent (`notch`), the tape ticks on scrub and arrow keys (`notch`), and the
  *   keys (Play and the dial's four edges) click down and up (`key-down` / `key-up`). A silent hardware Mute key sits on
- *   the deck beside the dial, sharing `litt-gallery:sound` with the `M` shortcut and other Device pages. Play's timer
+ *   the deck beside the dial (on a phone, beside Play, each with its word printed under it), sharing `litt-gallery:sound` with the `M` shortcut and other Device pages. Play's timer
  *   never sounds.
  * - Left out, as the plan says: the player's Find and Options screens, and playing on load (Decision 6 is Nick's).
  */
-import { useEffect, useRef, type CSSProperties, type KeyboardEvent, type PointerEvent } from "react";
+import { useEffect, useRef, type CSSProperties, type KeyboardEvent, type PointerEvent, type ReactNode } from "react";
 import { motion, useMotionValue } from "motion/react";
 import { snap, useHand, useSettle } from "@/motion/hand";
 import { useSound } from "@/motion/sound";
 import { useMuted } from "../../mute";
-import type { PlayObjectBody, PlayObjectBodyProps } from "../body";
+import type { PartScale, PlayObjectBody, PlayObjectBodyProps, PlayObjectHomeProps } from "../body";
 import { COMPACT_BOX, COMPACT_SCREEN, SCREEN_HEIGHT } from "../body";
 import { useScrub } from "../scrub";
 
@@ -187,6 +205,21 @@ function PlayKey({ play, className, onDial = false }: { play: PlayObjectBodyProp
   );
 }
 
+/* ---------- a key's word, printed on the plate under it ---------- */
+
+/** A key on the phone's strip with its word printed under it, as the deck's Mute is on a desktop. The word is lettering
+    (aria-hidden): the key's own name is what a screen reader hears. */
+function Lettered({ word, children }: { word: string; children: ReactNode }) {
+  return (
+    <div className="grid shrink-0 justify-items-center gap-1">
+      {children}
+      <span aria-hidden="true" data-part="lettering" className="select-none font-field text-caption text-fg-subtle">
+        {word}
+      </span>
+    </div>
+  );
+}
+
 /* ---------- Mute: a latching hardware key on the deck ---------- */
 
 function RecorderMute({ compact = false, className = "" }: { compact?: boolean; className?: string }) {
@@ -206,7 +239,7 @@ function RecorderMute({ compact = false, className = "" }: { compact?: boolean; 
         "hover:bg-block-hover active:shadow-(--block-press) active:[transform:translateY(var(--press-depth))] " +
         "aria-pressed:bg-[color-mix(in_oklab,var(--block),var(--tray)_55%)] aria-pressed:shadow-(--tray-shade) aria-pressed:[transform:translateY(var(--press-depth))] " +
         "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus forced-colors:border forced-colors:aria-pressed:border-[Highlight] " +
-        (compact ? "size-11 shrink-0 rounded-pill" : "size-10 rounded-[calc(var(--radius-control)-2px)]")
+        (compact ? "size-11 rounded-pill" : "size-10 rounded-[calc(var(--radius-control)-2px)]")
       }
     >
       <svg aria-hidden="true" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="size-4">
@@ -215,7 +248,8 @@ function RecorderMute({ compact = false, className = "" }: { compact?: boolean; 
       </svg>
     </button>
   );
-  if (compact) return button;
+  /* On a phone the key keeps its word too, printed under it as Play's is (plans/audits/device.md, finding 8). */
+  if (compact) return <Lettered word="Mute">{button}</Lettered>;
   return (
     <div className={"grid justify-items-center gap-1.5 " + className}>
       <span data-part="well" className="inline-flex rounded-control bg-tray px-0.5 pt-0.5 pb-1 shadow-(--tray-shade) forced-colors:border">
@@ -231,6 +265,18 @@ function RecorderMute({ compact = false, className = "" }: { compact?: boolean; 
 /* ---------- the dial ---------- */
 
 const DETENT = 15; // degrees of turn per component, as the player's dial clicks
+
+/* An edge's word, in the readout's chip, under the collar: shown while that edge is under the pointer. Each
+   rule is its own string, so no two classes on one chip set the same property under the same variant. */
+const LEGEND_ON = {
+  prev: "group-has-[[data-side=prev]:hover]/dial:flex",
+  next: "group-has-[[data-side=next]:hover]/dial:flex",
+  up: "group-has-[[data-side=up]:hover]/dial:flex",
+  down: "group-has-[[data-side=down]:hover]/dial:flex",
+} as const;
+const legend =
+  "pointer-events-none absolute top-[calc(100%+0.25rem)] left-1/2 z-10 hidden -translate-x-1/2 items-center whitespace-nowrap rounded-chip bg-chip px-1.5 py-0.5 " +
+  "text-caption font-label text-chip-ink uppercase forced-colors:border ";
 
 const side =
   "absolute top-1/4 grid h-1/2 w-1/4 cursor-pointer place-items-center text-dial-ink opacity-80 hover:opacity-100 " +
@@ -322,7 +368,7 @@ function Dial({
   const edgeSound = keyVoice(sound);
 
   return (
-    <div data-part="collar" data-recorder-dial="" className={"relative size-36 shrink-0 rounded-pill bg-tray p-2 shadow-(--tray-shade) " + className}>
+    <div data-part="collar" data-recorder-dial="" className={"group/dial relative size-36 [@media(max-height:52rem)]:size-28 shrink-0 rounded-pill bg-tray p-2 shadow-(--tray-shade) " + className}>
       <div
         ref={cap}
         data-part="cap"
@@ -367,6 +413,19 @@ function Dial({
           <PlayKey play={play} onDial className="size-full" />
         </span>
       </div>
+      {/* What each edge does, in words, under the hand. The names a screen reader hears are the edges' own. */}
+      {(
+        [
+          ["prev", step(-1)["aria-label"]],
+          ["next", step(1)["aria-label"]],
+          ["up", index["aria-label"]],
+          ["down", "Every component"],
+        ] as const
+      ).map(([at, word]) => (
+        <span key={at} aria-hidden="true" data-part="chip" data-dial-legend={at} className={legend + LEGEND_ON[at]}>
+          {word}
+        </span>
+      ))}
     </div>
   );
 }
@@ -381,7 +440,9 @@ function DeviceBody({ takes, at, selector, pick, step, index, everything, turn, 
         <div data-part="plate" className="grid shrink-0 gap-2 border-b border-line bg-canvas px-gutter py-3 shadow-(--plate-edge)">
           <div className="flex items-center gap-2">
             <Readout readout={readout} playing={playing} compact className="min-w-0 flex-1" />
-            <PlayKey play={play} className="size-11 shrink-0" />
+            <Lettered word="Play">
+              <PlayKey play={play} className="size-11" />
+            </Lettered>
             <RecorderMute compact />
           </div>
           <Tape takes={takes} at={at} selector={selector} pick={pick} className="h-11" />
@@ -397,23 +458,134 @@ function DeviceBody({ takes, at, selector, pick, step, index, everything, turn, 
   return (
     <div data-part="frame" className="mx-auto flex w-full max-w-6xl min-w-0 flex-col rounded-[var(--object-radius)] p-1 [background:var(--frame)] shadow-[var(--frame-edge),var(--object-cast)] forced-colors:border">
       <div data-part="plate" className="litt-grain relative isolate grid min-w-0 grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-x-6 rounded-[calc(var(--object-radius)-4px)] bg-canvas p-3 shadow-(--plate-edge) [--grain-opacity:var(--object-grain)]">
-        <Tape takes={takes} at={at} selector={selector} pick={pick} className="col-span-full row-start-2 mx-3 mt-3 h-10" />
-        <Readout readout={readout} playing={playing} className="col-start-1 row-start-3 mt-3 mb-4 ml-6 w-full max-w-xl" />
-        <Dial at={at} n={takes.length} step={step} index={index} everything={everything} turn={turn} play={play} className="col-start-3 row-start-3 mt-3 mr-6 mb-4" />
+        <Tape takes={takes} at={at} selector={selector} pick={pick} className="col-span-full row-start-2 mx-3 mt-3 h-10 [@media(max-height:52rem)]:mt-1 [@media(max-height:52rem)]:h-9" />
+        <Readout readout={readout} playing={playing} className="col-start-1 row-start-3 mt-3 mb-4 ml-6 w-full max-w-xl [@media(max-height:52rem)]:mt-1 [@media(max-height:52rem)]:mb-3" />
+        <Dial at={at} n={takes.length} step={step} index={index} everything={everything} turn={turn} play={play} className="col-start-3 row-start-3 mt-3 mr-6 mb-4 [@media(max-height:52rem)]:mt-1 [@media(max-height:52rem)]:mb-3" />
         <div data-part="bezel" className="relative col-span-full row-start-1 flex rounded-[calc(var(--object-radius)-16px)] bg-bezel p-2 shadow-(--bezel-edge) forced-colors:border">
           {screen}
           {/* The glass over the screen: a sheen where the light catches it. It takes no hand. */}
           <span aria-hidden="true" data-part="glass" className="pointer-events-none absolute inset-2 rounded-[calc(var(--object-radius)-24px)] [background:var(--glass-sheen)]" />
         </div>
-        <RecorderMute className="col-start-2 row-start-3 mt-3 mb-4 justify-self-end" />
+        <RecorderMute className="col-start-2 row-start-3 mt-3 mb-4 justify-self-end [@media(max-height:52rem)]:mt-1 [@media(max-height:52rem)]:mb-3" />
       </div>
+    </div>
+  );
+}
+
+/* ---------- Index: the recorder's file list ---------- */
+
+/* A row of the list: its number, its name and its level, in the mono, touching the next. The current row (under the keys
+   or the pointer) is the one blue on the glass, the selection bar (--select, its words --select-ink), switched where it
+   stands on the instant tier; under forced colors it is Highlight. A short window (the laptop's 30rem screen) sets the
+   rows closer, so all twelve fit beside the window. */
+const FILE_ROW =
+  "group/row litt-target relative grid h-control-sm w-full min-w-0 cursor-pointer grid-cols-[2.5ch_minmax(0,1fr)_2.5rem] items-center gap-3 rounded-chip px-3 text-left font-field text-small select-none " +
+  "[@media(max-height:52rem)]:h-7 pointer-coarse:h-control-md " +
+  "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus";
+const FILE_ROW_ON =
+  "bg-select text-select-ink forced-colors:bg-[Highlight] forced-colors:text-[HighlightText] forced-colors:[forced-color-adjust:none]";
+const FILE_ROW_OFF = "text-fg-muted data-pointer:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] data-pointer:text-fg";
+
+/** How large the cued part stands in its window: as large as the window holds it at 1440 by 1000, so it is the main
+    thing on the glass. A small part (a key, a figure, a gauge) stands half again its size; a conversation, which runs
+    tall, a little under its own; the rest a quarter over. Where a short window cannot hold a part, its window scrolls.
+    The command menu's tile is a key, its Search trigger (126px tall at 1.5); the panel it opens goes to the screen's
+    OverlayRoot, outside the zoom, at its own size. */
+const LIVE_SCALE: Record<string, PartScale> = {
+  "agent-indicator": 1.5,
+  "seven-segment": 1.5,
+  gauge: 1.5,
+  "copy-button": 1.5,
+  button: 1.5,
+  "command-menu": 1.5,
+  slider: 1,
+  "tape-progress": 1,
+  message: 0.75,
+};
+
+function DeviceHome({ world, takes, current, list, row, everything, part, compact }: PlayObjectHomeProps) {
+  const { children: words, ...link } = everything;
+  const n = takes.length;
+  /* The contract's own pad for the readout's count (contract.tsx); keep the two the same, so a row's number reads as the readout's. */
+  const pad = (i: number) => String(i).padStart(Math.max(2, String(n).length), "0");
+  const cued = takes[current];
+  return (
+    <div
+      className={
+        "grid h-full min-h-0 overflow-auto overscroll-contain " +
+        (compact ? "content-start gap-4 p-4" : "grid-cols-[minmax(0,20rem)_minmax(0,1fr)] gap-6 p-6 [@media(max-height:52rem)]:p-4")
+      }
+    >
+      <div className="flex min-h-0 min-w-0 flex-col gap-2">
+        {/* The list's head, as a recorder's file list prints it: the world, and how many takes are on it. A short window
+            leaves it out, so the twelve rows and the link fit the 30rem screen. */}
+        <p aria-hidden="true" className="flex items-baseline justify-between gap-3 px-3 font-field text-caption text-fg-subtle [@media(max-height:52rem)]:hidden">
+          <span>{world.name}</span>
+          <span className="tabular-nums">{n} takes</span>
+        </p>
+        <nav {...list}>
+          <ul className="grid">
+            {takes.map((t, i) => {
+              const on = i === current;
+              return (
+                <li key={t.id} className="grid min-w-0">
+                  <button {...row(i)} style={STEP} className={FILE_ROW + " " + (on ? FILE_ROW_ON : FILE_ROW_OFF)}>
+                    {/* The name first in the source, so it is the row's name; the number sits before it on the glass. */}
+                    <span className="col-start-2 row-start-1 min-w-0 truncate">{t.title}</span>
+                    <span aria-hidden="true" className={"col-start-1 row-start-1 text-caption tabular-nums " + (on ? "" : "text-fg-subtle")}>
+                      {pad(i + 1)}
+                    </span>
+                    {/* The take's level, the same tick the tape prints for it. */}
+                    <span aria-hidden="true" className="col-start-3 row-start-1 flex h-1 items-center bg-[color-mix(in_oklab,currentColor_22%,transparent)]">
+                      <span className="h-full bg-current" style={{ width: `${level(t.id) * 100}%` }} />
+                    </span>
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
+        <a
+          {...link}
+          className="litt-target relative mt-auto self-start px-3 font-field text-small text-fg underline decoration-line-strong underline-offset-4 hover:decoration-current focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+        >
+          {words}
+        </a>
+      </div>
+      {!compact && cued && (
+        /* The window on the same glass: the selected take, live, under a chip with its number and name (a recorder's
+           selected file, not a cue: from Index, Play starts at take 01) and its one line. */
+        <div data-part="window" className="grid min-h-0 min-w-0 grid-rows-[auto_minmax(0,1fr)] overflow-hidden rounded-surface border border-line">
+          <p className="flex min-w-0 items-center gap-3 border-b border-line px-4 py-2.5">
+            <span data-part="chip" className="inline-flex shrink-0 items-center gap-1.5 rounded-chip bg-fg px-1.5 py-0.5 text-caption font-label text-canvas uppercase forced-colors:border">
+              <span className="tabular-nums">{pad(current + 1)}</span> {cued.title}
+            </span>
+            <span className="min-w-0 truncate font-field text-small text-fg-muted">{cued.lede}</span>
+          </p>
+          <div className="grid min-h-0 min-w-0 justify-items-center overflow-auto overscroll-contain p-6 [align-content:safe_center] [@media(max-height:52rem)]:p-4">
+            {part({ scale: LIVE_SCALE[cued.id] ?? 1.25 })}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
 export const device: PlayObjectBody = {
   name: "device",
-  shape: (compact) => (compact ? COMPACT_SCREEN : SCREEN_HEIGHT + " w-full rounded-[calc(var(--object-radius)-24px)]"),
+  /* SCREEN_HEIGHT alone, never under its 30rem floor. Below 52rem of window, where that floor would push the dial under
+     the fold, the deck gives up its height instead (DeviceBody): at 1366 by 768 and 1280 by 800 the whole frame is in
+     view. There the screen is the floor, 30rem, and the command menu's panel, set 15dvh down it with a list up to 22rem
+     (command-menu.tsx), would run 80px past its foot at 768; so the screen caps the list at what is left of its 30rem
+     under the panel's top, its field and its footer (7rem), as a window that short caps it. The list scrolls inside. */
+  shape: (compact) =>
+    compact
+      ? COMPACT_SCREEN
+      : SCREEN_HEIGHT + " [@media(max-height:52rem)]:[--cmd-list-max:min(22rem,calc(30rem-15dvh-7rem))] w-full rounded-[calc(var(--object-radius)-24px)]",
   rail: false,
   Body: DeviceBody,
+  Home: DeviceHome,
+  /* On a phone the list stands alone: a touch on a row opens its take at once, so the cue never moves under a finger,
+     and a part above would push the list under the fold to show only the first take. */
+  phonePart: "none",
 };

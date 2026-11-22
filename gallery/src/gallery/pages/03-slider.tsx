@@ -136,17 +136,30 @@ const studySlider = {
   formatValue: formatSpeed,
 };
 
-function ReplayGlide() {
+/* Under Device the study speaks the recorder, as its lead stage does (MonitorLevelDemo). */
+const monitorSlider = {
+  label: "Monitor level",
+  min: -24,
+  max: 12,
+  step: 1,
+  marks: [-24, -12, 12],
+  home: 0,
+  minLabel: "Quieter",
+  maxLabel: "Louder",
+  formatValue: (v: number) => `${v < 0 ? "−" : v > 0 ? "+" : ""}${Math.abs(v)} dB`,
+};
+
+function ReplayGlide({ slider = studySlider, from = 0.5, to = 1.5 }: { slider?: typeof studySlider; from?: number; to?: number }) {
   const { reduced } = useMotionDial();
-  const [v, setV] = useState(reduced ? 1.5 : 0.5);
+  const [v, setV] = useState(reduced ? to : from);
   useEffect(() => {
     if (reduced) return;
-    const t = setTimeout(() => setV(1.5), 300);
+    const t = setTimeout(() => setV(to), 300);
     return () => clearTimeout(t);
-  }, [reduced]);
+  }, [reduced, to]);
   return (
     <div className="w-full max-w-sm">
-      <Slider {...studySlider} value={v} onValueChange={setV} />
+      <Slider {...slider} value={v} onValueChange={setV} />
     </div>
   );
 }
@@ -214,6 +227,32 @@ export const study: PageStudy = {
     label: "Replay the move",
     caption: "Watch the value go from the slow end to 1.5x, and the words follow.",
     run: () => <ReplayGlide />,
+  },
+  byWorld: {
+    device: {
+      object: (
+        <div className="w-full max-w-sm">
+          <Slider {...monitorSlider} defaultValue={-6} />
+        </div>
+      ),
+      states: {
+        default: (
+          <div className="w-full max-w-sm">
+            <Slider {...monitorSlider} defaultValue={-6} />
+          </div>
+        ),
+        disabled: (
+          <div className="w-full max-w-sm">
+            <Slider {...monitorSlider} defaultValue={-6} disabled />
+          </div>
+        ),
+      },
+      replay: {
+        label: "Replay the move",
+        caption: "Watch the key move from −24 dB up to home at 0 dB while the level on the glass follows.",
+        run: () => <ReplayGlide slider={monitorSlider} from={-24} to={0} />,
+      },
+    },
   },
 };
 
