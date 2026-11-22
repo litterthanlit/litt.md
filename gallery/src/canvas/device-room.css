@@ -1,75 +1,310 @@
 /*
- * Device Room prototype (plans/026, Phase 1a): CSS 3D machined chassis, laminated extrusion, stratum Z-offsets,
- * and crisp transform-none settle on Step In.
+ * Device Room prototype (plans/026, Phase 1a — First-person portal & walk-into-the-room):
+ *
+ * You stand outside a framed architectural doorway looking straight into Device's lab room:
+ * - Foreground doorway surround (z = 0) with top lintel, side jambs, and threshold
+ * - Left & right brushed aluminium lab walls with vertical panel seams (x = ±280px, z = 0..-460px)
+ * - Ceiling with a recessed linear studio light bar (y = -220px)
+ * - Machined floor with perspective seams and soft console light spill (y = +220px)
+ * - Back wall (z = -460px) holding the live, CNC-extruded Device console (Slider + Switch + LCD)
+ *
+ * Walking in dollies the camera forward along +Z (camZ: -60px -> +460px) via scroll, click, or the Walk control,
+ * with subtle first-person mouse-look parallax outside. At walk = 100%, the camera arrives flush at the console and
+ * clears to transform:none / transform-style:flat so 2D text and hairlines are razor-sharp.
  *
  * Rules kept here:
- * - Zero hex values: every color and shade reads Device's tokens or color-mix() against them.
- * - Zero overflow:hidden, opacity < 1, filter or backdrop-filter on any ancestor between the perspective stage
- *   and the preserve-3d strata (clipping lives only on leaf elements such as the slider fill inside its slot).
- * - Never animate opacity on any preserve-3d layer during Explode or Step In.
+ * - Zero hex values: every surface, shadow and light reads Device tokens or color-mix().
+ * - Zero overflow:hidden, opacity < 1, filter or backdrop-filter on any preserve-3d ancestor between
+ *   the perspective viewport and the interactive console strata (clip sits ONLY on the outer portal
+ *   viewport above perspective, and on leaf elements like the slider fill).
  */
 
-.dr-stage {
+/* Outer portal viewport: clips walls & doorway as they rush past the camera. Sits ABOVE perspective. */
+.dr-portal {
   position: relative;
-  display: grid;
-  place-items: center;
-  min-height: 360px;
-  padding: var(--space-12) var(--space-8);
+  width: 560px;
+  height: 440px;
+  max-width: 100%;
+  margin-inline: auto;
+  overflow: hidden;
   border-radius: var(--radius-surface);
-  background:
-    radial-gradient(
-      ellipse 78% 64% at 50% 24%,
-      color-mix(in oklab, var(--fg) 4%, var(--canvas)),
-      var(--canvas) 74%
-    );
-  box-shadow: inset 0 0 0 1px var(--line);
-  perspective: 1100px;
-  perspective-origin: 50% 46%;
+  background: var(--canvas);
+  box-shadow: inset 0 0 0 1px var(--line-strong);
+  perspective: 680px;
+  perspective-origin: 50% 50%;
 }
 
-.dr-stage[data-settled-flat="true"] {
+.dr-portal[data-settled-inside="true"] {
   perspective: none;
 }
 
-/* The 3D camera rig. Driven by Motion's expressive spring on Step In / Room, or cleared to transform:none once flat. */
-.dr-rig {
-  position: relative;
+/* Camera rig centered in the portal. Driven directly via CSS custom properties (no per-frame React renders). */
+.dr-camera {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
   transform-style: preserve-3d;
-  transform: rotateX(var(--dr-tilt-x, 38deg)) rotateZ(var(--dr-tilt-z, -24deg));
+  transform:
+    translate3d(0, 0, var(--dr-cam-z, -60px))
+    rotateX(var(--dr-look-x, 0deg))
+    rotateY(var(--dr-look-y, 0deg));
 }
 
-.dr-rig[data-settled-flat="true"] {
+.dr-camera[data-settled-inside="true"] {
+  position: relative;
+  top: auto;
+  left: auto;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
   transform: none;
   transform-style: flat;
 }
 
-/* Grounded studio shadow resting on the desk beneath the chassis (dark in both themes). Never holds preserve-3d children. */
-.dr-plinth-shadow {
+/* Architectural room planes — hidden cleanly once settled flat at 100% inside. */
+.dr-camera[data-settled-inside="true"] .dr-arch {
+  display: none;
+}
+
+/* Shared architectural surface base (all walls/floor/ceiling live around the origin of .dr-camera). */
+.dr-wall {
+  pointer-events: none;
+  position: absolute;
+  box-sizing: border-box;
+  backface-visibility: hidden;
+}
+
+/* Left wall: 460 deep x 440 tall, at x = -280, z = 0..-460 */
+.dr-wall-left {
+  left: -230px;
+  top: -220px;
+  width: 460px;
+  height: 440px;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      transparent 0,
+      transparent 113px,
+      color-mix(in oklab, var(--line) 80%, transparent) 113px,
+      color-mix(in oklab, var(--line) 80%, transparent) 114px
+    ),
+    linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--surface-1), var(--canvas) 20%) 0%,
+      var(--canvas) 55%,
+      color-mix(in oklab, var(--canvas), var(--bezel) 18%) 100%
+    );
+  box-shadow: inset 0 0 48px color-mix(in oklab, var(--bezel) 22%, transparent);
+  transform: translate3d(-280px, 0px, -230px) rotateY(90deg);
+}
+
+/* Right wall: 460 deep x 440 tall, at x = +280, z = 0..-460 */
+.dr-wall-right {
+  left: -230px;
+  top: -220px;
+  width: 460px;
+  height: 440px;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      transparent 0,
+      transparent 113px,
+      color-mix(in oklab, var(--line) 80%, transparent) 113px,
+      color-mix(in oklab, var(--line) 80%, transparent) 114px
+    ),
+    linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--surface-1), var(--canvas) 20%) 0%,
+      var(--canvas) 55%,
+      color-mix(in oklab, var(--canvas), var(--bezel) 18%) 100%
+    );
+  box-shadow: inset 0 0 48px color-mix(in oklab, var(--bezel) 22%, transparent);
+  transform: translate3d(280px, 0px, -230px) rotateY(-90deg);
+}
+
+/* Ceiling: 560 wide x 460 deep, at y = -220, z = 0..-460, with recessed studio light fixture */
+.dr-wall-ceiling {
+  left: -280px;
+  top: -230px;
+  width: 560px;
+  height: 460px;
+  display: grid;
+  place-items: center;
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--canvas), var(--bezel) 16%) 0%,
+      var(--surface-1) 50%,
+      color-mix(in oklab, var(--canvas), var(--bezel) 10%) 100%
+    );
+  box-shadow: inset 0 0 40px color-mix(in oklab, var(--bezel) 20%, transparent);
+  transform: translate3d(0px, -220px, -230px) rotateX(-90deg);
+}
+
+.dr-ceiling-fixture {
+  width: 280px;
+  height: 22px;
+  border-radius: var(--radius-control);
+  background: color-mix(in oklab, var(--surface-1), var(--field-ink) 68%);
+  box-shadow:
+    0 0 28px color-mix(in oklab, var(--field-ink) 28%, transparent),
+    inset 0 0 0 1px var(--line-strong);
+}
+
+/* Floor: 560 wide x 460 deep, at y = +220, z = 0..-460, with subtle architectural grid & overhead light pool */
+.dr-wall-floor {
+  left: -280px;
+  top: -230px;
+  width: 560px;
+  height: 460px;
+  background:
+    radial-gradient(
+      ellipse 64% 48% at 50% 24%,
+      color-mix(in oklab, var(--highlight) 70%, transparent),
+      transparent 72%
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent 0,
+      transparent 91px,
+      color-mix(in oklab, var(--line) 65%, transparent) 91px,
+      color-mix(in oklab, var(--line) 65%, transparent) 92px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent 0,
+      transparent 91px,
+      color-mix(in oklab, var(--line) 65%, transparent) 91px,
+      color-mix(in oklab, var(--line) 65%, transparent) 92px
+    ),
+    linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--canvas), var(--bezel) 22%) 0%,
+      color-mix(in oklab, var(--surface-2), var(--bezel) 8%) 60%,
+      var(--surface-2) 100%
+    );
+  box-shadow: inset 0 12px 36px color-mix(in oklab, var(--bezel) 24%, transparent);
+  transform: translate3d(0px, 220px, -230px) rotateX(90deg);
+}
+
+/* Foreground portal doorway frame (z = 0). Passes past the camera as you walk in. */
+.dr-doorway {
+  pointer-events: none;
+  position: absolute;
+  left: -280px;
+  top: -220px;
+  width: 560px;
+  height: 440px;
+  transform: translate3d(0, 0, 0);
+  transform-style: preserve-3d;
+}
+
+.dr-doorway[data-passed="true"] {
+  display: none;
+}
+
+.dr-door-jamb {
+  position: absolute;
+  background: var(--frame);
+  box-shadow: inset 0 0 0 1px var(--frame-edge);
+}
+
+.dr-door-top {
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-inline: var(--space-4);
+  border-bottom: 1px solid var(--frame-edge);
+  box-shadow:
+    inset 0 1px 0 var(--highlight),
+    0 8px 20px color-mix(in oklab, var(--bezel) 24%, transparent);
+}
+
+.dr-door-bottom {
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 20px;
+  border-top: 1px solid var(--frame-edge);
+  background: color-mix(in oklab, var(--frame), var(--bezel) 10%);
+}
+
+.dr-door-left {
+  top: 44px;
+  bottom: 20px;
+  left: 0;
+  width: 28px;
+  border-right: 1px solid var(--frame-edge);
+  box-shadow: 6px 0 18px color-mix(in oklab, var(--bezel) 18%, transparent);
+}
+
+.dr-door-right {
+  top: 44px;
+  bottom: 20px;
+  right: 0;
+  width: 28px;
+  border-left: 1px solid var(--frame-edge);
+  box-shadow: -6px 0 18px color-mix(in oklab, var(--bezel) 18%, transparent);
+}
+
+/* Back wall (560 x 440, at z = -460) holding the live Device console. */
+.dr-back-wall {
+  position: absolute;
+  left: -280px;
+  top: -220px;
+  width: 560px;
+  height: 440px;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(
+      ellipse 72% 58% at 50% 22%,
+      color-mix(in oklab, var(--surface-1), var(--canvas) 35%),
+      var(--canvas) 76%
+    );
+  box-shadow: inset 0 0 44px color-mix(in oklab, var(--bezel) 22%, transparent);
+  transform-style: preserve-3d;
+  transform: translate3d(0px, 0px, -460px);
+}
+
+.dr-camera[data-settled-inside="true"] .dr-back-wall {
+  position: relative;
+  left: auto;
+  top: auto;
+  width: 100%;
+  height: 100%;
+  background: var(--canvas);
+  box-shadow: none;
+  transform: none;
+  transform-style: flat;
+}
+
+/* Wall-mounted console drop shadow on the back wall surface. */
+.dr-wall-shadow {
   pointer-events: none;
   position: absolute;
   inset: 0;
   border-radius: var(--radius-plate);
-  background: color-mix(in oklab, var(--bezel) 48%, transparent);
-  filter: blur(20px);
-  transform: translate3d(
-    calc(var(--dr-depth, 14px) * 0.5),
-    calc(var(--dr-depth, 14px) * 1.15),
-    calc(var(--dr-depth, 14px) * -1 - 6px)
-  );
-  transition-property: transform, opacity;
-  transition-duration: var(--dur-expressive);
-  transition-timing-function: var(--ease-out);
+  background: color-mix(in oklab, var(--bezel) 52%, transparent);
+  filter: blur(18px);
+  transform: translate3d(0px, calc(var(--dr-depth, 14px) * 0.7), calc(var(--dr-depth, 14px) * -1 - 2px));
 }
 
-.dr-rig[data-flat="true"] .dr-plinth-shadow {
-  opacity: 0;
-  transform: translate3d(0, 0, 0);
+.dr-camera[data-settled-inside="true"] .dr-wall-shadow {
+  display: none;
 }
 
-/* Stratum 0: machined outer chassis frame (width 360px). */
+/* Stratum 0: machined outer chassis standing proud off the back wall. */
 .dr-chassis {
   position: relative;
-  width: 360px;
+  width: 380px;
   padding: 6px;
   border-radius: var(--radius-plate);
   background: var(--frame);
@@ -77,14 +312,16 @@
     inset 0 1px 0 var(--highlight),
     inset 0 0 0 1px var(--frame-edge);
   transform-style: preserve-3d;
+  transform: translateZ(var(--dr-depth, 14px));
 }
 
-.dr-rig[data-settled-flat="true"] .dr-chassis {
+.dr-camera[data-settled-inside="true"] .dr-chassis {
+  transform: none;
   transform-style: flat;
   box-shadow: var(--plate-lift), inset 0 0 0 1px var(--frame-edge);
 }
 
-/* Laminated CNC-extrusion slices giving rounded corners true physical thickness under tilt (darkened toward --bezel). */
+/* Laminated CNC-extrusion slices giving the console real machined thickness off the wall. */
 .dr-slice {
   pointer-events: none;
   position: absolute;
@@ -95,11 +332,11 @@
   transform: translateZ(calc(var(--dr-depth, 14px) * var(--dr-slice-t, 0) * -1));
 }
 
-.dr-rig[data-settled-flat="true"] .dr-slice {
+.dr-camera[data-settled-inside="true"] .dr-slice {
   display: none;
 }
 
-/* Stratum 1: brushed aluminium plate (1px resting Z clears coplanar hit-test z-fighting with chassis). */
+/* Stratum 1: brushed aluminium plate. */
 .dr-plate {
   position: relative;
   display: grid;
@@ -117,7 +354,7 @@
   transition-timing-function: var(--ease-out);
 }
 
-.dr-rig[data-settled-flat="true"] .dr-plate {
+.dr-camera[data-settled-inside="true"] .dr-plate {
   transform: none;
   transform-style: flat;
 }
@@ -132,7 +369,7 @@
   transition-timing-function: var(--ease-out);
 }
 
-.dr-rig[data-settled-flat="true"] .dr-stratum-well {
+.dr-camera[data-settled-inside="true"] .dr-stratum-well {
   transform: none;
   transform-style: flat;
 }
@@ -153,7 +390,7 @@
   transition-timing-function: var(--ease-out);
 }
 
-.dr-rig[data-settled-flat="true"] .dr-lcd-bezel {
+.dr-camera[data-settled-inside="true"] .dr-lcd-bezel {
   transform: none;
   transform-style: flat;
 }
@@ -191,7 +428,7 @@
   cursor: grabbing;
 }
 
-.dr-rig[data-settled-flat="true"] .dr-slider-track {
+.dr-camera[data-settled-inside="true"] .dr-slider-track {
   transform: none;
   transform-style: flat;
 }
@@ -235,7 +472,7 @@
   transform: translateZ(calc(var(--dr-explode, 0px) * 1.4 + var(--dr-cap-lift, 6px) - var(--press-depth)));
 }
 
-.dr-rig[data-settled-flat="true"] .dr-cap-wrap {
+.dr-camera[data-settled-inside="true"] .dr-cap-wrap {
   transform: none;
   transform-style: flat;
 }
@@ -256,7 +493,7 @@
   transform: translateZ(calc(var(--dr-cap-skirt-z, -2px)));
 }
 
-.dr-rig[data-settled-flat="true"] .dr-cap-skirt {
+.dr-camera[data-settled-inside="true"] .dr-cap-skirt {
   display: none;
 }
 
@@ -278,7 +515,7 @@
   box-shadow: var(--block-press);
 }
 
-.dr-rig[data-settled-flat="true"] .dr-cap-wrap[data-held="true"] .dr-cap-face {
+.dr-camera[data-settled-inside="true"] .dr-cap-wrap[data-held="true"] .dr-cap-face {
   transform: translateY(var(--press-depth));
 }
 
@@ -305,7 +542,7 @@
   transform: translateZ(1px);
 }
 
-.dr-rig[data-settled-flat="true"] .dr-switch-btn {
+.dr-camera[data-settled-inside="true"] .dr-switch-btn {
   transform: none;
   transform-style: flat;
 }
@@ -348,13 +585,13 @@
   );
 }
 
-.dr-rig[data-settled-flat="true"] .dr-switch-key {
+.dr-camera[data-settled-inside="true"] .dr-switch-key {
   transform-style: flat;
   transform: translateX(var(--dr-sw-x, 0px));
 }
 
-.dr-rig[data-settled-flat="true"] .dr-switch-btn:active .dr-switch-key,
-.dr-rig[data-settled-flat="true"] .dr-switch-key[data-pressed="true"] {
+.dr-camera[data-settled-inside="true"] .dr-switch-btn:active .dr-switch-key,
+.dr-camera[data-settled-inside="true"] .dr-switch-key[data-pressed="true"] {
   transform: translate3d(var(--dr-sw-x, 0px), var(--press-depth), 0);
 }
 
@@ -368,7 +605,7 @@
   transform: translateZ(-3px);
 }
 
-.dr-rig[data-settled-flat="true"] .dr-key-skirt {
+.dr-camera[data-settled-inside="true"] .dr-key-skirt {
   display: none;
 }
 
@@ -405,11 +642,8 @@
   background: var(--fg-muted);
 }
 
-/* Reduced motion: snap camera, explode and key travel instantaneously. */
+/* Reduced motion: snap walk, explode and key travel instantaneously. */
 @media (prefers-reduced-motion: reduce) {
-  .dr-rig,
-  .dr-plinth-shadow,
-  .dr-slice,
   .dr-plate,
   .dr-stratum-well,
   .dr-lcd-bezel,

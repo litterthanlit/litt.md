@@ -1,11 +1,14 @@
 /**
- * Device Room prototype (plans/026, Phase 1a): one compact machined Device module (Slider + Switch + LCD readout)
- * sitting in a live CSS 3D studio room on `#canvas`, with Step In (0° flat, transform:none on settle), Explode
- * (separating frame -> plate -> well/slot -> lcd -> cap/key along Z), true full-chain inverse-matrix drag (plane.ts),
- * Device Web Audio voices (sound.ts PlayOptions.root), and only the three room controls needed to judge the prototype
- * (tilt angle, Z-extrusion depth, explode spacing).
+ * Device Room prototype (plans/026, Phase 1a — First-person portal & walk-into-the-room):
  *
- * Lives strictly in gallery/src/canvas/. Nothing in src/components, src/worlds or src/motion/hand.ts changes here.
+ * You stand outside a framed architectural doorway looking straight into Device's lab room (doorframe, left/right
+ * aluminium walls, ceiling light fixture, perspective floor, and the live CNC-extruded Device console mounted on the
+ * back wall). Scroll over the portal, click the room, or scrub Walk to dolly the camera forward along +Z right
+ * through the doorway until you stand flush in front of the console — where it clears to `transform: none` for
+ * razor-sharp 2D text. Subtle first-person mouse-look parallax lets you peer inside while standing at the doorway.
+ *
+ * Every control (Slider + Switch + LCD) stays live at any walk depth via `plane.ts`'s full-chain inverse matrix
+ * projection and Device's Web Audio voices (`sound.ts` PlayOptions.root).
  */
 import { useCallback, useEffect, useId, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent } from "react";
 import { animate, useReducedMotion } from "motion/react";
@@ -20,6 +23,10 @@ const TRACK_PAD = 18; // px from track edge to cap center at 0% and 100%
 const NOTCHES = Array.from({ length: 11 }, (_, i) => i * 10);
 const SLICES = [1 / 7, 2 / 7, 3 / 7, 4 / 7, 5 / 7, 6 / 7, 1];
 
+const CAM_OUT = -60; // z at doorway (walk = 0)
+const CAM_IN = 460; // z flush with back wall (walk = 1)
+const DOOR_PASS_Z = 140; // hide doorway jambs once they sweep past viewport edges
+
 /* #canvas runs in Flat, which sets Pill radii on <html>. Restate Device's own control/surface corners on each frame. */
 const DEVICE_OWN = {
   "--radius-control": `${LIMITS.control}px`,
@@ -29,30 +36,29 @@ const DEVICE_OWN = {
 const clamp = (n: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, n));
 
 type RoomParams = {
-  mode: "room" | "flat";
+  walkTarget: number; // 0 (doorway) .. 1 (flush inside)
   exploded: boolean;
-  tilt: number;
   depth: number;
   explodeStep: number;
-  muted: boolean;
+  onWalkChange: (next: number) => void;
 };
 
-type DeviceRoomFrameProps = RoomParams & {
+type DeviceRoomModuleProps = RoomParams & {
   dark: boolean;
-  onExitFlat: () => void;
 };
 
 function DeviceRoomModule({
   dark,
-  mode,
+  walkTarget,
   exploded,
-  tilt,
   depth,
   explodeStep,
-  onExitFlat,
-}: Omit<DeviceRoomFrameProps, "muted">) {
+  onWalkChange,
+}: DeviceRoomModuleProps) {
   const frameRef = useRef<HTMLDivElement>(null);
-  const rigRef = useRef<HTMLDivElement>(null);
+  const portalRef = useRef<HTMLDivElement>(null);
+  const cameraRef = useRef<HTMLDivElement>(null);
+  const doorwayRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const sliderRef = useRef<HTMLDivElement>(null);
   const sliderLabelId = useId();
@@ -66,57 +72,133 @@ function DeviceRoomModule({
   const [armed, setArmed] = useState(true);
   const [held, setHeld] = useState(false);
   const [keyPressed, setKeyPressed] = useState(false);
-  const [settledFlat, setSettledFlat] = useState(mode === "flat");
+  const [settledInside, setSettledInside] = useState(walkTarget >= 0.999);
   const dragPointer = useRef<number | null>(null);
   const lastBucket = useRef(Math.floor(64 / 10));
-  const progressRef = useRef(mode === "room" ? 1 : 0);
 
-  /* Apply tilt angles directly to the rig CSS vars so the spring never triggers per-frame React renders. */
-  const writeTilt = useCallback(
-    (progress: number, tiltDeg: number) => {
-      const rig = rigRef.current;
-      if (!rig) return;
-      rig.style.setProperty("--dr-tilt-x", `${(tiltDeg * progress).toFixed(3)}deg`);
-      rig.style.setProperty("--dr-tilt-z", `${(-tiltDeg * 0.62 * progress).toFixed(3)}deg`);
-    },
-    [],
-  );
+  /* Imperative camera & mouse-look refs so spring frames never trigger React re-renders. */
+  const walkRef = useRef(walkTarget);
+  const lookTargetRef = useRef({ x: 0, y: 0 });
+  const lookCurrentRef = useRef({ x: 0, y: 0 });
+  const walkTargetRef = useRef(walkTarget);
+  walkTargetRef.current = walkTarget;
 
-  /* Animate Room <-> Step In on the expressive spring, then clear to transform:none once settled flat. */
-  useEffect(() => {
-    const target = mode === "room" ? 1 : 0;
-    const prefersReduced =
+  const isReducedMotion = useCallback(
+    () =>
       Boolean(reduced) ||
       (typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches) ||
-      ("duration" in expressive && expressive.duration === 0);
-    if (prefersReduced) {
-      progressRef.current = target;
-      writeTilt(target, tilt);
-      setSettledFlat(mode === "flat");
+      ("duration" in expressive && expressive.duration === 0),
+    [reduced, expressive],
+  );
+
+  const writeCamera = useCallback((w: number, lookX: number, lookY: number) => {
+    const cam = cameraRef.current;
+    if (!cam) return;
+    const z = CAM_OUT + (CAM_IN - CAM_OUT) * w;
+    const dampen = Math.max(0, 1 - w);
+    cam.style.setProperty("--dr-cam-z", `${z.toFixed(2)}px`);
+    cam.style.setProperty("--dr-look-x", `${(lookX * dampen).toFixed(3)}deg`);
+    cam.style.setProperty("--dr-look-y", `${(lookY * dampen).toFixed(3)}deg`);
+    if (doorwayRef.current) {
+      doorwayRef.current.dataset.passed = z >= DOOR_PASS_Z ? "true" : "false";
+    }
+  }, []);
+
+  /* Smoothly animate camera Z when walkTarget changes; clear to transform:none once settled at 100% inside. */
+  useEffect(() => {
+    const wantsInside = walkTarget >= 0.999 && !exploded;
+    if (isReducedMotion()) {
+      walkRef.current = walkTarget;
+      lookCurrentRef.current = { x: 0, y: 0 };
+      writeCamera(walkTarget, 0, 0);
+      setSettledInside(wantsInside);
       return;
     }
-    if (mode === "room") {
-      setSettledFlat(false);
+    if (!wantsInside) {
+      setSettledInside(false);
     }
-    const ctrl = animate(progressRef.current, target, {
+    const ctrl = animate(walkRef.current * 100, walkTarget * 100, {
       ...expressive,
+      restDelta: 0.15,
+      restSpeed: 0.5,
       onUpdate: (v) => {
-        progressRef.current = v;
-        writeTilt(v, tilt);
+        const w = v / 100;
+        walkRef.current = w;
+        writeCamera(w, lookCurrentRef.current.x, lookCurrentRef.current.y);
       },
       onComplete: () => {
-        progressRef.current = target;
-        writeTilt(target, tilt);
-        if (mode === "flat") setSettledFlat(true);
+        walkRef.current = walkTarget;
+        if (wantsInside) {
+          lookCurrentRef.current = { x: 0, y: 0 };
+          writeCamera(1, 0, 0);
+          setSettledInside(true);
+        } else {
+          writeCamera(walkTarget, lookCurrentRef.current.x, lookCurrentRef.current.y);
+        }
       },
     });
     return () => ctrl.stop();
-  }, [mode, reduced, expressive, tilt, writeTilt]);
+  }, [walkTarget, exploded, expressive, isReducedMotion, writeCamera]);
 
-  /* Live updates to the Tilt slider while in Room mode update the rig immediately. */
+  /* Gentle mouse-look parallax smoothing while outside the console (paused when settled inside or reduced motion). */
   useEffect(() => {
-    if (mode === "room" && !settledFlat) writeTilt(progressRef.current, tilt);
-  }, [tilt, mode, settledFlat, writeTilt]);
+    if (settledInside) return;
+    let raf = 0;
+    const step = () => {
+      raf = 0;
+      if (isReducedMotion()) return;
+      const cur = lookCurrentRef.current;
+      const tgt = lookTargetRef.current;
+      const dx = tgt.x - cur.x;
+      const dy = tgt.y - cur.y;
+      if (Math.abs(dx) > 0.01 || Math.abs(dy) > 0.01) {
+        cur.x += dx * 0.14;
+        cur.y += dy * 0.14;
+        writeCamera(walkRef.current, cur.x, cur.y);
+        raf = requestAnimationFrame(step);
+      }
+    };
+    const portal = portalRef.current;
+    if (!portal) return;
+    const onMove = (e: globalThis.PointerEvent) => {
+      if (e.pointerType !== "mouse" || isReducedMotion()) return;
+      const r = portal.getBoundingClientRect();
+      if (!r.width || !r.height) return;
+      const nx = clamp(((e.clientX - r.left) / r.width) * 2 - 1, -1, 1);
+      const ny = clamp(((e.clientY - r.top) / r.height) * 2 - 1, -1, 1);
+      lookTargetRef.current = { x: -ny * 3.5, y: nx * 5.5 };
+      if (!raf) raf = requestAnimationFrame(step);
+    };
+    const onLeave = () => {
+      lookTargetRef.current = { x: 0, y: 0 };
+      if (!raf) raf = requestAnimationFrame(step);
+    };
+    portal.addEventListener("pointermove", onMove);
+    portal.addEventListener("pointerleave", onLeave);
+    return () => {
+      portal.removeEventListener("pointermove", onMove);
+      portal.removeEventListener("pointerleave", onLeave);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, [settledInside, isReducedMotion, writeCamera]);
+
+  /* Scroll over the portal walks forward/backward smoothly along Z (Ctrl/⌘ + wheel passes through to #canvas zoom). */
+  useEffect(() => {
+    const portal = portalRef.current;
+    if (!portal) return;
+    const onWheel = (e: globalThis.WheelEvent) => {
+      if (e.ctrlKey || e.metaKey) return;
+      e.preventDefault();
+      e.stopPropagation();
+      const unit = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? 400 : 1;
+      const dy = e.deltaY * unit;
+      /* Scrolling down / forward walks into the room; scrolling up / back walks out toward the doorway. */
+      const next = clamp(walkTargetRef.current + dy / 520, 0, 1);
+      onWalkChange(Math.round(next * 100) / 100);
+    };
+    portal.addEventListener("wheel", onWheel, { passive: false });
+    return () => portal.removeEventListener("wheel", onWheel);
+  }, [onWalkChange]);
 
   const updateGain = useCallback(
     (next: number, playNotch: boolean) => {
@@ -188,12 +270,20 @@ function DeviceRoomModule({
   };
 
   const onModuleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
-    /* Escape leaves Step In only while focus is inside this module (never a window-level listener). */
-    if (e.key === "Escape" && mode === "flat") {
+    /* Escape walks back out to the doorway only while focus is inside this module (never a window listener). */
+    if (e.key === "Escape" && walkTarget > 0) {
       e.preventDefault();
       e.stopPropagation();
-      onExitFlat();
+      onWalkChange(0);
     }
+  };
+
+  const onPortalBackgroundClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    /* Clicking empty room/doorway space while standing outside walks straight into the room. */
+    if (walkTarget >= 0.85) return;
+    const target = e.target as Element | null;
+    if (target?.closest('[role="slider"], [role="switch"], button, .dr-slider-track')) return;
+    onWalkChange(1);
   };
 
   const toggleArmed = () => {
@@ -201,12 +291,12 @@ function DeviceRoomModule({
     play("switch", { root: frameRef.current });
   };
 
-  const isFlat = mode === "flat";
-  const activeExplode = exploded && !settledFlat ? explodeStep : 0;
+  const activeExplode = exploded && !settledInside ? explodeStep : 0;
   const formattedGain = String(gain).padStart(3, "0");
   const statusWord = armed ? "ARMED" : "STANDBY";
+  const walkPct = Math.round(walkTarget * 100);
 
-  const rigVars = {
+  const consoleVars = {
     "--dr-depth": `${depth}px`,
     "--dr-explode": `${activeExplode}px`,
     "--dr-cap-lift": `${Math.max(4, Math.round(depth * 0.45))}px`,
@@ -229,163 +319,190 @@ function DeviceRoomModule({
     >
       <div className="flex items-center justify-between gap-3">
         <span className="text-caption font-label tracking-(--label-tracking) uppercase text-fg-subtle">
-          {dark ? "Device · Dark" : "Device · Light"}
+          {dark ? "Room 01 · Device Dark" : "Room 01 · Device Light"}
         </span>
-        <span className="text-caption text-fg-subtle">
-          {settledFlat ? "0° flat · transform: none" : isFlat ? "Stepping in…" : exploded ? `Room · ${tilt}° · Exploded` : `Room · ${tilt}°`}
+        <span className="text-caption tabular-nums text-fg-subtle">
+          {settledInside
+            ? "Inside · 100% · transform: none"
+            : walkPct === 0
+              ? "Doorway · scroll or click to walk in"
+              : `Walking in · ${walkPct}%`}
         </span>
       </div>
 
-      {/* 3D Perspective Stage */}
-      <div className="dr-stage" data-settled-flat={settledFlat ? "true" : "false"}>
+      {/* First-person 3D Portal Viewport */}
+      <div
+        ref={portalRef}
+        className="dr-portal"
+        data-settled-inside={settledInside ? "true" : "false"}
+        onClick={onPortalBackgroundClick}
+      >
         <div
-          ref={rigRef}
-          className="dr-rig"
-          data-flat={isFlat ? "true" : "false"}
-          data-settled-flat={settledFlat ? "true" : "false"}
-          style={rigVars}
+          ref={cameraRef}
+          className="dr-camera"
+          data-settled-inside={settledInside ? "true" : "false"}
         >
-          {/* Grounded studio desk shadow */}
-          <div aria-hidden="true" className="dr-plinth-shadow" />
+          {/* Architectural room interior (hidden cleanly when settled 100% flat inside) */}
+          <div aria-hidden="true" className="dr-arch dr-wall dr-wall-left" />
+          <div aria-hidden="true" className="dr-arch dr-wall dr-wall-right" />
+          <div aria-hidden="true" className="dr-arch dr-wall dr-wall-ceiling">
+            <div className="dr-ceiling-fixture" />
+          </div>
+          <div aria-hidden="true" className="dr-arch dr-wall dr-wall-floor" />
 
-          {/* Stratum 0: Machined outer chassis + laminated CNC extrusion */}
-          <div data-part="frame" className="dr-chassis">
-            {SLICES.map((t, idx) => (
-              <div
-                key={idx}
-                aria-hidden="true"
-                className="dr-slice"
-                style={{ "--dr-slice-t": t, "--dr-slice-shade": Math.round(8 + t * 24) } as CSSProperties}
-              />
-            ))}
-
-            {/* Stratum 1: Brushed aluminium face plate */}
-            <div data-part="plate" className="dr-plate">
-              <div className="flex items-center justify-between gap-2">
-                <span className="text-caption font-label tracking-(--label-tracking) uppercase text-fg-muted">
-                  CH-01 · GAIN
-                </span>
-                <span className="inline-flex items-center gap-1.5 text-caption font-label tracking-(--label-tracking) uppercase text-fg-subtle">
-                  <span aria-hidden="true" data-part="light" className="dr-lamp" data-lit={armed ? "true" : "false"} />
-                  {statusWord}
-                </span>
-              </div>
-
-              {/* Stratum 3: Dark LCD glass behind bezel */}
-              <div data-part="bezel" className="dr-lcd-bezel">
-                <div data-part="lcd" className="dr-lcd-glass" aria-live="polite">
-                  <div className="grid gap-0.5">
-                    <span className="text-caption tracking-(--label-tracking) uppercase text-(--field-ink-subtle)">
-                      OUTPUT LEVEL
-                    </span>
-                    <span className="text-figure font-title tabular-nums">
-                      {formattedGain}%
-                    </span>
-                  </div>
-                  <span
-                    data-part="chip"
-                    className="rounded-control bg-(--chip) px-2 py-1 text-caption font-label tracking-(--label-tracking) uppercase text-(--chip-ink)"
-                  >
-                    {armed ? "LIVE" : "SAFE"}
-                  </span>
-                </div>
-              </div>
-
-              {/* Stratum 2: Recessed fader slot + raised physical cap (Stratum 4) */}
-              <div className="dr-stratum-well grid gap-2">
-                <div className="flex items-center justify-between text-caption font-label tracking-(--label-tracking) uppercase text-fg-subtle">
-                  <span id={sliderLabelId}>FADER</span>
-                  <span className="tabular-nums text-fg-muted">{formattedGain} / 100</span>
-                </div>
+          {/* Back wall (z = -460) holding the live, wall-mounted Device console */}
+          <div className="dr-back-wall">
+            <div data-part="frame" className="dr-chassis" style={consoleVars}>
+              <div aria-hidden="true" className="dr-wall-shadow" />
+              {SLICES.map((t, idx) => (
                 <div
-                  ref={trackRef}
-                  className="dr-slider-track"
-                  data-held={held ? "true" : "false"}
-                  onPointerDown={onTrackPointerDown}
-                  onPointerMove={onTrackPointerMove}
-                  onPointerUp={endTrackDrag}
-                  onPointerCancel={endTrackDrag}
-                  onLostPointerCapture={endTrackDrag}
-                >
-                  {/* Recessed slot (leaf overflow-hidden only) */}
-                  <span aria-hidden="true" data-part="slot" className="dr-slot">
-                    <span className="dr-slot-fill" style={{ width: `${gain}%` }} />
+                  key={idx}
+                  aria-hidden="true"
+                  className="dr-slice"
+                  style={{ "--dr-slice-t": t, "--dr-slice-shade": Math.round(10 + t * 26) } as CSSProperties}
+                />
+              ))}
+
+              {/* Stratum 1: Brushed aluminium plate */}
+              <div data-part="plate" className="dr-plate">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-caption font-label tracking-(--label-tracking) uppercase text-fg-muted">
+                    CH-01 · GAIN
                   </span>
-                  {/* Engraved detent ticks */}
-                  {NOTCHES.map((n) => (
+                  <span className="inline-flex items-center gap-1.5 text-caption font-label tracking-(--label-tracking) uppercase text-fg-subtle">
+                    <span aria-hidden="true" data-part="light" className="dr-lamp" data-lit={armed ? "true" : "false"} />
+                    {statusWord}
+                  </span>
+                </div>
+
+                {/* Stratum 3: Dark LCD glass behind bezel */}
+                <div data-part="bezel" className="dr-lcd-bezel">
+                  <div data-part="lcd" className="dr-lcd-glass" aria-live="polite">
+                    <div className="grid gap-0.5">
+                      <span className="text-caption tracking-(--label-tracking) uppercase text-(--field-ink-subtle)">
+                        OUTPUT LEVEL
+                      </span>
+                      <span className="text-figure font-title tabular-nums">
+                        {formattedGain}%
+                      </span>
+                    </div>
                     <span
-                      key={n}
-                      aria-hidden="true"
-                      className="dr-tick"
-                      data-major={n === 0 || n === 50 || n === 100 ? "true" : "false"}
-                      style={{ left: `calc(${TRACK_PAD}px + (100% - ${TRACK_PAD * 2}px) * ${n / 100})` }}
-                    />
-                  ))}
-                  {/* Physical raised cap — real role="slider" focusable control */}
-                  <div
-                    ref={sliderRef}
-                    role="slider"
-                    tabIndex={0}
-                    aria-labelledby={sliderLabelId}
-                    aria-valuemin={0}
-                    aria-valuemax={100}
-                    aria-valuenow={gain}
-                    aria-valuetext={`${gain} percent`}
-                    data-part="cap"
-                    data-held={held ? "true" : "false"}
-                    onKeyDown={onSliderKeyDown}
-                    className="dr-cap-wrap"
-                    style={{ left: capLeft }}
-                  >
-                    <span aria-hidden="true" className="dr-cap-skirt" style={{ "--dr-cap-skirt-z": "-2px" } as CSSProperties} />
-                    <span aria-hidden="true" className="dr-cap-skirt" style={{ "--dr-cap-skirt-z": "-4px" } as CSSProperties} />
-                    <span className="dr-cap-face">
-                      <span aria-hidden="true" className="dr-cap-grip" />
+                      data-part="chip"
+                      className="rounded-control bg-(--chip) px-2 py-1 text-caption font-label tracking-(--label-tracking) uppercase text-(--chip-ink)"
+                    >
+                      {armed ? "LIVE" : "SAFE"}
                     </span>
                   </div>
                 </div>
-              </div>
 
-              {/* Stratum 2 + 4: Recessed Switch well + raised toggle key */}
-              <div className="dr-stratum-well flex items-center justify-between gap-3 pt-1">
-                <div className="grid gap-0.5">
-                  <span id={switchLabelId} className="text-caption font-label tracking-(--label-tracking) uppercase text-fg-muted">
-                    BUS ARM
-                  </span>
-                  <span className="text-caption text-fg-subtle">
-                    {armed ? "Routing active" : "Output muted"}
-                  </span>
-                </div>
-                <button
-                  type="button"
-                  role="switch"
-                  aria-checked={armed}
-                  aria-labelledby={switchLabelId}
-                  data-part="well"
-                  className="dr-switch-btn"
-                  onPointerDown={() => {
-                    setKeyPressed(true);
-                    play("key-down", { root: frameRef.current });
-                  }}
-                  onPointerUp={() => setKeyPressed(false)}
-                  onPointerLeave={() => setKeyPressed(false)}
-                  onPointerCancel={() => setKeyPressed(false)}
-                  onClick={toggleArmed}
-                >
-                  <span
-                    aria-hidden="true"
-                    data-part="key"
-                    data-pressed={keyPressed ? "true" : "false"}
-                    className="dr-switch-key"
-                    style={switchVars}
+                {/* Stratum 2 + 4: Recessed fader slot + raised physical cap */}
+                <div className="dr-stratum-well grid gap-2">
+                  <div className="flex items-center justify-between text-caption font-label tracking-(--label-tracking) uppercase text-fg-subtle">
+                    <span id={sliderLabelId}>FADER</span>
+                    <span className="tabular-nums text-fg-muted">{formattedGain} / 100</span>
+                  </div>
+                  <div
+                    ref={trackRef}
+                    className="dr-slider-track"
+                    data-held={held ? "true" : "false"}
+                    onPointerDown={onTrackPointerDown}
+                    onPointerMove={onTrackPointerMove}
+                    onPointerUp={endTrackDrag}
+                    onPointerCancel={endTrackDrag}
+                    onLostPointerCapture={endTrackDrag}
                   >
-                    <span className="dr-key-skirt" />
-                    <span className="h-3 w-px bg-[color-mix(in_oklab,var(--fg)_28%,transparent)]" />
-                    <span className="h-3 w-px bg-[color-mix(in_oklab,var(--fg)_28%,transparent)]" />
-                  </span>
-                </button>
+                    <span aria-hidden="true" data-part="slot" className="dr-slot">
+                      <span className="dr-slot-fill" style={{ width: `${gain}%` }} />
+                    </span>
+                    {NOTCHES.map((n) => (
+                      <span
+                        key={n}
+                        aria-hidden="true"
+                        className="dr-tick"
+                        data-major={n === 0 || n === 50 || n === 100 ? "true" : "false"}
+                        style={{ left: `calc(${TRACK_PAD}px + (100% - ${TRACK_PAD * 2}px) * ${n / 100})` }}
+                      />
+                    ))}
+                    <div
+                      ref={sliderRef}
+                      role="slider"
+                      tabIndex={0}
+                      aria-labelledby={sliderLabelId}
+                      aria-valuemin={0}
+                      aria-valuemax={100}
+                      aria-valuenow={gain}
+                      aria-valuetext={`${gain} percent`}
+                      data-part="cap"
+                      data-held={held ? "true" : "false"}
+                      onKeyDown={onSliderKeyDown}
+                      className="dr-cap-wrap"
+                      style={{ left: capLeft }}
+                    >
+                      <span aria-hidden="true" className="dr-cap-skirt" style={{ "--dr-cap-skirt-z": "-2px" } as CSSProperties} />
+                      <span aria-hidden="true" className="dr-cap-skirt" style={{ "--dr-cap-skirt-z": "-4px" } as CSSProperties} />
+                      <span className="dr-cap-face">
+                        <span aria-hidden="true" className="dr-cap-grip" />
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Stratum 2 + 4: Recessed Switch well + raised toggle key */}
+                <div className="dr-stratum-well flex items-center justify-between gap-3 pt-1">
+                  <div className="grid gap-0.5">
+                    <span id={switchLabelId} className="text-caption font-label tracking-(--label-tracking) uppercase text-fg-muted">
+                      BUS ARM
+                    </span>
+                    <span className="text-caption text-fg-subtle">
+                      {armed ? "Routing active" : "Output muted"}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    role="switch"
+                    aria-checked={armed}
+                    aria-labelledby={switchLabelId}
+                    data-part="well"
+                    className="dr-switch-btn"
+                    onPointerDown={() => {
+                      setKeyPressed(true);
+                      play("key-down", { root: frameRef.current });
+                    }}
+                    onPointerUp={() => setKeyPressed(false)}
+                    onPointerLeave={() => setKeyPressed(false)}
+                    onPointerCancel={() => setKeyPressed(false)}
+                    onClick={toggleArmed}
+                  >
+                    <span
+                      aria-hidden="true"
+                      data-part="key"
+                      data-pressed={keyPressed ? "true" : "false"}
+                      className="dr-switch-key"
+                      style={switchVars}
+                    >
+                      <span className="dr-key-skirt" />
+                      <span className="h-3 w-px bg-[color-mix(in_oklab,var(--fg)_28%,transparent)]" />
+                      <span className="h-3 w-px bg-[color-mix(in_oklab,var(--fg)_28%,transparent)]" />
+                    </span>
+                  </button>
+                </div>
               </div>
             </div>
+          </div>
+
+          {/* Foreground architectural doorway surround (z = 0) — sweeps past the camera as you walk in */}
+          <div ref={doorwayRef} aria-hidden="true" className="dr-arch dr-doorway" data-passed="false">
+            <div className="dr-door-jamb dr-door-top">
+              <span className="text-caption font-label tracking-(--label-tracking) uppercase text-fg-muted">
+                ROOM 01 · DEVICE LAB
+              </span>
+              <span className="text-caption font-label tracking-(--label-tracking) uppercase text-fg-subtle">
+                {statusWord} · {formattedGain}%
+              </span>
+            </div>
+            <div className="dr-door-jamb dr-door-left" />
+            <div className="dr-door-jamb dr-door-right" />
+            <div className="dr-door-jamb dr-door-bottom" />
           </div>
         </div>
       </div>
@@ -397,7 +514,7 @@ function DeviceRoomModule({
             2D reference · native transform: none
           </span>
           <span className="text-caption text-fg-muted">
-            CH-01 · GAIN · compare against Step in at 100% zoom (0 key)
+            CH-01 · GAIN · compare once walked 100% inside (0 key)
           </span>
         </div>
         <div className="inline-flex items-center gap-3 rounded-control bg-field px-3 py-1.5 font-field text-fg shadow-(--field-shade)">
@@ -413,19 +530,18 @@ function DeviceRoomModule({
 
 /**
  * Top-level `#canvas` item for Plan 026 Phase 1a:
- * - Explicit Room / Step in and Explode controls
- * - Strictly 3 room sliders (Tilt, Extrusion, Explode spacing)
- * - Paired Light and Dark Device frames, each properly scoped with MaterialProvider + lookAttributes
+ * - First-person doorway portal into Device's room (Light & Dark)
+ * - Scroll or click to walk forward/back along Z, with subtle mouse-look parallax
+ * - Strictly 3 room sliders (Walk depth, Extrusion, Explode spacing) + quick depth buttons
  */
 export function DeviceRoomPreview() {
-  const [mode, setMode] = useState<"room" | "flat">("room");
+  const [walkTarget, setWalkTarget] = useState(0);
   const [exploded, setExploded] = useState(false);
-  const [tilt, setTilt] = useState(38);
   const [depth, setDepth] = useState(14);
   const [explodeStep, setExplodeStep] = useState(20);
   const [muted, setMuted] = useState(false);
 
-  const tiltId = useId();
+  const walkId = useId();
   const depthId = useId();
   const explodeId = useId();
 
@@ -435,31 +551,50 @@ export function DeviceRoomPreview() {
   const btnIdle = "bg-surface-2 text-fg-muted shadow-[inset_0_0_0_1px_var(--line)] hover:text-fg";
   const btnOn = "bg-fg text-canvas";
 
+  const walkPct = Math.round(walkTarget * 100);
+
   return (
     <div className="grid gap-6">
-      {/* Compact header bar: mode toggles + strictly 3 room controls (Tilt, Extrusion, Explode spacing) */}
+      {/* Compact header bar: doorway/walk-in controls + strictly 3 room sliders */}
       <div className="flex flex-wrap items-center justify-between gap-4 rounded-surface bg-surface-2 p-4 shadow-[inset_0_0_0_1px_var(--line)]">
         <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
-            aria-pressed={mode === "room"}
-            onClick={() => setMode("room")}
-            className={`${btnBase} ${mode === "room" ? btnOn : btnIdle}`}
+            aria-pressed={walkPct === 0}
+            onClick={() => setWalkTarget(0)}
+            className={`${btnBase} ${walkPct === 0 ? btnOn : btnIdle}`}
           >
-            Room
+            Doorway
           </button>
           <button
             type="button"
-            aria-pressed={mode === "flat"}
-            onClick={() => setMode("flat")}
-            className={`${btnBase} ${mode === "flat" ? btnOn : btnIdle}`}
+            aria-pressed={walkPct > 0 && walkPct < 100}
+            onClick={() => setWalkTarget(0.55)}
+            className={`${btnBase} ${walkPct > 0 && walkPct < 100 ? btnOn : btnIdle}`}
           >
-            Step in (0°)
+            Mid-room
+          </button>
+          <button
+            type="button"
+            aria-pressed={walkPct === 100}
+            onClick={() => {
+              setExploded(false);
+              setWalkTarget(1);
+            }}
+            className={`${btnBase} ${walkPct === 100 ? btnOn : btnIdle}`}
+          >
+            Walk in (2D)
           </button>
           <button
             type="button"
             aria-pressed={exploded}
-            onClick={() => setExploded((e) => !e)}
+            onClick={() => {
+              setExploded((e) => {
+                const next = !e;
+                if (next && walkTarget >= 0.99) setWalkTarget(0.55);
+                return next;
+              });
+            }}
             className={`${btnBase} ${exploded ? btnOn : btnIdle}`}
           >
             Explode
@@ -475,19 +610,19 @@ export function DeviceRoomPreview() {
         </div>
 
         <div className="flex flex-wrap items-center gap-6">
-          <label htmlFor={tiltId} className="flex items-center gap-2 text-caption text-fg-muted">
-            <span className="font-label">Tilt</span>
+          <label htmlFor={walkId} className="flex items-center gap-2 text-caption text-fg-muted">
+            <span className="font-label">Walk</span>
             <input
-              id={tiltId}
+              id={walkId}
               type="range"
-              min={20}
-              max={52}
+              min={0}
+              max={100}
               step={1}
-              value={tilt}
-              onChange={(e) => setTilt(Number(e.target.value))}
-              className="w-24 accent-fg"
+              value={walkPct}
+              onChange={(e) => setWalkTarget(Number(e.target.value) / 100)}
+              className="w-28 accent-fg"
             />
-            <span className="w-8 tabular-nums text-fg-subtle">{tilt}°</span>
+            <span className="w-9 tabular-nums text-fg-subtle">{walkPct}%</span>
           </label>
           <label htmlFor={depthId} className="flex items-center gap-2 text-caption text-fg-muted">
             <span className="font-label">Extrusion</span>
@@ -520,27 +655,25 @@ export function DeviceRoomPreview() {
         </div>
       </div>
 
-      {/* Paired Light & Dark Device rooms */}
+      {/* Paired Light & Dark Device portals */}
       <MaterialProvider material="device">
         <SoundProvider muted={muted}>
           <div className="grid gap-6 lg:grid-cols-2">
             <DeviceRoomModule
               dark={false}
-              mode={mode}
+              walkTarget={walkTarget}
               exploded={exploded}
-              tilt={tilt}
               depth={depth}
               explodeStep={explodeStep}
-              onExitFlat={() => setMode("room")}
+              onWalkChange={setWalkTarget}
             />
             <DeviceRoomModule
               dark={true}
-              mode={mode}
+              walkTarget={walkTarget}
               exploded={exploded}
-              tilt={tilt}
               depth={depth}
               explodeStep={explodeStep}
-              onExitFlat={() => setMode("room")}
+              onWalkChange={setWalkTarget}
             />
           </div>
         </SoundProvider>

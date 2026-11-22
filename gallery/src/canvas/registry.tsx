@@ -287,7 +287,7 @@ const FEEL = { x: DATA.x + 5 * (DATA.width + DATA.gap) + 120, y: DATA.y, width: 
 const flatRowY =(row: number) => FLAT_Y + FLAT.together + FLAT.gap + FLAT.heights.slice(0, row).reduce((sum, h) => sum + h + FLAT.gap, 0);
 const callRowY = (row: number) => CALLS_Y + CALL.heights.slice(0, row).reduce((sum, h) => sum + h + CALL.gap, 0);
 export const ITEMS: CanvasItem[] = [
-  { id: "device-room", name: "Device · step into the room (plan 026, phase 1a)", x: 0, y: -880, width: 1240, height: 740, render: () => <DeviceRoomPreview /> },
+  { id: "device-room", name: "Device · walk into the room (plan 026, phase 1a)", x: 0, y: -940, width: 1320, height: 800, render: () => <DeviceRoomPreview /> },
   { id: "blues", name: "Accent · six blues and today", x: 0, y: 0, width: 1040, height: 380, render: () => <AccentBlues /> },
   { id: "material", name: "Material · flat, raised, sunken", x: 1120, y: 0, width: 680, height: 200, render: () => <MaterialDepths /> },
 
