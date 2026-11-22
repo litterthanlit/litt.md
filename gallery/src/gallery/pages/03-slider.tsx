@@ -248,8 +248,8 @@ export const study: PageStudy = {
         ),
       },
       replay: {
-        label: "Replay the glide",
-        caption: "Watch the cap glide from −24 dB up to home at 0 dB while the level on the glass follows.",
+        label: "Replay the move",
+        caption: "Watch the key move from −24 dB up to home at 0 dB while the level on the glass follows.",
         run: () => <ReplayGlide slider={monitorSlider} from={-24} to={0} />,
       },
     },

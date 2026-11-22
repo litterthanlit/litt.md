@@ -125,8 +125,6 @@ const KNOWN = [
     k(`${w}/components`, ["glass"], NAME + "; the gallery view lists it by name" + (w === "rack" ? ", and the clip launcher's preset Glass Pad is a name in Rack's demo (rack-fixes.md, step 8)" : "")),
   ]),
   ...["device", "rack", "heat"].map((w) => k(`${w}/tune`, ["pill"], TUNE)),
-  k("device/about", ["pill"], "About's foundations come from Device's row in look.ts, which device-fixes.md step 1 rewrites"),
-  k("rack/inspector", ["floats"], "the lead stage is the toast tuner (Floats, A toast floats), which rack-fixes.md step 4 replaces with a device's parameters"),
   /* Plain's words are Nick's (litt-principles.md, Plain: nothing changes without asking): each page below waits on its
      row in the draft, plans/audits/plain-words.md, and names only the words that row replaces, so a new word on a Plain
      page, or another world named on one the draft does not cover, fails. When a row lands, its entry goes. */
