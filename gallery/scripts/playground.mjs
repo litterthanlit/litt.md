@@ -318,9 +318,12 @@ const setOn = (pg) => pg.evaluate((F) => [...document.querySelectorAll(`${F} [da
 const PARTS = pageMetas().filter((p) => p.group && p.group !== "Blocks" && p.group !== "Worlds" && !p.world);
 const partsIn = (world) => PARTS.filter((p) => !p.worlds || p.worlds.includes(world)).map((p) => p.id);
 
-/* Each world's set, read from play-object/takes.ts, so the list lives once. --self-test adds a part Heat does not have. */
+/* Each world's set, read from SET in play-object/takes.ts, so the list lives once: SET's block alone, since BAR beside
+   it lists worlds the same way (plans/027). --self-test adds a part Heat does not have. */
+const SET_BLOCK = /\nconst SET\b[\s\S]*?\n\};/.exec(fs.readFileSync(path.join(here, "..", "src", "gallery", "play-object", "takes.ts"), "utf8"))?.[0];
+if (!SET_BLOCK) throw new Error("playground: no `const SET` in play-object/takes.ts");
 const SETS = Object.fromEntries(
-  [...fs.readFileSync(path.join(here, "..", "src", "gallery", "play-object", "takes.ts"), "utf8").matchAll(/^\s+(\w+): \[([^\]]*)\],$/gm)].map((m) => [m[1], [...m[2].matchAll(/"([^"]+)"/g)].map((x) => x[1])]),
+  [...SET_BLOCK.matchAll(/^\s+(\w+): \[([^\]]*)\],$/gm)].map((m) => [m[1], [...m[2].matchAll(/"([^"]+)"/g)].map((x) => x[1])]),
 );
 const shadowed = pageMetas().filter((p) => ["components", "about", "take"].includes(p.id)).map((p) => p.id);
 claim("no page id is components, about or take, the world's own addresses", shadowed.length ? `pages named ${shadowed.join(", ")}` : null);
