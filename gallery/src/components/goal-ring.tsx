@@ -71,8 +71,11 @@ export function GoalRing({
   }
 
   return (
-    <div className={"inline-grid justify-items-center gap-4 text-fg " + className}>
-      {/* Centered ring holding the single 40px standing figure */}
+    <div
+      data-part="paper"
+      className={"litt-paper inline-grid justify-items-center gap-4 rounded-surface bg-surface-1 p-6 text-fg forced-colors:border " + className}
+    >
+      {/* Centered ring holding the single standing figure */}
       <div
         role="progressbar"
         aria-labelledby={headingId}
@@ -124,7 +127,7 @@ export function GoalRing({
           >
             {current}
           </motion.span>
-          <span data-part="lettering" className="text-caption tabular-nums text-fg-subtle">
+          <span data-part="lettering" className="text-caption font-normal tabular-nums text-fg-subtle">
             / {safeTarget} {unit}
           </span>
         </div>
@@ -138,11 +141,11 @@ export function GoalRing({
         <div className="flex items-center gap-2">
           <button
             type="button"
-            data-part="outline"
+            data-part="circle"
             aria-label={`Decrease ${unit} by 1`}
             disabled={current === 0}
             onClick={() => update(current - 1)}
-            className="litt-target relative grid size-9 cursor-pointer place-items-center rounded-pill text-body font-title text-fg-muted shadow-[inset_0_0_0_1.5px_var(--line-control)] transition-colors duration-(--dur-instant) ease-litt hover:text-fg disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus forced-colors:border"
+            className="litt-target relative grid size-9 cursor-pointer place-items-center rounded-pill bg-block text-body font-title text-fg transition-colors duration-(--dur-instant) ease-litt hover:bg-(--block-hover) disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus forced-colors:border"
           >
             <span aria-hidden="true">−</span>
           </button>

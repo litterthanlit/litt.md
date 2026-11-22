@@ -88,20 +88,23 @@ export function ReadingProgress({
   }
 
   return (
-    <div className={"grid w-full max-w-sm min-w-0 gap-3 text-fg " + className}>
-      {/* Streak-matched typographic header: quiet title over standing 40px figure */}
+    <div
+      data-part="paper"
+      className={"litt-paper grid w-full max-w-sm min-w-0 gap-3 rounded-surface bg-surface-1 p-6 text-fg forced-colors:border " + className}
+    >
+      {/* Quiet title over crisp standing percentage */}
       <header className="grid gap-1">
         <span id={headingId} data-part="lettering" className="truncate text-small text-fg-subtle">
           {title}
         </span>
-        <p className="flex items-baseline gap-2.5 text-fg">
+        <p className="flex items-baseline gap-2 text-fg">
           <motion.span
             key={pct}
             data-part="figure"
             initial={reduced ? false : { scale: 0.92 }}
             animate={{ scale: 1 }}
             transition={spring}
-            className="inline-block origin-left text-figure leading-none tabular-nums"
+            className="inline-block origin-left text-figure tabular-nums"
           >
             {pct}%
           </motion.span>
@@ -147,7 +150,7 @@ export function ReadingProgress({
       </div>
 
       {/* Single quiet line naming the active chapter */}
-      <p data-part="lettering" className="text-caption text-fg-subtle">
+      <p data-part="lettering" className="text-caption font-normal text-fg-subtle">
         <span className="font-title text-fg">{activeChapter?.title ?? `Chapter ${index + 1}`}</span>
         {" · "}
         <span className="tabular-nums">
