@@ -4,16 +4,16 @@ import { Page, Stage, TryIt, type PageDocs, type PageMeta } from "../kit";
 export const meta: PageMeta = {
   id: "context-budget",
   title: "Context budget",
-  lede: "A context window picker showing each source's share in color with frameless dot tags.",
+  lede: "A context window picker: one bar for the share used, and the sources to tap in or out.",
   order: 1.05,
   group: "Agents",
   verbs: ["select", "watch"],
   worlds: ["flat"],
   summary:
-    "How much of a writing assistant's context window is full, framed on a white paper card (or contrasting ink card) sitting on Flat's grey ground: a crisp percentage readout, a proportional bar, and frameless dot tags you tap to include or exclude. It belongs to Flat.",
+    "How much of a writing assistant's context window is full, on a white paper: the share used as one figure and one ink bar, and the sources as pills you tap to attach or leave out. It belongs to Flat.",
   tiers: ["instant", "expressive"],
   mechanism:
-    "The card sits as white paper (or ink) on the grey ground with no outline. Each source sits cleanly on the paper with a round dot and its token count, adding its share to the proportional meter; excluding a source turns its dot to an outline and writes Off beside its name. Toggling any source bounces the percentage readout and reshapes the bar segments on Flat's expressive spring, and announces the updated token total once.",
+    "Each attached source is a grey pill with its name and token count, adding its share to the ink bar; a source left out is a bare pill that reads Off. Tapping a pill moves the bar and lifts the figure on Flat's expressive spring and announces the new total once. Nothing moves until a hand taps.",
 };
 
 export const docs: PageDocs = {
@@ -30,19 +30,19 @@ export const docs: PageDocs = {
     "Making token headroom tangible without technical chrome or dense tables.",
   ],
   skip: [
-    "Another world's page. ContextBudget belongs to Flat's grey ground, paper card, crisp standing percentage and frameless dot tags, and needs data-material=\"flat\" on <html>.",
+    "Another world's page. ContextBudget belongs to Flat's grey ground, white paper, standing figure and ink bar, and needs data-material=\"flat\" on <html>.",
     "A single linear upload or download bar. Use Progress.",
-    "A structured key-value telemetry readout. Use Stat.",
+    "A list of named values. Use Stat.",
   ],
   keyboard: [
-    [["Tab"], "Moves across each source tag and the Trim largest or Attach all action."],
-    [["Enter", "Space"], "Attaches or excludes the focused context source and announces the updated token budget."],
+    [["Tab"], "Moves across each source pill and the Trim largest or Attach all button."],
+    [["Enter", "Space"], "Attaches or leaves out the focused source and announces the new token budget."],
   ],
   a11y: [
-    "The proportional bar exposes role=\"meter\" with aria-valuemin, aria-valuemax, aria-valuenow and a spoken aria-valuetext naming percentage and tokens.",
-    "Each source tag is a native button with aria-pressed; excluded items show Off in plain words alongside their hollow dot.",
+    "The bar exposes role=\"meter\" with aria-valuemin, aria-valuemax, aria-valuenow and a spoken aria-valuetext naming percentage and tokens.",
+    "Each source pill is a native button with aria-pressed; a source left out says Off in plain words.",
     "Every toggle and one-tap trim announces the new percentage and token count once in a polite status region.",
-    "Under reduced motion the figure and bar segments jump directly to their new size.",
+    "Under reduced motion the figure and bar jump directly to their new size.",
   ],
 };
 
@@ -51,14 +51,14 @@ function DraftContextDemo() {
 }
 
 const FULL_SOURCES: ContextSource[] = [
-  { id: "brief", label: "Issue 14 brief", tokens: 18000, hue: "sky", included: true },
-  { id: "interviews", label: "Coastal interviews", tokens: 44000, hue: "blue", included: true },
-  { id: "photos", label: "Caption notes", tokens: 26000, hue: "violet", included: true },
-  { id: "edits", label: "Editor thread", tokens: 24000, hue: "bubblegum", included: true },
+  { id: "brief", label: "Issue 14 brief", tokens: 18000, included: true },
+  { id: "interviews", label: "Garden interviews", tokens: 44000, included: true },
+  { id: "photos", label: "Caption notes", tokens: 26000, included: true },
+  { id: "edits", label: "Editor letters", tokens: 24000, included: true },
 ];
 
 function NearLimitDemo() {
-  return <ContextBudget title="Issue 14 research" tone="ink" sources={FULL_SOURCES} capacity={128000} />;
+  return <ContextBudget title="Issue 14 research" sources={FULL_SOURCES} capacity={128000} />;
 }
 
 export default function ContextBudgetPage() {
@@ -71,16 +71,16 @@ export default function ContextBudgetPage() {
       <Stage
         title="Draft context"
         tier="expressive"
-        caption="Framed on white paper with frameless dot tags; tap any source to exclude it or bring the archive back in."
+        caption="Tap any source to leave it out, or bring the archive back in."
         code="DraftContextDemo"
       >
         <DraftContextDemo />
       </Stage>
 
       <Stage
-        title="Ink card"
+        title="Near the limit"
         tier="expressive"
-        caption="Flat's contrasting ink card holds a live context readout with high contrast and no outline."
+        caption="Every source attached and the window nearly full; Trim largest leaves out the biggest one."
         code="NearLimitDemo"
       >
         <NearLimitDemo />
@@ -89,10 +89,9 @@ export default function ContextBudgetPage() {
       <TryIt
         of="ContextBudget"
         component={ContextBudget}
-        props={{ title: "Draft context", tone: "paper", capacity: 128000 }}
+        props={{ title: "Draft context", capacity: 128000 }}
         controls={[
           "title",
-          { name: "tone", options: ["paper", "ink"] },
           { name: "capacity", type: "number", min: 64000, max: 256000, step: 16000 },
         ]}
       />

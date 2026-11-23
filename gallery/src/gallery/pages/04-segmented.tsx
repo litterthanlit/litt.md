@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Button } from "@/components/button";
 import { Segmented } from "@/components/segmented";
 import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 
@@ -6,13 +7,17 @@ export const meta: PageMeta = {
   id: "segmented",
   title: "Segmented control",
   lede: "A short choice in one track.",
-  ledeByWorld: { heat: "A short choice in a row of square cells, the chosen one in brackets." },
+  ledeByWorld: {
+    heat: "A short choice in a row of square cells, the chosen one in brackets.",
+    flat: "A short choice, one pill gliding under your pick.",
+  },
   order: 3.05,
   group: "Selection",
   verbs: ["select"],
   summary:
     "A short choice in one track. Your pick takes the selected face and the stronger ink, and color changes are instant, so the control answers without ever resizing.",
   summaryByWorld: {
+    flat: "A short choice as words in a line, with one pill under the chosen word: white on the grey ground, the grey bubble inside paper. The pill glides to your pick on two springs, where it starts and how wide it is, so it stretches a little as it travels and never bounces, and the chosen word takes the ink at once. Nothing frames it.",
     heat: "A short choice in a row of square cells divided by 1px rules. The chosen cell takes a darker fill, corner brackets and ‹ › around its label at once, and colors change on the instant tier, so the control answers without ever resizing.",
   },
   fun: "Pick another option: the surface springs to it and settles a hair past its mark.",
@@ -22,7 +27,8 @@ export const meta: PageMeta = {
 export const docs: PageDocs = {
   components: ["segmented"],
   exports: ["Segmented"],
-  usage: `import { Segmented } from "@/components/segmented";
+  usage: `import { Button } from "@/components/button";
+import { Segmented } from "@/components/segmented";
 
 const [theme, setTheme] = useState<"system" | "light" | "dark">("system");
 
@@ -571,6 +577,45 @@ function DeployWindowDemo() {
   );
 }
 
+/* ---------- Flat's own: a newsletter's plan picker ---------- */
+
+type Billing = "monthly" | "yearly" | "lifetime";
+
+const PLANS: Record<Billing, { label: string; amount: string; per: string; note: string }> = {
+  monthly: { label: "Monthly", amount: "$9", per: "a month", note: "Billed every month. Stop any time." },
+  yearly: { label: "Yearly", amount: "$84", per: "a year", note: "Two months free, billed once a year." },
+  lifetime: { label: "Lifetime", amount: "$249", per: "once", note: "Yours for good, every future issue." },
+};
+
+/** The choice on the grey ground, where chosen is white, and under it one paper with the price and the one action. */
+function SupporterPlanDemo() {
+  const [billing, setBilling] = useState<Billing>("yearly");
+  const plan = PLANS[billing];
+  return (
+    <div className="grid w-full max-w-sm justify-items-center gap-4">
+      <Segmented
+        legend="Billing period"
+        value={billing}
+        onValueChange={setBilling}
+        options={(Object.keys(PLANS) as Billing[]).map((value) => ({ value, label: PLANS[value].label }))}
+      />
+      <div className="litt-paper grid w-full gap-1 rounded-surface bg-surface-1 p-6">
+        <p className="text-body font-title text-fg">Supporter</p>
+        <p className="mt-1 flex items-baseline gap-2">
+          <span className="text-figure-lg tabular-nums text-fg">{plan.amount}</span>
+          <span className="text-body text-fg-subtle">{plan.per}</span>
+        </p>
+        <p role="status" className="min-h-5 text-small text-fg-subtle">
+          {plan.note}
+        </p>
+        <Button variant="secondary" className="mt-3 w-full">
+          Become a supporter
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 export default function SegmentedPage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -580,6 +625,13 @@ export default function SegmentedPage() {
         caption="The small size, as in a header. The legend is hidden, because the options name the control. The selected surface glides to your pick through transform on the responsive tier, and the text color fades on the instant tier. On a touch screen the segment you hold fills."
         code="ThemeDemo"
         byWorld={{
+          flat: {
+            demo: <SupporterPlanDemo />,
+            title: "Plan picker",
+            code: "SupporterPlanDemo",
+            caption:
+              "A newsletter's plan picker. On the grey ground the chosen word sits in a white pill, which glides to your pick on two springs, where it starts and how wide it is, so it stretches a little between words of different widths and keeps its speed if you change your mind. It never bounces, and the word takes the ink at once. The arrow keys move and pick, and the price on the paper below follows.",
+          },
           press: {
             demo: <DeployWindowDemo />,
             title: "Deploy window",

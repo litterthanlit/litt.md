@@ -22,7 +22,9 @@
  * nothing else), the three radii, zero-offset shadows, no `transition-all`,
  * only transform, opacity and color-family fades, duration and ease classes
  * that pair by tier, no literal timings or easings, no raw or quoted colors, and no touch target (litt-target)
- * without relative, absolute, fixed or sticky in its class list (rule `other`; test:targets sees the same in a build).
+ * without relative, absolute, fixed or sticky in its class list (rule `other`; test:targets sees the same in a build),
+ * and no dot in a Flat part (rule `other`: a 4 to 12px box with rounded-pill as a status dot, bullet or dot tag; see
+ * "Flat's dots" below, and KNOWN_DOTS for the ones not taken out yet, which warn).
  *
  *   node lint-litt.mjs [files...]                         gallery mode, text output (needs the litt.md repo)
  *   node lint-litt.mjs --host [--json] [--root DIR] FILE...   host mode (files or folders), anywhere
@@ -36,7 +38,8 @@
  *                `rule` is weight, radius, shadow, color, type, motion or other.
  *   --root DIR   Paths in the output are relative to DIR (gallery mode: the gallery root; host mode: the cwd).
  *   --self-test  Lint the fixtures in lint-fixtures/: host-clean.tsx must be clean, and every line of
- *                host-dirty.tsx, host-dirty.css (host mode) and gallery-dirty.tsx (gallery mode) that
+ *                host-dirty.tsx, host-dirty.css, dots-host-dirty.flat.tsx, dots-stamped-dirty.tsx (host mode),
+ *                gallery-dirty.tsx and dots-dirty.flat.tsx (gallery mode; dots-clean.flat.tsx must be clean) that
  *                ends in `// expect: <rule>` must fail exactly that rule while no other line fails.
  *                `// warn: <rule>` does the same for warnings. It also lints the built registry items
  *                (public/r) in host mode: the shipped components must come back clean.
@@ -142,8 +145,9 @@ const LAYOUT_KEYS = /(^|[\s,{])(width|height|top|left|right|bottom|margin\w*|pad
 /* ============================================================================ gallery mode */
 
 /** Lint the gallery's own source. Returns { fails, warns } of { file, line, rule, message }. */
-function lintGallery(files, root) {
+function lintGallery(files, root, full = false) {
   const fails = [], warns = [];
+  const dotsSeen = new Set();
   const rel = (f) => path.relative(root, f);
 
   for (const f of files) {
@@ -234,6 +238,7 @@ function lintGallery(files, root) {
     if (!f.endsWith(".css")) {
       const lines = text.split("\n");
       for (const line of new Set(unpositionedTargets(text))) if (!lines[line - 1].includes("litt-allow")) fails.push({ file: rel(f), line, rule: "other", message: TARGET_MESSAGE });
+      for (const k of lintDots(f, text, false, true, (kind, line, message) => (kind === "warn" ? warns : fails).push({ file: rel(f), line, rule: "other", message }))) dotsSeen.add(k);
     }
     for (const m of text.matchAll(MOTION_PROPS)) {
       const start = m.index + m[0].length;
@@ -245,6 +250,12 @@ function lintGallery(files, root) {
           fails.push({ file: rel(f), line, rule: "motion", message: `motion animates "${k[2]}": only transform (x, y, scale) and opacity move; use layout/layoutId for size changes` });
       }
     }
+  }
+  /* A whole run sees every part, so a KNOWN dot that no longer happens is an entry to take out. */
+  if (full) {
+    const self = fileURLToPath(import.meta.url);
+    const at = fs.readFileSync(self, "utf8").split("\n").findIndex((l) => l.startsWith("const KNOWN_DOTS")) + 1;
+    for (const k of Object.keys(KNOWN_DOTS)) if (!dotsSeen.has(k)) fails.push({ file: rel(self), line: at, rule: "other", message: `KNOWN_DOTS lists "${k}", which has no dot any more: take the entry out` });
   }
   return { fails, warns };
 }
@@ -528,6 +539,103 @@ function unpositionedTargets(text) {
 }
 const TARGET_MESSAGE = "litt-target with no relative, absolute, fixed or sticky in its class list: its ::before grows to the nearest positioned ancestor and takes its neighbours' taps; write litt-target relative";
 
+/* ---------------------------------------------------------------------- Flat's dots */
+
+/* Flat has no dots (litt-principles.md, Flat, the page): no status dot, bullet, dot tag or dot matrix; status is a
+   word. A dot is a small round box: one class list that gives it a size of 4 to 12px (size-1 to size-3, size-[4px] to
+   size-[12px], or an h- and a w- in that range written in one string) and rounded-pill (rounded-full,
+   rounded-litt-pill) under the same variants, a ::before or ::after included. Bars (h-2 w-full) and tracks have a
+   long side and pass. A radio's or a checkbox's checked mark sits inside its box, not beside text, so a list that keys
+   a variant on the checked state passes. It is judged in a Flat part (a body in worlds/flat/, installed as
+   <part>.flat.tsx; a part whose page says worlds: ["flat"]; in host mode, a file the registry stamped
+   @litt/flat-<part>), and in any file behind Flat's variant, in-[[data-material=flat]]:. */
+const DOT_STEPS = new Set(["1", "1.5", "2", "2.5", "3"]);
+const dotLength = (v) => DOT_STEPS.has(v) || (/^\[(\d+(?:\.\d+)?)px\]$/.test(v) && Number(v.slice(1, -3)) >= 4 && Number(v.slice(1, -3)) <= 12);
+const ROUND = new Set(["rounded-full", "rounded-pill", "rounded-litt-pill"]);
+const CHECKED = /(?:^|-)checked$|^(?:(?:group|peer)-)?(?:data|aria)-\[(?:state=)?checked(?:=true)?\]$/;
+const FLAT_VARIANT = "in-[[data-material=flat]]";
+/** The lines of the dots in a file: every one when the file is a Flat part, else those behind Flat's variant. */
+function dotMarks(text, flatFile) {
+  const sc = scanSource(text, false);
+  const scopes = new Map();
+  for (const f of sc.frags) {
+    const list = scopes.get(f.scope) ?? [];
+    scopes.set(f.scope, list);
+    list.push(...fragTokens(f));
+  }
+  const out = [];
+  for (const tokens of scopes.values()) {
+    if (tokens.some((t) => t.variants.some((v) => CHECKED.test(v)))) continue;
+    const chains = new Map();
+    for (const t of tokens) {
+      if (!flatFile && !t.vset.has(FLAT_VARIANT)) continue;
+      const c = chains.get(t.prefix) ?? { size: null, h: new Map(), w: new Map(), round: false };
+      chains.set(t.prefix, c);
+      let m;
+      if ((m = /^size-(.+)$/.exec(t.base)) && dotLength(m[1])) c.size ??= t.line;
+      else if ((m = /^([hw])-(.+)$/.exec(t.base)) && dotLength(m[2]) && !c[m[1]].has(t.frag)) c[m[1]].set(t.frag, t.line);
+      if (ROUND.has(t.base)) c.round = true;
+    }
+    for (const c of chains.values()) {
+      if (!c.round) continue;
+      const hw = [...c.h].find(([frag]) => c.w.has(frag));
+      if (c.size ?? hw) out.push(c.size ?? hw[1]);
+    }
+  }
+  return [...new Set(out)];
+}
+const DOT_MESSAGE = "a dot in a Flat part (a small round mark): Flat has no status dot, bullet, dot tag or dot matrix; say the status in a word, or let the figure, a pill or a bar carry it";
+
+/* The Flat parts that are Flat's alone: each component a page with worlds: ["flat"] documents. Read once. */
+let flatOnly = null;
+function flatOnlyParts() {
+  if (flatOnly) return flatOnly;
+  flatOnly = new Set();
+  const pages = path.join(galleryRoot, "src", "gallery", "pages");
+  if (!fs.existsSync(pages)) return flatOnly;
+  for (const f of fs.readdirSync(pages).filter((x) => x.endsWith(".tsx"))) {
+    const t = fs.readFileSync(path.join(pages, f), "utf8");
+    if (!/\bworlds:\s*\[\s*"flat"\s*\]/.test(t)) continue;
+    const c = /\bcomponents:\s*\[([^\]]*)\]/.exec(t);
+    for (const id of c ? c[1].matchAll(/"([\w-]+)"/g) : []) flatOnly.add(id[1]);
+  }
+  return flatOnly;
+}
+/** The Flat part a file is, as KNOWN names it ("flat/<part>" for a body, "<part>" for a Flat-only part), or null. */
+function flatPartOf(file, text, host) {
+  const base = path.basename(file);
+  let m;
+  if ((m = /^([\w-]+)\.flat\.tsx$/.exec(base))) return `flat/${m[1]}`;
+  if (host) return /^(?:"use client";\n)?\/\/ @litt\/flat-/.test(text) ? base.replace(/\.[jt]sx?$/, "") : null;
+  if ((m = /[\\/]worlds[\\/]flat[\\/]([\w-]+)\.tsx$/.exec(file))) return `flat/${m[1]}`;
+  if ((m = /[\\/]src[\\/]components[\\/]([\w-]+)\.tsx$/.exec(file)) && flatOnlyParts().has(m[1])) return m[1];
+  return null;
+}
+/* Dots not taken out yet, by the part they are in: each prints as a warning, and a whole gallery run fails when one
+   stops happening, so take the entry out with the fix. */
+const KNOWN_DOTS = {
+  "flat/tag": "the status tag's mark (data-status-mark) is a dot tag; the status word alone is the Flat way",
+  timeline: "a result is its word after an 8px circle behind Flat's variant (v1.17, call 6), which v1.22 takes back",
+};
+/* Parts whose round mark is a series key, not a dot: the swatch beside a series' name says which series, as a chart's
+   own marks do (taste v1.22, Nick, 2026-11-23: a series key is data). Never a status. */
+const SERIES_KEYS = {
+  "flat/legend": "each series' swatch beside its name is the key to which series is which",
+};
+/** Fail (or, for a KNOWN part, warn) every dot in a file. `shipped` says a KNOWN entry may excuse it. Returns the parts excused. */
+function lintDots(file, text, host, shipped, push) {
+  const part = flatPartOf(file, text, host);
+  const lines = text.split("\n");
+  const key = part ?? path.basename(file).replace(/\.[jt]sx?$/, "");
+  const excused = new Set();
+  for (const line of dotMarks(text, !!part)) {
+    if (lines[line - 1]?.includes("litt-allow") || SERIES_KEYS[key]) continue;
+    if (shipped && KNOWN_DOTS[key]) { excused.add(key); push("warn", line, `${DOT_MESSAGE} (known: ${KNOWN_DOTS[key]})`); }
+    else push("fail", line, DOT_MESSAGE);
+  }
+  return excused;
+}
+
 /* ---------------------------------------------------------------------- class tokens */
 
 const PROSE = /[.,;:!?](\s|$)/;
@@ -738,6 +846,7 @@ function lintHostFile(file, text, rel) {
   } else {
     checkTokens(sc.frags, codeLines, add);
     for (const line of unpositionedTargets(text)) add("fail", line, "other", TARGET_MESSAGE);
+    lintDots(file, text, true, /^(?:"use client";\n)?\/\/ @litt\//.test(text), (kind, line, message) => add(kind, line, "other", message));
   }
 
   // line patterns: colors, declarations, motion values
@@ -878,7 +987,7 @@ function run(argv) {
   const mode = o.host ? "host" : "gallery";
   const files = collectFiles(o);
   const root = o.root ?? (o.host ? process.cwd() : galleryRoot);
-  const { fails, warns } = o.host ? lintHost(files, root) : lintGallery(files, root);
+  const { fails, warns } = o.host ? lintHost(files, root) : lintGallery(files, root, !o.files.length);
 
   if (o.json) {
     console.log(JSON.stringify({ mode, files: files.length, fails, warns }));
@@ -933,6 +1042,10 @@ function selfTest() {
   check("host-dirty.tsx", "host");
   check("host-dirty.css", "host");
   check("gallery-dirty.tsx", "gallery");
+  check("dots-dirty.flat.tsx", "gallery");
+  check("dots-clean.flat.tsx", "gallery");
+  check("dots-host-dirty.flat.tsx", "host");
+  check("dots-stamped-dirty.tsx", "host");
 
   // The shipped components are the reference for good host code: they must lint clean in host mode.
   // (The motion engine is exempt: it writes the springs the hooks hand out.) Skipped when the registry is not built.

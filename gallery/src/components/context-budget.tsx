@@ -1,31 +1,24 @@
 /**
- * ContextBudget, a Flat part (skills/litt-md/taste/litt-principles.md, Flat): an airy context-window budget and memory
- * picker framed as a Flat paper card (or ink card) sitting on Flat's grey ground with no outline and nothing cast.
+ * ContextBudget, a Flat part (skills/litt-md/taste/litt-principles.md, Flat): how full a writing assistant's context
+ * window is, on one white paper on the grey ground.
  *
- * - Material order (Ground -> Paper -> Bubble): framed in a white rounded paper card (`bg-surface-1
- *   rounded-surface`, black in dark) with generous 24px padding, or an optional `tone="ink"` ink card (`.litt-ink`).
- * - Pairs a quiet title with a crisp standing percentage (`text-display`), a proportional bar in Flat's
- *   data hues, and frameless `font-normal` source tags (matching Flat's Legend and status Tag): attached sources show
- *   a filled dot with label and token count; excluded sources show an outline dot with "Off" in words (R5) and no pill
- *   or border frame at rest (only a quiet tint on hover).
- * - Toggling any source bounces the percentage on Flat's expressive spring (0.28 bounce) and announces the updated
- *   token count once in a polite status region. Zero `--accent` fills (R6) and zero auto-animation on mount (R4).
+ * - A quiet title over one standing figure (the share used, `text-figure`), one ink bar for that share, and the
+ *   sources as pills: an attached source is a grey pill with its name in the ink and its tokens beside it, a source
+ *   left out is a bare pill reading "Off" (R5: the state is a word).
+ * - Toggling a source moves the bar and lifts the figure on Flat's expressive spring, and announces the new total
+ *   once. The ink is the only colour, no accent fill (R6), and nothing moves until a hand toggles (R4).
  */
 import { useId, useState, type ReactNode } from "react";
 import { motion } from "motion/react";
 import { useMotionDial, useTransition } from "@/motion";
 
-export type ContextHue = "sky" | "blue" | "violet" | "bubblegum" | "teal";
-
 export type ContextSource = {
   /** Stable identifier for the context source. */
   id: string;
-  /** Friendly name shown on the pill, e.g. "Coastline draft" or "Style notes". */
+  /** Friendly name shown on the pill, e.g. "Spring issue" or "Style notes". */
   label: string;
   /** Token count in raw tokens, e.g. 24000. */
   tokens: number;
-  /** Distinct Candy hue slot assigned to this source. */
-  hue: ContextHue;
   /** Whether the source starts attached in the window. Defaults to true. */
   included?: boolean;
 };
@@ -33,9 +26,7 @@ export type ContextSource = {
 export type ContextBudgetProps = {
   /** Quiet title printed above the standing figure. Defaults to "Draft context". */
   title?: ReactNode;
-  /** Surface tone: white paper card on grey ground ("paper"), or Flat's contrasting ink card ("ink"). Defaults to "paper". */
-  tone?: "paper" | "ink";
-  /** Context sources the reader can attach or prune. */
+  /** Context sources the reader can attach or leave out. */
   sources?: ContextSource[];
   /** Total model context window in tokens. Defaults to 128000. */
   capacity?: number;
@@ -48,21 +39,12 @@ export type ContextBudgetProps = {
 };
 
 export const DEFAULT_CONTEXT_ITEMS: ContextSource[] = [
-  { id: "guide", label: "Voice guide", tokens: 12000, hue: "sky", included: true },
-  { id: "draft", label: "Coastline draft", tokens: 34000, hue: "blue", included: true },
-  { id: "notes", label: "Field notes", tokens: 22000, hue: "violet", included: true },
-  { id: "thread", label: "Recent replies", tokens: 14000, hue: "bubblegum", included: true },
-  { id: "archive", label: "Issue 13 archive", tokens: 19000, hue: "teal", included: false },
+  { id: "guide", label: "Voice guide", tokens: 12000, included: true },
+  { id: "draft", label: "Spring issue", tokens: 34000, included: true },
+  { id: "notes", label: "Field notes", tokens: 22000, included: true },
+  { id: "letters", label: "Reader letters", tokens: 14000, included: true },
+  { id: "archive", label: "Issue 13 archive", tokens: 19000, included: false },
 ];
-
-/* Literal CSS variable strings so gen-registry renames every data token cleanly for host installs. */
-const HUE_VAR: Record<ContextHue, string> = {
-  sky: "var(--data-sky)",
-  blue: "var(--data-blue)",
-  violet: "var(--data-violet)",
-  bubblegum: "var(--data-bubblegum)",
-  teal: "var(--data-teal)",
-};
 
 function formatTokens(n: number): string {
   if (n >= 1000) {
@@ -72,10 +54,9 @@ function formatTokens(n: number): string {
   return String(Math.round(n));
 }
 
-/** Flat's interactive context-window card: paper or ink frame, crisp percentage, proportional bar and frameless source tags. */
+/** Flat's context-window card: the share used as one figure and one ink bar, and the sources as pills to tap in or out. */
 export function ContextBudget({
   title = "Draft context",
-  tone = "paper",
   sources = DEFAULT_CONTEXT_ITEMS,
   capacity = 128000,
   includedIds: includedProp,
@@ -90,7 +71,6 @@ export function ContextBudget({
   const spring = useTransition("expressive");
   const { reduced } = useMotionDial();
 
-  const ink = tone === "ink";
   const included = new Set(includedProp ?? innerIds);
   const safeCap = Math.max(1, capacity);
   const activeSources = sources.filter((s) => included.has(s.id));
@@ -112,7 +92,7 @@ export function ContextBudget({
     const nextPct = Math.min(100, Math.round((nextUsed / safeCap) * 100));
     commit(
       next,
-      `${src.label} ${on ? "excluded" : "attached"}: ${nextPct}% used, ${formatTokens(nextUsed)} of ${formatTokens(safeCap)} tokens.`,
+      `${src.label} ${on ? "left out" : "attached"}: ${nextPct}% used, ${formatTokens(nextUsed)} of ${formatTokens(safeCap)} tokens.`,
     );
   }
 
@@ -122,7 +102,7 @@ export function ContextBudget({
       const largest = [...activeSources].sort((a, b) => b.tokens - a.tokens)[0]!;
       const next = activeSources.filter((s) => s.id !== largest.id).map((s) => s.id);
       const nextUsed = sources.filter((s) => next.includes(s.id)).reduce((sum, s) => sum + s.tokens, 0);
-      commit(next, `Trimmed ${largest.label}: ${formatTokens(nextUsed)} of ${formatTokens(safeCap)} tokens.`);
+      commit(next, `Left out ${largest.label}: ${formatTokens(nextUsed)} of ${formatTokens(safeCap)} tokens.`);
     } else {
       const allIds = sources.map((s) => s.id);
       const allUsed = sources.reduce((sum, s) => sum + s.tokens, 0);
@@ -132,14 +112,10 @@ export function ContextBudget({
 
   return (
     <div
-      data-part={ink ? "ink-card" : "paper"}
-      className={
-        "grid w-full max-w-sm min-w-0 gap-4 rounded-surface p-6 text-fg forced-colors:border " +
-        (ink ? "litt-ink " : "litt-paper bg-surface-1 ") +
-        className
-      }
+      data-part="paper"
+      className={"litt-paper grid w-full max-w-sm min-w-0 gap-4 rounded-surface bg-surface-1 p-6 text-fg forced-colors:border " + className}
     >
-      {/* Quiet title over crisp standing percentage */}
+      {/* A quiet title over the one standing figure */}
       <header className="grid gap-1">
         <span id={headingId} data-part="lettering" className="truncate text-small text-fg-subtle">
           {title}
@@ -161,7 +137,7 @@ export function ContextBudget({
         </p>
       </header>
 
-      {/* Proportional Candy context meter */}
+      {/* One ink bar for the share used, on the grey bubble */}
       <div
         role="meter"
         aria-labelledby={headingId}
@@ -170,32 +146,20 @@ export function ContextBudget({
         aria-valuenow={Math.min(usedTokens, safeCap)}
         aria-valuetext={`${pct}% of context window used, ${formatTokens(usedTokens)} of ${formatTokens(safeCap)} tokens`}
         data-part="bubble"
-        className="flex h-3 w-full gap-0.5 overflow-hidden rounded-pill p-0.5 forced-colors:border"
-        style={{ backgroundColor: "color-mix(in oklab, var(--fg) 10%, transparent)" }}
+        className="h-2 w-full overflow-hidden rounded-pill bg-block forced-colors:border"
       >
-        {activeSources.map((src) => {
-          const share = Math.max(0.03, src.tokens / Math.max(safeCap, usedTokens));
-          return (
-            <motion.span
-              key={src.id}
-              aria-hidden="true"
-              data-part="mark"
-              initial={false}
-              animate={reduced ? undefined : { flexGrow: share }}
-              transition={spring}
-              className="block h-full min-w-1.5 rounded-pill forced-colors:bg-[Highlight]"
-              style={{
-                flexGrow: share,
-                flexBasis: 0,
-                backgroundColor: HUE_VAR[src.hue],
-              }}
-            />
-          );
-        })}
+        <motion.span
+          aria-hidden="true"
+          data-part="mark"
+          initial={false}
+          animate={{ x: `${pct - 100}%` }}
+          transition={spring}
+          className="block h-full rounded-pill bg-fg forced-colors:bg-[Highlight]"
+        />
       </div>
 
-      {/* Frameless font-normal source tags: dot + word at rest, quiet hover wash */}
-      <div role="group" aria-label="Attached context sources" className="-mx-2 flex flex-wrap gap-x-1 gap-y-1">
+      {/* The sources as pills: grey when attached, bare and "Off" when left out */}
+      <div role="group" aria-label="Context sources" className="flex flex-wrap gap-1.5">
         {sources.map((src) => {
           const on = included.has(src.id);
           return (
@@ -203,45 +167,34 @@ export function ContextBudget({
               key={src.id}
               type="button"
               aria-pressed={on}
-              data-part="lettering"
+              data-part="pill"
               onClick={() => toggleSource(src)}
               className={
-                "litt-target relative inline-flex h-control-sm cursor-pointer items-center gap-2 rounded-pill bg-transparent px-2 text-caption font-normal select-none " +
-                "[-webkit-tap-highlight-color:transparent] transition-colors duration-(--dur-instant) ease-litt " +
-                "hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] " +
-                "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus " +
-                (on ? "text-fg" : "text-fg-subtle hover:text-fg")
+                "litt-target relative inline-flex h-control-sm max-w-full min-w-0 cursor-pointer items-center gap-2 rounded-pill px-3 text-small select-none " +
+                "[-webkit-tap-highlight-color:transparent] transition-[background-color,color,transform] duration-(--dur-instant) ease-litt motion-safe:active:scale-97 " +
+                "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus forced-colors:border " +
+                (on ? ON_PILL : OFF_PILL)
               }
             >
-              <span
-                aria-hidden="true"
-                data-part={on ? "circle" : "outline"}
-                className={
-                  "size-2.5 shrink-0 rounded-pill border-2 transition-colors duration-(--dur-instant) ease-litt forced-colors:border-[CanvasText] " +
-                  (on ? "border-transparent" : "border-fg-subtle bg-transparent")
-                }
-                style={on ? { backgroundColor: HUE_VAR[src.hue] } : undefined}
-              />
               <span className="truncate">{src.label}</span>
-              <span className="tabular-nums text-fg-subtle">
-                {on ? formatTokens(src.tokens) : "Off"}
-              </span>
+              <span className="shrink-0 font-normal tabular-nums text-fg-subtle">{on ? formatTokens(src.tokens) : "Off"}</span>
             </button>
           );
         })}
       </div>
 
-      {/* Quiet footer summary and one-tap trim/restore */}
-      <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
-        <span data-part="lettering" className="text-caption font-normal tabular-nums text-fg-subtle">
-          {overBudget ? "Over window · trim a source" : `${formatTokens(freeTokens)} free`} · {activeSources.length} of {sources.length} attached
+      {/* A quiet summary, and one tap to trim the largest or attach all */}
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <span data-part="lettering" className="text-small tabular-nums text-fg-subtle">
+          {overBudget ? "Over the window, trim a source" : `${formatTokens(freeTokens)} free`} · {activeSources.length} of{" "}
+          {sources.length} attached
         </span>
         {sources.length > 1 && (
           <button
             type="button"
-            data-part="lettering"
+            data-part="pill"
             onClick={trimOrRestore}
-            className="litt-target relative cursor-pointer rounded-control px-1.5 py-0.5 text-caption font-normal text-fg hover:text-fg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+            className="litt-target relative -mr-3 inline-flex h-control-sm cursor-pointer items-center rounded-pill bg-transparent px-3 text-small font-title text-fg transition-[background-color,transform] duration-(--dur-instant) ease-litt hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] motion-safe:active:scale-97 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
           >
             {activeSources.length === sources.length ? "Trim largest" : "Attach all"}
           </button>
@@ -254,3 +207,7 @@ export function ContextBudget({
     </div>
   );
 }
+
+/* An attached source is the grey bubble with its name in the ink; one left out is bare, its words quiet. */
+const ON_PILL = "bg-block font-title text-fg hover:bg-(--block-hover)";
+const OFF_PILL = "bg-transparent font-normal text-fg-subtle hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] hover:text-fg";

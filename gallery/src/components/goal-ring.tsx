@@ -1,12 +1,12 @@
 /**
- * GoalRing, a Flat part (skills/litt-md/taste/litt-principles.md, Flat): progress toward one goal you can count, centered
- * directly on Flat's ground with no box around it.
+ * GoalRing, a Flat part (skills/litt-md/taste/litt-principles.md, Flat): progress toward one goal you can count, on one
+ * white paper on the grey ground.
  *
- * - One 136px SVG ring stroked across `--data-sky`, `--data-violet` and `--data-bubblegum`, with Flat's single 40px
- *   standing figure and `/ target` centered inside.
- * - Directly beneath: the goal's name and two round `−` / `+` keys (`bg-block` / `outline`) that step the count, the
- *   arc following on the expressive spring.
- * - No outer box (as `Poll`, `Streak` and `Kudos`), no `--accent` fills (R6), and nothing moves on mount (R2/R4).
+ * - One 136px SVG ring in the ink over a grey track, with the count standing inside it at the large figure (44px,
+ *   `text-figure-lg`, since the count is the whole object) and `/ target unit` under it.
+ * - Beneath: the goal's name and two grey circles, − and +, that step the count; the arc and the figure follow on the
+ *   expressive spring.
+ * - Monochrome: the ink is the only colour (v1.22), no accent fill (R6), and nothing moves until a hand steps it (R4).
  */
 import { useId, useState, type ReactNode } from "react";
 import { motion } from "motion/react";
@@ -34,7 +34,7 @@ const STROKE = 8;
 const RADIUS = (SIZE - STROKE) / 2;
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
-/** Progress toward one goal you can count: a ring with the count inside and − and + keys below. */
+/** Progress toward one goal you can count: an ink ring with the count inside and − and + circles below. */
 export function GoalRing({
   title = "Books read in 2026",
   target = 24,
@@ -45,7 +45,6 @@ export function GoalRing({
   className = "",
 }: GoalRingProps) {
   const headingId = useId();
-  const gradId = useId();
   const safeTarget = Math.max(1, Math.round(target));
   const clamp = (n: number) => Math.max(0, Math.min(safeTarget, Math.round(n)));
   const [inner, setInner] = useState(() => clamp(defaultValue));
@@ -75,7 +74,7 @@ export function GoalRing({
       data-part="paper"
       className={"litt-paper inline-grid justify-items-center gap-4 rounded-surface bg-surface-1 p-6 text-fg forced-colors:border " + className}
     >
-      {/* Centered ring holding the single standing figure */}
+      {/* The ring in the ink, the count standing inside it */}
       <div
         role="progressbar"
         aria-labelledby={headingId}
@@ -86,19 +85,12 @@ export function GoalRing({
         className="relative grid size-[136px] place-items-center"
       >
         <svg width={SIZE} height={SIZE} viewBox={`0 0 ${SIZE} ${SIZE}`} className="size-full -rotate-90" aria-hidden="true">
-          <defs>
-            <linearGradient id={gradId} x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="var(--data-sky)" />
-              <stop offset="52%" stopColor="var(--data-violet)" />
-              <stop offset="100%" stopColor="var(--data-bubblegum)" />
-            </linearGradient>
-          </defs>
           <circle
             cx={SIZE / 2}
             cy={SIZE / 2}
             r={RADIUS}
             fill="none"
-            stroke="color-mix(in oklab, var(--fg) 10%, transparent)"
+            stroke="var(--surface-3)"
             strokeWidth={STROKE}
           />
           <motion.circle
@@ -106,7 +98,7 @@ export function GoalRing({
             cy={SIZE / 2}
             r={RADIUS}
             fill="none"
-            stroke={`url(#${gradId})`}
+            stroke="var(--fg)"
             strokeWidth={STROKE}
             strokeLinecap="round"
             strokeDasharray={CIRCUMFERENCE}
@@ -123,7 +115,7 @@ export function GoalRing({
             initial={reduced ? false : { scale: 0.92 }}
             animate={{ scale: 1 }}
             transition={spring}
-            className="text-figure leading-none tabular-nums text-fg"
+            className="text-figure-lg leading-none tabular-nums text-fg"
           >
             {current}
           </motion.span>
@@ -133,7 +125,7 @@ export function GoalRing({
         </div>
       </div>
 
-      {/* Quiet label + balanced circular stepper keys */}
+      {/* The goal's name, and − and + as two grey circles */}
       <div className="grid justify-items-center gap-2.5">
         <span id={headingId} data-part="lettering" className="text-small text-fg-subtle">
           {title}
@@ -145,7 +137,7 @@ export function GoalRing({
             aria-label={`Decrease ${unit} by 1`}
             disabled={current === 0}
             onClick={() => update(current - 1)}
-            className="litt-target relative grid size-9 cursor-pointer place-items-center rounded-pill bg-block text-body font-title text-fg transition-colors duration-(--dur-instant) ease-litt hover:bg-(--block-hover) disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus forced-colors:border"
+            className="litt-target relative grid size-10 cursor-pointer place-items-center rounded-pill bg-block text-body font-title text-fg transition-[background-color,transform] duration-(--dur-instant) ease-litt hover:bg-(--block-hover) motion-safe:active:scale-95 disabled:cursor-not-allowed disabled:text-fg-disabled focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus forced-colors:border"
           >
             <span aria-hidden="true">−</span>
           </button>
@@ -155,7 +147,7 @@ export function GoalRing({
             aria-label={`Add 1 to ${unit}`}
             disabled={current >= safeTarget}
             onClick={() => update(current + 1)}
-            className="litt-target relative grid size-9 cursor-pointer place-items-center rounded-pill bg-block text-body font-title text-fg transition-colors duration-(--dur-instant) ease-litt hover:bg-(--block-hover) disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus forced-colors:border"
+            className="litt-target relative grid size-10 cursor-pointer place-items-center rounded-pill bg-block text-body font-title text-fg transition-[background-color,transform] duration-(--dur-instant) ease-litt hover:bg-(--block-hover) motion-safe:active:scale-95 disabled:cursor-not-allowed disabled:text-fg-disabled focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus forced-colors:border"
           >
             <span aria-hidden="true">+</span>
           </button>

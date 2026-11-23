@@ -14,6 +14,7 @@ export const meta: PageMeta = {
     device: "A toggle key that flips in a well, its word on the glass beside it.",
     rack: "A key that reads On or Off, lit when on.",
     press: "A block thrown along a tray, uncovering On or Off.",
+    flat: "A setting that is on or off: a pill you can tap, drag or flick.",
   },
   order: 3.02,
   group: "Selection",
@@ -21,6 +22,7 @@ export const meta: PageMeta = {
   summary:
     "An on or off setting you can feel. Click, tap or drag it, and it says On or Off in a word as well as by where it stands. Neutral keeps it quiet; accent marks it when on, for the one switch that is a view's main choice. The label sits beside it, or the switch sits at the end of a settings row.",
   summaryByWorld: {
+    flat: "An on or off setting in a list, its label saying what it does and its description what that means. The switch is a pill, an outline when off and the ink when on, with a circle you can tap, drag or flick over its centre: under a finger it lags toward the middle, snaps through and lands while you still hold it. Where the circle stands and whether the pill is filled say the state, never colour alone. The label sits beside it, or the switch sits at the end of a settings row.",
     heat: "An on or off setting as two flat square cells in a black slab, Off and On, the live one filled and framed by four corner brackets: ink brackets for Off, amber for On, or solid amber for the one switch that is a view's main choice. Click, tap or drag it, and it cuts to the other side at once. The label sits beside it, or the switch sits at the end of a settings row.",
     device: "An on or off setting you can feel: a toggle key in a well that flips with a detent, and its word on a small LCD beside it, with a lamp that lights when on. Press it and the key sinks its 2px; click, tap or drag it across. The label sits beside it, or the switch sits at the end of a settings row.",
     rack: "An on or off setting as a toggle key, its word on its face. Off is a key in the panel's grey; on, it lights in the ink, or in the accent for the one switch that is a view's main choice. Click or tap it, or drag across it and it flips by the side you end on. The key never moves or changes width. The label sits beside it, or the switch sits at the end of a settings row.",
@@ -35,7 +37,7 @@ export const meta: PageMeta = {
     press: "Press the row and the block presses down, its cast tightening at once. A click, a tap or Space throws it along the tray on the responsive tier, 200ms with no bounce, uncovering the word set in the floor. Or take the block and drag it: it follows the finger one to one and lands on the nearer side. Its fill and cast change on the instant tier, 100ms, and the tray never moves. Reduced motion drops the crossing.",
     device: "Press and the key sinks the whole 2px into its well. A click, a tap or Space flips it across in three even steps on the instant tier, 100ms, a detent and never a spring, and with sound on it clicks. Or take the key and drag it: it follows the finger one to one and lands on the nearer side. The word changes on the glass and the lamp lights when on. Reduced motion flips it at once.",
     rack: "A press darkens the key's outline and fill on the frame, and the key stays where it is. A click, a tap or Space flips it: the word and the fill change at once on the instant tier, and nothing slides across. A drag over it flips it by the side it ends on. Reduced motion changes nothing, since nothing travels.",
-    flat: "A click, a tap or Space sends the round knob across the pill on the responsive tier, 200ms with no bounce, and the pill fills with ink as it goes on, or empties to an outline as it goes off. Or take the knob and drag it: it follows the finger one to one and lands on the nearer side. The word beside it changes at once, and nothing sinks or casts. Reduced motion drops the crossing.",
+    flat: "A click, a tap, Space or Enter throws the circle over on an over-centre spring: it speeds up through the middle and lands against its stop, and the ink grows behind it as it goes on, or drains back to the outline as it goes off. Take the circle and drag it, and it lags toward the middle, snaps through and changes the switch while you still hold it; let go short and it falls back, unless you flicked it, and the flick carries it over. Only transforms and the ink's opacity move, and nothing sinks or casts. Reduced motion puts it on its side at once.",
   },
 };
 
@@ -136,9 +138,8 @@ export const study: PageStudy = {
       { name: "The label", selector: "label" },
     ],
     flat: [
-      { name: "The switch", selector: "[role=switch]" },
-      { name: "The knob", selector: "[role=switch] [data-state]" },
-      { name: "The word", selector: "[role=switch] span[aria-hidden]:not(:empty)" },
+      { name: "The pill", selector: "[role=switch]" },
+      { name: "The circle", selector: "[role=switch] [data-state]" },
       { name: "The label", selector: "label" },
     ],
   },
@@ -354,33 +355,40 @@ function RecorderLockedDemo() {
 
 /* ---------- Flat's own (plans/024, phase 3): a small site and its letter ---------- */
 
+const LETTER_SETTINGS = [
+  { key: "welcome", label: "Welcome letter", on: "Sent to every new reader", off: "New readers get nothing yet", start: true },
+  { key: "replies", label: "Reply emails", on: "You hear when a reader replies", off: "Replies wait in your inbox", start: true },
+  { key: "count", label: "Reader count", on: "Shown on your site", off: "Kept to yourself", start: false },
+] as const;
+
+/** A newsletter's settings on one paper: each row says what it does, and its line says what that means now. */
 function LetterSettingsDemo() {
-  const [saved, setSaved] = useState("");
-  const note = (setting: string) => (on: boolean) => setSaved(`Saved. ${setting} is ${on ? "on" : "off"}.`);
+  const [on, setOn] = useState<Record<string, boolean>>(() => Object.fromEntries(LETTER_SETTINGS.map((s) => [s.key, s.start])));
+  const count = LETTER_SETTINGS.filter((s) => on[s.key]).length;
 
   return (
-    <div className="grid w-full max-w-lg gap-3">
-      <p className="text-small font-title text-fg">Your letter</p>
-      <ul className="divide-y divide-line border-y border-line">
-        <li>
-          <Switch align="end" label="Send the letter every Friday at 9:00" defaultChecked onCheckedChange={note("The Friday letter")} />
-        </li>
-        <li>
-          <Switch align="end" label="Email me when someone subscribes" onCheckedChange={note("The new reader email")} />
-        </li>
-        <li>
-          <Switch
-            align="end"
-            label="Let readers reply"
-            description="A reply comes to your inbox, never to the site, so only you see it."
-            defaultChecked
-            onCheckedChange={note("Replies")}
-          />
-        </li>
+    <div className="litt-paper grid w-full max-w-sm gap-2 rounded-surface bg-surface-1 px-5 pt-5 pb-3">
+      <div className="flex items-baseline justify-between gap-3">
+        <h3 id="letter-settings" className="text-display text-fg">
+          Newsletter
+        </h3>
+        <p className="text-small text-fg-subtle tabular-nums">
+          {count} of {LETTER_SETTINGS.length} on
+        </p>
+      </div>
+      <ul aria-labelledby="letter-settings" className="grid">
+        {LETTER_SETTINGS.map((s) => (
+          <li key={s.key}>
+            <Switch
+              align="end"
+              label={s.label}
+              description={on[s.key] ? s.on : s.off}
+              checked={on[s.key]}
+              onCheckedChange={(next) => setOn((was) => ({ ...was, [s.key]: next }))}
+            />
+          </li>
+        ))}
       </ul>
-      <p role="status" className="min-h-5 text-small text-fg-subtle">
-        {saved}
-      </p>
     </div>
   );
 }
@@ -549,7 +557,7 @@ export default function SwitchPage() {
             title: "Letter settings",
             code: "LetterSettingsDemo",
             caption:
-              "Press anywhere on a row, press Space on the switch, or take the knob and drag it across: it crosses on the responsive tier. Off is an outline, on is the ink. The switches sit at the row's end, so they line up in one column, and every one is neutral: a list never takes the accent.",
+              "A newsletter's settings on one paper. Tap anywhere on a row or press Space, and the circle is thrown over its centre; or take it and drag it, and it snaps through under your finger, or flick it and let go. Off is an outline, on is the ink, and each row's line says what the setting means now. The switches sit at the row's end, so they line up in one column, and every one is neutral: a list never takes the accent.",
           },
           device: {
             demo: <RecordingSettingsDemo />,
@@ -622,7 +630,14 @@ export default function SwitchPage() {
         tier="instant"
         caption="A disabled switch is muted, skipped by Tab and left out of a form. The tray goes flat to surface-2 with a hairline, and the block lies flat in it with no cast. The block stays on its side and uncovers its word, so the state still reads."
         code="DisabledDemo"
-        byWorld={{ flat: { demo: <SiteLockedDemo />, code: "SiteLockedDemo" }, device: { demo: <RecorderLockedDemo />, code: "RecorderLockedDemo" } }}
+        byWorld={{
+          flat: {
+            demo: <SiteLockedDemo />,
+            code: "SiteLockedDemo",
+            caption: "A disabled switch is muted, skipped by Tab and left out of a form. The pill and its circle fade back, and the circle stays on its side, so the state still reads.",
+          },
+          device: { demo: <RecorderLockedDemo />, code: "RecorderLockedDemo" },
+        }}
       >
         <DisabledDemo />
       </Stage>

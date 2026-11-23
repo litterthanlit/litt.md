@@ -438,7 +438,7 @@ for (const [n, want] of Object.entries(ROLE_WEIGHTS)) {
   const v = (tokenDecls.match(new RegExp(`(?<![\\w-])${n}\\s*:\\s*([^;]+);`)) || [])[1]?.trim();
   if (Number(v) !== want) weightFails.push(`tokens.css: ${n} is ${v ?? "missing"}, must be ${want}`);
 }
-const TITLE_STEPS = ["display", "h1", "h2", "h3", "h4", "figure"];
+const TITLE_STEPS = ["display", "h1", "h2", "h3", "h4", "figure", "figure-lg"];
 const captionSize = (v) => /^var\(--type-caption-size\)$/.test(v) || /^(?:0?\.75rem|12px|1[01]px|[0-9]px)$/.test(v);
 for (const f of assetFiles) {
   const text = strip(read(f));
@@ -766,7 +766,7 @@ else {
   if (!/var\(--focus\)/.test(ring) || /#|rgb/.test(ring)) flatFails.push(`flat: --focus-ring must restate the ring with var(--focus), never a literal (is "${ring}")`);
   for (const h of ["blue", "amber", "teal", "violet", "rose"])
     if (!/var\(--surface-1\)/.test(flat.get(`--data-${h}-tint`) || "")) flatFails.push(`flat: --data-${h}-tint is not restated over var(--surface-1)`);
-  /* Flat's ramp (v1.18; a sunset since v1.20, its hue walking with its lightness): four steps, light to deep in light
+  /* Flat's ramp (v1.18; four steps of the ink since v1.22, the sunset kept for a theme): four steps, light to deep in light
      and dim to bright in dark, so each step stands further from the ground than the last; steps two to four hold most
      of a gauge's arc, so they reach 3:1 on the ground and on paper. The first is a heatmap's faintest step, beside its
      legend, as the 30% mix it replaces, and the start of a gauge's arc, which blends up out of it. */

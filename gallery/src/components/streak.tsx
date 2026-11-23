@@ -1,17 +1,16 @@
 /**
  * Streak, a Flat part (skills/litt-md/taste/litt-principles.md, Flat): how long a run has lasted (issues sent, days
- * read), built on Flat's standing 40px figure, the sequential ramp (--data-seq-1 to --data-seq-4) and the expressive spring.
+ * read) on one white paper: the count as the one standing figure, and a pill for each week or day.
  *
- * - One 40px figure (text-figure, call 8) carries the live count, paired with its unit in quiet ink and an optional status
- *   dot + word (call 6 amended: small 8px circle in status color, word in ink, no pill).
- * - Each entry in the cadence is a pill: done slots walk the sequential ramp (gold to plum in light, plum to gold in
- *   dark) as the run grows; missed slots rest in a quiet 8% ink wash.
- * - An open current slot (when onToggle is set) is a native button drawn with Flat's 1.5px outline when off ("an outline
- *   means off", Flat rule 2). Logging it springs the pill into the warmest step on the expressive spring and steps the
- *   figure up.
- * - Hovering or focusing any slot reads its detail note in plain words underneath; otherwise the line says whether the
- *   current slot is done, in words, with no instruction (principle 6). Toggling announces the updated streak in a polite
- *   live region. No accent fills (R6); forced colors keeps real borders on every pill.
+ * - One figure (text-figure) carries the count, its unit beside it in the muted ink, and the status as a word on the
+ *   right ("Active"), never a dot.
+ * - Each slot is a pill: done is the ink, missed is the grey bubble. Monochrome: the ink says done, and nothing walks a
+ *   colour ramp.
+ * - The open current slot (when the reader can log it) is a native button in Flat's 1.5px outline, since an outline
+ *   means off. One motion idea, a pill pops: logging it fills the pill with the ink and it grows back from the press on
+ *   the expressive spring. The figure simply counts on. Under reduced motion it fills at once.
+ * - Hovering or focusing a slot reads its detail underneath in plain words; otherwise the line says whether the current
+ *   slot is done. Logging announces the new streak in a polite live region. Forced colors keeps real borders.
  */
 import { useId, useState, type ReactNode } from "react";
 import { motion } from "motion/react";
@@ -50,16 +49,7 @@ export type StreakProps = {
   className?: string;
 };
 
-/* Literal variable strings so gen-registry renames every sequential token for host installs. */
-const SEQ = ["var(--data-seq-1)", "var(--data-seq-2)", "var(--data-seq-3)", "var(--data-seq-4)"] as const;
-function rampAt(t: number) {
-  const at = Math.max(0, Math.min(1, t)) * 3;
-  const k = Math.min(2, Math.floor(at));
-  const u = Math.round((at - k) * 100);
-  return `color-mix(in oklab, ${SEQ[k + 1]} ${u}%, ${SEQ[k]})`;
-}
-
-/** How long a run has lasted: the count, its status, and a pill for each day or week, warmer as the run grows. */
+/** How long a run has lasted: the count, its status in a word, and a pill for each day or week, the ink when done. */
 export function Streak({
   label,
   unit,
@@ -78,6 +68,7 @@ export function Streak({
   const [inspectIdx, setInspectIdx] = useState<number | null>(null);
   const [live, setLive] = useState("");
   const spring = useTransition("expressive");
+  const settle = useTransition("responsive");
   const { reduced } = useMotionDial();
 
   const currentDone = checked !== undefined ? checked : innerDone;
@@ -107,9 +98,6 @@ export function Streak({
     setLive(next ? `Logged. ${nextCount} ${nextUnit} running.` : `Removed. ${nextCount} ${nextUnit} running.`);
   };
 
-  /* Track order of completed slots so warmth climbs monotonically across done pills. */
-  let doneSeen = 0;
-  const doneOrder = resolved.map((s) => (s.done ? doneSeen++ : -1));
   const focusedSlot = inspectIdx !== null ? resolved[inspectIdx] : null;
 
   return (
@@ -119,27 +107,19 @@ export function Streak({
     >
       <header className="flex flex-wrap items-end justify-between gap-3">
         <div className="grid gap-1">
-          <span id={headingId} data-part="lettering" className="text-small text-fg-subtle">
+          <span id={headingId} data-part="lettering" className="text-small text-fg-muted">
             {label}
           </span>
           <p className="flex items-baseline gap-2 text-fg">
-            <motion.span
-              key={count}
-              data-part="figure"
-              initial={reduced ? false : { scale: 0.9 }}
-              animate={{ scale: 1 }}
-              transition={spring}
-              className="inline-block origin-left text-figure tabular-nums"
-            >
+            <span data-part="figure" className="text-figure tabular-nums">
               {count}
-            </motion.span>
-            <span data-part="lettering" className="text-body text-fg-subtle">
+            </span>
+            <span data-part="lettering" className="text-small text-fg-muted">
               {unitWord}
             </span>
           </p>
         </div>
-        <span data-part="mark" className="inline-flex items-center gap-2 pb-1 text-small text-fg">
-          <span aria-hidden="true" data-part="circle" className={"size-2 shrink-0 rounded-pill " + (active ? "bg-success" : "bg-fg-subtle")} />
+        <span data-part="lettering" className="pb-1 text-small font-title text-fg">
           {statusText}
         </span>
       </header>
@@ -153,8 +133,6 @@ export function Streak({
         {resolved.map((slot, i) => {
           const isCurrent = i === currentIdx;
           const interactive = isCurrent && (onToggle !== undefined || checked === undefined);
-          const rank = doneOrder[i]!;
-          const fill = slot.done ? rampAt(totalDone <= 1 ? 1 : rank / (totalDone - 1)) : undefined;
 
           if (interactive) {
             return (
@@ -169,17 +147,16 @@ export function Streak({
                   onPointerLeave={() => setInspectIdx((cur) => (cur === i ? null : cur))}
                   onFocus={() => setInspectIdx(i)}
                   onBlur={() => setInspectIdx((cur) => (cur === i ? null : cur))}
-                  whileTap={reduced ? undefined : { scale: 0.9 }}
+                  whileTap={reduced ? undefined : { scale: 0.94 }}
                   animate={reduced ? undefined : { scale: slot.done ? [0.86, 1] : 1 }}
-                  transition={spring}
+                  transition={slot.done ? spring : settle}
                   className={
-                    "litt-target relative h-10 w-full cursor-pointer rounded-pill transition-[background-color,box-shadow] duration-(--dur-instant) ease-litt [-webkit-tap-highlight-color:transparent] " +
+                    "litt-target relative h-10 w-full cursor-pointer rounded-pill [-webkit-tap-highlight-color:transparent] " +
                     "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus " +
                     (slot.done
-                      ? "forced-colors:border-2 forced-colors:border-[Highlight] forced-colors:bg-[Highlight]!"
-                      : "bg-transparent shadow-[inset_0_0_0_1.5px_var(--line-control)] hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] forced-colors:border forced-colors:border-[ButtonBorder]")
+                      ? "bg-fg forced-colors:border-2 forced-colors:border-[Highlight] forced-colors:bg-[Highlight]"
+                      : "bg-transparent shadow-[inset_0_0_0_1.5px_var(--line-control)] hover:bg-surface-3 forced-colors:border forced-colors:border-[ButtonBorder]")
                   }
-                  style={slot.done && fill ? { backgroundColor: fill } : undefined}
                 />
                 <span aria-hidden="true" data-part="lettering" className="text-caption font-title tabular-nums text-fg">
                   {slot.label}
@@ -200,15 +177,14 @@ export function Streak({
                 onFocus={() => setInspectIdx(i)}
                 onBlur={() => setInspectIdx((cur) => (cur === i ? null : cur))}
                 className={
-                  "litt-target relative block h-10 w-full cursor-pointer rounded-pill transition-colors duration-(--dur-instant) ease-litt [-webkit-tap-highlight-color:transparent] " +
+                  "litt-target relative block h-10 w-full cursor-pointer rounded-pill [-webkit-tap-highlight-color:transparent] " +
                   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus " +
                   (slot.done
-                    ? "forced-colors:border forced-colors:bg-[CanvasText]!"
-                    : "bg-[color-mix(in_oklab,var(--fg)_8%,transparent)] forced-colors:border")
+                    ? "bg-fg forced-colors:border forced-colors:bg-[CanvasText]"
+                    : "bg-surface-3 forced-colors:border")
                 }
-                style={slot.done && fill ? { backgroundColor: fill } : undefined}
               />
-              <span aria-hidden="true" data-part="lettering" className="text-caption font-normal tabular-nums text-fg-subtle">
+              <span aria-hidden="true" data-part="lettering" className="text-caption font-normal tabular-nums text-fg-muted">
                 {slot.label}
               </span>
             </div>
@@ -216,7 +192,7 @@ export function Streak({
         })}
       </div>
 
-      <p data-part="lettering" className="min-h-5 text-small text-fg-subtle">
+      <p data-part="lettering" className="min-h-5 text-small text-fg-muted">
         {focusedSlot
           ? `${focusedSlot.label}${focusedSlot.detail ? ` · ${focusedSlot.detail}` : focusedSlot.done ? " · Done" : " · Open"}`
           : currentIdx >= 0

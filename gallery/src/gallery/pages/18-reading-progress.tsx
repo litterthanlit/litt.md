@@ -12,10 +12,10 @@ export const meta: PageMeta = {
   verbs: ["select", "press"],
   worlds: ["flat"],
   summary:
-    "How far through a long post a reader is: the percent read as one large number with the minutes left, a bar of chapters to jump between, and the current chapter's name under it. It sits on the page with no box around it. It belongs to Flat.",
-  tiers: ["instant", "expressive"],
+    "How far through a long post a reader is, on a white paper: the title and the minutes left, the percent read as one large number, a bar of chapters to jump between, the ink up to where they are, and the current chapter's name under it. It belongs to Flat.",
+  tiers: ["instant", "responsive"],
   mechanism:
-    "Each chapter is a button on the bar. Choosing one lights every chapter up to it, each a step along the ramp (--data-sky, --data-blue, --data-violet, --data-bubblegum), pops the current chapter and the figure on the expressive spring (350ms), and announces progress in a polite live region.",
+    "Each chapter is a button on the bar, a grey track with an ink fill. Choosing one fills every chapter up to it from the left and empties those past it, on the responsive spring (a small move, never a bounce); the figure simply changes, and a polite live region announces the progress. Nothing moves on load.",
 };
 
 export const docs: PageDocs = {
@@ -32,7 +32,7 @@ export const docs: PageDocs = {
     "Where readers want to see the time left and jump straight to any chapter.",
   ],
   skip: [
-    "Another world's page. ReadingProgress uses Flat's large figure and colored chapters; it needs data-material=\"flat\" on <html>.",
+    "Another world's page. ReadingProgress is drawn in Flat's paper, ink and standing figure; it needs data-material=\"flat\" on <html>.",
     "A background upload or task meter. Use Progress.",
     "A multi-step form wizard with validation. Use Tabs or Breadcrumb.",
   ],
@@ -41,10 +41,10 @@ export const docs: PageDocs = {
     [["Enter", "Space"], "Jumps directly to the focused chapter."],
   ],
   a11y: [
-    "Chapter segments sit inside role=\"group\" named Chapters; the active segment carries aria-current=\"step\".",
+    "Chapter segments sit inside a role=\"group\" named by the post's title; the active segment carries aria-current=\"step\".",
     "Each segment exposes the chapter number, title and reading minutes in aria-label.",
     "Every jump announces the chapter title, percentage and remaining read time once in a polite status region.",
-    "Under reduced motion the segment and figure update immediately without spring overshoot.",
+    "Under reduced motion the chapters fill at once.",
   ],
 };
 
@@ -85,7 +85,7 @@ export const study: PageStudy = {
   object: <ReadingProgress title="A week on the coast" defaultChapterIndex={2} />,
   parts: [
     { name: "The figure", selector: "[data-part=figure]" },
-    { name: "The chapter segments", selector: "[data-part=bubble]" },
+    { name: "A chapter read", selector: "[aria-current] [data-part=track]" },
     { name: "The active chapter", selector: "p[data-part=lettering]" },
   ],
   states: {
@@ -95,7 +95,7 @@ export const study: PageStudy = {
   },
   replay: {
     label: "Replay chapter advance",
-    caption: "Watch the chapters light up one by one as the reader moves on.",
+    caption: "Watch the chapters fill with the ink one by one as the reader moves on.",
     run: () => <ReplayReading />,
   },
 };
@@ -120,7 +120,7 @@ export default function ReadingProgressPage() {
         title="Finished state"
         tier="expressive"
         code="FinishedProgressDemo"
-        caption="At the last chapter every segment is lit, and the time left reads Finished."
+        caption="At the last chapter every segment is the ink, and the time left reads Finished."
       >
         <FinishedProgressDemo />
       </Stage>

@@ -1,278 +1,292 @@
 /**
- * AgentRun, a Flat part (skills/litt-md/taste/litt-principles.md, Flat): an editorial assistant turn start to finish
- * on a white paper card, pairing frameless colored dot steps, a collapsible thinking summary and streamed draft prose.
+ * AgentRun, a Flat part (skills/litt-md/taste/litt-principles.md, Flat): one assistant turn on a writer's draft, start
+ * to finish, on one white paper.
  *
- * - Framed in Flat's paper card (`litt-paper bg-surface-1 rounded-surface p-6`, no outline and nothing cast).
- * - Each step is a frameless dot tag (filled data hue dot when done, hollow outline dot while queued, matching Flat's
- *   Legend and status Tag) with `font-normal` labels and tabular timings.
- * - Starts settled on mount (zero auto-animation, R4). Tapping "Run again" walks through every step and streams the
- *   draft prose; under reduced motion it completes cleanly on the spot.
+ * - Your request sits in a grey bubble. The assistant thinks with a live timer, runs its steps one by one (a turning
+ *   ring that becomes an ink circle with a check, the step's result beside it), folds the work into "Thought for 4s",
+ *   then writes its answer in, word by word, behind a caret.
+ * - At rest it is the finished turn, folded: nothing moves on load (R4). Run again plays the turn; the fold opens and
+ *   closes from its own button. Under reduced motion Run again finishes at once.
+ * - The ink is the only colour, no accent fill (R6), and a step's state is its mark and its result, never a dot.
+ * - Screen readers hear each phase once, not every word.
  */
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { useMotionDial, useTransition } from "@/motion";
-
-export type RunHue = "sky" | "blue" | "violet" | "bubblegum" | "teal";
+import { useExit, useMotionDial, useTransition } from "@/motion";
 
 export type AgentRunStep = {
   id: string;
+  /** What the step did, e.g. "Read Spring issue". */
   label: string;
+  /** Its result, printed quietly at the end of its row once done, e.g. "412 words". */
   detail: string;
+  /** How long it took, e.g. "1.2s". The steps' times add up to the "Thought for" line, and Run again takes as long. */
   duration: string;
-  hue: RunHue;
 };
 
 export type AgentRunProps = {
-  /** Card title naming the draft or task. */
+  /** The turn's accessible name, e.g. the draft or task it works on. */
   title?: string;
-  /** Steps executed during the turn. */
+  /** What you asked, shown in a grey bubble above the turn. Leave it out to show the turn alone. */
+  request?: string;
+  /** Steps the assistant runs, in order. */
   steps?: AgentRunStep[];
-  /** Draft prose revealed when the turn finishes. */
+  /** The answer it writes once the steps are done. */
   answer?: string;
-  /** Whether the step list starts expanded. Default true. */
+  /** Whether the steps start unfolded. Default false: the finished turn shows "Thought for", folded. */
   defaultExpanded?: boolean;
-  /** Fires when a replay finishes. */
+  /** Fires when a run started by Run again finishes. */
   onComplete?: () => void;
   className?: string;
 };
 
-const HUE_VAR: Record<RunHue, string> = {
-  sky: "var(--data-sky)",
-  blue: "var(--data-blue)",
-  violet: "var(--data-violet)",
-  bubblegum: "var(--data-bubblegum)",
-  teal: "var(--data-teal)",
-};
-
 export const DEFAULT_RUN_STEPS: AgentRunStep[] = [
-  { id: "voice", label: "Read voice guide", detail: "Short sentences", duration: "0.6s", hue: "teal" },
-  { id: "notes", label: "Scan field notes", detail: "4 passages", duration: "1.1s", hue: "blue" },
-  { id: "draft", label: "Draft opening", detail: "62 words", duration: "1.2s", hue: "violet" },
-  { id: "check", label: "Check tone", detail: "Clear", duration: "0.5s", hue: "bubblegum" },
+  { id: "read", label: "Read Spring issue", detail: "412 words", duration: "0.8s" },
+  { id: "search", label: "Search reader letters", detail: "4 found", duration: "0.9s" },
+  { id: "edit", label: "Edit Spring issue", detail: "+18 −9", duration: "0.9s" },
 ];
 
-export const DEFAULT_RUN_ANSWER =
-  "Low tide comes early in November. By seven the salt marsh is quiet, the harbor posts stand clear of the water, and the whole coast smells of cedar smoke and rain.";
+export const DEFAULT_RUN_REQUEST = "Make the spring issue open stronger";
 
-/** Flat's editorial agent run card: frameless colored dot steps, collapsible thinking summary and live draft prose. */
+export const DEFAULT_RUN_ANSWER =
+  "I tightened the intro and moved two reader letters up, so the issue opens with what people wrote in.";
+
+/* The run's own pacing (what the assistant is doing, not an animation): how long it thinks before the first step, and
+   how fast each word of the answer comes in. */
+const THINK_MS = 1400;
+const WORD_MS = 45;
+
+type Phase = "thinking" | "working" | "answering" | "done";
+
+function stepMs(step: AgentRunStep): number {
+  const s = Number.parseFloat(step.duration);
+  return Number.isFinite(s) ? Math.min(4000, Math.max(300, s * 1000)) : 900;
+}
+
+/** Flat's agent turn: a request bubble, steps that fold into "Thought for", and the answer written in behind a caret. */
 export function AgentRun({
-  title = "Opening draft",
+  title = "Spring issue",
+  request = DEFAULT_RUN_REQUEST,
   steps = DEFAULT_RUN_STEPS,
   answer = DEFAULT_RUN_ANSWER,
-  defaultExpanded = true,
+  defaultExpanded = false,
   onComplete,
   className = "",
 }: AgentRunProps) {
   const { reduced } = useMotionDial();
-  const spring = useTransition("expressive");
-  const settle = useTransition("responsive");
-  const headingId = useId();
-  const stepsId = useId();
+  const arrive = useTransition("expressive");
+  const small = useTransition("responsive");
+  const leave = useExit("responsive");
+  const foldId = useId();
 
-  const words = answer.split(/\s+/).filter(Boolean);
-  const [phase, setPhase] = useState<"running" | "writing" | "done">("done");
-  const [completedCount, setCompletedCount] = useState(steps.length);
-  const [wordCount, setWordCount] = useState(words.length);
-  const [expanded, setExpanded] = useState(defaultExpanded);
+  const words = answer.split(/(?<=\s)/);
+  const thought = Math.max(1, Math.round((THINK_MS + steps.reduce((sum, s) => sum + stepMs(s), 0)) / 1000));
+
+  const [phase, setPhase] = useState<Phase>("done");
+  const [revealed, setRevealed] = useState(steps.length);
+  const [finished, setFinished] = useState(steps.length);
+  const [streamed, setStreamed] = useState(words.length);
+  const [open, setOpen] = useState(defaultExpanded);
+  const [seconds, setSeconds] = useState(thought);
   const [live, setLive] = useState("");
 
-  const timersRef = useRef<number[]>([]);
+  const timers = useRef<number[]>([]);
+  const ticker = useRef<number | null>(null);
+  const headRef = useRef<HTMLButtonElement>(null);
 
-  const clearTimers = useCallback(() => {
-    for (const id of timersRef.current) window.clearTimeout(id);
-    timersRef.current = [];
+  const clear = useCallback(() => {
+    for (const t of timers.current) window.clearTimeout(t);
+    timers.current = [];
+    if (ticker.current !== null) window.clearInterval(ticker.current);
+    ticker.current = null;
   }, []);
+  useEffect(() => clear, [clear]);
 
-  useEffect(() => clearTimers, [clearTimers]);
+  const busy = phase === "thinking" || phase === "working";
 
-  const replay = useCallback(() => {
-    clearTimers();
-    setExpanded(true);
-
+  const run = useCallback(() => {
+    clear();
+    headRef.current?.focus({ preventScroll: true });
     if (reduced) {
-      setCompletedCount(steps.length);
-      setWordCount(words.length);
       setPhase("done");
-      setLive(`${title} complete: ${steps.length} steps finished.`);
+      setRevealed(steps.length);
+      setFinished(steps.length);
+      setStreamed(words.length);
+      setSeconds(thought);
+      setLive(`Answer ready. ${answer}`);
       onComplete?.();
       return;
     }
+    const at = (ms: number, fn: () => void) => timers.current.push(window.setTimeout(fn, ms));
+    const started = Date.now();
+    setPhase("thinking");
+    setRevealed(0);
+    setFinished(0);
+    setStreamed(0);
+    setOpen(true);
+    setSeconds(0);
+    setLive("Thinking");
+    ticker.current = window.setInterval(() => setSeconds(Math.floor((Date.now() - started) / 1000)), 250);
 
-    setPhase("running");
-    setCompletedCount(0);
-    setWordCount(0);
-    setLive(`Running ${title}: ${steps.length} steps.`);
-
-    const stepMs = 480;
-    steps.forEach((_, idx) => {
-      const id = window.setTimeout(() => {
-        setCompletedCount(idx + 1);
-      }, (idx + 1) * stepMs);
-      timersRef.current.push(id);
+    let t = THINK_MS;
+    steps.forEach((step, i) => {
+      at(t, () => {
+        setPhase("working");
+        setRevealed(i + 1);
+        setLive(step.label);
+      });
+      t += stepMs(step);
+      at(t, () => setFinished(i + 1));
     });
+    at(t + 250, () => {
+      if (ticker.current !== null) window.clearInterval(ticker.current);
+      ticker.current = null;
+      setSeconds(Math.max(1, Math.round((Date.now() - started) / 1000)));
+      setPhase("answering");
+      setOpen(false);
+    });
+    t += 500;
+    words.forEach((_, i) => at(t + i * WORD_MS, () => setStreamed(i + 1)));
+    t += words.length * WORD_MS;
+    at(t, () => {
+      setPhase("done");
+      setLive(`Answer ready. ${answer}`);
+      onComplete?.();
+    });
+  }, [answer, clear, onComplete, reduced, steps, thought, words]);
 
-    const streamStart = steps.length * stepMs + 140;
-    const writeStartId = window.setTimeout(() => {
-      setPhase("writing");
-    }, streamStart);
-    timersRef.current.push(writeStartId);
-
-    const chunkSize = 3;
-    const chunkMs = 70;
-    const totalChunks = Math.ceil(words.length / chunkSize);
-    for (let c = 1; c <= totalChunks; c++) {
-      const id = window.setTimeout(() => {
-        const shown = Math.min(words.length, c * chunkSize);
-        setWordCount(shown);
-        if (shown >= words.length) {
-          setPhase("done");
-          setLive(`${title} ready: ${steps.length} steps complete.`);
-          onComplete?.();
-        }
-      }, streamStart + c * chunkMs);
-      timersRef.current.push(id);
-    }
-  }, [clearTimers, onComplete, reduced, steps, title, words.length]);
-
-  const activeIndex = phase === "running" ? completedCount : -1;
-  const visibleProse = words.slice(0, wordCount).join(" ");
-  const statusDot =
-    phase === "done"
-      ? "var(--success)"
-      : phase === "writing"
-        ? "var(--data-violet)"
-        : HUE_VAR[steps[Math.min(completedCount, Math.max(0, steps.length - 1))]?.hue ?? "blue"];
-
-  const statusText =
-    phase === "done"
-      ? `Ready · ${steps.length} steps`
-      : phase === "writing"
-        ? "Writing draft…"
-        : `${steps[activeIndex]?.label ?? "Working"}…`;
+  const current = steps[Math.max(0, revealed - 1)];
+  const shownSteps = steps.slice(0, revealed);
+  const text = words.slice(0, streamed).join("");
 
   return (
-    <div
+    <section
+      aria-label={title}
+      aria-busy={busy}
       data-part="paper"
-      className={"litt-paper grid w-full max-w-sm min-w-0 gap-4 rounded-surface bg-surface-1 p-6 text-fg forced-colors:border " + className}
+      className={"litt-paper grid w-full max-w-md min-w-0 rounded-surface bg-surface-1 px-5 pt-4 pb-5 text-body text-fg forced-colors:border " + className}
     >
-      {/* Header with title and frameless status dot */}
-      <header className="flex items-start justify-between gap-3">
-        <div className="grid min-w-0 gap-1">
-          <span id={headingId} data-part="lettering" className="truncate text-body font-title text-fg">
-            {title}
-          </span>
-          <span data-part="lettering" className="inline-flex items-center gap-2 text-caption font-normal text-fg-subtle">
-            <span
-              aria-hidden="true"
-              data-part="circle"
-              className="size-2 shrink-0 rounded-pill forced-colors:[forced-color-adjust:none] forced-colors:bg-[CanvasText]"
-              style={{ backgroundColor: statusDot }}
-            />
-            <span className="truncate">{statusText}</span>
-          </span>
-        </div>
-
-        <button
-          type="button"
-          data-part="lettering"
-          aria-expanded={expanded}
-          aria-controls={stepsId}
-          onClick={() => setExpanded((v) => !v)}
-          className="litt-target relative inline-flex h-control-sm shrink-0 cursor-pointer items-center gap-1 rounded-pill bg-transparent px-2 text-caption font-normal text-fg-subtle transition-colors duration-(--dur-instant) ease-litt hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+      {request && (
+        <p
+          data-part="bubble"
+          className="m-0 mb-3 ml-auto w-fit max-w-[85%] rounded-surface bg-block px-4 py-2 text-body text-fg forced-colors:border"
         >
-          <span>{expanded ? "Hide steps" : `${steps.length} steps`}</span>
-          <svg
-            width={12}
-            height={12}
-            viewBox="0 0 12 12"
-            aria-hidden="true"
-            className={"shrink-0 transition-transform duration-(--dur-instant) ease-litt " + (expanded ? "rotate-180" : "")}
-          >
-            <path
-              d="M3 4.5 6 7.5 9 4.5"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </button>
-      </header>
+          {request}
+        </p>
+      )}
 
-      {/* Collapsible frameless dot step list */}
-      <AnimatePresence initial={false}>
-        {expanded && (
-          <motion.ul
-            id={stepsId}
-            aria-labelledby={headingId}
-            initial={reduced ? false : { opacity: 0, y: -4 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={reduced ? undefined : { opacity: 0, y: -4 }}
-            transition={phase === "done" ? settle : spring}
-            className="m-0 grid list-none gap-2 p-0"
+      {/* The turn's line: what it is doing and for how long, or once done, the fold and Run again */}
+      <div className="-mx-2 flex min-h-9 items-center gap-2">
+        <button
+          ref={headRef}
+          type="button"
+          aria-expanded={open && revealed > 0}
+          aria-controls={foldId}
+          aria-disabled={busy || undefined}
+          onClick={() => !busy && setOpen((v) => !v)}
+          className={
+            "litt-target relative flex min-h-9 min-w-0 flex-1 items-center gap-2 rounded-pill px-2 py-1.5 text-left transition-colors duration-(--dur-instant) ease-litt focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus " +
+            (busy ? "cursor-default" : "cursor-pointer hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)]")
+          }
+        >
+          {busy ? (
+            <>
+              <span className="min-w-0 truncate font-title text-fg-subtle">{phase === "thinking" ? "Thinking" : current?.label}</span>
+              <span className="ml-auto shrink-0 text-small tabular-nums text-fg-subtle">{seconds}s</span>
+            </>
+          ) : (
+            <>
+              <span className="min-w-0 truncate text-fg-subtle">Thought for {seconds}s</span>
+              <svg
+                width={14}
+                height={14}
+                viewBox="0 0 16 16"
+                aria-hidden="true"
+                className={"shrink-0 text-fg-subtle transition-transform duration-(--dur-instant) ease-litt " + (open ? "rotate-90" : "")}
+              >
+                <path d="m6 4 4 4-4 4" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </>
+          )}
+        </button>
+        {phase === "done" && (
+          <button
+            type="button"
+            data-part="pill"
+            onClick={run}
+            className="litt-target relative mr-2 inline-flex h-9 shrink-0 cursor-pointer items-center rounded-pill bg-block px-4 text-small font-title text-fg transition-[background-color,transform] duration-(--dur-instant) ease-litt hover:bg-(--block-hover) motion-safe:active:scale-97 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus forced-colors:border"
           >
-            {steps.map((step, i) => {
-              const isDone = i < completedCount;
-              const isActive = i === activeIndex;
-              return (
-                <li key={step.id} className="flex items-center justify-between gap-3 text-caption font-normal">
-                  <span className="inline-flex min-w-0 items-center gap-2">
-                    <span
-                      aria-hidden="true"
-                      data-part={isDone || isActive ? "circle" : "outline"}
-                      className={
-                        "size-2.5 shrink-0 rounded-pill border-2 transition-colors duration-(--dur-instant) ease-litt forced-colors:border-[CanvasText] " +
-                        (isDone || isActive ? "border-transparent" : "border-fg-subtle bg-transparent")
-                      }
-                      style={isDone || isActive ? { backgroundColor: HUE_VAR[step.hue] } : undefined}
-                    />
-                    <span className={"truncate " + (isDone || isActive ? "text-fg" : "text-fg-subtle")}>
-                      {step.label}
+            Run again
+          </button>
+        )}
+      </div>
+
+      {/* The steps: each a turning ring that becomes an ink circle with a check, and its result once done */}
+      <div id={foldId}>
+        <AnimatePresence initial={false}>
+          {open && shownSteps.length > 0 && (
+            <motion.ol
+              initial={reduced ? false : { opacity: 0, y: -4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={reduced ? undefined : { opacity: 0, y: -4, transition: leave }}
+              transition={small}
+              className="m-0 grid list-none p-0"
+            >
+              {shownSteps.map((step, i) => {
+                const done = i < finished;
+                return (
+                  <motion.li
+                    key={step.id}
+                    initial={reduced ? false : { opacity: 0, y: 4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={small}
+                    className="relative flex min-w-0 items-center gap-2.5 pt-2.5"
+                  >
+                    {i > 0 && <span aria-hidden="true" className="absolute top-0 left-[9px] h-2.5 w-0.5 rounded-pill bg-line" />}
+                    <span aria-hidden="true" className="relative size-5 shrink-0">
+                      {done ? (
+                        <motion.span
+                          initial={reduced ? false : { scale: 0.6, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          transition={arrive}
+                          className="absolute inset-0 grid place-items-center rounded-pill bg-fg text-canvas forced-colors:bg-[CanvasText] forced-colors:text-[Canvas]"
+                        >
+                          <svg width={20} height={20} viewBox="0 0 20 20" fill="none">
+                            <path d="m6 10.4 2.7 2.6L14 7.4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                          </svg>
+                        </motion.span>
+                      ) : (
+                        <svg width={20} height={20} viewBox="0 0 20 20" fill="none" className="absolute inset-0 animate-spin motion-reduce:animate-none">{/* litt-allow: the loading spinner */}
+                          <circle cx="10" cy="10" r="7.5" stroke="var(--surface-3)" strokeWidth="2.5" />
+                          <path d="M17.5 10A7.5 7.5 0 0 0 10 2.5" stroke="var(--fg)" strokeWidth="2.5" strokeLinecap="round" />
+                        </svg>
+                      )}
                     </span>
-                    <span className="truncate text-fg-subtle">{step.detail}</span>
-                  </span>
-                  <span className="shrink-0 tabular-nums text-fg-subtle">
-                    {isDone ? step.duration : isActive ? "Now" : "Queued"}
-                  </span>
-                </li>
-              );
-            })}
-          </motion.ul>
-        )}
-      </AnimatePresence>
-
-      {/* Draft output surface (soft block inside paper, flips cleanly on sheets) */}
-      <div
-        data-part="bubble"
-        className="min-h-16 rounded-control bg-block p-4 text-small text-fg forced-colors:border"
-      >
-        {visibleProse ? (
-          <p className="m-0 leading-relaxed">{visibleProse}</p>
-        ) : (
-          <p className="m-0 text-fg-subtle">Gathering notes for the opening…</p>
-        )}
+                    <span className="min-w-0 truncate font-title text-fg">{step.label}</span>
+                    {done && (
+                      <span className="ml-auto shrink-0 text-small tabular-nums text-fg-subtle">{step.detail}</span>
+                    )}
+                  </motion.li>
+                );
+              })}
+            </motion.ol>
+          )}
+        </AnimatePresence>
       </div>
 
-      {/* Footer summary + Replay */}
-      <div className="flex items-center justify-between gap-2">
-        <span data-part="lettering" className="text-caption font-normal tabular-nums text-fg-subtle">
-          {phase === "done" ? `${words.length} words · 3.4s` : `${completedCount} of ${steps.length} steps`}
-        </span>
-        <button
-          type="button"
-          data-part="lettering"
-          onClick={replay}
-          disabled={phase !== "done"}
-          className="litt-target relative inline-flex h-control-sm cursor-pointer items-center rounded-pill bg-transparent px-2 text-caption font-normal text-fg transition-colors duration-(--dur-instant) ease-litt hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] disabled:cursor-default disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
-        >
-          {phase === "done" ? "Run again" : "Running…"}
-        </button>
-      </div>
+      {/* The answer, written in word by word behind a caret */}
+      {text && (
+        <p className="m-0 mt-3 text-body text-fg">
+          {text}
+          {phase === "answering" && (
+            <span aria-hidden="true" className="ml-0.5 inline-block h-[1.05em] w-0.5 translate-y-0.5 rounded-pill bg-fg" />
+          )}
+        </p>
+      )}
 
       <span role="status" aria-live="polite" className="sr-only">
         {live}
       </span>
-    </div>
+    </section>
   );
 }

@@ -820,7 +820,7 @@ const COPY = {
   },
   kudos: {
     title: "Kudos",
-    description: "A way for readers to cheer a post, up to five times each: an outlined pill until they do, a row of dots that warm with each kudos, and a +1 that rises. A Flat part.",
+    description: "A way for readers to cheer a post, up to five times each: a pill whose heart fills in ink and a +N that rises. A Flat part.",
     docs: "Needs data-material=\"flat\" on <html>. Pass count and subject; one more at the cap clears the reader's kudos. Under reduced motion nothing springs or floats and the count updates at once.",
   },
   "reaction-bar": {
@@ -894,23 +894,48 @@ const COPY = {
   },
   "context-budget": {
     title: "Context budget",
-    description: "A framed Flat paper (or ink) context window picker pairing a 28px standing percentage, proportional color segments and frameless dot tags. A Flat part.",
+    description: "A framed Flat paper (or ink) context window picker pairing a 28px standing percentage, one ink bar and plain source rows. A Flat part.",
     docs: "Needs data-material=\"flat\" on <html>. Pass title, sources and capacity; tapping any source tag attaches or excludes it.",
   },
   "hold-confirm": {
     title: "Hold to confirm",
-    description: "A framed Flat paper publishing card where holding the pill lights four sunset segments alongside a live 28px percentage readout, then settles with one-tap Undo. A Flat part.",
+    description: "A framed Flat paper publishing card where holding the pill fills one ink bar alongside a live 28px percentage readout, then settles with one-tap Undo. A Flat part.",
     docs: "Needs data-material=\"flat\" on <html>. Hold the pill by pointer, touch, or Space/Enter to confirm, release early to rewind, or tap Undo once complete.",
   },
   "agent-run": {
     title: "Agent run",
-    description: "A framed Flat paper card showing an editorial assistant turn from frameless colored dot steps to streamed prose with a collapsible step toggle and one-tap replay. A Flat part.",
+    description: "A framed Flat paper card showing an editorial assistant turn from plain steps to streamed prose with a collapsible step toggle and one-tap replay. A Flat part.",
     docs: "Needs data-material=\"flat\" on <html>. Tap Run again to step through the turn and stream the draft, or fold steps behind Hide steps.",
   },
   "toast-stack": {
     title: "Toast stack",
-    description: "Stacked Flat paper notices with frameless colored status dots that tuck behind the newest card and fan out smoothly on hover, focus, or tap. A Flat part.",
+    description: "Stacked Flat paper notices that tuck behind the newest card and fan out smoothly on hover, focus, or tap. A Flat part.",
     docs: "Needs data-material=\"flat\" on <html>. Hover or tap Fan out to spread notices apart, dismiss individual items, or add fresh notices to the deck.",
+  },
+  "agent-status": {
+    title: "Agent status",
+    description: "An agent's run on one Flat paper: the task and its state in words, the time live as a 44px figure, what it is doing now, three phase pills and only the actions that apply (Run, Stop, Allow, Try again). A Flat part.",
+    docs: "Needs data-material=\"flat\" on <html>. Controlled: pass state, step and tokens, and handle onRun, onStop and onAllow. Escape stops a live run.",
+  },
+  "assistant-status": {
+    title: "Assistant status",
+    description: "One white Flat pill saying what a writing assistant is doing: an ink circle with a moving glyph per phase (thinking, searching, reading, weighing, checking, writing) and the phase in words. A Flat part.",
+    docs: "Needs data-material=\"flat\" on <html>. Pass phase and detail, and tie paused to your stream so the glyph moves only while tokens arrive.",
+  },
+  "working-loader": {
+    title: "Working loader",
+    description: "Four Flat ways to say an assistant is working (shimmering words, a wave of squares, a stepping arc, typing pills), with what it is doing and how long. No dots. A Flat part.",
+    docs: "Needs data-material=\"flat\" on <html>. Pick variant, pass label, and tie paused to your stream; pass seconds to show a time you keep.",
+  },
+  "magnetic-button": {
+    title: "Magnetic button",
+    description: "A Flat ink pill with a little gravity: it leans toward a pointer that comes near on the responsive spring and springs home on Flat's expressive spring. A Flat part.",
+    docs: "Needs data-material=\"flat\" on <html>. Use it for the one action a page is for; pressed makes it a toggle, strength and reach set the pull.",
+  },
+  "spotlight-card": {
+    title: "Spotlight card",
+    description: "A Flat paper with one large figure and a grey bubble that rides under the pointer, held in so the paper keeps its white rim; cards in a SpotlightGroup share one pointer. A Flat part.",
+    docs: "Needs data-material=\"flat\" on <html>. Wrap cards in SpotlightGroup so the bubble crosses from one to the next.",
   },
   "agent-dispatch": {
     title: "Agent dispatch",

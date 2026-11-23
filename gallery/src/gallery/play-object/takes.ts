@@ -28,7 +28,7 @@ export type Take = {
  */
 const SET: Record<Material, string[]> = {
   press: ["autonomy-gate", "deploy-status", "env-switch", "release-rail", "stat", "button", "switch", "segmented", "slider", "input", "select", "menu"],
-  flat: ["context-budget", "hold-confirm", "agent-run", "toast-stack", "poll", "streak", "kudos", "reaction-bar", "reading-progress", "goal-ring", "progress", "toast"],
+  flat: ["spotlight-card", "magnetic-button", "working-loader", "assistant-status", "agent-status", "context-budget", "hold-confirm", "agent-run", "toast-stack", "poll", "streak", "kudos"],
   device: ["agent-dispatch", "composer", "agent-indicator", "tool-call", "message", "seven-segment", "tape-progress", "switch", "slider", "gauge", "copy-button", "command-menu"],
   plain: ["agent-transcript", "form", "input", "select", "checkbox", "button", "table", "details", "callout", "breadcrumb", "tabs", "dialog"],
   rack: ["agent-chain", "clip-launcher", "device-rack", "step-sequencer", "slider", "curve-editor", "pad", "time-scrubber", "inspector", "number-field", "segmented", "switch"],

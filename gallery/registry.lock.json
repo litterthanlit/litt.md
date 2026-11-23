@@ -1,6 +1,6 @@
 {
   "$comment": "Written by scripts/gen-registry.mjs. What each registry item installs, hashed, and the release that last changed it. Commit it with the change.",
-  "latest": "2026.11.22",
+  "latest": "2026.11.23",
   "items": {
     "accordion": {
       "version": "2026.11.18",
@@ -31,8 +31,12 @@
       "hash": "ff0a695ce52c48ed"
     },
     "agent-run": {
-      "version": "2026.11.22",
-      "hash": "bc50930cd0743191"
+      "version": "2026.11.23",
+      "hash": "8515a4a7bdc4756a"
+    },
+    "agent-status": {
+      "version": "2026.11.23",
+      "hash": "7fcda55d30df2671"
     },
     "agent-throttle": {
       "version": "2026.11.22",
@@ -45,6 +49,10 @@
     "app-shell": {
       "version": "2026.11.06",
       "hash": "db759722a42893f7"
+    },
+    "assistant-status": {
+      "version": "2026.11.23",
+      "hash": "6fef40991c015d82"
     },
     "autonomy-gate": {
       "version": "2026.11.22",
@@ -115,8 +123,8 @@
       "hash": "941606ce76eb027f"
     },
     "code-input": {
-      "version": "2026.11.19",
-      "hash": "03b2f8728223ade4"
+      "version": "2026.11.23",
+      "hash": "913b7933454134b6"
     },
     "cohort-grid": {
       "version": "2026.11.18",
@@ -143,8 +151,8 @@
       "hash": "06c030aa75ac1895"
     },
     "context-budget": {
-      "version": "2026.11.22",
-      "hash": "a2b28a07afc1fbf3"
+      "version": "2026.11.23",
+      "hash": "f30961de58ed75c3"
     },
     "context-menu": {
       "version": "2026.11.12",
@@ -335,8 +343,8 @@
       "hash": "36890aac1240c896"
     },
     "device-heatmap": {
-      "version": "2026.11.18",
-      "hash": "dc365d55a4a6e737"
+      "version": "2026.11.23",
+      "hash": "c494686dc1eb9562"
     },
     "device-hover-card": {
       "version": "2026.11.16",
@@ -375,8 +383,8 @@
       "hash": "dd147264254ab4bb"
     },
     "device-litt": {
-      "version": "2026.11.22",
-      "hash": "0b0c4ca8c8e5b66e"
+      "version": "2026.11.23",
+      "hash": "d09cf5ed2c7a65cf"
     },
     "device-log-view": {
       "version": "2026.11.18",
@@ -431,8 +439,8 @@
       "hash": "9d8b30626009a796"
     },
     "device-progress": {
-      "version": "2026.11.19",
-      "hash": "031ec1bbc38610c7"
+      "version": "2026.11.23",
+      "hash": "4cc5d2bb58545260"
     },
     "device-rack": {
       "version": "2026.11.21",
@@ -511,8 +519,8 @@
       "hash": "1925454f8d693be6"
     },
     "device-stat": {
-      "version": "2026.11.20",
-      "hash": "91724af970e7eff0"
+      "version": "2026.11.23",
+      "hash": "3ced546afed71e6d"
     },
     "device-states": {
       "version": "2026.11.18",
@@ -611,12 +619,20 @@
       "hash": "09c6dfea8cc66216"
     },
     "flat-agent-run": {
-      "version": "2026.11.22",
-      "hash": "bc50930cd0743191"
+      "version": "2026.11.23",
+      "hash": "8515a4a7bdc4756a"
+    },
+    "flat-agent-status": {
+      "version": "2026.11.23",
+      "hash": "7fcda55d30df2671"
     },
     "flat-app-shell": {
       "version": "2026.11.16",
       "hash": "db759722a42893f7"
+    },
+    "flat-assistant-status": {
+      "version": "2026.11.23",
+      "hash": "6fef40991c015d82"
     },
     "flat-avatar": {
       "version": "2026.11.18",
@@ -671,8 +687,8 @@
       "hash": "941606ce76eb027f"
     },
     "flat-code-input": {
-      "version": "2026.11.17",
-      "hash": "90fa90adb442bf88"
+      "version": "2026.11.23",
+      "hash": "d2b62f5a88c629d5"
     },
     "flat-cohort-grid": {
       "version": "2026.11.18",
@@ -695,8 +711,8 @@
       "hash": "512ee5ac9a9da5c0"
     },
     "flat-context-budget": {
-      "version": "2026.11.22",
-      "hash": "a2b28a07afc1fbf3"
+      "version": "2026.11.23",
+      "hash": "f30961de58ed75c3"
     },
     "flat-context-menu": {
       "version": "2026.11.16",
@@ -751,20 +767,20 @@
       "hash": "f50a1e82889db283"
     },
     "flat-goal-ring": {
-      "version": "2026.11.22",
-      "hash": "319bc1a5f3708baf"
+      "version": "2026.11.23",
+      "hash": "a869de4bc32947b2"
     },
     "flat-header": {
       "version": "2026.11.16",
       "hash": "36890aac1240c896"
     },
     "flat-heatmap": {
-      "version": "2026.11.18",
-      "hash": "aec882e54f380aa1"
+      "version": "2026.11.23",
+      "hash": "b1fdcef0ce3fef07"
     },
     "flat-hold-confirm": {
-      "version": "2026.11.22",
-      "hash": "c2fb4cd7cb3081d7"
+      "version": "2026.11.23",
+      "hash": "381c4f3c2090fac8"
     },
     "flat-hover-card": {
       "version": "2026.11.16",
@@ -787,8 +803,8 @@
       "hash": "17d1840b1643cf07"
     },
     "flat-kudos": {
-      "version": "2026.11.22",
-      "hash": "736107af58d0b1fe"
+      "version": "2026.11.23",
+      "hash": "6131170027b856a8"
     },
     "flat-legend": {
       "version": "2026.11.20",
@@ -807,12 +823,16 @@
       "hash": "dd147264254ab4bb"
     },
     "flat-litt": {
-      "version": "2026.11.22",
-      "hash": "383026223d9b8135"
+      "version": "2026.11.23",
+      "hash": "8f2ab33b5ffcb4e0"
     },
     "flat-log-view": {
       "version": "2026.11.18",
       "hash": "7565bfac238912d1"
+    },
+    "flat-magnetic-button": {
+      "version": "2026.11.23",
+      "hash": "8ca35dce0636bb89"
     },
     "flat-media": {
       "version": "2026.11.16",
@@ -851,8 +871,8 @@
       "hash": "df73f4f043b78b69"
     },
     "flat-poll": {
-      "version": "2026.11.22",
-      "hash": "0283a0cd45718a8d"
+      "version": "2026.11.23",
+      "hash": "d98834925d38bab8"
     },
     "flat-popover": {
       "version": "2026.11.16",
@@ -867,20 +887,20 @@
       "hash": "9d8b30626009a796"
     },
     "flat-progress": {
-      "version": "2026.11.19",
-      "hash": "ba4e958346266e98"
+      "version": "2026.11.23",
+      "hash": "4cc5d2bb58545260"
     },
     "flat-range-chart": {
       "version": "2026.11.16",
       "hash": "3b510b0be4606ccd"
     },
     "flat-reaction-bar": {
-      "version": "2026.11.22",
-      "hash": "55c77f530e86216f"
+      "version": "2026.11.23",
+      "hash": "8f530cab3de91cce"
     },
     "flat-reading-progress": {
-      "version": "2026.11.22",
-      "hash": "4e6eda5f6f034392"
+      "version": "2026.11.23",
+      "hash": "85cfea81a1493e6c"
     },
     "flat-resizable": {
       "version": "2026.11.16",
@@ -907,8 +927,8 @@
       "hash": "9d6e7d1ba7b86f41"
     },
     "flat-segmented": {
-      "version": "2026.11.16",
-      "hash": "38b31339376b44f1"
+      "version": "2026.11.23",
+      "hash": "a6aab72cebb2a197"
     },
     "flat-select": {
       "version": "2026.11.18",
@@ -927,8 +947,8 @@
       "hash": "7961c4270fa30a0e"
     },
     "flat-slider": {
-      "version": "2026.11.18",
-      "hash": "30f7d24b71262605"
+      "version": "2026.11.23",
+      "hash": "52d2ae502c8ed0c6"
     },
     "flat-sources": {
       "version": "2026.11.18",
@@ -937,6 +957,10 @@
     "flat-sparkline": {
       "version": "2026.11.18",
       "hash": "b2401978cb45d117"
+    },
+    "flat-spotlight-card": {
+      "version": "2026.11.23",
+      "hash": "61c20653389ba0af"
     },
     "flat-spread": {
       "version": "2026.11.18",
@@ -947,8 +971,8 @@
       "hash": "1925454f8d693be6"
     },
     "flat-stat": {
-      "version": "2026.11.20",
-      "hash": "8f8a8ee97849530e"
+      "version": "2026.11.23",
+      "hash": "3f89b9d02dd4837a"
     },
     "flat-states": {
       "version": "2026.11.18",
@@ -959,12 +983,12 @@
       "hash": "eb874003dc2c37b0"
     },
     "flat-streak": {
-      "version": "2026.11.22",
-      "hash": "78c38e05ad6db0d8"
+      "version": "2026.11.23",
+      "hash": "cda3296c44c0dffa"
     },
     "flat-switch": {
-      "version": "2026.11.16",
-      "hash": "ba487862a337426e"
+      "version": "2026.11.23",
+      "hash": "dd6e61c74ce275ca"
     },
     "flat-table": {
       "version": "2026.11.18",
@@ -999,8 +1023,8 @@
       "hash": "b30bfa89cc3a2976"
     },
     "flat-toast-stack": {
-      "version": "2026.11.22",
-      "hash": "33e206b8347d07d6"
+      "version": "2026.11.23",
+      "hash": "b0f6d746ee42e8f9"
     },
     "flat-token-input": {
       "version": "2026.11.19",
@@ -1021,6 +1045,10 @@
     "flat-tune": {
       "version": "2026.11.18",
       "hash": "033401331cff1fb6"
+    },
+    "flat-working-loader": {
+      "version": "2026.11.23",
+      "hash": "113775c8707d1e76"
     },
     "form": {
       "version": "2026.11.06",
@@ -1043,8 +1071,8 @@
       "hash": "f50a1e82889db283"
     },
     "goal-ring": {
-      "version": "2026.11.22",
-      "hash": "319bc1a5f3708baf"
+      "version": "2026.11.23",
+      "hash": "a869de4bc32947b2"
     },
     "growth": {
       "version": "2026.10.26",
@@ -1203,8 +1231,8 @@
       "hash": "36890aac1240c896"
     },
     "heat-heatmap": {
-      "version": "2026.11.18",
-      "hash": "dc365d55a4a6e737"
+      "version": "2026.11.23",
+      "hash": "c494686dc1eb9562"
     },
     "heat-hover-card": {
       "version": "2026.11.16",
@@ -1247,8 +1275,8 @@
       "hash": "dd147264254ab4bb"
     },
     "heat-litt": {
-      "version": "2026.11.22",
-      "hash": "23d0ed8d4d50c1fa"
+      "version": "2026.11.23",
+      "hash": "58a3487ce5974c88"
     },
     "heat-log-view": {
       "version": "2026.11.18",
@@ -1303,8 +1331,8 @@
       "hash": "9d8b30626009a796"
     },
     "heat-progress": {
-      "version": "2026.11.19",
-      "hash": "031ec1bbc38610c7"
+      "version": "2026.11.23",
+      "hash": "4cc5d2bb58545260"
     },
     "heat-pursuit-meter": {
       "version": "2026.11.20",
@@ -1379,8 +1407,8 @@
       "hash": "1925454f8d693be6"
     },
     "heat-stat": {
-      "version": "2026.11.20",
-      "hash": "163840d37f10dd4a"
+      "version": "2026.11.23",
+      "hash": "616fe62b0f8eee74"
     },
     "heat-states": {
       "version": "2026.11.18",
@@ -1451,12 +1479,12 @@
       "hash": "d7d66c1d48e8cfe5"
     },
     "heatmap": {
-      "version": "2026.11.18",
-      "hash": "fe8ced325d8ddccd"
+      "version": "2026.11.23",
+      "hash": "bdbcf78e2361e216"
     },
     "hold-confirm": {
-      "version": "2026.11.22",
-      "hash": "c2fb4cd7cb3081d7"
+      "version": "2026.11.23",
+      "hash": "381c4f3c2090fac8"
     },
     "hover-card": {
       "version": "2026.11.15",
@@ -1483,8 +1511,8 @@
       "hash": "17d1840b1643cf07"
     },
     "kudos": {
-      "version": "2026.11.22",
-      "hash": "736107af58d0b1fe"
+      "version": "2026.11.23",
+      "hash": "6131170027b856a8"
     },
     "lap-timer": {
       "version": "2026.11.20",
@@ -1507,12 +1535,16 @@
       "hash": "dd147264254ab4bb"
     },
     "litt": {
-      "version": "2026.11.22",
-      "hash": "d23d81722469a4fa"
+      "version": "2026.11.23",
+      "hash": "95813f269d33e8de"
     },
     "log-view": {
       "version": "2026.11.18",
       "hash": "7565bfac238912d1"
+    },
+    "magnetic-button": {
+      "version": "2026.11.23",
+      "hash": "8ca35dce0636bb89"
     },
     "media": {
       "version": "2026.11.06",
@@ -1695,8 +1727,8 @@
       "hash": "36890aac1240c896"
     },
     "plain-heatmap": {
-      "version": "2026.11.18",
-      "hash": "dc365d55a4a6e737"
+      "version": "2026.11.23",
+      "hash": "c494686dc1eb9562"
     },
     "plain-hover-card": {
       "version": "2026.11.16",
@@ -1735,8 +1767,8 @@
       "hash": "dd147264254ab4bb"
     },
     "plain-litt": {
-      "version": "2026.11.22",
-      "hash": "fc513d6ca87433fb"
+      "version": "2026.11.23",
+      "hash": "13cbcbb2c18c13f3"
     },
     "plain-log-view": {
       "version": "2026.11.18",
@@ -1791,8 +1823,8 @@
       "hash": "9d8b30626009a796"
     },
     "plain-progress": {
-      "version": "2026.11.19",
-      "hash": "031ec1bbc38610c7"
+      "version": "2026.11.23",
+      "hash": "4cc5d2bb58545260"
     },
     "plain-range-chart": {
       "version": "2026.11.16",
@@ -1863,8 +1895,8 @@
       "hash": "1925454f8d693be6"
     },
     "plain-stat": {
-      "version": "2026.11.20",
-      "hash": "335deb639322c24b"
+      "version": "2026.11.23",
+      "hash": "b51b0d89bd4c2499"
     },
     "plain-states": {
       "version": "2026.11.18",
@@ -1935,8 +1967,8 @@
       "hash": "df73f4f043b78b69"
     },
     "poll": {
-      "version": "2026.11.22",
-      "hash": "0283a0cd45718a8d"
+      "version": "2026.11.23",
+      "hash": "d98834925d38bab8"
     },
     "popover": {
       "version": "2026.11.15",
@@ -2099,8 +2131,8 @@
       "hash": "36890aac1240c896"
     },
     "press-heatmap": {
-      "version": "2026.11.18",
-      "hash": "dc365d55a4a6e737"
+      "version": "2026.11.23",
+      "hash": "c494686dc1eb9562"
     },
     "press-hover-card": {
       "version": "2026.11.16",
@@ -2139,8 +2171,8 @@
       "hash": "dd147264254ab4bb"
     },
     "press-litt": {
-      "version": "2026.11.22",
-      "hash": "906cf18d67866fe6"
+      "version": "2026.11.23",
+      "hash": "f58f72bebd995768"
     },
     "press-log-view": {
       "version": "2026.11.18",
@@ -2195,8 +2227,8 @@
       "hash": "9d8b30626009a796"
     },
     "press-progress": {
-      "version": "2026.11.19",
-      "hash": "031ec1bbc38610c7"
+      "version": "2026.11.23",
+      "hash": "4cc5d2bb58545260"
     },
     "press-range-chart": {
       "version": "2026.11.16",
@@ -2271,8 +2303,8 @@
       "hash": "1925454f8d693be6"
     },
     "press-stat": {
-      "version": "2026.11.20",
-      "hash": "335deb639322c24b"
+      "version": "2026.11.23",
+      "hash": "b51b0d89bd4c2499"
     },
     "press-states": {
       "version": "2026.11.18",
@@ -2351,8 +2383,8 @@
       "hash": "9d8b30626009a796"
     },
     "progress": {
-      "version": "2026.11.19",
-      "hash": "d2b973e773cc4e57"
+      "version": "2026.11.23",
+      "hash": "4cc5d2bb58545260"
     },
     "projects": {
       "version": "2026.11.03",
@@ -2519,8 +2551,8 @@
       "hash": "36890aac1240c896"
     },
     "rack-heatmap": {
-      "version": "2026.11.18",
-      "hash": "dc365d55a4a6e737"
+      "version": "2026.11.23",
+      "hash": "c494686dc1eb9562"
     },
     "rack-hover-card": {
       "version": "2026.11.16",
@@ -2559,8 +2591,8 @@
       "hash": "dd147264254ab4bb"
     },
     "rack-litt": {
-      "version": "2026.11.22",
-      "hash": "db6b5ff4d5b2cf6d"
+      "version": "2026.11.23",
+      "hash": "454752b17b979584"
     },
     "rack-log-view": {
       "version": "2026.11.18",
@@ -2615,8 +2647,8 @@
       "hash": "9d8b30626009a796"
     },
     "rack-progress": {
-      "version": "2026.11.19",
-      "hash": "031ec1bbc38610c7"
+      "version": "2026.11.23",
+      "hash": "4cc5d2bb58545260"
     },
     "rack-range-chart": {
       "version": "2026.11.16",
@@ -2687,8 +2719,8 @@
       "hash": "1925454f8d693be6"
     },
     "rack-stat": {
-      "version": "2026.11.20",
-      "hash": "517e9ca087ce0367"
+      "version": "2026.11.23",
+      "hash": "9b5a8da22bb022df"
     },
     "rack-states": {
       "version": "2026.11.18",
@@ -2763,12 +2795,12 @@
       "hash": "3b510b0be4606ccd"
     },
     "reaction-bar": {
-      "version": "2026.11.22",
-      "hash": "55c77f530e86216f"
+      "version": "2026.11.23",
+      "hash": "8f530cab3de91cce"
     },
     "reading-progress": {
-      "version": "2026.11.22",
-      "hash": "4e6eda5f6f034392"
+      "version": "2026.11.23",
+      "hash": "85cfea81a1493e6c"
     },
     "release-rail": {
       "version": "2026.11.21",
@@ -2799,8 +2831,8 @@
       "hash": "9d6e7d1ba7b86f41"
     },
     "segmented": {
-      "version": "2026.11.19",
-      "hash": "82fb938dd9309e7c"
+      "version": "2026.11.23",
+      "hash": "b43770b6c25e2b55"
     },
     "select": {
       "version": "2026.11.19",
@@ -2831,8 +2863,8 @@
       "hash": "f248f509d9e11776"
     },
     "slider": {
-      "version": "2026.11.19",
-      "hash": "e7c6b2ec671dbbda"
+      "version": "2026.11.23",
+      "hash": "bcb224f05132d743"
     },
     "sources": {
       "version": "2026.11.18",
@@ -2841,6 +2873,10 @@
     "sparkline": {
       "version": "2026.11.19",
       "hash": "b720189608441d06"
+    },
+    "spotlight-card": {
+      "version": "2026.11.23",
+      "hash": "61c20653389ba0af"
     },
     "spread": {
       "version": "2026.11.18",
@@ -2851,8 +2887,8 @@
       "hash": "1925454f8d693be6"
     },
     "stat": {
-      "version": "2026.11.20",
-      "hash": "922c81378381e846"
+      "version": "2026.11.23",
+      "hash": "24dcceb3f0c04bfe"
     },
     "states": {
       "version": "2026.11.18",
@@ -2867,12 +2903,12 @@
       "hash": "eb874003dc2c37b0"
     },
     "streak": {
-      "version": "2026.11.22",
-      "hash": "78c38e05ad6db0d8"
+      "version": "2026.11.23",
+      "hash": "cda3296c44c0dffa"
     },
     "switch": {
-      "version": "2026.11.19",
-      "hash": "a54eb3daf4aecc66"
+      "version": "2026.11.23",
+      "hash": "1dbd525f61113528"
     },
     "table": {
       "version": "2026.11.19",
@@ -2915,8 +2951,8 @@
       "hash": "b30bfa89cc3a2976"
     },
     "toast-stack": {
-      "version": "2026.11.22",
-      "hash": "33e206b8347d07d6"
+      "version": "2026.11.23",
+      "hash": "b0f6d746ee42e8f9"
     },
     "token-input": {
       "version": "2026.11.19",
@@ -2945,6 +2981,10 @@
     "usage": {
       "version": "2026.10.26",
       "hash": "bda1d7576a9c59e5"
+    },
+    "working-loader": {
+      "version": "2026.11.23",
+      "hash": "113775c8707d1e76"
     }
   }
 }

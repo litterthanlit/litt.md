@@ -12,10 +12,10 @@ export const meta: PageMeta = {
   verbs: ["watch"],
   worlds: ["flat"],
   summary:
-    "How many weeks or days a run has lasted: the count as one large number at the top with a status word beside it, and a pill for each week or day below. Each one done is a step warmer than the last, gold to plum in light and plum to gold in dark; a missed one stays grey. The current one is outlined until you log it, and logging it again takes it back. It belongs to Flat.",
-  tiers: ["instant", "expressive"],
+    "How many weeks or days a run has lasted, on a white paper: the count as one large number with a status word beside it, and a pill for each week or day below. Each one done is the ink and a missed one stays grey. The current one is outlined until you log it, and logging it again takes it back. It belongs to Flat.",
+  tiers: ["responsive", "expressive"],
   mechanism:
-    "Done pills read the sequential ramp (--data-seq-1 to --data-seq-4) blended in OKLab, so warmth climbs with the run. The current slot is a native button with aria-pressed, drawn as a 1.5px outline while open; logging it springs the pill and the figure on the expressive spring (350ms) and announces the new streak in a polite status region. Reduced motion updates at once.",
+    "Done pills are the ink and missed ones the grey bubble. The current slot is a native button with aria-pressed, drawn as a 1.5px outline while open; logging it fills it with the ink and pops it back from the press on the expressive spring (350ms), and taking it back settles on the responsive spring with no bounce. The figure counts on without moving, and a polite status region announces the new streak. Reduced motion updates at once.",
 };
 
 export const docs: PageDocs = {
@@ -38,10 +38,10 @@ export const docs: PageDocs = {
 />`,
   use: [
     "A recurring site, newsletter or reading habit under Flat: consecutive issues published, days read, drafts finished.",
-    "A warm visual reward where each step along the run adds heat.",
+    "A quiet reward where the run reads at a glance: a row of ink with no gaps.",
   ],
   skip: [
-    "Another world's page. Streak reads Flat's warm sequential ramp and large figure; it needs data-material=\"flat\" on <html>.",
+    "Another world's page. Streak is drawn in Flat's paper, pills and standing figure; it needs data-material=\"flat\" on <html>.",
     "A dense calendar of months of history. Use Heatmap.",
     "A live job or upload with a known percentage. Use Progress.",
   ],
@@ -52,7 +52,7 @@ export const docs: PageDocs = {
   a11y: [
     "The standing count, unit and status are plain text; the capsules sit in a labelled list with full labels.",
     "The interactive current slot is a native button with aria-pressed, and toggling announces the updated count once in a polite status.",
-    "Status never relies on color alone: the figure, status word and footer caption state the run in words.",
+    "Status never relies on a shade alone: the figure, the status word and the line under the pills state the run in words.",
     "Under reduced motion the figure and capsule update at once with no spring.",
   ],
 };
@@ -100,7 +100,7 @@ export const study: PageStudy = {
   object: <Streak label="Friday letter" unit={["week", "weeks"]} actionLabel="Send Issue 14" slots={ISSUES} className="max-w-md" />,
   parts: [
     { name: "The figure", selector: "[data-part=figure]" },
-    { name: "The status", selector: "[data-part=mark]" },
+    { name: "The status", selector: "header > [data-part=lettering]" },
     { name: "A week done", selector: "[role=listitem] [data-part=pill]" },
     { name: "The open slot", selector: "[role=listitem] button" },
   ],
@@ -110,7 +110,7 @@ export const study: PageStudy = {
   },
   replay: {
     label: "Replay logging a week",
-    caption: "Watch this week's pill take the warmest color as the count goes from 6 to 7.",
+    caption: "Watch this week's pill fill with the ink and pop as the count goes from 6 to 7.",
     run: () => <ReplayStreak />,
   },
 };
@@ -127,7 +127,7 @@ export default function StreakPage() {
         title="Friday letter cadence"
         tier="expressive"
         code="LetterCadenceDemo"
-        caption="Six weeks sent in a row, each a little warmer than the last. W14 is still open until Issue 14 goes out."
+        caption="Six weeks sent in a row, each in ink. W14 is outlined until Issue 14 goes out."
       >
         <LetterCadenceDemo />
       </Stage>

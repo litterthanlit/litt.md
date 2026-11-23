@@ -156,6 +156,10 @@ export function ProjectCard({ open }: { open: boolean }) {
       <a href="#c" className={TARGET_ROW + " justify-between"} />
       <a href="#d" className={"litt-target " + POSITION} />
       <a href="#e" className="litt-target sm:relative" /> {/* expect: other */}
+      {/* Flat has no dots: outside a Flat part only what sits behind Flat's variant is judged. */}
+      <span className="size-2 rounded-pill bg-success" />
+      <span className="before:size-2 before:rounded-pill in-[[data-material=device]]:size-1.5 in-[[data-material=device]]:rounded-pill" />
+      <span className="in-[[data-material=flat]]:before:size-2 in-[[data-material=flat]]:before:rounded-pill" /> {/* expect: other */}
       <Button size="lg">Open</Button>
     </div>
   );

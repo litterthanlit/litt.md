@@ -66,6 +66,14 @@ const W = {
   floats: /\bfloat(?:s|ing)\b/i,
   leans: /\blean(?:s|ing)?\b/i,
   "half a pixel": /\bhalf a pixel\b/i,
+  /* Device's hardware, which Flat's studies dropped (taste v1.22): a figure stands on the paper, it is not read off a
+     panel. A readout and an LCD are a device's; a reel turns tape ("reels of film" is a thing a post is about); a needle
+     swings on a meter ("a needle in a haystack" is an idiom); letters scramble on a display ("scrambled eggs" are food). */
+  readout: /\breadouts?\b/i,
+  LCD: /\bLCDs?\b/,
+  reel: /\breels?\b(?!\s+of\s+film\b)/i,
+  needle: /\bneedles?\b(?!\s+in\s+a\s+haystack\b)/i,
+  scramble: /\bscrambl(?:e|es|ed|ing)\b(?!\s+eggs?\b)/i,
 };
 const pick = (...names) => Object.fromEntries(names.map((n) => [n, W[n]]));
 /* Another world named on a page in this one ("In Flat there is no block…"): a world's page shows itself only. */
@@ -78,7 +86,8 @@ const others = (self) => ({
  * Each world checked, and the words that belong to the other worlds' materials, never to it (litt-principles.md, each
  * world's own; plans/audits, each world's finding on its words).
  * - Heat is black and flat: nothing is glass, casts, glows, stands raised, sinks or is a pill (proposals/heat.md).
- * - Flat has no edges, lines or depth: paper on grey, pills and circles, nothing cast but what floats (flat.md, 1).
+ * - Flat has no edges, lines or depth: paper on grey, pills and circles, nothing cast but what floats (flat.md, 1), and
+ *   no hardware: no readout, LCD, reel, needle or scramble (the studies, taste v1.22).
  * - Rack follows Live: values in boxes, nothing travels, eases or sinks (rack.md, 2).
  * - Device is plates, wells, keys and glass, so those are its own; Press's tray, cast and pill are not (device.md, 3).
  * - Plain has no UI and nothing moves (plain.md, 2).
@@ -86,7 +95,7 @@ const others = (self) => ({
  */
 const WORDS = {
   press: others("press"),
-  flat: { ...pick("glass", "cast", "raised", "sinks", "plate", "tray", "bezel", "glow", "stone"), ...others("flat") },
+  flat: { ...pick("glass", "cast", "raised", "sinks", "plate", "tray", "bezel", "glow", "stone", "readout", "LCD", "reel", "needle", "scramble"), ...others("flat") },
   device: { ...pick("cast", "raised", "tray", "thrown", "glides", "leans", "half a pixel", "pill", "stone"), ...others("device") },
   plain: {
     ...pick("glass", "cast", "raised", "sinks", "cap", "plate", "tray", "glides"),
@@ -125,6 +134,8 @@ const KNOWN = [
     k(`${w}/components`, ["glass"], NAME + "; the gallery view lists it by name" + (w === "rack" ? ", and the clip launcher's preset Glass Pad is a name in Rack's demo (rack-fixes.md, step 8)" : "")),
   ]),
   ...["device", "rack", "heat"].map((w) => k(`${w}/tune`, ["pill"], TUNE)),
+  /* Flat's hardware words (taste v1.22): these parts are being redrawn after the studies, and their words with them. */
+  k("flat/time-scrubber", ["needle"], "every world draws the scrubber's fixed needle (it has no Flat body), so the shared Accessibility line names it; it waits on a Flat body"),
   /* Plain's words are Nick's (litt-principles.md, Plain: nothing changes without asking): each page below waits on its
      row in the draft, plans/audits/plain-words.md, and names only the words that row replaces, so a new word on a Plain
      page, or another world named on one the draft does not cover, fails. When a row lands, its entry goes. */
@@ -225,11 +236,11 @@ function read(content) {
 
 const browser = await chromium.launch();
 const ctx = await browser.newContext({ viewport: { width: 1440, height: 1000 }, colorScheme: "dark", reducedMotion: "reduce" });
-/* What the self-test puts back: each world's list catches some of it (glass, raised, the tray, the cast, or another world named). */
-const INJECTED = "A glass dropdown whose raised block sinks into its tray and tightens its cast, as in Flat and in Device.";
+/* What the self-test puts back: each world's list catches some of it (glass, raised, the tray, the cast, a readout for Flat, or another world named). */
+const INJECTED = "A glass dropdown whose raised block sinks into its tray and tightens its cast under a readout, as in Flat and in Device.";
 /* One sentence trips several lists at once, so a page counts as caught only when its world's own list finds the word
    named here, and another world named: a list that lost most of its words would otherwise still catch something. */
-const EXPECT = { press: "another world", flat: "glass", device: "tray", plain: "sinks", rack: "cast", heat: "raised" };
+const EXPECT = { press: "another world", flat: ["glass", "readout"], device: "tray", plain: "sinks", rack: "cast", heat: "raised" };
 if (selfTest) {
   await ctx.addInitScript((injected) => {
     new MutationObserver((_, obs) => {
@@ -282,7 +293,7 @@ if (selfTest) {
   /* Caught means caught as a fresh hit (one a KNOWN entry holds would pass the real run unseen), by the world's expected
      word and by another world named. */
   const fresh = found.filter((f) => f.injected && !knownFor(f));
-  const wanted = (id) => [...new Set([EXPECT[id.split("/")[0]], "another world"])];
+  const wanted = (id) => [...new Set([EXPECT[id.split("/")[0]], "another world"].flat())];
   const lacks = (id) => wanted(id).filter((w) => !fresh.some((f) => f.id === id && f.word === w));
   const caught = new Set(pages.filter((id) => !lacks(id).length));
   const missed = pages.filter((id) => !caught.has(id)).map((id) => `${id} (no fresh ${lacks(id).join(", ")})`);

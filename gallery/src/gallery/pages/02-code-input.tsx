@@ -13,7 +13,13 @@ export const meta: PageMeta = {
   verbs: ["type"],
   summary:
     "A short one-time code, such as the six digits from a sign-in email, drawn as one cell per character, each cut into the page like an Input, but built as one real field, so paste, the browser's one-time-code autofill and screen readers all work as in any field. The next cell takes the focus edge and a still caret, and the last character runs onComplete once. The edges fade on the instant tier.",
+  summaryByWorld: {
+    flat: "A short one-time code, such as the six digits from a sign-in email, drawn as one white rounded square per character on the grey ground, each with one large figure in it, but built as one real field, so paste, the browser's one-time-code autofill and screen readers all work as in any field. The next cell takes an ink ring and a still bar, a typed figure arrives in its cell, and the last character runs onComplete once.",
+  },
   tiers: ["instant"],
+  movesByWorld: {
+    flat: "One real input lies over the cells, invisible, so typing, paste and one-time-code autofill work as in any field; the cells are only drawn from its value. The cell the next character goes into takes an ink ring and a still bar, and nothing blinks. Each typed figure arrives in its cell on the expressive spring, growing from nine tenths, and the ring moves to the next on the instant tier. The last figure runs onComplete once. An error turns every figure the danger colour. Reduced motion puts each figure in its cell at once.",
+  },
   mechanism:
     "One real input lies over the cells, invisible, so typing, paste and one-time-code autofill work as in any field; the cells are only drawn from its value. The cell the next character goes into takes the focus edge and a still caret, and nothing blinks. Each digit fills a cell and the edge moves to the next, fading on the instant tier, 100ms. The last digit runs onComplete once. An error puts the danger edge on every cell. Reduced motion has nothing to remove: the edges change at once.",
 };
@@ -219,6 +225,7 @@ function ConfirmSubscribeDemo() {
     <div className="grid w-full max-w-sm gap-6">
       <CodeInput
         key={round}
+        size="lg"
         label="Your code"
         help={`We sent six digits to mara@example.com, so we know it is you. Try ${RIGHT}.`}
         error={result === "wrong" ? "That code is not right. Check it, or send a new one." : undefined}
@@ -261,7 +268,7 @@ export default function CodeInputPage() {
             demo: <ConfirmSubscribeDemo />,
             title: "Confirm a subscription",
             code: "ConfirmSubscribeDemo",
-            caption: `A new reader confirms their email before the first letter. Type or paste six digits; "246 810" pastes as 246810, because spaces and dashes are dropped. The cell the next digit goes into has the focus edge and a still caret. The sixth digit runs onComplete, which checks the code: ${RIGHT} subscribes, anything else shows the error under the cells, and typing again clears it.`,
+            caption: `A new reader confirms their email before the first letter. Type or paste six digits; "246 810" pastes as 246810, because spaces and dashes are dropped. Each figure arrives in its white square on the expressive spring, and the square the next one goes into has an ink ring and a still bar. The sixth digit runs onComplete, which checks the code: ${RIGHT} subscribes, anything else shows the error under the cells, and typing again clears it.`,
           },
           device: {
             demo: <PairRecorderDemo />,
@@ -280,7 +287,14 @@ export default function CodeInputPage() {
         align="start"
         code="StatesDemo"
         caption="An alphanumeric code of four at lg, with letters in capitals; six cells split three and three, shorter codes do not. An error puts the danger edge on every cell. Disabled is flat and muted, as the Input."
-        byWorld={{ device: { demo: <PairingStatesDemo />, code: "PairingStatesDemo" } }}
+        byWorld={{
+          flat: {
+            demo: <StatesDemo />,
+            code: "StatesDemo",
+            caption: "An alphanumeric code of four at lg, with letters in capitals. An error turns every figure the danger colour and the line under the squares says what to do. Disabled squares are the light grey with quiet figures.",
+          },
+          device: { demo: <PairingStatesDemo />, code: "PairingStatesDemo" },
+        }}
       >
         <StatesDemo />
       </Stage>
