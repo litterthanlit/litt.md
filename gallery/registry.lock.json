@@ -34,6 +34,10 @@
       "version": "2026.11.23",
       "hash": "8515a4a7bdc4756a"
     },
+    "agent-status": {
+      "version": "2026.11.23",
+      "hash": "7fcda55d30df2671"
+    },
     "agent-throttle": {
       "version": "2026.11.22",
       "hash": "60205db5e2559310"
@@ -45,6 +49,10 @@
     "app-shell": {
       "version": "2026.11.06",
       "hash": "db759722a42893f7"
+    },
+    "assistant-status": {
+      "version": "2026.11.23",
+      "hash": "6fef40991c015d82"
     },
     "autonomy-gate": {
       "version": "2026.11.22",
@@ -614,9 +622,17 @@
       "version": "2026.11.23",
       "hash": "8515a4a7bdc4756a"
     },
+    "flat-agent-status": {
+      "version": "2026.11.23",
+      "hash": "7fcda55d30df2671"
+    },
     "flat-app-shell": {
       "version": "2026.11.16",
       "hash": "db759722a42893f7"
+    },
+    "flat-assistant-status": {
+      "version": "2026.11.23",
+      "hash": "6fef40991c015d82"
     },
     "flat-avatar": {
       "version": "2026.11.18",
@@ -814,6 +830,10 @@
       "version": "2026.11.18",
       "hash": "7565bfac238912d1"
     },
+    "flat-magnetic-button": {
+      "version": "2026.11.23",
+      "hash": "8ca35dce0636bb89"
+    },
     "flat-media": {
       "version": "2026.11.16",
       "hash": "37d4718106f094ae"
@@ -938,6 +958,10 @@
       "version": "2026.11.18",
       "hash": "b2401978cb45d117"
     },
+    "flat-spotlight-card": {
+      "version": "2026.11.23",
+      "hash": "61c20653389ba0af"
+    },
     "flat-spread": {
       "version": "2026.11.18",
       "hash": "025cca7319b37365"
@@ -1021,6 +1045,10 @@
     "flat-tune": {
       "version": "2026.11.18",
       "hash": "033401331cff1fb6"
+    },
+    "flat-working-loader": {
+      "version": "2026.11.23",
+      "hash": "113775c8707d1e76"
     },
     "form": {
       "version": "2026.11.06",
@@ -1513,6 +1541,10 @@
     "log-view": {
       "version": "2026.11.18",
       "hash": "7565bfac238912d1"
+    },
+    "magnetic-button": {
+      "version": "2026.11.23",
+      "hash": "8ca35dce0636bb89"
     },
     "media": {
       "version": "2026.11.06",
@@ -2842,6 +2874,10 @@
       "version": "2026.11.19",
       "hash": "b720189608441d06"
     },
+    "spotlight-card": {
+      "version": "2026.11.23",
+      "hash": "61c20653389ba0af"
+    },
     "spread": {
       "version": "2026.11.18",
       "hash": "025cca7319b37365"
@@ -2945,6 +2981,10 @@
     "usage": {
       "version": "2026.10.26",
       "hash": "bda1d7576a9c59e5"
+    },
+    "working-loader": {
+      "version": "2026.11.23",
+      "hash": "113775c8707d1e76"
     }
   }
 }
