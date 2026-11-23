@@ -242,7 +242,7 @@ export function AutonomyGate({
       </div>
 
       {/* Recessed approval tray holding the next queued agent action */}
-      <div data-part="tray" className="grid min-w-0 gap-2 rounded-surface bg-tray p-1 shadow-(--tray-shade) forced-colors:border">
+      <div data-part="tray" className="grid min-w-0 gap-2 rounded-surface bg-tray p-2 shadow-(--tray-shade) forced-colors:border">
         {pending ? (
           <>
             <div data-part="cut" className="grid min-w-0 gap-1 rounded-control bg-cut px-3 py-2.5 shadow-(--cut-shade) forced-colors:border">
@@ -261,7 +261,7 @@ export function AutonomyGate({
               <code className="truncate font-mono text-small text-fg">{pending.command}</code>
             </div>
 
-            <div className="flex flex-wrap items-center justify-between gap-2 px-1 pb-1">
+            <div className="flex flex-wrap items-center justify-between gap-2">
               <span data-part="lettering" className="text-caption font-normal text-fg-subtle">
                 {blockedByObserve ? "Writes need Confirm mode" : autoReady ? "Auto-runs within budget" : "Waiting on your call"}
               </span>
