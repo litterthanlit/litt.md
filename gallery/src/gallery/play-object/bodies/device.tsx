@@ -492,6 +492,7 @@ const FILE_ROW_OFF = "text-fg-muted data-pointer:bg-[color-mix(in_oklab,var(--fg
     The command menu's tile is a key, its Search trigger (126px tall at 1.5); the panel it opens goes to the screen's
     OverlayRoot, outside the zoom, at its own size. */
 const LIVE_SCALE: Record<string, PartScale> = {
+  "agent-dispatch": 1,
   "agent-indicator": 1.5,
   "seven-segment": 1.5,
   gauge: 1.5,

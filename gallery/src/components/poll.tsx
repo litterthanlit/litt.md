@@ -114,7 +114,10 @@ export function Poll({
   };
 
   return (
-    <div className={"grid w-full min-w-0 gap-4 " + className}>
+    <div
+      data-part="paper"
+      className={"litt-paper grid w-full min-w-0 gap-4 rounded-surface bg-surface-1 p-6 forced-colors:border " + className}
+    >
       <header className="grid gap-1">
         <p id={headingId} data-part="lettering" className="text-body font-title text-fg">
           {question}
