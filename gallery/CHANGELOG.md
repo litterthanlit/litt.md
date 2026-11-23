@@ -4,10 +4,11 @@ Every change to the litt registry at https://littmd.vercel.app/r/, newest first.
 
 To update an item, read the entries since your version, then reinstall it with `--overwrite`. A **breaking** entry says what to change in your code.
 
-## 2026-11-23 · File drop's name on a touch screen
+## 2026-11-23 · Flat's File drop and Code input on the ground
 
 - **fixed** `file-drop`, `flat-file-drop`: on a touch screen Flat's choose button showed "Add files" but was named "Choose files", failing WCAG 2.5.3 (Label in Name). The button now shows its name, "Choose files" (or "Choose a file"), everywhere, with the hint as its description. Props are unchanged.
 - **changed** `file-drop`, `flat-file-drop`: Flat's area is a sheet of paper on the grey ground (`litt-paper`, `data-part="paper"`), as Flat's other cards are: an ink circle with the up arrow, the words ("Drop files here", or "Add files" on a touch screen), the hint, and the Choose files pill as the grey bubble on the paper, where before the pill was the same paper as the area and hard to see. `FileList` under Flat is a sheet of paper too. Props are unchanged.
+- **fixed** `code-input`, `flat-code-input`: under Flat an empty cell is paper on the ground (`--block`), as a field is, where before it was `--surface-2`, which in dark is the ground itself, so the empty cells could not be seen. A disabled cell is `--surface-3`, as a disabled Flat button is. Props are unchanged.
 - **changed** `press-file-drop`, `device-file-drop`, `plain-file-drop`, `rack-file-drop`, `heat-file-drop`: the contract's comments describe Flat's new body. Nothing else changes.
 
 ## 2026-11-22 · World-native agentic components
