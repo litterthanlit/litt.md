@@ -33,6 +33,7 @@ honor its STOP conditions, and update your row when done.
 | 023  | [Flat bounces more than the other worlds](023-flat-bounces-more.md) | P2 | M | — | DONE (0.28 at 350ms in Flat, responsive 0) |
 | 024  | [Each world is dialled in to the components repo's bar: its materials written, every part built from them, its own studies, then its player body](024-dial-in-each-world.md) | P1 | XL | — | IN PROGRESS (phase 0, the presentation pass, done; STOP for Nick before Device; STOP after every world) |
 | 025  | [Components are interactive: every part does what it shows, once the design is settled](025-components-are-interactive.md) | P1 | L | 024 (every world done) | TODO (waits for 024; phase 0 agrees the scope with Nick) |
+| 026  | [Step into the room (Device `#canvas` prototype) and the Taste Engine direction](026-device-room-and-taste-engine.md) | P1 | M | 024 (Phase 1b/3) | TODO (revised after Fable's PR #165 reviews; Phase 1a self-contained on `#canvas` with 3 room controls -> STOP -> Phase 1b real Device Slider in the room) |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale — finding fixed independently or approach abandoned)
 
@@ -85,6 +86,8 @@ The screens themselves are not redesigned per world: they are built from these p
 - 017 follows Nick, 2026-11-15, a few hours after 016: "so maybe no library at all is best no? if we cooked so hard on components" and then "yes drop the library". Nick's components repo depends on React alone, and 81 of litt's 97 parts already do. 017 replaces 016 and reverses its order: every part on Radix's dialog moves first, because a litt layer inside a Radix dialog cannot join Radix's focus stack, while the reverse is fixable in litt's code. Its first phase changes no part: it records what each part does today (focus, roles, layers, forms) so that every later phase is compared against it.
 
 - 018 follows Nick, 2026-11-15: "I reckon components is stronger than litt.md" and "we should make a device for each world just like components that looks like the world itself that would be playground". It says object, not device, since Device is a world. It is gallery chrome only: no part, token or registry item changes. It leans on two questions `taste/litt-principles.md` leaves open (does anything run by itself; is there sound) and recommends litt's current answer to both. If 017 has not started, record its phase 0 baselines for `#playground` after 018's phase 1, or record that page again.
+
+- 026 follows the 2026-11-21 grill-me and Fable's reviews on PR #165. Phase 1a prototypes the isometric Device Room + Step In (`0°` crisp 2D at 100% zoom) + Explode + 3 room controls (tilt, extrusion, explode spacing) in `gallery/src/canvas/` (with one additive `root` option on `PlayOptions` in `gallery/src/motion/sound.ts` and `gallery/scripts/test-plane.mjs` in `verify`). Only after 1a passes Nick's hand check does Phase 1b mount the real Device `Slider` in the room via plane-projected `useHand()`. Plan 024 (Device and Flat) stays next in line; Phase 3 keeps the plugin skill, `tokens.css` and mechanical checks permanently together in one repo and settles Base UI vs. UI SDK once. Radix stays untouched in `litt.md` and 017 stays deferred.
 
 ## Audit findings not yet planned
 
