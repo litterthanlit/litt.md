@@ -105,7 +105,7 @@ function Post() {
       </header>
       <ul className="flex flex-wrap gap-2" aria-label="Filed under">
         <li>
-          <Tag hue="sky">Pictures</Tag>
+          <Tag hue="sky">Photos</Tag>
         </li>
         <li>
           <Tag hue="bubblegum">The coast</Tag>
@@ -120,13 +120,13 @@ function Post() {
 
 /* --------------------------------------------------------------- your posts */
 
-type Kind = "Pictures" | "Letters" | "Notes";
+type Kind = "Photos" | "Letters" | "Notes";
 /* One hue per kind of post, the same wherever the kind shows (R7). */
-const KIND_HUE: Record<Kind, BarListHue> = { Pictures: "sky", Letters: "bubblegum", Notes: "sun" };
+const KIND_HUE: Record<Kind, BarListHue> = { Photos: "sky", Letters: "bubblegum", Notes: "sun" };
 const POSTS: { title: string; kind: Kind; reads: number }[] = [
   { title: "Issue 13: the long way round", kind: "Letters", reads: 856 },
-  { title: "Dusk tide", kind: "Pictures", reads: 712 },
-  { title: "Open water", kind: "Pictures", reads: 640 },
+  { title: "Dusk tide", kind: "Photos", reads: 712 },
+  { title: "Open water", kind: "Photos", reads: 640 },
   { title: "What I read in March", kind: "Notes", reads: 388 },
   { title: "Issue 12: a quiet month", kind: "Letters", reads: 352 },
   { title: "On keeping a small site", kind: "Notes", reads: 214 },
@@ -142,7 +142,7 @@ function YourPosts() {
         value={filter}
         onValueChange={setFilter}
         block
-        options={(["All", "Pictures", "Letters", "Notes"] as const).map((v) => ({ value: v, label: v }))}
+        options={(["All", "Photos", "Letters", "Notes"] as const).map((v) => ({ value: v, label: v }))}
       />
       <BarList label="Reads this month" unit={["read", "reads"]} items={rows.map((p) => ({ label: p.title, value: p.reads, hue: KIND_HUE[p.kind] }))} />
       <p className="text-caption text-fg-muted" aria-live="polite">
