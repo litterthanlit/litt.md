@@ -12,10 +12,10 @@ export const meta: PageMeta = {
   verbs: ["press"],
   worlds: ["flat"],
   summary:
-    "Reactions at the foot of a post, a letter or a portfolio note. Each pill holds a symbol and its count, and the reaction's name is read out and shown on hover. A reaction nobody here has chosen yet is outlined; choosing one tints the pill, colors its symbol and sends a small +1 up, and choosing it again takes it back. It belongs to Flat.",
-  tiers: ["instant", "expressive"],
+    "Reactions at the foot of a post, a letter or a portfolio note, on a white paper. Each pill holds a symbol and its count, and the reaction's name is read out and shown on hover. A reaction you have not chosen is outlined; choosing one makes it the grey bubble with its symbol filled and its count rolled up by one, and choosing it again takes it back. It belongs to Flat.",
+  tiers: ["instant", "responsive"],
   mechanism:
-    "Each reaction is a native button with aria-pressed. Choosing one moves it from the outline (off) to its tint (on) without taking an accent fill, colors the symbol in its data hue, pops on the expressive spring (350ms), and announces the updated count in a polite status region.",
+    "Each reaction is a native button with aria-pressed. Choosing one moves it from the outline (off) to the grey bubble (chosen inside paper), fills its symbol, rolls the changed digits of its count and of the total (Rolling number, on the responsive spring, never a bounce) and announces the new count in a polite status region. The pill gives a little under the finger; nothing floats.",
 };
 
 export const docs: PageDocs = {
@@ -25,14 +25,14 @@ export const docs: PageDocs = {
 
 <ReactionBar subject="Issue 18" />
 
-// With Flat's standing 40px combined reaction total.
+// With the combined total as the standing figure.
 <ReactionBar subject="Issue 18" prominent />`,
   use: [
     "At the foot of an essay, portfolio case study or newsletter issue under Flat, where readers want minimal multi-choice reactions.",
-    "Lightweight editorial feedback that stays playful, uncluttered and free of accent fills.",
+    "Light feedback from readers that stays quiet: grey and ink, nothing else.",
   ],
   skip: [
-    "Another world's page. ReactionBar uses Flat's outline-means-off pills and data hues; it needs data-material=\"flat\" on <html>.",
+    "Another world's page. ReactionBar is drawn in Flat's paper, outlines and grey bubble; it needs data-material=\"flat\" on <html>.",
     "A single cheer a reader can give up to five times. Use Kudos.",
     "A formal mutually exclusive vote with share bars. Use Poll.",
   ],
@@ -43,8 +43,8 @@ export const docs: PageDocs = {
   a11y: [
     "Grouped in role=\"group\" with an accessible name carrying the subject.",
     "Each pill is a native button with aria-pressed, title and an accessible label carrying the full reaction name and count.",
-    "Every toggle announces once in a polite live status region; decorative floating +1 badges are hidden from assistive tech.",
-    "Under reduced motion nothing springs or floats; pill state and count update immediately.",
+    "Every toggle announces once in a polite live status region; the rolling digits are hidden from assistive tech, which reads the whole figure.",
+    "Under reduced motion nothing rolls; the pill and its count change at once.",
   ],
 };
 
@@ -75,8 +75,8 @@ export const study: PageStudy = {
   object: <ReactionBar subject="Issue 18" defaultValue={["love"]} prominent />,
   parts: [
     { name: "The figure", selector: "[data-part=figure]" },
-    { name: "The active pill", selector: "[data-part=pill]" },
-    { name: "A frameless reaction", selector: "button[data-part=lettering]" },
+    { name: "A chosen reaction", selector: "button[aria-pressed=true]" },
+    { name: "A reaction not chosen", selector: "button[aria-pressed=false]" },
   ],
   states: {
     empty: <ReactionBar subject="Issue 18" defaultValue={[]} prominent />,
@@ -85,7 +85,7 @@ export const study: PageStudy = {
   },
   replay: {
     label: "Replay two reactions",
-    caption: "Watch each pill pop and take its color as a reader reacts.",
+    caption: "Watch each pill turn to the grey bubble and its count roll up as a reader reacts.",
     run: () => <ReplayReactions />,
   },
 };
@@ -102,7 +102,7 @@ export default function ReactionBarPage() {
         title="Essay reactions"
         tier="expressive"
         code="EssayReactionsDemo"
-        caption="The total stands above the pills. A reaction you chose is tinted, with its symbol in color."
+        caption="The total stands above the pills. A reaction you chose is the grey bubble, with its symbol filled."
       >
         <EssayReactionsDemo />
       </Stage>
@@ -110,7 +110,7 @@ export default function ReactionBarPage() {
         title="Inline footer bar"
         tier="expressive"
         code="CompactReactionsDemo"
-        caption="Without the total: every reaction is outlined until you choose it."
+        caption="Without the total, every reaction is outlined until you choose it."
       >
         <CompactReactionsDemo />
       </Stage>

@@ -1,16 +1,17 @@
 /**
- * Poll, a Flat part (skills/litt-md/taste/litt-principles.md, Flat): a question for readers, built from Flat's pills
- * and the expressive spring.
+ * Poll, a Flat part (skills/litt-md/taste/litt-principles.md, Flat): a question for readers on one white paper, its
+ * choices as grey pills, and everyone's share once the reader votes.
  *
- * - Before a pick, every choice sits as a plain grey bubble inside the paper card, its label alone. No frames, no
- *   dividers, nothing cast.
- * - Picking a choice reveals the shares: each pill's quiet ink bar springs open from the left on the expressive
- *   spring (instant under reduced motion), with the percentage and vote count in ink words.
- * - A standing 40px figure (text-figure, Flat's call 8) holds the total votes at the top when showFigure is set.
- * - No color: the shares are one quiet ink wash, and no fill uses the accent (R6).
- * - A hand always wins: picking another option moves your vote at once, and picking your current choice takes it back.
- * - Accessibility: native radiogroup / radio buttons with full text names, polite live announcement on change, and clear
- *   forced-colors borders on every pill and the chosen row.
+ * - One paper on the ground: the question, then the total votes as the one standing figure (text-figure), then the
+ *   choices. Each choice is a grey bubble pill with its label; nothing is outlined, nothing casts, and there are no dots.
+ * - One motion idea, a bar fills: picking a choice opens every share as a deeper grey inside its pill, growing from the
+ *   left on the expressive spring (it arrives, so it bounces a little); a change of vote moves the shares on the same
+ *   spring. Under reduced motion the shares are simply there.
+ * - Your pick is the one thing in ink: an ink circle with a check before its label, and the label at the title weight.
+ *   The percentage sits at the pill's right end in words.
+ * - A hand always wins: picking another choice moves your vote at once, and picking yours again takes it back.
+ * - Accessibility: native buttons with aria-pressed, each naming its share once revealed, a polite live line on every
+ *   change, and real borders under forced colors.
  */
 import { useId, useState, type ReactNode } from "react";
 import { motion } from "motion/react";
@@ -40,7 +41,7 @@ export type PollProps = {
   onVote?: (id: string | null) => void;
   /** Show the shares before the reader votes. Defaults to false (revealed on pick). */
   showResults?: boolean;
-  /** Show the total votes as Flat's standing 40px figure above the pills. Defaults to true. */
+  /** Show the total votes as the standing figure under the question. Defaults to true; off, the total is a quiet line. */
   showFigure?: boolean;
   /** Optional short note under the poll, such as when it closes. */
   note?: ReactNode;
@@ -70,13 +71,14 @@ export function Poll({
 
   const counts = options.map((o) => o.votes + (picked === o.id ? 1 : 0));
   const total = counts.reduce((sum, n) => sum + n, 0);
+  const votesWord = total === 1 ? "vote" : "votes";
 
   const choose = (o: PollOption) => {
     const next = picked === o.id ? null : o.id;
     if (value === undefined) setInner(next);
     onVote?.(next);
     if (next === null) {
-      setStatus(`Removed vote for ${o.label}.`);
+      setStatus(`Removed your vote for ${o.label}.`);
     } else {
       const nextTotal = options.reduce((sum, item) => sum + item.votes + (item.id === next ? 1 : 0), 0);
       const mine = o.votes + 1;
@@ -97,15 +99,15 @@ export function Poll({
         {showFigure ? (
           <p className="flex items-baseline gap-2 text-fg">
             <span data-part="figure" className="text-figure tabular-nums">
-              {total.toLocaleString()}
+              {total.toLocaleString("en-GB")}
             </span>
-            <span data-part="lettering" className="text-small text-fg-subtle">
-              {total === 1 ? "vote" : "votes"}
+            <span data-part="lettering" className="text-small text-fg-muted">
+              {votesWord}
             </span>
           </p>
         ) : (
-          <p data-part="lettering" className="text-caption font-normal tabular-nums text-fg-subtle">
-            {total.toLocaleString()} {total === 1 ? "vote" : "votes"}
+          <p data-part="lettering" className="text-small tabular-nums text-fg-muted">
+            {total.toLocaleString("en-GB")} {votesWord}
           </p>
         )}
       </header>
@@ -135,24 +137,27 @@ export function Poll({
               {revealed && (
                 <motion.span
                   aria-hidden="true"
-                  data-part="bubble"
-                  initial={reduced ? { scaleX: share } : { scaleX: 0 }}
-                  animate={{ scaleX: share }}
+                  data-part="share"
+                  initial={reduced ? false : { x: "-100%" }}
+                  animate={{ x: `${(share - 1) * 100}%` }}
                   transition={spring}
-                  style={{ originX: 0 }}
-                  className="pointer-events-none absolute inset-0 -z-10 bg-[color-mix(in_oklab,var(--fg)_8%,transparent)]"
+                  className="pointer-events-none absolute inset-0 -z-10 rounded-control bg-slot-fill"
                 />
               )}
               <span className="flex min-w-0 items-center gap-2.5">
-                <span className={"min-w-0 truncate " + (isPicked ? "font-title" : "font-normal")}>{o.label}</span>
                 {isPicked && (
-                  <span aria-hidden="true" data-part="mark" className="inline-flex shrink-0 text-fg">
-                    <CheckIcon />
+                  <span
+                    aria-hidden="true"
+                    data-part="circle"
+                    className="inline-flex size-5 shrink-0 items-center justify-center rounded-pill bg-accent text-accent-fg forced-colors:border"
+                  >
+                    <CheckIcon size={12} />
                   </span>
                 )}
+                <span className={"min-w-0 truncate " + (isPicked ? "font-title" : "font-normal")}>{o.label}</span>
               </span>
               {revealed && (
-                <span className="shrink-0 text-caption font-title tabular-nums text-fg-muted">
+                <span className="shrink-0 text-small font-title tabular-nums text-fg">
                   {pct}%
                   <span className="sr-only">
                     {", "}
@@ -166,7 +171,7 @@ export function Poll({
       </div>
 
       {note && (
-        <p data-part="lettering" className="text-small text-fg-subtle">
+        <p data-part="lettering" className="text-small text-fg-muted">
           {note}
         </p>
       )}

@@ -788,7 +788,7 @@
     },
     "flat-kudos": {
       "version": "2026.11.23",
-      "hash": "8d898c7a74ac4f27"
+      "hash": "6131170027b856a8"
     },
     "flat-legend": {
       "version": "2026.11.20",
@@ -852,7 +852,7 @@
     },
     "flat-poll": {
       "version": "2026.11.23",
-      "hash": "0142dd65b58adcad"
+      "hash": "6ba958db1dfdcbb9"
     },
     "flat-popover": {
       "version": "2026.11.16",
@@ -875,12 +875,12 @@
       "hash": "3b510b0be4606ccd"
     },
     "flat-reaction-bar": {
-      "version": "2026.11.22",
-      "hash": "55c77f530e86216f"
+      "version": "2026.11.23",
+      "hash": "8f530cab3de91cce"
     },
     "flat-reading-progress": {
-      "version": "2026.11.22",
-      "hash": "4e6eda5f6f034392"
+      "version": "2026.11.23",
+      "hash": "04eae67bc70a6933"
     },
     "flat-resizable": {
       "version": "2026.11.16",
@@ -960,7 +960,7 @@
     },
     "flat-streak": {
       "version": "2026.11.23",
-      "hash": "1dbd106b46f67301"
+      "hash": "cda3296c44c0dffa"
     },
     "flat-switch": {
       "version": "2026.11.16",
@@ -1484,7 +1484,7 @@
     },
     "kudos": {
       "version": "2026.11.23",
-      "hash": "8d898c7a74ac4f27"
+      "hash": "6131170027b856a8"
     },
     "lap-timer": {
       "version": "2026.11.20",
@@ -1936,7 +1936,7 @@
     },
     "poll": {
       "version": "2026.11.23",
-      "hash": "0142dd65b58adcad"
+      "hash": "6ba958db1dfdcbb9"
     },
     "popover": {
       "version": "2026.11.15",
@@ -2763,12 +2763,12 @@
       "hash": "3b510b0be4606ccd"
     },
     "reaction-bar": {
-      "version": "2026.11.22",
-      "hash": "55c77f530e86216f"
+      "version": "2026.11.23",
+      "hash": "8f530cab3de91cce"
     },
     "reading-progress": {
-      "version": "2026.11.22",
-      "hash": "4e6eda5f6f034392"
+      "version": "2026.11.23",
+      "hash": "04eae67bc70a6933"
     },
     "release-rail": {
       "version": "2026.11.21",
@@ -2868,7 +2868,7 @@
     },
     "streak": {
       "version": "2026.11.23",
-      "hash": "1dbd106b46f67301"
+      "hash": "cda3296c44c0dffa"
     },
     "switch": {
       "version": "2026.11.19",

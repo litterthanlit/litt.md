@@ -12,10 +12,10 @@ export const meta: PageMeta = {
   verbs: ["select"],
   worlds: ["flat"],
   summary:
-    "One question and its choices as pills. Once a reader picks one, every choice shows its share as a bar and the total votes stand above them as one large number. Choosing another moves the vote at once, and choosing the same one again takes it back. It belongs to Flat.",
+    "One question on a white paper, the total votes as its one large number, and the choices as grey pills. Once a reader picks one, every pill fills with its share in a deeper grey and says its percentage, and the reader's pick takes an ink check. Choosing another moves the vote at once, and choosing the same one again takes it back. It belongs to Flat.",
   tiers: ["instant", "expressive"],
   mechanism:
-    "Each option is a native button with aria-pressed. On a vote, a full-height quiet ink layer grows from zero to its share along X on the expressive spring (350ms). Percentage and vote count appear in ink words beside the label, and a polite live region announces the updated vote. Under reduced motion the bars land at their share at once.",
+    "Each choice is a native button with aria-pressed. On a vote, a deeper grey layer inside each pill grows from zero to its share along X on the expressive spring (350ms, a little bounce, since the shares arrive), and a change of vote moves them on the same spring. The percentage appears at the pill's end in words, and a polite live region announces the vote. Under reduced motion the shares are there at once.",
 };
 
 export const docs: PageDocs = {
@@ -36,7 +36,7 @@ export const docs: PageDocs = {
     "Two to six clear options where seeing everyone else's share is part of the answer.",
   ],
   skip: [
-    "Another world's page. Poll is drawn in Flat's pills and large figure; it needs data-material=\"flat\" on <html>.",
+    "Another world's page. Poll is drawn in Flat's paper, pills and standing figure; it needs data-material=\"flat\" on <html>.",
     "A form setting that submits with other fields. Use RadioGroup or CardPicker.",
     "A single binary choice. Use Switch or Button.",
   ],
@@ -47,8 +47,8 @@ export const docs: PageDocs = {
   a11y: [
     "Every choice is a native button with aria-pressed and a readable percentage and vote count once revealed.",
     "Voting announces the choice, percentage and vote count once in a polite status region.",
-    "Color never carries selection alone: your pick shows a check mark and bold ink label, and forced colors outlines it in Highlight.",
-    "Under reduced motion the share bars appear at their final width with no spring overshoot.",
+    "Your pick is never shown by a shade alone: it has an ink check and its label at the title weight, and forced colors outlines it in Highlight.",
+    "Under reduced motion the shares appear at their final width with no spring.",
   ],
 };
 
@@ -106,7 +106,8 @@ export const study: PageStudy = {
     { name: "The question", selector: "header > p:first-child" },
     { name: "The figure", selector: "[data-part=figure]" },
     { name: "A choice pill", selector: "button[data-part=pill]" },
-    { name: "The share bar", selector: "[data-part=bubble]" },
+    { name: "A share", selector: "[data-part=share]" },
+    { name: "Your pick", selector: "[data-part=circle]" },
   ],
   states: {
     default: <Poll question="Which series for Issue 15?" options={NEXT_ISSUE.slice(0, 3)} defaultValue="coast" className="max-w-md" />,
@@ -114,7 +115,7 @@ export const study: PageStudy = {
   },
   replay: {
     label: "Replay the vote",
-    caption: "Watch every share open the moment a choice is picked.",
+    caption: "Watch every share fill its pill the moment a choice is picked.",
     run: () => <ReplayPoll />,
   },
 };
@@ -131,7 +132,7 @@ export default function PollPage() {
         title="Reader poll"
         tier="expressive"
         code="ReaderPollDemo"
-        caption="Four choices. Choose another to move your vote, or choose yours again to clear it."
+        caption="Four choices with the shares open and your pick in ink. Choose another to move your vote, or choose yours again to clear it."
       >
         <ReaderPollDemo />
       </Stage>
@@ -139,7 +140,7 @@ export default function PollPage() {
         title="Before voting"
         tier="expressive"
         code="UnvotedPollDemo"
-        caption="Before anyone has voted here, the choices wait as plain pills. Once a reader picks one, every share opens."
+        caption="Before a reader votes, the choices wait as plain grey pills and the total is a quiet line. Once they pick one, every share fills."
       >
         <UnvotedPollDemo />
       </Stage>

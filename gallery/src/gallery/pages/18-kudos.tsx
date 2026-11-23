@@ -12,10 +12,10 @@ export const meta: PageMeta = {
   verbs: ["press"],
   worlds: ["flat"],
   summary:
-    "A cheer for a post, a picture series or an issue. Each kudos fills the heart in ink, counts up and sends a small +N up. One more at the cap clears the reader's kudos, so it can always be undone. It belongs to Flat.",
-  tiers: ["instant", "expressive"],
+    "A cheer for a post, a picture series or an issue, on a white paper. The pill is the ink until a reader gives kudos, then the grey bubble with the heart filled and how many of five they gave beside it; the total rolls up with each one. One more at the most clears the reader's kudos, so it can always be undone. It belongs to Flat.",
+  tiers: ["instant", "responsive"],
   mechanism:
-    "A native button counts the reader's kudos from zero up to max (five by default). Each one fills the heart glyph in ink, pops the pill on the expressive spring (350ms), writes how many of max the reader has given beside the pill, and releases a floating +N badge that rises on the expressive spring and fades on the exit tween. Reduced motion updates the count at once.",
+    "A native button counts the reader's kudos from zero up to max (five by default). The first turns the pill from the ink to the grey bubble and fills the heart; each one rolls the changed digits of the total (Rolling number, on the responsive spring, never a bounce) and writes how many of max the reader has given beside the pill. The pill gives a little under the finger. Nothing floats. Reduced motion updates the count at once.",
 };
 
 export const docs: PageDocs = {
@@ -25,14 +25,14 @@ export const docs: PageDocs = {
 
 <Kudos count={142} subject="Dusk tide" />
 
-// With Flat's standing 40px figure above the pill.
+// With the total as the large figure above the pill.
 <Kudos count={142} subject="Dusk tide" prominent />`,
   use: [
     "At the foot of a post, photo series or newsletter issue under Flat, where a reader wants to cheer without writing a comment.",
-    "A light signal, given up to five times, that feels warm and playful without taking an accent fill.",
+    "A light signal, given up to five times, where the count going up is the reward.",
   ],
   skip: [
-    "Another world's page. Kudos uses Flat's paper card and grey pill; it needs data-material=\"flat\" on <html>.",
+    "Another world's page. Kudos is drawn in Flat's paper, pills and large figure; it needs data-material=\"flat\" on <html>.",
     "A single on/off bookmark or save action. Use Button with aria-pressed or Switch.",
     "A numeric quantity in a form. Use NumberField.",
   ],
@@ -41,23 +41,15 @@ export const docs: PageDocs = {
     [["Enter", "Space"], "Adds one kudo, or clears your kudos once you reach the cap."],
   ],
   a11y: [
-    "A single native button with aria-pressed and an accessible name carrying the subject, total count and how many taps you gave.",
+    "A single native button with aria-pressed, whose accessible name starts with its visible words and carries the subject, the total and how many you gave.",
     "Each kudos announces the updated count and progress (or clear) once in a polite status region.",
-    "The floating +N badge is hidden from assistive tech; the live region and label say everything in words.",
-    "Under reduced motion nothing springs or floats; the count updates at once.",
+    "The rolling digits are hidden from assistive tech, which reads the whole figure; the live region and label say everything in words.",
+    "Under reduced motion nothing rolls; the count updates at once.",
   ],
 };
 
 function PostKudosDemo() {
-  return (
-    <div className="grid gap-4">
-      <div className="grid gap-1">
-        <p className="text-body font-title text-fg">Dusk tide · Spring series</p>
-        <p className="text-small text-fg-subtle">Give up to five kudos. One more clears yours.</p>
-      </div>
-      <Kudos count={142} subject="Dusk tide" defaultValue={2} prominent />
-    </div>
-  );
+  return <Kudos count={142} subject="Dusk tide" defaultValue={2} prominent />;
 }
 
 function InlineKudosDemo() {
@@ -91,6 +83,7 @@ export const study: PageStudy = {
   parts: [
     { name: "The figure", selector: "[data-part=figure]" },
     { name: "The pill", selector: "button" },
+    { name: "How many you gave", selector: "[data-part=lettering][aria-hidden]" },
   ],
   states: {
     empty: <Kudos count={142} subject="Dusk tide" defaultValue={0} prominent />,
@@ -99,7 +92,7 @@ export const study: PageStudy = {
   },
   replay: {
     label: "Replay three taps",
-    caption: "Watch the pill pop and the count climb with each kudos given.",
+    caption: "Watch the pill turn grey and the total roll up with each kudos given.",
     run: () => <ReplayKudos />,
   },
 };
@@ -116,7 +109,7 @@ export default function KudosPage() {
         title="Reader kudos"
         tier="expressive"
         code="PostKudosDemo"
-        caption="The total stands above the pill. Each kudos counts up, and one past five clears yours."
+        caption="The total stands above the pill. Each kudos rolls it up, and one past five clears yours."
       >
         <PostKudosDemo />
       </Stage>
@@ -124,7 +117,7 @@ export default function KudosPage() {
         title="Compact inline pills"
         tier="expressive"
         code="InlineKudosDemo"
-        caption="At the foot of a post or issue: outlined until you give kudos, white once you have."
+        caption="At the foot of a post or issue, the total sits in the pill: the ink until you give kudos, the grey bubble once you have."
       >
         <InlineKudosDemo />
       </Stage>
