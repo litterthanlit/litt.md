@@ -85,7 +85,10 @@ export function Kudos({
   };
 
   return (
-    <div className={"inline-flex flex-col items-start gap-3 " + className}>
+    <div
+      data-part="paper"
+      className={"litt-paper inline-flex flex-col items-start gap-3 rounded-surface bg-surface-1 p-6 forced-colors:border " + className}
+    >
       {prominent && (
         <div className="flex items-baseline gap-2 text-fg">
           <motion.span
@@ -108,12 +111,20 @@ export function Kudos({
         <div className="relative inline-flex">
           <motion.button
             type="button"
-            data-part={mine > 0 ? "pill" : "outline"}
+            data-part="pill"
             aria-pressed={mine > 0}
             aria-label={
-              mine >= cap
-                ? `Clear your ${cap} kudos for ${subject}, ${total} total`
-                : `Give kudos to ${subject}, ${total} total, you gave ${mine} of ${cap}`
+              prominent
+                ? mine >= cap
+                  ? `+${mine}, clear your ${cap} kudos for ${subject}, ${total} total`
+                  : mine > 0
+                    ? `+${mine}, give kudos to ${subject}, ${total} total, ${mine} of ${cap}`
+                    : `Give kudos to ${subject}, ${total} total`
+                : mine >= cap
+                  ? `${total.toLocaleString()} +${mine}, clear your ${cap} kudos for ${subject}`
+                  : mine > 0
+                    ? `${total.toLocaleString()} +${mine}, give kudos to ${subject}, ${mine} of ${cap}`
+                    : `${total.toLocaleString()}, give kudos to ${subject}`
             }
             onClick={tap}
             whileTap={reduced ? undefined : { scale: 0.92 }}
@@ -121,11 +132,9 @@ export function Kudos({
             transition={spring}
             className={
               "litt-target relative inline-flex h-control-md cursor-pointer items-center gap-2.5 rounded-pill px-4 text-small font-title text-fg select-none [-webkit-tap-highlight-color:transparent] " +
-              "transition-[background-color,box-shadow] duration-(--dur-instant) ease-litt " +
+              "bg-block hover:bg-(--block-hover) transition-[background-color] duration-(--dur-instant) ease-litt " +
               "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus " +
-              (mine > 0
-                ? "bg-block hover:bg-(--block-hover) forced-colors:border-2 forced-colors:border-[Highlight]"
-                : "bg-transparent shadow-[inset_0_0_0_1.5px_var(--line-control)] hover:bg-[color-mix(in_oklab,var(--fg)_5%,transparent)] forced-colors:border forced-colors:border-[ButtonBorder]")
+              (mine > 0 ? "forced-colors:border-2 forced-colors:border-[Highlight]" : "forced-colors:border forced-colors:border-[ButtonBorder]")
             }
           >
             <svg

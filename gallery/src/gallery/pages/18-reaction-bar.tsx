@@ -76,7 +76,7 @@ export const study: PageStudy = {
   parts: [
     { name: "The figure", selector: "[data-part=figure]" },
     { name: "The active pill", selector: "[data-part=pill]" },
-    { name: "The outline pill", selector: "[data-part=outline]" },
+    { name: "A frameless reaction", selector: "button[data-part=lettering]" },
   ],
   states: {
     empty: <ReactionBar subject="Issue 18" defaultValue={[]} prominent />,

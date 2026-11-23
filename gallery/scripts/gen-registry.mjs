@@ -886,6 +886,52 @@ const COPY = {
     description: "Recent deploys resting quietly inside one recessed stone tray where only the selected release lifts up as a raised block, with a Promote to live key. A Press part.",
     docs: "Uses Press's default warm-stone materials. Select any older release to inspect its build duration and promote it to live.",
   },
+  /* World-native agentic parts (2026-11-22): one signature agentic component built in each world's own materials. */
+  "autonomy-gate": {
+    title: "Autonomy gate",
+    description: "A tactile agent autonomy selector, cut-in session budget slot and queued action approval gate on warm stone. A Press part.",
+    docs: "Uses Press's default warm-stone materials. Pick Observe, Confirm or Autonomous in the recessed tray and allow or hold queued actions.",
+  },
+  "context-budget": {
+    title: "Context budget",
+    description: "A framed Flat paper (or ink) context window picker pairing a 28px standing percentage, proportional color segments and frameless dot tags. A Flat part.",
+    docs: "Needs data-material=\"flat\" on <html>. Pass title, sources and capacity; tapping any source tag attaches or excludes it.",
+  },
+  "hold-confirm": {
+    title: "Hold to confirm",
+    description: "A framed Flat paper publishing card where holding the pill lights four sunset segments alongside a live 28px percentage readout, then settles with one-tap Undo. A Flat part.",
+    docs: "Needs data-material=\"flat\" on <html>. Hold the pill by pointer, touch, or Space/Enter to confirm, release early to rewind, or tap Undo once complete.",
+  },
+  "agent-run": {
+    title: "Agent run",
+    description: "A framed Flat paper card showing an editorial assistant turn from frameless colored dot steps to streamed prose with a collapsible step toggle and one-tap replay. A Flat part.",
+    docs: "Needs data-material=\"flat\" on <html>. Tap Run again to step through the turn and stream the draft, or fold steps behind Hide steps.",
+  },
+  "toast-stack": {
+    title: "Toast stack",
+    description: "Stacked Flat paper notices with frameless colored status dots that tuck behind the newest card and fan out smoothly on hover, focus, or tap. A Flat part.",
+    docs: "Needs data-material=\"flat\" on <html>. Hover or tap Fan out to spread notices apart, dismiss individual items, or add fresh notices to the deck.",
+  },
+  "agent-dispatch": {
+    title: "Agent dispatch",
+    description: "A four-channel hardware agent console on an aluminium plate with smoked LCD glass, monochrome token-burst meters, recessed signal lamps and tactile channel keys with synthesized sound. A Device part.",
+    docs: "Needs data-material=\"device\" on <html>. Select channels with the hardware keys, approve waiting work when the orange lamp lights, or hold and retry channels.",
+  },
+  "agent-chain": {
+    title: "Agent chain",
+    description: "An Ableton-style modular five-stage agent signal chain with clip-colored stages, per-stage bypass switches, vertical-drag parameter boxes, tool toggles and instant-cut presets. A Rack part.",
+    docs: "Needs data-material=\"rack\" on <html>. Drag parameter boxes vertically, bypass stages on the frame or recall a pipeline preset.",
+  },
+  "agent-throttle": {
+    title: "Agent throttle",
+    description: "A street-racing HUD steering and overdrive slab framed by corner brackets and hazard stripes with three 12-dash tuning rows and an instant Halt kill-switch. A Heat part.",
+    docs: "Needs data-material=\"heat\" on <html>. Focus the slab to drive rows with Up and Down, tune dashes with Left and Right, press H to halt or R to reset to Cruise.",
+  },
+  "agent-transcript": {
+    title: "Agent transcript",
+    description: "A document-native agent step ledger with 1px rules, four corner brackets on the active filter, inline link-blue Approve, Skip, Inspect and Rollback controls, and zero motion. A Plain part.",
+    docs: "Needs data-material=\"plain\" on <html>. Filter steps by state, inspect raw payloads inline, approve or skip queued steps or roll back after any applied step.",
+  },
   litt: {
     title: "litt tokens",
     description: "litt.md's colors, type, space, shape, depth and motion as CSS variables, Tailwind names and the litt-glass, litt-raised, litt-trim, litt-lit and litt-grain classes. Every name starts with litt, so none of it touches your own.",

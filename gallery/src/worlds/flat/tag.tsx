@@ -40,7 +40,7 @@ export function TagFlatBody({ status, hue, raised, label, rest, className }: Tag
   return (
     <span
       data-body="flat"
-      className={"inline-flex h-6 max-w-full shrink-0 items-center whitespace-nowrap text-caption " + shape + " " + className}
+      className={"inline-flex h-6 max-w-full shrink-0 items-center whitespace-nowrap text-caption font-normal " + shape + " " + className}
       {...rest}
     >
       {status && !hue && (

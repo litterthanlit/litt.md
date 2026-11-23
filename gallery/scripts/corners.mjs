@@ -328,8 +328,14 @@ async function checkPage(id) {
     /* A slider's cap rests mid-track in the demos, but its ends are where the curve is: every slider at both. */
     for (const key of sliders ? ["Home", "End"] : []) {
       for (let i = 0; i < sliders; i++) {
-        await pg.evaluate((n) => document.querySelector(`[data-corners-thumb="${n}"]`).focus({ preventScroll: true }), i);
-        await pg.keyboard.press(key);
+        /* A player's own Take slider (i = 0) swaps the live preview on Home/End, which unmounts any sliders inside it. */
+        const focused = await pg.evaluate((n) => {
+          const el = document.querySelector(`[data-corners-thumb="${n}"]`);
+          if (!el) return false;
+          el.focus({ preventScroll: true });
+          return true;
+        }, i);
+        if (focused) await pg.keyboard.press(key);
       }
       for (const radius of shapesFor(id)) {
         await shape(radius);

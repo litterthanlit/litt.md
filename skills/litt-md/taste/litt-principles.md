@@ -216,7 +216,7 @@ Plain, precise and quiet, in every world. "Write it the way you would say it to 
 
 ## Open, for Nick
 
-1. **Flat's bounce and size. Closed, 2026-11-18.** The bounce is answered (2026-11-16): the expressive spring at 0.28, the responsive at 0, in R4. The size is answered on Flat's call 8 ("all yes"): one figure per object may stand above 18px, at 40px as shown (`--type-figure-size`, Flat's block alone), R8's exception.
+1. **Flat's bounce and size. Closed, 2026-11-18; tuned 2026-11-22.** The bounce is answered (2026-11-16): the expressive spring at 0.28, the responsive at 0, in R4. The size is answered on Flat's call 8 and tuned to 28px on 2026-11-22: one figure per object may stand above 18px, at 28px (`--type-figure-size`, Flat's block alone), R8's exception.
 2. **Device's sound.** Answered: it starts on. Not built yet; litt has no sound engine.
 3. **Running by itself.** In the components repo every study moves in its first four seconds, untouched. Here nothing moves on its own (R2, R4). May Device's studies and its object run by themselves, while the other worlds stay still? Until Nick says, none does.
 4. **Spelling.** The components repo is British with -ize (colour, centre, synthesized). The skill writes color. Which is litt's?
