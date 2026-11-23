@@ -13,23 +13,23 @@ import { Suspense, useContext, useEffect, useRef, useState } from "react";
 import { StillMotion } from "@/motion";
 import { Button } from "@/components/button";
 import { ExpandIcon } from "@/components/icons";
-import { DEVICE_PLATE, PreviewContext, WorldContext } from "./kit";
+import { DEVICE_PLATE, lineIn, PreviewContext, WorldContext } from "./kit";
 import type { PageEntry } from "./registry";
 
 /** Pages whose tile is two rows tall beside two short ones: their component needs the height. */
 export const TALL = new Set(["plan", "app-shell", "list", "action-bar", "timeline", "message", "rule-builder"]);
 
 /**
- * Under Flat a tile is the grey ground itself, as in the Flat studies (.flat-stage in app.css: the ground, a step darker
- * under a hovering pointer), so paper stays white paper and an object looks as it does on its page. Its name sits under
- * its object as a caption, the two centred together, so the name belongs to its object by more than position. Every
- * other world keeps its tile as it was.
+ * Under Flat a tile is the Flat studies' (plans/026): the grey ground itself (.flat-stage in app.css: the ground, a step
+ * darker under a hovering pointer), so paper stays white paper and an object looks as it does on its page; its name
+ * under it at the left with the component's line after it in the muted ink, cut to one line; and its object is never
+ * held still, so a demo that runs by itself runs (R4, Flat's gallery). Every other world keeps its tile as it was.
  */
 const FLAT_STAGE = "flat-stage in-[[data-material=flat]]:min-h-72 in-[[data-material=flat]]:grid-rows-[auto_auto] in-[[data-material=flat]]:content-center";
 /** The object's room: under Flat it gives its height to the stage, so the name follows the object. */
 const FLAT_ROOM = "min-h-80 md:min-h-96 in-[[data-material=flat]]:min-h-0 md:in-[[data-material=flat]]:min-h-0 in-[[data-material=flat]]:pb-2 sm:in-[[data-material=flat]]:pb-3";
-/** The name: under Flat a caption centred under its object, across both columns, the expand button laid over its end. */
-const FLAT_NAME = "in-[[data-material=flat]]:col-span-2 in-[[data-material=flat]]:col-start-1 in-[[data-material=flat]]:row-start-2 in-[[data-material=flat]]:justify-center in-[[data-material=flat]]:pb-5";
+/** The name: under Flat it sits under its object at the left, with the component's line after it (the Flat studies). */
+const FLAT_NAME = "in-[[data-material=flat]]:col-start-1 in-[[data-material=flat]]:row-start-2 in-[[data-material=flat]]:items-baseline in-[[data-material=flat]]:gap-2 in-[[data-material=flat]]:pb-4";
 
 /** True once the element has come within a screen of the viewport, and stays true. */
 export function useNear<T extends HTMLElement>(ref: React.RefObject<T | null>): boolean {
@@ -84,6 +84,8 @@ export function WallTile({ page, href, onOpen, onFollow, heading: Heading = "h2"
   const zone = onOpen ? "" : undefined;
   const world = useContext(WorldContext);
   const device = world === "device";
+  const flat = world === "flat";
+  const line = flat ? lineIn(page, "lede", "flat") : "";
   return (
     <div
       ref={ref}
@@ -102,7 +104,7 @@ export function WallTile({ page, href, onOpen, onFollow, heading: Heading = "h2"
     >
       <div inert={!settled} data-open-zone={zone} className={"col-span-2 grid min-w-0 place-items-center p-6 sm:p-10 " + FLAT_ROOM}>
         {near && (
-          <StillMotion active={!awake}>
+          <StillMotion active={!awake && !flat}>
             <div data-open-zone={zone} className="grid w-full min-w-0 place-items-center [&>*]:min-w-0">
               <PageTile page={page} />
             </div>
@@ -114,13 +116,14 @@ export function WallTile({ page, href, onOpen, onFollow, heading: Heading = "h2"
           href={href}
           onClick={onFollow && (() => ref.current && onFollow(ref.current))}
           className={
-            "-mx-2 flex h-control-sm items-center rounded-control px-2 text-fg-muted select-none [-webkit-tap-highlight-color:transparent] " +
+            "-mx-2 flex h-control-sm shrink-0 items-center rounded-control px-2 whitespace-nowrap text-fg-muted select-none [-webkit-tap-highlight-color:transparent] " +
             "transition-colors duration-(--dur-instant) ease-litt hover:text-fg group-hover/tile:text-fg pointer-coarse:h-control-md " +
             "focus-visible:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
           }
         >
           {page.title}
         </a>
+        {line && <span className="min-w-0 truncate text-fg-subtle">{line}</span>}
       </Heading>
       {onOpen && (
         <div data-tile-foot className="flex items-start pr-2 pb-2 in-[[data-material=flat]]:col-start-2 in-[[data-material=flat]]:row-start-2">
@@ -130,7 +133,7 @@ export function WallTile({ page, href, onOpen, onFollow, heading: Heading = "h2"
             variant="ghost"
             size="sm"
             aria-haspopup="dialog"
-            aria-label={`Open every ${page.title} demo here`}
+            aria-label={flat ? `Open ${page.title} large` : `Open every ${page.title} demo here`}
             onClick={() => ref.current && onOpen(ref.current, button.current)}
             /* Seen only by the keyboard: a pointer opens the mosaic from the tile's ground. */
             className="text-fg-subtle opacity-0 focus-visible:opacity-100"

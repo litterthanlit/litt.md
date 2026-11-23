@@ -1,6 +1,6 @@
 # 026. Flat is the Flat studies
 
-Status: IN PROGRESS (phase 1, 2026-11-23).
+Status: IN PROGRESS (phase 1 and phase 2, 2026-11-23).
 
 ## Nick's words
 
@@ -32,15 +32,19 @@ the responsive spring (200ms visual) reads as the studies' 250ms ease-out glide.
 
 ## Phase 2. The studies' gallery
 
-- [ ] A Flat tile: its stage on the ground (done in #171), its name and a muted tagline under it, left-aligned. The
-      tagline is a new optional `meta.tagline` (one short line, the studies' voice), falling back to nothing.
-- [ ] Tiles run by themselves under Flat until a hand arrives (R4's exception): `StillMotion` stays off for a Flat tile;
-      a hand (pointer, key, wheel, focus) stops a demo's own loop for good; reduced motion stills it with a status.
-      `test:motion` and `test:sound` must still pass: nothing moves under reduced motion, nothing sounds.
-- [ ] The viewer: a Flat tile opens a full-screen sheet on the ground with Close on the left, the title centred, and
-      Previous and Next circles on the right, stepping through the world's gallery view; Escape closes it and returns
-      focus to the tile; its address deep-links. It replaces the mosaic under Flat.
-- [ ] `test:wall`, `test:playground`, `test:focus`, `test:targets` and `test:a11y` on `#flat/*`.
+- [x] A Flat tile: its stage on the ground (#171), its name and its line under it, left-aligned. The line is the page's
+      lede in Flat's words (`lineIn`), cut to one line, so no new field was needed; a page can still get a shorter one
+      with `ledeByWorld.flat`. The List's shared lede said "raised"; it is now true of every body.
+- [x] A Flat tile is never held still (`StillMotion` is off for it), so a demo that runs by itself runs. The demos that
+      run themselves until a hand arrives come with the parts, in phase 3 (a gallery hook, never in a shipped part).
+- [x] The viewer (`flat-viewer.tsx`): a Flat tile's ground or its expand button opens the component alone on the ground,
+      growing out of the tile from 0.9 on the expressive spring; Close on the left, the name centred, Previous and Next
+      on the right stepping through the whole view; its line and Open page under it; Esc and Close return focus to the
+      tile. Only `#flat/components` has it; the overview keeps its mosaic.
+- [ ] Deep links to an open component (`#flat/components/<id>`) are left out: the hash is the route, and a third part
+      would touch `worldOfHash`, `canonical`, `routes.mjs` and `index.html`'s copy. Worth its own small PR if wanted.
+- [x] `test:a11y`, `test:motion`, `test:targets`, `test:reflow`, `test:text-zoom`, `test:gaps`, `test:corners`,
+      `test:wall` and `test:words` (Flat) on `#flat/components`.
 
 ## Phase 3 onward. The parts, a batch per PR
 
