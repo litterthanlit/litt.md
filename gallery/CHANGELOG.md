@@ -15,6 +15,7 @@ Flat's showcase parts lose their colored dots and the hues that only fed them. E
 - **changed** `hold-confirm`, `flat-hold-confirm`: holding fills one ink bar where four sunset segments lit, the note under the title has no status dot, and the done check is ink. Props are unchanged.
 - **changed** `kudos`, `flat-kudos`: the row of warming dots is gone and the heart fills in ink; the +N says how many you gave, and a quiet "3 of 5" beside the pill says how many of the most you have given. Props are unchanged.
 - **changed** `streak`, `flat-streak`: the status word stands alone, with no dot before it. Props are unchanged.
+- **changed** `litt`, `press-litt`, `flat-litt`, `device-litt`, `plain-litt`, `rack-litt`, `heat-litt`: Flat is monochrome by default (taste v1.22). Under Flat `--data-seq-1` to `4` read four steps of the ink (`--flat-mono-seq-1` to `4`, new), so a heatmap, a cohort grid, a gauge's ticks and a Progress's fill are the ink; the sunset stays as `--flat-data-seq-1` to `4` for a colour theme. New: `--type-figure-lg-size` (44px under Flat, the figure step elsewhere) and its utility `text-figure-lg`, for a figure that is the whole object on its own card. Nothing changes outside Flat.
 
 ## 2026-11-22 · World-native agentic components
 

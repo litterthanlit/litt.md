@@ -375,8 +375,8 @@
       "hash": "dd147264254ab4bb"
     },
     "device-litt": {
-      "version": "2026.11.22",
-      "hash": "0b0c4ca8c8e5b66e"
+      "version": "2026.11.23",
+      "hash": "d09cf5ed2c7a65cf"
     },
     "device-log-view": {
       "version": "2026.11.18",
@@ -807,8 +807,8 @@
       "hash": "dd147264254ab4bb"
     },
     "flat-litt": {
-      "version": "2026.11.22",
-      "hash": "383026223d9b8135"
+      "version": "2026.11.23",
+      "hash": "8f2ab33b5ffcb4e0"
     },
     "flat-log-view": {
       "version": "2026.11.18",
@@ -1247,8 +1247,8 @@
       "hash": "dd147264254ab4bb"
     },
     "heat-litt": {
-      "version": "2026.11.22",
-      "hash": "23d0ed8d4d50c1fa"
+      "version": "2026.11.23",
+      "hash": "58a3487ce5974c88"
     },
     "heat-log-view": {
       "version": "2026.11.18",
@@ -1507,8 +1507,8 @@
       "hash": "dd147264254ab4bb"
     },
     "litt": {
-      "version": "2026.11.22",
-      "hash": "d23d81722469a4fa"
+      "version": "2026.11.23",
+      "hash": "95813f269d33e8de"
     },
     "log-view": {
       "version": "2026.11.18",
@@ -1735,8 +1735,8 @@
       "hash": "dd147264254ab4bb"
     },
     "plain-litt": {
-      "version": "2026.11.22",
-      "hash": "fc513d6ca87433fb"
+      "version": "2026.11.23",
+      "hash": "13cbcbb2c18c13f3"
     },
     "plain-log-view": {
       "version": "2026.11.18",
@@ -2139,8 +2139,8 @@
       "hash": "dd147264254ab4bb"
     },
     "press-litt": {
-      "version": "2026.11.22",
-      "hash": "906cf18d67866fe6"
+      "version": "2026.11.23",
+      "hash": "f58f72bebd995768"
     },
     "press-log-view": {
       "version": "2026.11.18",
@@ -2559,8 +2559,8 @@
       "hash": "dd147264254ab4bb"
     },
     "rack-litt": {
-      "version": "2026.11.22",
-      "hash": "db6b5ff4d5b2cf6d"
+      "version": "2026.11.23",
+      "hash": "454752b17b979584"
     },
     "rack-log-view": {
       "version": "2026.11.18",

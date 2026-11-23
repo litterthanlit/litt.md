@@ -132,6 +132,11 @@
   --text-figure--line-height: var(--type-figure-leading);
   --text-figure--letter-spacing: var(--type-figure-tracking);
   --text-figure--font-weight: var(--weight-title);
+  /* Flat's large figure (v1.22): the whole object's one figure on its own card; elsewhere the figure step. */
+  --text-figure-lg: var(--type-figure-lg-size);
+  --text-figure-lg--line-height: var(--type-figure-leading);
+  --text-figure-lg--letter-spacing: var(--type-figure-tracking);
+  --text-figure-lg--font-weight: var(--weight-title);
 
   --text-h2: var(--type-h2-size);
   --text-h2--line-height: var(--type-h2-leading);

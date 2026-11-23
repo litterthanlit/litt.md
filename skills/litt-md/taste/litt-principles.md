@@ -41,9 +41,11 @@ For product UI, settings and dashboards. Nick, 2026-11-16: "I said it was overde
 For sites, portfolios and reading. Nick, 2026-11-16: "I want it light, easy to use, airy, flat - no complications, fun and I want motion that matches that." With two references, "no direct copy but in that direction" (`taste/inspirations.md`, Flat's references).
 
 - **Light, airy and easy.** No complications: one clear thing at a time, room around it, nothing to work out.
-- **Bold, simple shapes on grey.** Grey is the ground. What sits on it is a pill, a circle or a rounded square in the ink or in white, with no outline and nothing cast, and a small pop of color only where it says something.
-- **Things come from where you touched them.** A set deals out of what opened it and gathers back; an overlay grows from its opener. A reader never loses where they were.
-- **Fun, and it moves that way.** Motion is quick and playful, to match, and Flat bounces more than the other worlds do (Nick, 2026-11-16: "yes flat should be more bouncy I feel like"). It is Flat's own exception to R4's bounce cap, picked by eye on the canvas (Nick, 2026-11-16: "0.28 at 350ms, no bounce on small moves looks good"): where something arrives on the expressive spring it bounces 0.28, where every other world keeps 0.12. Small moves and exits never bounce. At rest the fun is a figure that stands up: one figure per object may be large (call 8).
+- **Bold, simple shapes on grey.** Grey is the ground. What sits on it is a pill, a circle or a rounded square in the ink or in white, with no outline and nothing cast. At rest the fun is one figure per object that stands up: the subscriber count, the price, the percentage, the time live (call 8; two sizes since v1.22, below).
+- **Things come from where you touched them.** A set deals out of what opened it and gathers back; an overlay grows from its opener. A sheet grows out of its tile and gathers back into it, toasts come out of the button that sent them, a palette grows out of its search pill, and "Copied to clipboard" rises where the command was. A reader never loses where they were.
+- **Fun, and it moves that way.** Motion is quick and playful, to match, and Flat bounces more than the other worlds do (Nick, 2026-11-16: "yes flat should be more bouncy I feel like"). It is Flat's own exception to R4's bounce cap, picked by eye on the canvas (Nick, 2026-11-16: "0.28 at 350ms, no bounce on small moves looks good"): where something arrives on the expressive spring it bounces 0.28, where every other world keeps 0.12. Small moves and exits never bounce. The whole of it is Flat's motion, below.
+- **Designed from the pattern, never from a device** (v1.22). A Flat part starts from what a product needs, for a small site, a newsletter and its readers: a settings list, a sign-in code, an upload, a plan picker, a mic check. It is drawn as if no hardware existed: no readout card, reel, needle, knob, fader strip or scramble. Where the subject is itself a tool (a mixer, a sequencer) Flat draws its plain web-app version. The measure is the 23 studies of `proposals/flat-studies/` (Nick, 2026-11-23: "this is what I imagined flat to be, the simplicity, the movement").
+- **No dots** (v1.22). A state is a word in the ink. Nothing in Flat says anything with a status dot, a bullet, a dot tag or a dot matrix (Nick, 2026-11-23: "remove the dots. simplify as much as possible"). A picture made of dots, a dithered cover, is content.
 
 #### Flat's materials
 
@@ -56,28 +58,39 @@ They combine in one order: **ground, then paper, then part.** The ground is the 
 | Ground | The grey everything sits on. Nothing is drawn on it but objects and words. | `--canvas` under Flat is `--flat-ground` (light: Flat's surface-3; dark: Flat's surface-2). A part shown on its own (`--well`) stands on the ground too. | None |
 | Paper | A white rounded square on the ground (black in dark): a card, a panel, a table's sheet. No edge and nothing cast: on grey the fill is the edge (call 2). | `--surface-1` under Flat is `--flat-paper` (light: white; dark: Flat's canvas, the black); `.litt-raised` loses its ring under Flat. | `--radius-surface` (16) |
 | Pill | What a hand presses or types into: a button, a field, a segment, a label tag, the switch (a status has no pill). White on the ground, so it reads as paper. | `--block`, `--cut` and `--slot` are paper under Flat; `--radius-control` | `--radius-control` (28) |
-| Circle | A key with one symbol, a checkbox, a radio, a knob, an avatar, a status's mark (call 6). | `--radius-pill` | Round |
+| Circle | A key with one symbol, a checkbox, a radio, a switch's thumb, an avatar. A status has no mark: it is a word (v1.22). | `--radius-pill` | Round |
 | Bubble | What is chosen inside paper: a grey fill (the current segment, row or tab). | `--surface-3` | The shape it sits in, less its inset |
 | Ink | What is on, and the one primary action: black on light, white on dark. | `--fg`, `--accent` (the ink, call 5), `--accent-fg` on it | The shape it fills |
-| Ink card | At most one per view: the ink as a rounded square holding one live thing (a stat, a live run, a timer), its one color the first data hue on its data only. No shadow; white in dark (call 4). | The opposite theme on the square (`data-theme` flipped), and `--data-blue` on its data | `--radius-surface` |
+| Ink card | Rare, and none by default (v1.22): the ink as a rounded square, earned only when one live thing is the whole object (a timer). No shadow, no hue; white in dark (call 4). None of the 23 studies needs one. | The opposite theme on the square (`data-theme` flipped) | `--radius-surface` |
 | Outline | Only what is off: a switch, an unticked box, a step to come. It also keeps the 3:1 edge on the grey ground (call 7). | `--line-control` at 1.5px | The control's |
 | Float | Only what floats over the page keeps a shadow: a menu, a popover, a dialog, a toast. | `--shadow-float`, `--shadow-modal` | `--radius-surface` |
-| Lettering | Geist, three weights by role. One figure per object may stand above 18px (call 8). | `--font-sans`, `--weight*`, `--type-*`; the figure `--type-figure-size` | None |
+| Lettering | Geist, three weights by role. One figure per object may stand above 18px (call 8): 28px in a card among other things, 44px when the figure is the whole object on its own card, a price, a count, a sign-in code's cells (v1.22, Q-A). | `--font-sans`, `--weight*`, `--type-*`; the figure `--type-figure-size`, the large one `--type-figure-lg-size` (`text-figure-lg`) | None |
 
 In dark the ground and black paper stand only 1.1:1 apart (light's white on grey, 1.18:1): the words and what is on the paper carry it, as Flat's grey field always has. A cover is a real picture, never an X-crossed wireframe (call 3): a placeholder is not the work (R1), and Flat is for sites and portfolios.
 
 #### Flat's color
 
-Two fills on a grey ground, and color only where it says something (R6, R7). Colourful in Flat means the data (Nick, 2026-11-18): the surfaces stay grey and white, and the data is bright Candy, every hue at the most chroma the screen holds.
+Monochrome by default (v1.22): grey, white and the ink (Nick, 2026-11-23: "let's strip back the color, we can add color themes later on"). Color appears only where a series has to be told apart, and a project that wants more picks a colour theme, never the default. Before v1.22 the data was bright Candy everywhere and how much and how far along walked a sunset (v1.18 to v1.21); those values stay in the tokens for the themes to come.
 
 | Color | Means | Never |
 |---|---|---|
 | Grey | The ground; inside paper, what is chosen | An edge, a frame, a line between things |
-| White and black | Paper and the ink: everything a hand uses, and the words | — |
-| The ink (`--accent`) | What is on, and the view's one primary action (call 5: Flat keeps the ink as its accent) | A second fill per view (R6); a Progress's fill, which is warmth (Flat heatwave, v1.21) |
-| The data hues, bright Candy | A chart's series in R7's order, one hue per series and never cycled (eight slots before Other: blue, tangerine, mint, grape, cherry, then sky, bubblegum and sun; a scatter-style form keeps to three); how much, on the sunset ramp (`--flat-data-seq-1` to `4`, v1.20: gold to plum in light, plum to gold in dark, its lightness one way; a heatmap, a cohort grid, a gauge's ticks walking every step); how far along, on the same ramp (Flat heatwave, v1.21: a Progress's fill, each done segment at its place on the ramp, a continuous fill the step at its value; Nick, 2026-11-19: "C is amazing tho. Flat heatwave is the move"); the ink card's data, in the first hue | Chrome, a button, a surface, a status word, any fill but Progress's |
-| Success, warning, danger | A status, on its small circle only, the word after it in the ink and no pill (call 6, amended 2026-11-18: "I like the tags"); danger's words on a destructive action | A whole word in color, a tinted field |
+| White and black | Paper and the ink: everything a hand uses, what is on, the one action, and the words | — |
+| The ink (`--accent`) | What is on, and the view's one primary action (call 5: Flat keeps the ink as its accent); how much and how far along, in four steps of it (`--data-seq-1` to `4` are `--flat-mono-seq-1` to `4` under Flat: a heatmap, a gauge's ticks, a Progress's fill) | A second fill per view (R6) |
+| The data hues, bright Candy | Which series: one hue per series, in R7's order and never cycled, on the mark that says which (a chart's lines, the step sequencer's four tracks; Nick, 2026-11-23: "I like the previous step sequencer colors") | How much, how far along, a status, chrome, a button, a surface |
+| Danger | A word that must warn ("Too loud", "That code didn't work", "Didn't finish"), and danger's words on a destructive action | A fill, a tinted field, a mark before a word |
 | A cover's own colors | A cover is content | — |
+
+#### Flat's motion
+
+Written 2026-11-23 from the 23 studies (`proposals/flat-studies/`, "the simplicity, the movement"). Six rules; R4 holds them for every world, and these say how Flat keeps them.
+
+1. **Arrivals bounce a little; small moves and exits never do.** What arrives rides the expressive spring, 350ms at bounce 0.28: a toast, a palette, a price that changes, a figure that rolls. Small moves (a highlight between rows, a thumb settling) and every exit ride the responsive spring at bounce 0, and an exit is quicker.
+2. **Things come from where you touched them.** A sheet grows out of its tile; toasts out of their button; a palette out of its pill; prev and next slide the new thing in from their own side.
+3. **Springs wherever a hand is.** A spring keeps its speed when interrupted, so nothing jumps. The components repo's springs stay where they serve the hand: a highlight's glide, a magnet's pull, a motor that lets go when grabbed, a switch that snaps over its centre, a flick that carries. A part a hand moves never runs on a duration and a curve.
+4. **One thing moves at a time.** Each part has one motion idea: digits roll, a bar fills, a pill pops. Nothing shimmers, pulses or loops behind it.
+5. **Text swaps by leaving up and arriving in its place.** The old line goes up and fades with no bounce; the new one rises in on the 0.28 spring. A scramble or a glitch is Device's (Nick, 2026-11-23: "copy button animation was meant for device only").
+6. **A hand always wins, and nothing moves on its own.** A shipped part waits for a hand. A demo that plays by itself (a ghost typing, a motor playing back) belongs to the gallery around the part, like the Playground's Play, and the first hand ends it for good (v1.22, Q-B). Reduced motion stills it all.
 
 #### Flat's voice
 
