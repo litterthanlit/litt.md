@@ -11,8 +11,8 @@
  * size: a leading set in px stays put while the text doubles, so the lines overlap. Leading in rem or a unitless
  * number grows with the text. Visually hidden text (sr-only, a 1px clip) and line-height: normal are skipped.
  *
- * The self-test puts back `--type-body-leading: 22px`, the leading before it was rem, on a few pages, and fails if
- * any of them passes.
+ * The self-test puts back `--type-body-leading: 22px`, the leading before it was rem, on a few pages (over any world's
+ * own leading), and fails if any of them passes.
  *
  * Needs Playwright, found as a11y.mjs finds it (A11Y_TOOLS, then here, then the cloud container's global copy).
  */
@@ -59,7 +59,8 @@ const server = http.createServer((req, res) => {
 const port = server.address().port;
 
 const ZOOM = "html{font-size:200% !important}";
-const OLD_LEADING = ":root{--type-body-leading:22px}";
+/* Important, so it also beats a world's own body leading (Flat's block sets one since v1.22). */
+const OLD_LEADING = ":root,[data-material]{--type-body-leading:22px !important}";
 
 /* Read in the page: visible text whose line height is less than its font size, so its lines would overlap. */
 function measure() {
