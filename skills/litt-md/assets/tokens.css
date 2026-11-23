@@ -1802,9 +1802,9 @@
   --slot-fill: color-mix(in oklab, var(--surface-3), var(--fg) 14%);
   /* Paper has no edge (v1.17): .litt-raised draws no ring under Flat. Only what floats keeps a shadow. */
   --raised-line: transparent;
-  /* Fun at rest: one figure per object stands up (R8's exception, v1.17, Nick on call 8: 40px). Its leading is a
+  /* Fun at rest: one figure per object stands up (R8's exception, v1.17; tuned to 28px, 2026-11-22). Its leading is a
      ratio, so it grows with the reader's text size. */
-  --type-figure-size: 2.5rem;    /* 40 */
+  --type-figure-size: 1.75rem;   /* 28 */
   --type-figure-leading: 1.1;
   --type-figure-tracking: -0.03em;
   --slot-fill-shade: inset 0 0 0 0 transparent;

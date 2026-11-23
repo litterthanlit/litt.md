@@ -113,7 +113,10 @@ export function Streak({
   const focusedSlot = inspectIdx !== null ? resolved[inspectIdx] : null;
 
   return (
-    <div className={"grid w-full min-w-0 gap-4 " + className}>
+    <div
+      data-part="paper"
+      className={"litt-paper grid w-full min-w-0 gap-4 rounded-surface bg-surface-1 p-6 forced-colors:border " + className}
+    >
       <header className="flex flex-wrap items-end justify-between gap-3">
         <div className="grid gap-1">
           <span id={headingId} data-part="lettering" className="text-small text-fg-subtle">

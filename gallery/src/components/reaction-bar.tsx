@@ -130,7 +130,10 @@ export function ReactionBar({
   }
 
   return (
-    <div className={"inline-flex flex-col items-start gap-3 " + className}>
+    <div
+      data-part="paper"
+      className={"litt-paper inline-flex flex-col items-start gap-3 rounded-surface bg-surface-1 p-6 forced-colors:border " + className}
+    >
       {prominent && (
         <div className="flex items-baseline gap-2 text-fg">
           <motion.span
@@ -161,7 +164,7 @@ export function ReactionBar({
               <motion.button
                 type="button"
                 title={item.label}
-                data-part={isOn ? "pill" : "outline"}
+                data-part={isOn ? "pill" : "lettering"}
                 aria-pressed={isOn}
                 aria-label={`${item.label}, ${count} ${count === 1 ? "reaction" : "reactions"}${isOn ? ", selected" : ""}`}
                 onClick={() => toggle(item)}
@@ -169,11 +172,11 @@ export function ReactionBar({
                 animate={reduced ? undefined : isOn ? { scale: [0.92, 1] } : { scale: 1 }}
                 transition={spring}
                 className={
-                  "litt-target relative inline-flex h-control-md cursor-pointer items-center gap-2 rounded-control px-3.5 text-small font-title select-none [-webkit-tap-highlight-color:transparent] " +
+                  "litt-target relative inline-flex h-control-sm cursor-pointer items-center gap-2 rounded-pill px-3 text-small select-none [-webkit-tap-highlight-color:transparent] " +
                   "transition-colors duration-(--dur-instant) ease-litt focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus forced-colors:border " +
                   (isOn
-                    ? `${tone.tint} text-fg`
-                    : "bg-transparent text-fg-muted shadow-[inset_0_0_0_1.5px_var(--line-control)] hover:text-fg")
+                    ? "bg-block font-title text-fg hover:bg-(--block-hover)"
+                    : "bg-transparent font-normal text-fg-subtle hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] hover:text-fg")
                 }
               >
                 <span data-part="mark" className="inline-flex items-center">

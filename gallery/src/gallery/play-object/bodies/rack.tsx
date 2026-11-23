@@ -246,9 +246,9 @@ function RackBody({ takes, at, selector, pick, step, index, play, readout, scree
    draws. Every part in Rack's set is named here, one id per string (test:playground reads this list and fails on a part
    in SET.rack that no track names); one that slips through still draws, on Controls. */
 const TRACKS: { name: string; ids: string[] }[] = [
-  { name: "Only here", ids: ["clip-launcher", "device-rack", "step-sequencer"] },
+  { name: "Only here", ids: ["agent-chain", "clip-launcher", "device-rack", "step-sequencer"] },
   { name: "Values", ids: ["slider", "curve-editor", "pad", "time-scrubber", "inspector", "number-field"] },
-  { name: "Controls", ids: ["segmented", "switch", "button"] },
+  { name: "Controls", ids: ["segmented", "switch"] },
 ];
 function trackOf(id: string) {
   const k = TRACKS.findIndex((t) => t.ids.includes(id));

@@ -4,6 +4,23 @@ Every change to the litt registry at https://littmd.vercel.app/r/, newest first.
 
 To update an item, read the entries since your version, then reinstall it with `--overwrite`. A **breaking** entry says what to change in your code.
 
+## 2026-11-22 · World-native agentic components
+
+One signature agentic component for each of the six worlds, built strictly from that world's own materials, color grammar, motion language and voice, and placed first in each world's player set for review.
+
+- **added** `autonomy-gate`, `press-autonomy-gate`: Autonomy gate, a tactile warm-stone agent autonomy selector (Observe, Confirm, Autonomous) in a recessed tray above a cut-in session budget slot and a queued action approval tray. Uses Press's default warm-stone materials.
+- **added** `context-budget`, `flat-context-budget`: Context budget, a framed Flat paper (or ink) context-window picker on Flat's grey ground pairing a 28px standing percentage (`text-figure`), proportional color segments and frameless `font-normal` dot tags on Flat's expressive spring. Needs `data-material="flat"` on `<html>`.
+- **added** `hold-confirm`, `flat-hold-confirm`: Hold to confirm, a framed Flat paper publishing card where holding the pill lights four sunset segments alongside a live 28px percentage readout, rewinds smoothly on early release, and settles with one-tap Undo. Needs `data-material="flat"` on `<html>`.
+- **added** `agent-run`, `flat-agent-run`: Agent run, a framed Flat paper card showing an editorial assistant turn from frameless colored dot steps to streamed draft prose with a collapsible step list and one-tap replay. Needs `data-material="flat"` on `<html>`.
+- **added** `toast-stack`, `flat-toast-stack`: Toast stack, stacked Flat paper notification cards with frameless colored status dots that tuck neatly behind the newest card and fan out on hover, focus, or tap on Flat's expressive spring. Needs `data-material="flat"` on `<html>`.
+- **added** `agent-dispatch`, `device-agent-dispatch`: Agent dispatch, a four-channel hardware agent console on a machined aluminium plate with smoked LCD glass, monochrome token-burst meters, recessed red and orange lamps, channel keys and synthesized clicks via `useSound()`. Needs `data-material="device"` on `<html>`.
+- **added** `agent-chain`, `rack-agent-chain`: Agent chain, an Ableton-style modular five-stage agent signal chain with clip-colored headers (`amber`, `blue`, `teal`, `violet`, `rose`), power bypasses, vertical-drag value boxes, tool toggles and instant-cut presets. Needs `data-material="rack"` on `<html>`.
+- **added** `agent-throttle`, `heat-agent-throttle`: Agent throttle, a striped black Heat HUD steering slab with four outer ink corner brackets, live burn-rate telemetry, three keyboard-driven 12-dash rows (Reasoning, Parallelism, Guardrail) and an instant `H` Halt kill-switch. Needs `data-material="heat"` on `<html>`.
+- **added** `agent-transcript`, `plain-agent-transcript`: Agent transcript, a pure-document agent ledger with 1px rules, four 4px corner brackets on the active filter, underlined link-blue Inspect, Approve, Skip and Rollback actions, and zero motion. Needs `data-material="plain"` on `<html>`.
+- **changed** `litt`, `press-litt`, `flat-litt`, `device-litt`, `plain-litt`, `rack-litt`, `heat-litt`: tunes Flat's `--type-figure-size` from `2.5rem` (40px) to `1.75rem` (28px) so standing figures and percentages sit comfortably inside Flat's paper cards. Nothing changes outside Flat.
+- **changed** `poll`, `flat-poll`, `streak`, `flat-streak`, `kudos`, `flat-kudos`, `reaction-bar`, `flat-reaction-bar`, `reading-progress`, `flat-reading-progress`, `goal-ring`, `flat-goal-ring`: restores cohesive Flat paper frames (`litt-paper rounded-surface bg-surface-1 p-6`, `data-part="paper"`) around every Flat showcase widget, aligns `ReactionBar`, `Kudos`, and `GoalRing` to Flat's frameless-tag and soft-pill standard, fixes `Kudos` accessible label parity, and harmonizes standing percentages on Flat's 28px `text-figure`. Props are unchanged.
+- **changed** `tag`, `flat-tag`: lightens Flat's `Tag` body (`worlds/flat/tag.tsx`) from `600` (`--weight-label`) to `400` (`font-normal`). Props are unchanged.
+
 ## 2026-11-21 · Press, Flat and Rack
 
 Press's audit (plans/audits/press.md, findings 2, 3 and 14; plans/audits/press-fixes.md, Buildable now): Press's own parts keep the contracts they announce. Nothing changes outside Press, and nothing looks different at rest.
