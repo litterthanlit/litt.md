@@ -11,7 +11,7 @@
  *
  * A study page is a page file in src/gallery/pages that exports `study`. The list is read from those sources (the
  * page's id from its `meta`), so a ninth study is tested without editing this file. It fails when:
- * - a study page lacks its sections as h2s in order (Anatomy, How it moves, States, Replay, Source; How it moves, States and Replay only when the page's source has a mechanism, states or a replay), or has
+ * - a study page lacks its sections as h2s in order (Anatomy, How it moves, States, Replay, Source; How it moves, States and Replay only when the page's source has a mechanism, states or a replay, shared or that world's own in meta.movesByWorld or study.byWorld), or has
  *   not exactly one main and one h1, or throws,
  * - an anatomy part does not resolve: the callout lines on a desktop (the numbered badges on a phone) are not as many
  *   as the items in the parts list, or the console warns about a selector,
@@ -70,14 +70,23 @@ const PAGES = fs.readdirSync(pagesDir).filter((f) => f.endsWith(".tsx")).map((f)
   const src = fs.readFileSync(path.join(pagesDir, f), "utf8");
   const at = src.search(/export const study\b/);
   const rest = at >= 0 ? src.slice(at) : "";
+  /* study.byWorld (kit.tsx, PageStudy): a world's own object, states or replay. Read apart from the shared study, so a
+     Replay only Flat has is wanted on Flat's page alone. It holds while the map is written as Prettier lays it out:
+     `  byWorld: {` at two spaces, each world at four, each closed on its own line. */
+  const block = /\n  byWorld:\s*\{\n([\s\S]*?)\n  \},?\n/.exec(rest);
+  const shared = block ? rest.replace(block[0], "\n") : rest;
+  const own = Object.fromEntries([...(block?.[1] ?? "").matchAll(/(?:^|\n)    ([a-z]+):\s*\{\n([\s\S]*?)\n    \},?(?=\n|$)/g)].map((m) => [m[1], m[2]]));
   return {
     id: /\bid:\s*"([^"]+)"/.exec(src)?.[1],
     study: at >= 0,
     mechanism: /\bmechanism\s*:/.test(src),
     /* The shared mechanism as meta writes it (one string literal), what gen-llms puts under How it moves in the docs. */
     sharedMoves: (() => { const m = /\bmechanism\s*:\s*"((?:[^"\\]|\\.)*)"/.exec(src)?.[1]; return m === undefined ? null : JSON.parse(`"${m}"`); })(),
-    states: /\bstates\s*:\s*\{\s*[a-z]/i.test(rest),
-    replay: /\breplay\s*:/.test(rest),
+    states: /\bstates\s*:\s*\{\s*[a-z]/i.test(shared),
+    replay: /\breplay\s*:/.test(shared),
+    /* What a world's own study adds (study.byWorld.<world>): a Replay or States only that world's page shows. */
+    ownReplay: Object.keys(own).filter((w) => /\breplay\s*:/.test(own[w])),
+    ownStates: Object.keys(own).filter((w) => /\bstates\s*:\s*\{\s*[a-z]/i.test(own[w])),
     /* The worlds a part is in, when fewer than all (meta.worlds); null is every world. */
     worlds: (() => { const w = /\bworlds:\s*\[([^\]]*)\]/.exec(src)?.[1]; return w ? [...w.matchAll(/"([^"]+)"/g)].map((m) => m[1]) : null; })(),
     /* The worlds that show How it moves in their own words (meta.movesByWorld), so not the shared mechanism the docs carry.
@@ -148,7 +157,8 @@ function inspect(id) {
     h2: s.querySelector("h2")?.textContent.trim().split("\n")[0] ?? null,
   }));
   const anatomy = document.querySelector(`section[aria-labelledby="study-anatomy-${id}"]`);
-  const svg = anatomy.querySelector("svg.pointer-events-none.absolute");
+  /* The callouts' drawing: the stage's own child, never an SVG the object draws itself (Flat's Dial has one). */
+  const svg = anatomy.querySelector("[data-stage=study] > svg.pointer-events-none.absolute");
   const replay = document.querySelector(`section[aria-labelledby="study-replay-${id}"]`);
   return {
     sections,
@@ -174,7 +184,7 @@ async function audit(page, size, scheme, world, mutate) {
   await pg.waitForTimeout(1500);
   const r = await pg.evaluate(inspect, page.id);
 
-  const want = Object.keys(SECTION_NAMES).filter((k) => k === "anatomy" || k === "source" || (k === "mechanism" && page.mechanism) || (k === "states" && page.states) || (k === "replay" && page.replay));
+  const want = Object.keys(SECTION_NAMES).filter((k) => k === "anatomy" || k === "source" || (k === "mechanism" && (page.mechanism || page.ownMoves.includes(world))) || (k === "states" && (page.states || page.ownStates.includes(world))) || (k === "replay" && (page.replay || page.ownReplay.includes(world))));
   const got = r.sections.map((s) => s.key);
   const named = r.sections.every((s) => s.h2 === SECTION_NAMES[s.key]);
   claim(C.sections, got.join() === want.join() && named && r.mains === 1 && r.h1s === 1 && errors.length === 0 ? null : `${where}: sections ${got.join(", ")} (want ${want.join(", ")})${named ? "" : ", a heading is not an h2 with its name"}, ${r.mains} mains, ${r.h1s} h1s${errors.length ? ", " + errors[0] : ""}`);
@@ -232,7 +242,7 @@ if (selfTest) {
   const bare = PAGES.find((p) => !p.mechanism);
   const run1 = (size, mutate, world = "flat") => audit(button, size, "light", world, mutate);
   const breaks = [
-    [C.parts, "hide one callout line", () => run1(SIZES[0], (pg) => pg.evaluate(() => document.querySelector("section[aria-labelledby^=study-anatomy] svg.pointer-events-none line").remove()))],
+    [C.parts, "hide one callout line", () => run1(SIZES[0], (pg) => pg.evaluate(() => document.querySelector("section[aria-labelledby^=study-anatomy] [data-stage=study] > svg.pointer-events-none line").remove()))],
     [C.rest, "a dialog is open at load", () => run1(SIZES[0], (pg) => pg.evaluate(() => { const d = document.createElement("div"); d.setAttribute("role", "dialog"); d.dataset.state = "open"; d.setAttribute("aria-modal", "true"); document.body.append(d); }))],
     [C.docs, "the docs file read is a page with no mechanism", async () => { const m = (await run1(SIZES[0])).mechanism; await docs(button, m, bare?.id ?? "no-such-page"); }],
     [C.sections, "the Source section moves above Anatomy", () => run1(SIZES[0], (pg) => pg.evaluate(() => { const s = document.querySelector("section[aria-labelledby^=study-source]"); s.parentElement.prepend(s); }))],
