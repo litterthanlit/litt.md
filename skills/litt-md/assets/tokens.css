@@ -79,6 +79,11 @@
   --type-figure-tracking: var(--type-h1-tracking);
   /* Flat's large figure (v1.22); every other world keeps the one figure step. */
   --type-figure-lg-size: var(--type-figure-size);
+  /* The big steps' weight: the title weight in every world but Flat, whose block sets its page title and its figure
+     at the label weight (R8's exception, v1.22, after the Flat studies). */
+  --type-display-weight: var(--weight-title);
+  --type-h1-weight: var(--weight-title);
+  --type-figure-weight: var(--weight-title);
 
   --measure: 65ch;
 
@@ -1820,14 +1825,47 @@
   --slot-fill: color-mix(in oklab, var(--surface-3), var(--fg) 14%);
   /* Paper has no edge (v1.17): .litt-raised draws no ring under Flat. Only what floats keeps a shadow. */
   --raised-line: transparent;
-  /* Fun at rest: one figure per object stands up (R8's exception, v1.17; tuned to 28px, 2026-11-22). Its leading is a
-     ratio, so it grows with the reader's text size. */
-  --type-figure-size: 1.75rem;   /* 28 */
+  /* Flat's type is the Flat studies' (R8's exception, v1.22): body 15px, its secondary words 14, a section title 16,
+     and a page title that stands up at 34 in the label weight. Fun at rest: one figure per object stands up at the
+     label weight (v1.17; 28px in a card among other things, 48px when it is the whole object on its own card,
+     --type-figure-lg-size). The figure's leading is a ratio, so it grows with the reader's text size; every other
+     step keeps whole pixels. */
+  --type-display-size: 2.125rem;   /* 34 */
+  --type-display-leading: 2.375rem;  /* 38 */
+  --type-display-tracking: -0.03em;
+  --type-display-weight: var(--weight-label);
+  --type-h1-size: 2.125rem;        /* 34 */
+  --type-h1-leading: 2.375rem;  /* 38 */
+  --type-h1-tracking: -0.03em;
+  --type-h1-weight: var(--weight-label);
+  --type-h2-size: 1rem;            /* 16 */
+  --type-h2-leading: 1.5rem;  /* 24 */
+  --type-h2-tracking: -0.01em;
+  --type-h3-size: 1rem;            /* 16 */
+  --type-h3-leading: 1.5rem;  /* 24 */
+  --type-h3-tracking: -0.01em;
+  --type-h4-size: 1rem;            /* 16 */
+  --type-h4-leading: 1.5rem;  /* 24 */
+  --type-h4-tracking: -0.01em;
+  --type-reading-size: 0.9375rem;  /* 15 */
+  --type-reading-leading: 1.5rem;  /* 24 */
+  --type-reading-tracking: -0.005em;
+  --type-body-size: 0.9375rem;     /* 15 */
+  --type-body-leading: 1.375rem;  /* 22 */
+  --type-body-tracking: -0.005em;
+  --type-small-size: 0.875rem;     /* 14 */
+  --type-small-leading: 1.25rem;  /* 20 */
+  --type-small-tracking: -0.005em;
+  --type-figure-size: 1.75rem;     /* 28 */
   --type-figure-leading: 1.1;
   --type-figure-tracking: -0.03em;
-  /* The large figure (v1.22, Q-A of "Flat is the studies"): a figure that is the whole object on its own card (a price,
-     a subscriber count, a sign-in code's cells) stands at 44px. Still one figure per object. */
-  --type-figure-lg-size: 2.75rem;   /* 44 */
+  --type-figure-weight: var(--weight-label);
+  /* The large figure (v1.22, Flat is the studies): a figure that is the whole object on its own card (a price,
+     a subscriber count, a sign-in code's cells) stands at 48px at the label weight. Still one figure per object. */
+  --type-figure-lg-size: 3rem;     /* 48 */
+  /* A press shrinks what was pressed, as the studies' do (v1.22): 0.96 on the instant tier, where every other world
+     keeps 0.98. Reduced motion sets it to 1. */
+  --press-scale: 0.96;
   --slot-fill-shade: inset 0 0 0 0 transparent;
   --plate-lift: 0 0 0 0 transparent;
   --cap: color-mix(in oklab, var(--surface-3), var(--fg) 45%);
@@ -2850,6 +2888,7 @@
      label weight, never the browser's bold. Faux bold stays off. */
   html { font-synthesis-weight: none; }
   h1, h2, h3, h4, h5, h6, b, strong { font-weight: var(--weight-title); }
+  h1 { font-weight: var(--type-h1-weight); }
   th { font-weight: var(--weight-label); }
   /* Controls take the control radius, not the browser's default rounding. */
   button, input, select, textarea { border-radius: var(--radius-control); }

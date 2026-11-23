@@ -3,13 +3,15 @@
  * (wall-tile.tsx). The world's set leads under "In the set", followed by the remaining groups in the gallery's order
  * (PAGE_GROUPS) deduplicated so each component appears once, each a section under its h2 with the wall's two columns of
  * tiles, and a row of jump links leads to them. A tile's name opens its page in the world (#<world>/<id>). Nothing here
- * links out of the world (plans/019). Quiet (plans/024, phase 0): no counts and no line of explanation; a tile is the
- * object and its name.
+ * links out of the world (plans/019). Quiet (plans/024, phase 0): no counts; a tile is the object and its name. Under Flat
+ * (plans/026) a tile also carries its line, and opens large in Flat's viewer (flat-viewer.tsx), which steps through the
+ * view.
  */
 import { useId } from "react";
 import { Toaster } from "@/components/toast";
 import { materialOf, type Material } from "./look";
 import { shelvesOf } from "./play-object/takes";
+import { ViewerHost, openViewer } from "./flat-viewer";
 import { TALL, WallTile } from "./wall-tile";
 
 const JUMP =
@@ -21,6 +23,10 @@ export function WorldGallery({ material }: { material: Material }) {
   const world = materialOf(material);
   const shelves = shelvesOf(material);
   const id = useId();
+  /* Flat's view opens a tile large in its viewer and steps through every tile on it (plans/026, the Flat studies). */
+  const flat = material === "flat";
+  const all = shelves.flatMap((s) => s.pages);
+  const hrefOf = (p: { id: string }) => `#${material}/${p.id}`;
   const sectionId = (k: number) => `${id}-group-${k}`;
   const titleId = (k: number) => `${id}-group-${k}-title`;
   return (
@@ -59,12 +65,18 @@ export function WorldGallery({ material }: { material: Material }) {
             <ul className="grid gap-4 md:grid-flow-row-dense md:grid-cols-2">
               {s.pages.map((p) => (
                 <li key={p.id} className={"grid min-w-0 " + (TALL.has(p.id) ? "md:row-span-2" : "")}>
-                  <WallTile page={p} href={`#${material}/${p.id}`} heading="h3" />
+                  <WallTile
+                    page={p}
+                    href={hrefOf(p)}
+                    heading="h3"
+                    onOpen={flat ? (tile, button) => openViewer({ pages: all, at: all.indexOf(p), hrefOf, tile, returnTo: button ?? tile }) : undefined}
+                  />
                 </li>
               ))}
             </ul>
           </section>
         ))}
+        {flat && <ViewerHost />}
       </Toaster>
     </article>
   );

@@ -31,7 +31,17 @@
   }
 }
 
-/* Flat's sheet (plans/024, Flat, leftovers): a wall tile (.flat-sheet) and the player's screen (.flat-screen) under Flat
+/* Flat's stage (after the Flat studies): a wall tile under Flat is the grey ground itself, as the page is, so what is
+   paper on the page (a card, a field, a pill) is white paper in the tile too and an object looks the same in both. The
+   tile is held by its object and its name, and under a pointer that can hover the ground darkens a step of ink, the
+   same 3% the studies use. Nothing outlines it and nothing moves. Outside Flat it does nothing. */
+@media (hover: hover) {
+  [data-material="flat"] .flat-stage:hover {
+    background-color: color-mix(in oklab, var(--well), var(--fg) 3%);
+  }
+}
+
+/* Flat's sheet (plans/024, Flat, leftovers): a system's scene (.flat-sheet) and the player's screen (.flat-screen) under Flat
    are a sheet of their own on the grey ground, so an object and its name read as one thing. In light the sheet is
    paper; in dark it is the ground lifted a step of ink (8%, about the step light's paper stands off the ground: 1.18:1
    against 1.17:1), since dark paper sits below the ground. Nothing outlines it and nothing is cast. What stood on the

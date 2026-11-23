@@ -637,12 +637,12 @@ export function RangeChart({
 
   return (
     <div role="group" aria-labelledby={labelId} aria-disabled={disabled || undefined} className={"grid gap-4 " + className}>
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
         <div className="grid min-w-0 gap-1">
           <span id={labelId} className={"text-small font-title " + (disabled ? "text-fg-disabled" : "text-fg")}>
             {label}
           </span>
-          <p aria-hidden="true" className="flex items-baseline gap-2 text-display tabular-nums">
+          <p aria-hidden="true" className="flex flex-wrap items-baseline gap-x-2 text-display tabular-nums">
             <span className="inline-flex">
               <Figure total={total} locale={locale} separator={separator} disabled={disabled} />
             </span>

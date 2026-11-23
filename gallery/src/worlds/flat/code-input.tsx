@@ -1,7 +1,7 @@
 /**
  * Code input, the Flat body (taste v1.22, "Flat is the studies"; proposals/flat-studies/studies/one-time-code.js):
  * a sign-in's code as one white rounded square per character on the grey ground, with one large figure in each (the
- * large figure, text-figure-lg, 44px, in a cell as tall as five sixths of its width allows). The cells are --cut,
+ * large figure, text-figure-lg, 48px, in a cell as tall as five sixths of its width allows). The cells are --cut,
  * paper on the ground and the grey bubble inside paper, at the surface radius, parted by space alone: no outline and
  * nothing cast. They are drawn from the contract's one real input, which lies over them, so paste, autofill, password
  * managers and screen readers all work.
@@ -11,7 +11,7 @@
  * - A typed character arrives in its cell on the expressive spring (it grows from 0.9), the one thing that moves: a
  *   hand typed it. What the field starts with is simply there, and reduced motion puts it there at once.
  * - An error turns every figure the danger colour and the message under the cells says what to do, in words.
- * - Disabled cells are the light grey with --fg-disabled figures.
+ * - Disabled cells are the object grey (--surface-3) with --fg-disabled figures, as a disabled Flat button is.
  */
 import { motion } from "motion/react";
 import { useEffect, useRef } from "react";
@@ -39,7 +39,7 @@ export function CodeInputFlatBody({ length, code, at, focused, disabled, error }
               "transition-[box-shadow,color] duration-(--dur-instant) ease-litt forced-colors:border " +
               /* Forced colors drop the ring (a box-shadow), so the current cell takes an outline there. */
               (current ? "shadow-[inset_0_0_0_2px_var(--fg)] forced-colors:outline-2 forced-colors:-outline-offset-2 forced-colors:outline-[Highlight] " : "") +
-              (disabled ? "bg-surface-2 text-fg-disabled" : error ? "bg-cut text-danger" : "bg-cut text-fg")
+              (disabled ? "bg-surface-3 text-fg-disabled" : error ? "bg-cut text-danger" : "bg-cut text-fg")
             }
           >
             {char ? (
