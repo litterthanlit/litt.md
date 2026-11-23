@@ -439,8 +439,8 @@
       "hash": "55f372924afbc79f"
     },
     "device-range-chart": {
-      "version": "2026.11.16",
-      "hash": "3b510b0be4606ccd"
+      "version": "2026.11.23",
+      "hash": "a92fac940c89ff00"
     },
     "device-resizable": {
       "version": "2026.11.16",
@@ -871,8 +871,8 @@
       "hash": "ba4e958346266e98"
     },
     "flat-range-chart": {
-      "version": "2026.11.16",
-      "hash": "3b510b0be4606ccd"
+      "version": "2026.11.23",
+      "hash": "a92fac940c89ff00"
     },
     "flat-reaction-bar": {
       "version": "2026.11.22",
@@ -1311,8 +1311,8 @@
       "hash": "56c4ba87dc4b6e8a"
     },
     "heat-range-chart": {
-      "version": "2026.11.16",
-      "hash": "3b510b0be4606ccd"
+      "version": "2026.11.23",
+      "hash": "a92fac940c89ff00"
     },
     "heat-resizable": {
       "version": "2026.11.16",
@@ -1795,8 +1795,8 @@
       "hash": "031ec1bbc38610c7"
     },
     "plain-range-chart": {
-      "version": "2026.11.16",
-      "hash": "3b510b0be4606ccd"
+      "version": "2026.11.23",
+      "hash": "a92fac940c89ff00"
     },
     "plain-resizable": {
       "version": "2026.11.16",
@@ -2199,8 +2199,8 @@
       "hash": "031ec1bbc38610c7"
     },
     "press-range-chart": {
-      "version": "2026.11.16",
-      "hash": "3b510b0be4606ccd"
+      "version": "2026.11.23",
+      "hash": "a92fac940c89ff00"
     },
     "press-release-rail": {
       "version": "2026.11.21",
@@ -2619,8 +2619,8 @@
       "hash": "031ec1bbc38610c7"
     },
     "rack-range-chart": {
-      "version": "2026.11.16",
-      "hash": "3b510b0be4606ccd"
+      "version": "2026.11.23",
+      "hash": "a92fac940c89ff00"
     },
     "rack-resizable": {
       "version": "2026.11.16",
@@ -2759,8 +2759,8 @@
       "hash": "033401331cff1fb6"
     },
     "range-chart": {
-      "version": "2026.11.06",
-      "hash": "3b510b0be4606ccd"
+      "version": "2026.11.23",
+      "hash": "a92fac940c89ff00"
     },
     "reaction-bar": {
       "version": "2026.11.22",

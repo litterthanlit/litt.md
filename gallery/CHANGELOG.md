@@ -10,6 +10,7 @@ Flat's rules are now the Flat studies' (taste v1.22). Nothing changes outside Fl
 
 - **changed** `litt`, `press-litt`, `flat-litt`, `device-litt`, `plain-litt`, `rack-litt`, `heat-litt`: under Flat the type is bigger: body and reading 15px, small 14, h2 to h4 16, display and h1 34px, and the one figure per object (`text-litt-figure`) 48px, tight. The page title and the figure set at the label weight, 600, through three new tokens, `--litt-type-display-weight`, `--litt-type-h1-weight` and `--litt-type-figure-weight`, which are the title weight, 500, in every other world; `text-litt-display`, `text-litt-h1`, `text-litt-figure` and the `h1` element read them. Under Flat `--litt-press-scale` is 0.96 (0.98 elsewhere, 1 under reduced motion). Nothing in your code has to change.
 - **changed** `base-styles`: `h1` takes `--litt-type-h1-weight`, the title weight everywhere but Flat.
+- **fixed** `range-chart`, `press-range-chart`, `flat-range-chart`, `device-range-chart`, `plain-range-chart`, `rack-range-chart`, `heat-range-chart`: the reading's row wraps, so "Whole range" goes under the figure when the two do not fit side by side, as on a 320px screen under Flat's 34px display step, where the row ran 24px past the edge. Props are unchanged.
 - **changed** `button`, `flat-button`: under Flat a press shrinks the pill to `--litt-press-scale` (0.96) on the instant tier; a disabled or busy button stays put, and reduced motion keeps it still. Props are unchanged.
 
 ## 2026-11-22 · World-native agentic components
