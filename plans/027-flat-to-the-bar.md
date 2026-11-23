@@ -190,3 +190,11 @@ npm run test:motion --prefix gallery
   Today, before #168, all twenty pages fail: the six own parts mostly on `root` alone, the rest for want of marks.
   Not caught yet: reading-progress paints its off-ramp colours as solid fills, and the gradient rule reads gradients.
 - 2026-11-22. Read PR #168 at Nick's word. The list, the reference and rule 3 follow it (above).
+- 2026-11-23. #168 merged; `main` merged in. The check in study mode on the twenty: context-budget, hold-confirm,
+  poll, streak, reaction-bar and reading-progress pass rules 3 and 4; agent-run and toast-stack have 24 unmarked
+  parts each, kudos 4, goal-ring 4 and 12 off-ramp gradient stops; progress, toast and the eight staples have no paper
+  and no marks. The reference passes, so the rules agree with it. The sheet on `#canvas` shows the new set.
+- 2026-11-23. Nick, on a preview of three studies outside the repo: "design looks too android, we need it do be iOS".
+  A second preview follows iOS (system type, grouped lists with hairlines, a white shadowed thumb, springs that bounce
+  only after a flick). That bends Flat's face, bounce, no-lines and no-shadow rules, so it waits for Nick's word and
+  goes through `evolve.md` before the pilot.

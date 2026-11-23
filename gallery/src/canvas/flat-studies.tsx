@@ -28,21 +28,22 @@ type Study = {
 };
 
 const SET: Study[] = [
-  { id: "poll", marks: "Six kinds marked", hand: "Tap only, no drag; buttons, not a radio group", look: "Note says “click any pill”", pilot: true },
-  { id: "streak", marks: "Marked", hand: "Tap and hover", look: "Instruction text inside the part" },
-  { id: "kudos", marks: "Marked", hand: "Tap only", look: "Tap dip not picked yet" },
-  { id: "reaction-bar", marks: "Marked", hand: "Tap only", look: "Data hue fills a button; studio words" },
-  { id: "goal-ring", marks: "Marked", hand: "Two keys step it, no drag", look: "Gradient off the sunset ramp" },
-  { id: "reading-progress", marks: "Three kinds marked", hand: "Click a chapter", look: "Ramp off rule; studio words" },
-  { id: "progress", marks: "No marks", hand: "A press runs a script", look: "On the sunset ramp" },
-  { id: "gauge", marks: "No marks", hand: "A still picture", look: "On the ramp" },
-  { id: "heatmap", marks: "No marks", hand: "Hover readout only", look: "On the ramp" },
-  { id: "button", marks: "No marks", hand: "Press, nothing moves", look: "Words fine" },
-  { id: "card", marks: "No marks", hand: "Hover only", look: "Ink card ships" },
-  { id: "toast", marks: "No marks", hand: "Press to raise, drag to dismiss", look: "Colour and words fine" },
+  { id: "context-budget", marks: "Passes rules 3 and 4", hand: "Press to pick a window", look: "The reference: what Flat should look like" },
+  { id: "hold-confirm", marks: "Passes rules 3 and 4", hand: "Hold the pill; an early release rewinds", look: "On the sunset ramp" },
+  { id: "agent-run", marks: "Some parts unmarked", hand: "Open the steps, replay", look: "Colour and words fine" },
+  { id: "toast-stack", marks: "Some parts unmarked", hand: "Hover, focus or tap fans it out", look: "Colour and words fine" },
+  { id: "poll", marks: "Passes rules 3 and 4", hand: "Tap only, no drag; buttons, not a radio group", look: "Note says “click any pill”", pilot: true },
+  { id: "streak", marks: "Passes rules 3 and 4", hand: "Tap and hover", look: "Instruction text inside the part" },
+  { id: "kudos", marks: "A few words unmarked", hand: "Tap only", look: "Tap dip not picked yet" },
+  { id: "reaction-bar", marks: "Passes rules 3 and 4", hand: "Tap only", look: "Words to check" },
+  { id: "reading-progress", marks: "Passes rules 3 and 4", hand: "Click a chapter", look: "Solid fills off the ramp, not caught by the check" },
+  { id: "goal-ring", marks: "A few parts unmarked", hand: "Two keys step it, no drag", look: "Gradient off the sunset ramp" },
+  { id: "progress", marks: "No paper, no marks", hand: "A press runs a script", look: "On the sunset ramp" },
+  { id: "toast", marks: "No paper, no marks", hand: "Press to raise, drag to dismiss", look: "Colour and words fine" },
 ];
 
 const STAPLES: Study[] = [
+  { id: "button", marks: "No marks", hand: "Press, nothing moves", look: "Words fine" },
   { id: "slider", marks: "No marks", hand: "Drags 1:1", look: "Colour and words fine", pilot: true },
   { id: "switch", marks: "No marks", hand: "Drags 1:1", look: "Colour and words fine" },
   { id: "segmented", marks: "No marks", hand: "Press and arrows", look: "No Flat stage" },
@@ -50,7 +51,6 @@ const STAPLES: Study[] = [
   { id: "tabs", marks: "No marks", hand: "Press and arrows", look: "Colour and words fine" },
   { id: "input", marks: "No marks", hand: "Type", look: "Colour and words fine" },
   { id: "select", marks: "No marks", hand: "Open and choose", look: "Colour and words fine" },
-  { id: "chart", marks: "No marks", hand: "Hover readout", look: "Candy hues" },
 ];
 
 const BAR = [
