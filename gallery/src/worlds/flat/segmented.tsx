@@ -22,9 +22,11 @@ import type { SegmentedBodyProps, SegmentedSize } from "@/components/segmented";
 /* A held unselected word on a coarse pointer takes the --fg text. */
 const PRESS = "pointer-coarse:active:text-fg";
 
-const sizes: Record<SegmentedSize, { track: string; segment: string }> = {
-  sm: { track: "h-control-sm pointer-coarse:h-control-md", segment: "px-3.5 text-small pointer-coarse:text-body" },
-  md: { track: "h-control-md", segment: "px-4.5 text-body" },
+/* A segment's words, and its sides: hugging its word, or (a block that fills its row) an even share of the row with a
+   small side, so four words still fit at 320px. */
+const sizes: Record<SegmentedSize, { track: string; text: string; pad: string }> = {
+  sm: { track: "h-control-sm pointer-coarse:h-control-md", text: "text-small pointer-coarse:text-body", pad: "px-3.5" },
+  md: { track: "h-control-md", text: "text-body", pad: "px-4.5" },
 };
 
 /** The width's spring: the position's, a fifth slower, so the pill stretches as it goes. */
@@ -102,8 +104,8 @@ export function SegmentedFlatBody({ legend, showLegend, name, value, options, si
               className={
                 "litt-target relative grid h-full select-none place-items-center rounded-pill font-title " +
                 "transition-[color,scale] duration-(--dur-instant) ease-litt [-webkit-tap-highlight-color:transparent] " +
-                (block ? "flex-1 " : "") +
-                look.segment +
+                (block ? "min-w-0 flex-1 basis-0 px-2 " : look.pad + " ") +
+                look.text +
                 (selected ? " forced-colors:outline-2 forced-colors:-outline-offset-2 forced-colors:outline-[Highlight]" : "") +
                 (off
                   ? " cursor-not-allowed text-fg-disabled"

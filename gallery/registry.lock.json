@@ -928,7 +928,7 @@
     },
     "flat-segmented": {
       "version": "2026.11.23",
-      "hash": "b79b9ece037966af"
+      "hash": "a6aab72cebb2a197"
     },
     "flat-select": {
       "version": "2026.11.18",
@@ -2832,7 +2832,7 @@
     },
     "segmented": {
       "version": "2026.11.23",
-      "hash": "90d760b0c59baa8c"
+      "hash": "b43770b6c25e2b55"
     },
     "select": {
       "version": "2026.11.19",
