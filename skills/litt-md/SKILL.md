@@ -50,7 +50,7 @@ Append to `taste/journal.md` when the skill directory is a writable git checkout
 5. **R5 Say it in words.** A switch says On or Off, a slider its value, a status Ready or Failed. Never color, a dot or position alone. A word in a control is sentence case, 12px, the title weight.
 6. **R6 One accent, as light.** One accent fill per view: the primary action with its glow, or the one main switch (no glow). Elsewhere it is light: the focus ring and links. Checkboxes, radios and other switches fill with `--fg`. Each world has its own accent: Press Blue 4, Flat the ink, Device orange, Plain link blue, each at least 0.12 (OKLab) from every data hue. A project may ask for Blue 4 (`[data-accent="blue"]`), monochrome (`[data-accent="mono"]`): the primary action in the ink; or pink (`[data-accent="pink"]`), in any world, held to the same rules.
 7. **R7 Color carries data.** Beyond the one accent, color only says something: a series, a category, a heat step, a side of a goal, an identity. Five data hues in a fixed order (blue, amber, teal, violet, rose), each with a mark tone, a `-text` tone and a tint, never on chrome.
-8. **R8 Weight, ink and space rank.** Text at 400 (`--weight`), titles, buttons, tabs and words in a control at 500 (`--weight-title`), 12px labels at 600 (`--weight-label`), nothing else. Two inks. Nearly everything 14px, one 18px title, nothing above 18. Lockups 4px, blocks 16px, sections 48px. Figures are tabular; the mono is for code only, except under Device, where every word is in it and 12px labels are engraved capitals (`.litt-legend`).
+8. **R8 Weight, ink and space rank.** Text at 400 (`--weight`), titles, buttons, tabs and words in a control at 500 (`--weight-title`), 12px labels at 600 (`--weight-label`), nothing else. Two inks. Nearly everything 14px, one 18px title, nothing above 18; under Flat (v1.22) a 15px body, a 34px page title and a 48px figure, those two at 600. Lockups 4px, blocks 16px, sections 48px. Figures are tabular; the mono is for code only, except under Device, where every word is in it and 12px labels are engraved capitals (`.litt-legend`).
 9. **R9 Exact, with room.** 8px grid (4px inside components), 1px hairlines, radii 4 / 8 / pill nested. Controls share 32 / 44 / 56 with trimmed labels (sm pad 12, md 16, an lg button 32); lg for hero CTAs only; touch targets at least 44px. Airy pages (128 / 96 / 64px between sections), compact tools.
 10. **R10 Easy, and felt.** Easy first: the main task is plain at a glance and done with no explanation. Then felt: each design makes someone feel something, named in one line, and earns it through its world's own means (Flat's Candy data and bounce, Press's weight, Device's machined parts), never decoration or color on chrome.
 
@@ -83,7 +83,7 @@ These change only when Nick changes them.
 - Bounce above 0.12 (above 0.28 under Flat), bounce on exits or the responsive tier, a second expressive moment per view, scroll reveals, parallax, marquee
 - A second typeface
 - A weight outside the three roles (bold, 700 and up, below 400, or 600 above 12px)
-- Type above 18px (but Flat's one figure per object at `--type-figure-size`)
+- Type above 18px (but under Flat, its 34px page title and its one figure per object at `--type-figure-size`)
 
 ## Token quick view (values live only in `assets/tokens.css`)
 

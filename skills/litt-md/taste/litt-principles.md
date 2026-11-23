@@ -43,7 +43,7 @@ For sites, portfolios and reading. Nick, 2026-11-16: "I want it light, easy to u
 - **Light, airy and easy.** No complications: one clear thing at a time, room around it, nothing to work out.
 - **Bold, simple shapes on grey.** Grey is the ground. What sits on it is a pill, a circle or a rounded square in the ink or in white, with no outline and nothing cast, and a small pop of color only where it says something.
 - **Things come from where you touched them.** A set deals out of what opened it and gathers back; an overlay grows from its opener. A reader never loses where they were.
-- **Fun, and it moves that way.** Motion is quick and playful, to match, and Flat bounces more than the other worlds do (Nick, 2026-11-16: "yes flat should be more bouncy I feel like"). It is Flat's own exception to R4's bounce cap, picked by eye on the canvas (Nick, 2026-11-16: "0.28 at 350ms, no bounce on small moves looks good"): where something arrives on the expressive spring it bounces 0.28, where every other world keeps 0.12. Small moves and exits never bounce. At rest the fun is a figure that stands up: one figure per object may be large (call 8).
+- **Fun, and it moves that way.** Motion is quick and playful, to match, and Flat bounces more than the other worlds do (Nick, 2026-11-16: "yes flat should be more bouncy I feel like"). It is Flat's own exception to R4's bounce cap, picked by eye on the canvas (Nick, 2026-11-16: "0.28 at 350ms, no bounce on small moves looks good"): where something arrives on the expressive spring it bounces 0.28, where every other world keeps 0.12. Small moves and exits never bounce. At rest the fun is a figure that stands up: one figure per object may be large (call 8). Since v1.22 Flat is the Flat studies': a press shrinks to 0.96, and in the gallery a tile or a demo runs by itself until a hand arrives, then stops for good (stilled under reduced motion).
 
 #### Flat's materials
 
@@ -62,7 +62,7 @@ They combine in one order: **ground, then paper, then part.** The ground is the 
 | Ink card | At most one per view: the ink as a rounded square holding one live thing (a stat, a live run, a timer), its one color the first data hue on its data only. No shadow; white in dark (call 4). | The opposite theme on the square (`data-theme` flipped), and `--data-blue` on its data | `--radius-surface` |
 | Outline | Only what is off: a switch, an unticked box, a step to come. It also keeps the 3:1 edge on the grey ground (call 7). | `--line-control` at 1.5px | The control's |
 | Float | Only what floats over the page keeps a shadow: a menu, a popover, a dialog, a toast. | `--shadow-float`, `--shadow-modal` | `--radius-surface` |
-| Lettering | Geist, three weights by role. One figure per object may stand above 18px (call 8). | `--font-sans`, `--weight*`, `--type-*`; the figure `--type-figure-size` | None |
+| Lettering | Geist, three weights by role, at the Flat studies' sizes (v1.22): body 15px, page title 34px at 600. One figure per object stands at 48px, at 600 (call 8). | `--font-sans`, `--weight*`, `--type-*`; the figure `--type-figure-size` | None |
 
 In dark the ground and black paper stand only 1.1:1 apart (light's white on grey, 1.18:1): the words and what is on the paper carry it, as Flat's grey field always has. A cover is a real picture, never an X-crossed wireframe (call 3): a placeholder is not the work (R1), and Flat is for sites and portfolios.
 
@@ -182,7 +182,7 @@ One contract, a body per world (`proposals/worlds.md`, decisions 13 and 15). "A 
 | How the hand works it: a slide, a flip, a detent, a travel | Its keys, one tab stop per composite, and where focus goes in and comes back to |
 | Its motion language, inside the tiers and bounds (R4) | The value it sends in a form |
 | Its vocabulary, in the body and the demo | States in words (R5), one accent fill per view (R6), color only for data (R7) |
-| Its face and its own accent (decision 14) | Weight by role and nothing above 18px (R8); the space, radius and control scales (R9) |
+| Its face, its own accent (decision 14) and its type sizes (v1.22) | Weight by role (R8); the space, radius and control scales (R9) |
 | Abilities only it has, such as Device's sound | Nothing moves on its own; reduced motion and forced colors are designed |
 | Parts only it has (`meta.worlds`), which cost the other worlds nothing | 44px targets on coarse pointers; reflow at 320px; text at 200% |
 

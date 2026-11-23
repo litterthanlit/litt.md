@@ -120,18 +120,18 @@
   --text-display: var(--type-display-size);
   --text-display--line-height: var(--type-display-leading);
   --text-display--letter-spacing: var(--type-display-tracking);
-  --text-display--font-weight: var(--weight-title);
+  --text-display--font-weight: var(--type-display-weight);
 
   --text-h1: var(--type-h1-size);
   --text-h1--line-height: var(--type-h1-leading);
   --text-h1--letter-spacing: var(--type-h1-tracking);
-  --text-h1--font-weight: var(--weight-title);
+  --text-h1--font-weight: var(--type-h1-weight);
 
   /* The one figure per object: the h1 step everywhere but Flat, whose block lifts it (R8's exception). */
   --text-figure: var(--type-figure-size);
   --text-figure--line-height: var(--type-figure-leading);
   --text-figure--letter-spacing: var(--type-figure-tracking);
-  --text-figure--font-weight: var(--weight-title);
+  --text-figure--font-weight: var(--type-figure-weight);
 
   --text-h2: var(--type-h2-size);
   --text-h2--line-height: var(--type-h2-leading);

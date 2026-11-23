@@ -431,7 +431,10 @@ const assetFiles = fs.readdirSync(path.join(skillDir, "assets")).filter((f) => /
 // Three weights, one per role: text 400, titles 500, 12px labels 600. Nothing else exists.
 const ROLE_WEIGHTS = { "--weight": 400, "--weight-title": 500, "--weight-label": 600 };
 const roleVar = (v) => /^var\((--weight(?:-title|-label)?)\)$/.exec(v)?.[1];
-const okWeight = (v) => ["400", "500", "600", "normal", "inherit", "initial", "unset"].includes(v) || !!roleVar(v);
+/* The big steps' own weight tokens (v1.22): the title weight everywhere, the label weight in Flat's block alone. */
+const BIG_STEPS = ["display", "h1", "figure"];
+const bigVar = (v) => /^var\(--type-(display|h1|figure)-weight\)$/.exec(v)?.[1];
+const okWeight = (v) => ["400", "500", "600", "normal", "inherit", "initial", "unset"].includes(v) || !!roleVar(v) || !!bigVar(v);
 const weightOf = (v) => (roleVar(v) ? ROLE_WEIGHTS[roleVar(v)] : /^\d+$/.test(v) ? Number(v) : v === "normal" ? 400 : NaN);
 const tokenDecls = strip(css);
 for (const [n, want] of Object.entries(ROLE_WEIGHTS)) {
@@ -439,6 +442,20 @@ for (const [n, want] of Object.entries(ROLE_WEIGHTS)) {
   if (Number(v) !== want) weightFails.push(`tokens.css: ${n} is ${v ?? "missing"}, must be ${want}`);
 }
 const TITLE_STEPS = ["display", "h1", "h2", "h3", "h4", "figure"];
+/* Each big step's weight is the title weight in :root and every world but Flat, whose block may lift it to the label
+   weight (R8's exception, v1.22, the Flat studies). */
+{
+  const flatBlock = (tokenDecls.match(/:root\[data-material="flat"\],\s*\[data-material="flat"\]\s*\{(?=\s*\/\*|\s*--canvas)[^}]*\}/) || [])[0] || "";
+  for (const step of BIG_STEPS) {
+    const n = `--type-${step}-weight`;
+    const all = [...tokenDecls.matchAll(new RegExp(`(?<![\\w-])${n}\\s*:\\s*([^;]+);`, "g"))].map((m) => m[1].trim());
+    if (all[0] !== "var(--weight-title)") weightFails.push(`tokens.css: ${n} is ${all[0] ?? "missing"} in :root, must be var(--weight-title)`);
+    const inFlat = (flatBlock.match(new RegExp(`(?<![\\w-])${n}\\s*:\\s*([^;]+);`)) || [])[1]?.trim();
+    if (inFlat && inFlat !== "var(--weight-label)") weightFails.push(`tokens.css: Flat's ${n} is ${inFlat}, must be var(--weight-label)`);
+    const elsewhere = all.slice(1).filter((v) => v !== "var(--weight-title)").length - (inFlat && inFlat !== "var(--weight-title)" ? 1 : 0);
+    if (elsewhere > 0) weightFails.push(`tokens.css: ${n} is lifted outside Flat's block (only Flat may set it to the label weight)`);
+  }
+}
 const captionSize = (v) => /^var\(--type-caption-size\)$/.test(v) || /^(?:0?\.75rem|12px|1[01]px|[0-9]px)$/.test(v);
 for (const f of assetFiles) {
   const text = strip(read(f));
@@ -455,8 +472,8 @@ for (const f of assetFiles) {
     // A type step's weight follows its role: titles for display to h4, labels for the caption, text for the rest.
     const step = /^--text-([\w-]+?)--font-weight$/.exec(name)?.[1];
     if (step) {
-      const want = TITLE_STEPS.includes(step) ? "--weight-title" : step === "caption" ? "--weight-label" : "--weight";
-      if (roleVar(v) !== want) weightFails.push(`${f}: ${name} is ${v}, must be var(${want})`);
+      const want = BIG_STEPS.includes(step) ? `--type-${step}-weight` : TITLE_STEPS.includes(step) ? "--weight-title" : step === "caption" ? "--weight-label" : "--weight";
+      if ((roleVar(v) ?? (bigVar(v) && `--type-${bigVar(v)}-weight`)) !== want) weightFails.push(`${f}: ${name} is ${v}, must be var(${want})`);
     }
   }
   // 600 is for 12px labels only: a rule that sets the label weight sets nothing larger than the caption.

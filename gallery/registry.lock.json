@@ -1,6 +1,6 @@
 {
   "$comment": "Written by scripts/gen-registry.mjs. What each registry item installs, hashed, and the release that last changed it. Commit it with the change.",
-  "latest": "2026.11.22",
+  "latest": "2026.11.23",
   "items": {
     "accordion": {
       "version": "2026.11.18",
@@ -59,8 +59,8 @@
       "hash": "e37a0c21ecb32d72"
     },
     "base-styles": {
-      "version": "2026.11.17",
-      "hash": "89ed42fb8e0b196b"
+      "version": "2026.11.23",
+      "hash": "880bc06eb4cb9f79"
     },
     "breadcrumb": {
       "version": "2026.11.06",
@@ -71,8 +71,8 @@
       "hash": "5472ede5c202dece"
     },
     "button": {
-      "version": "2026.11.19",
-      "hash": "93ce2d30481c492d"
+      "version": "2026.11.23",
+      "hash": "38e573bd1efd4dcd"
     },
     "callout": {
       "version": "2026.11.18",
@@ -375,8 +375,8 @@
       "hash": "dd147264254ab4bb"
     },
     "device-litt": {
-      "version": "2026.11.22",
-      "hash": "0b0c4ca8c8e5b66e"
+      "version": "2026.11.23",
+      "hash": "4eb02391a4101d00"
     },
     "device-log-view": {
       "version": "2026.11.18",
@@ -635,8 +635,8 @@
       "hash": "a7deda94f7d16e53"
     },
     "flat-button": {
-      "version": "2026.11.19",
-      "hash": "7880d6d957952910"
+      "version": "2026.11.23",
+      "hash": "d7cd83f5b003107e"
     },
     "flat-callout": {
       "version": "2026.11.18",
@@ -807,8 +807,8 @@
       "hash": "dd147264254ab4bb"
     },
     "flat-litt": {
-      "version": "2026.11.22",
-      "hash": "383026223d9b8135"
+      "version": "2026.11.23",
+      "hash": "ee39cf4e2677af46"
     },
     "flat-log-view": {
       "version": "2026.11.18",
@@ -1247,8 +1247,8 @@
       "hash": "dd147264254ab4bb"
     },
     "heat-litt": {
-      "version": "2026.11.22",
-      "hash": "23d0ed8d4d50c1fa"
+      "version": "2026.11.23",
+      "hash": "131807b32855f538"
     },
     "heat-log-view": {
       "version": "2026.11.18",
@@ -1507,8 +1507,8 @@
       "hash": "dd147264254ab4bb"
     },
     "litt": {
-      "version": "2026.11.22",
-      "hash": "d23d81722469a4fa"
+      "version": "2026.11.23",
+      "hash": "f86a0935ae76dc0d"
     },
     "log-view": {
       "version": "2026.11.18",
@@ -1735,8 +1735,8 @@
       "hash": "dd147264254ab4bb"
     },
     "plain-litt": {
-      "version": "2026.11.22",
-      "hash": "fc513d6ca87433fb"
+      "version": "2026.11.23",
+      "hash": "88fd39920ac48810"
     },
     "plain-log-view": {
       "version": "2026.11.18",
@@ -2139,8 +2139,8 @@
       "hash": "dd147264254ab4bb"
     },
     "press-litt": {
-      "version": "2026.11.22",
-      "hash": "906cf18d67866fe6"
+      "version": "2026.11.23",
+      "hash": "4f177fda0543dee3"
     },
     "press-log-view": {
       "version": "2026.11.18",
@@ -2559,8 +2559,8 @@
       "hash": "dd147264254ab4bb"
     },
     "rack-litt": {
-      "version": "2026.11.22",
-      "hash": "db6b5ff4d5b2cf6d"
+      "version": "2026.11.23",
+      "hash": "15eee5e4c9138ef9"
     },
     "rack-log-view": {
       "version": "2026.11.18",

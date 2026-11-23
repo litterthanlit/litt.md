@@ -238,7 +238,7 @@ function llmsTxt(pages, cp, look) {
     worldsDoc(look, pages),
     "## House rules",
     bullets([
-      "Weight by role: text at 400, titles, buttons and tabs at 500 (font-litt-title), 12px labels at 600 (font-litt-label, carried by text-litt-caption). Never font-medium, font-semibold or font-bold. Nothing is set above 18px.",
+      "Weight by role: text at 400, titles, buttons and tabs at 500 (font-litt-title), 12px labels at 600 (font-litt-label, carried by text-litt-caption). Never font-medium, font-semibold or font-bold. Nothing is set above 18px, but under Flat, whose page title is 34px and whose one figure per object is 48px (text-litt-figure), both at 600.",
       "Tokens only: no hex and no raw colors. Radii are rounded-litt-control (4px), rounded-litt-surface (8px) or rounded-litt-pill (avatars, icon-only buttons, switches).",
       "One accent fill per view, on the primary action. Checkboxes, radios and switches fill with the foreground color.",
       "Glass only on floating surfaces (menus, popovers, dialogs, toasts). Cards in the page flow are raised, with no shadow.",

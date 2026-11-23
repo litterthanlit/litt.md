@@ -8,6 +8,8 @@
  *   glow and no highlight (Flat has no light, R2). Secondary is a grey pill (--block is --surface-3 under Flat),
  *   icon-only a grey circle. Ghost is words alone: no fill, even under the hand, which only brings the words to --fg.
  *   Danger is the grey pill with red words; in a dialog's footer it is the confirm, the one red fill.
+ * - A press shrinks the pill to --press-scale (0.96 under Flat, v1.22, as the Flat studies' do) on the instant tier; a
+ *   disabled or busy button stays put, and reduced motion sets the scale to 1.
  * - A disabled button is a grey fill with --fg-disabled words and no hairline.
  * - The contract (props, aria-busy, aria-disabled, sizes, label, spinner) is button.tsx's. This file only says what the
  *   pill is made of. Fun mode's deeper sink still applies, since it is a movement and not a look.
@@ -16,8 +18,8 @@ import type { ButtonBodyProps, ButtonVariant } from "@/components/button";
 
 const base =
   "litt-target relative inline-flex shrink-0 items-center justify-center gap-control whitespace-nowrap select-none font-title " +
-  "cursor-pointer transition-[background-color,color,translate] duration-(--dur-instant) ease-litt " +
-  "[-webkit-tap-highlight-color:transparent] " +
+  "cursor-pointer transition-[background-color,color,translate,scale] duration-(--dur-instant) ease-litt " +
+  "[-webkit-tap-highlight-color:transparent] enabled:not-data-loading:active:scale-[var(--press-scale)] " +
   "active:translate-y-(--press-depth) disabled:cursor-not-allowed disabled:active:translate-y-0 " +
   "data-loading:cursor-wait data-loading:active:translate-y-0 " +
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus";
