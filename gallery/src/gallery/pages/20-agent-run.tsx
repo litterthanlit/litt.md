@@ -4,16 +4,16 @@ import { Page, Stage, TryIt, type PageDocs, type PageMeta } from "../kit";
 export const meta: PageMeta = {
   id: "agent-run",
   title: "Agent run",
-  lede: "A writing assistant's turn from plain steps to streamed prose.",
+  lede: "Think, run the steps, fold them away, write the answer.",
   order: 1.07,
   group: "Agents",
   verbs: ["press", "watch"],
   worlds: ["flat"],
   summary:
-    "One assistant turn framed on a white paper card: a plain list of steps that folds away behind a quiet toggle, followed by the drafted paragraph and a one-tap replay. It belongs to Flat.",
-  tiers: ["instant", "expressive"],
+    "One assistant turn on a writer's draft, on a white paper: your request in a grey bubble, the steps it ran folded into \"Thought for 4s\", and its answer. Run again plays the turn from the start. It belongs to Flat.",
+  tiers: ["instant", "responsive", "expressive"],
   mechanism:
-    "Starts settled at rest so the card reads immediately with zero motion on load. Tapping Run again steps through each row in sequence and streams the draft prose inside the card's soft inner block; tapping Hide steps folds the step list neatly away. Under reduced motion, replaying updates directly without stepping or streaming.",
+    "At rest it is the finished turn, folded, and nothing moves on load. Run again thinks with a live timer, then runs each step: a turning ring that becomes an ink circle with a check on the expressive spring, its result beside it. Then the steps fold into \"Thought for\" and the answer comes in word by word behind a caret. The fold opens and closes from its own button. Under reduced motion Run again finishes at once.",
 };
 
 export const docs: PageDocs = {
@@ -21,74 +21,79 @@ export const docs: PageDocs = {
   exports: ["AgentRun"],
   usage: `import { AgentRun } from "@/components/agent-run";
 
-<AgentRun title="Opening draft" />`,
+<AgentRun
+  title="Spring issue"
+  request="Make the spring issue open stronger"
+/>`,
   use: [
-    "Showing what a writing or research assistant checked before producing an answer, without dense logs or chrome.",
-    "Letting a reader fold the intermediate steps away while keeping the finished draft prominent.",
+    "Showing what a writing or research assistant did before it answered, without dense logs or chrome.",
+    "Letting a reader fold the steps away while the answer stays in front.",
   ],
   skip: [
-    "Another world's page. AgentRun belongs to Flat's grey ground, paper card and plain step rows, and needs data-material=\"flat\" on <html>.",
+    "Another world's page. AgentRun belongs to Flat's grey ground, white paper and ink marks, and needs data-material=\"flat\" on <html>.",
     "A multi-agent pipeline with editable parameters. Use Plan or RunList.",
     "A long chronological audit log of every tool payload. Use LogView.",
   ],
   keyboard: [
-    [["Tab"], "Moves between the Hide steps toggle and Run again."],
-    [["Enter", "Space"], "Toggles the step list or replays the turn from the first step."],
+    [["Tab"], "Moves between the Thought for line, which folds the steps, and Run again."],
+    [["Enter", "Space"], "Folds or unfolds the steps, or plays the turn again from the start."],
   ],
   a11y: [
-    "The disclosure button uses aria-expanded and aria-controls linked to the step list.",
-    "Step state is in plain words (duration, Now, Queued), with reached steps in ink.",
-    "Starting and completing a replay announce once in a polite status region.",
+    "The turn is a named section, aria-busy while it runs; the Thought for line is a disclosure with aria-expanded and aria-controls.",
+    "A step's state is its mark and its result in words, never a dot.",
+    "A polite status region says each phase once (Thinking, each step, Answer ready with the answer), not every word.",
+    "Run again moves focus to the Thought for line, so focus never falls to the page while the turn runs.",
   ],
 };
 
-function OpeningDraftDemo() {
-  return <AgentRun title="Opening draft" />;
+function SpringIssueDemo() {
+  return <AgentRun title="Spring issue" />;
 }
 
-const BRIEF_STEPS: AgentRunStep[] = [
-  { id: "links", label: "Gather links", detail: "6 articles", duration: "0.9s" },
-  { id: "dedupe", label: "Group themes", detail: "3 topics", duration: "0.7s" },
-  { id: "write", label: "Summarize", detail: "38 words", duration: "1.0s" },
+const DIGEST_STEPS: AgentRunStep[] = [
+  { id: "links", label: "Gather saved links", detail: "6 posts", duration: "0.9s" },
+  { id: "group", label: "Group by theme", detail: "3 themes", duration: "0.7s" },
+  { id: "write", label: "Write the digest", detail: "38 words", duration: "1.0s" },
 ];
 
-function CollapsedBriefDemo() {
+function OpenStepsDemo() {
   return (
     <AgentRun
       title="Morning digest"
-      steps={BRIEF_STEPS}
-      answer="Three stories stood out this morning: ferries returning to winter schedules, a new coastal trail map for Mendocino, and an interview with the lighthouse keeper."
-      defaultExpanded={false}
+      request="What did readers share this week?"
+      steps={DIGEST_STEPS}
+      answer="Three things stood out: the garden notes, a reader's letter on grey, and the spring issue's new opening."
+      defaultExpanded
     />
   );
 }
 
 export default function AgentRunPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<AgentRun title="Opening draft" />}>
+    <Page meta={meta} docs={docs} tile={<AgentRun title="Spring issue" />}>
       <Stage
-        title="Opening draft"
+        title="A finished turn"
         tier="expressive"
-        caption="Plain steps above the drafted paragraph; tap Run again to watch the turn step and stream."
-        code="OpeningDraftDemo"
+        caption="The turn at rest, folded into Thought for; press Run again to watch it think, run its steps and write the answer."
+        code="SpringIssueDemo"
       >
-        <OpeningDraftDemo />
+        <SpringIssueDemo />
       </Stage>
 
       <Stage
-        title="Collapsed steps"
+        title="Steps unfolded"
         tier="expressive"
-        caption="Steps start tucked away so the finished note leads; expand the step count to inspect the work."
-        code="CollapsedBriefDemo"
+        caption="Starts with the steps open, each an ink check and its result; the Thought for line folds them away."
+        code="OpenStepsDemo"
       >
-        <CollapsedBriefDemo />
+        <OpenStepsDemo />
       </Stage>
 
       <TryIt
         of="AgentRun"
         component={AgentRun}
-        props={{ title: "Opening draft", defaultExpanded: true }}
-        controls={["title", "defaultExpanded"]}
+        props={{ title: "Spring issue", request: "Make the spring issue open stronger", defaultExpanded: false }}
+        controls={["request", "defaultExpanded"]}
       />
     </Page>
   );

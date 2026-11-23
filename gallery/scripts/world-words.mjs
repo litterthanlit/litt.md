@@ -135,8 +135,6 @@ const KNOWN = [
   ]),
   ...["device", "rack", "heat"].map((w) => k(`${w}/tune`, ["pill"], TUNE)),
   /* Flat's hardware words (taste v1.22): these parts are being redrawn after the studies, and their words with them. */
-  k("flat/hold-confirm", ["readout"], "the shared summary calls the figure a readout; Hold to confirm is being redrawn after the studies"),
-  k("flat/context-budget", ["readout"], "the summary and Skip when call it a readout; Context budget is being redrawn after the studies"),
   k("flat/time-scrubber", ["needle"], "every world draws the scrubber's fixed needle (it has no Flat body), so the shared Accessibility line names it; it waits on a Flat body"),
   /* Plain's words are Nick's (litt-principles.md, Plain: nothing changes without asking): each page below waits on its
      row in the draft, plans/audits/plain-words.md, and names only the words that row replaces, so a new word on a Plain

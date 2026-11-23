@@ -12,10 +12,10 @@ export const meta: PageMeta = {
   verbs: ["press"],
   worlds: ["flat"],
   summary:
-    "One goal you can count: a ring that fills as you get closer, the count inside it, the goal's name beneath, and round − and + keys to step it. It sits on the page with no box around it. It belongs to Flat.",
+    "One goal you can count on a white paper: an ink ring that fills as you get closer, the count standing inside it, the goal's name beneath, and grey − and + circles to step it. It belongs to Flat.",
   tiers: ["instant", "expressive"],
   mechanism:
-    "An SVG ring maps the count over the target to its strokeDashoffset, stroked with a gradient across --data-sky, --data-violet and --data-bubblegum. The − and + keys beneath step the count, and the ring and the figure follow on the expressive spring (350ms) without taking an accent fill, announcing each step once.",
+    "An SVG ring maps the count over the target to its strokeDashoffset, stroked in the ink over a grey track. The − and + circles beneath step the count, and the ring and the figure follow on the expressive spring, announcing each step once. Nothing moves until a hand steps it.",
 };
 
 export const docs: PageDocs = {
@@ -34,17 +34,17 @@ export const docs: PageDocs = {
     "One goal you can count, such as books read, issues sent or readers reached.",
   ],
   skip: [
-    "Another world's page. GoalRing uses Flat's large figure, colored ring and round keys; it needs data-material=\"flat\" on <html>.",
+    "Another world's page. GoalRing uses Flat's paper, large figure, ink ring and grey circles; it needs data-material=\"flat\" on <html>.",
     "A live hardware or telemetry meter. Use Gauge.",
     "A multi-series comparison. Use Chart.",
   ],
   keyboard: [
-    [["Tab"], "Moves focus between the circular − and + keys."],
+    [["Tab"], "Moves focus between the − and + buttons."],
     [["Enter", "Space"], "Steps the goal down or up by one."],
   ],
   a11y: [
     "The radial ring exposes role=\"progressbar\" with aria-valuemin, aria-valuemax, aria-valuenow and readable aria-valuetext.",
-    "The SVG graphic is hidden from assistive tech; the standing figure, circular key labels and polite live region say everything in words.",
+    "The SVG graphic is hidden from assistive tech; the figure, the buttons' names and a polite live region say everything in words.",
     "Under reduced motion the ring and figure jump immediately with no spring overshoot.",
   ],
 };
@@ -77,7 +77,7 @@ export const study: PageStudy = {
   parts: [
     { name: "The ring", selector: "[role=progressbar]" },
     { name: "The figure", selector: "[data-part=figure]" },
-    { name: "The circular keys", selector: "[data-part=circle]" },
+    { name: "The − and + circles", selector: "[data-part=circle]" },
   ],
   states: {
     empty: <GoalRing title="Books read in 2026" target={24} unit="books" defaultValue={5} />,
@@ -103,7 +103,7 @@ export default function GoalRingPage() {
         title="Reading goal"
         tier="expressive"
         code="ReadingGoalDemo"
-        caption="A ring that fills toward the goal, the count inside it, and round − and + keys."
+        caption="An ink ring that fills toward the goal, the count inside it, and − and + to step it."
       >
         <ReadingGoalDemo />
       </Stage>

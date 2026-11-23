@@ -32,7 +32,7 @@
     },
     "agent-run": {
       "version": "2026.11.23",
-      "hash": "8cc26422eb1366aa"
+      "hash": "8515a4a7bdc4756a"
     },
     "agent-throttle": {
       "version": "2026.11.22",
@@ -144,7 +144,7 @@
     },
     "context-budget": {
       "version": "2026.11.23",
-      "hash": "a1e4f3c783858bff"
+      "hash": "f30961de58ed75c3"
     },
     "context-menu": {
       "version": "2026.11.12",
@@ -612,7 +612,7 @@
     },
     "flat-agent-run": {
       "version": "2026.11.23",
-      "hash": "8cc26422eb1366aa"
+      "hash": "8515a4a7bdc4756a"
     },
     "flat-app-shell": {
       "version": "2026.11.16",
@@ -696,7 +696,7 @@
     },
     "flat-context-budget": {
       "version": "2026.11.23",
-      "hash": "a1e4f3c783858bff"
+      "hash": "f30961de58ed75c3"
     },
     "flat-context-menu": {
       "version": "2026.11.16",
@@ -751,8 +751,8 @@
       "hash": "f50a1e82889db283"
     },
     "flat-goal-ring": {
-      "version": "2026.11.22",
-      "hash": "319bc1a5f3708baf"
+      "version": "2026.11.23",
+      "hash": "a869de4bc32947b2"
     },
     "flat-header": {
       "version": "2026.11.16",
@@ -764,7 +764,7 @@
     },
     "flat-hold-confirm": {
       "version": "2026.11.23",
-      "hash": "7bd66d68b5e39283"
+      "hash": "381c4f3c2090fac8"
     },
     "flat-hover-card": {
       "version": "2026.11.16",
@@ -1000,7 +1000,7 @@
     },
     "flat-toast-stack": {
       "version": "2026.11.23",
-      "hash": "fe72f4681f7d5273"
+      "hash": "b0f6d746ee42e8f9"
     },
     "flat-token-input": {
       "version": "2026.11.19",
@@ -1043,8 +1043,8 @@
       "hash": "f50a1e82889db283"
     },
     "goal-ring": {
-      "version": "2026.11.22",
-      "hash": "319bc1a5f3708baf"
+      "version": "2026.11.23",
+      "hash": "a869de4bc32947b2"
     },
     "growth": {
       "version": "2026.10.26",
@@ -1456,7 +1456,7 @@
     },
     "hold-confirm": {
       "version": "2026.11.23",
-      "hash": "7bd66d68b5e39283"
+      "hash": "381c4f3c2090fac8"
     },
     "hover-card": {
       "version": "2026.11.15",
@@ -2916,7 +2916,7 @@
     },
     "toast-stack": {
       "version": "2026.11.23",
-      "hash": "fe72f4681f7d5273"
+      "hash": "b0f6d746ee42e8f9"
     },
     "token-input": {
       "version": "2026.11.19",
