@@ -42,7 +42,7 @@ const SET: Record<Material, string[]> = {
  * read it yet: they switch to it when Flat's list holds twelve.
  */
 export const BAR: Partial<Record<Material, string[]>> = {
-  flat: [],
+  flat: ["poll", "slider"],
 };
 
 /** Whether a part's study has passed its world's bar (BAR). */
