@@ -15,7 +15,7 @@ export const meta: PageMeta = {
     "One question and its choices as pills, each with a dot in its own color. Once a reader picks one, every choice shows its share as a bar and the total votes stand above them as one large number. Choosing another moves the vote at once, and choosing the same one again takes it back. It belongs to Flat.",
   tiers: ["instant", "expressive"],
   mechanism:
-    "Each option is a native button with aria-pressed. On a vote, a full-height tinted layer in the choice's data hue grows from zero to its share along X on the expressive spring (350ms). Percentage and vote count appear in ink words beside the label, and a polite live region announces the updated vote. Under reduced motion the bars land at their share at once.",
+    "The choices form one radiogroup with roving focus, so Tab lands once and arrow keys, Home and End move and vote. When a poll first enters view, revealed share bars sweep open along X and the vote figure settles once on the expressive spring (350ms), then stays still. A choice dips subtly the moment a pointer lands on it, and voting updates the shares and announces the pick in a polite live region. Under reduced motion the bars and figure appear at rest with no animation.",
 };
 
 export const docs: PageDocs = {
@@ -41,14 +41,17 @@ export const docs: PageDocs = {
     "A single binary choice. Use Switch or Button.",
   ],
   keyboard: [
-    [["Tab"], "Moves between the choices."],
-    [["Enter", "Space"], "Votes for the focused choice, or removes your vote if already picked."],
+    [["Tab"], "Moves focus into and out of the poll as one tab stop, landing on your picked choice or the first one."],
+    [["ArrowDown", "ArrowRight"], "Moves focus to the next choice and votes for it, wrapping to the first."],
+    [["ArrowUp", "ArrowLeft"], "Moves focus to the previous choice and votes for it, wrapping to the last."],
+    [["Home", "End"], "Jumps to the first or last choice and votes for it."],
+    [["Enter", "Space"], "Votes for the focused choice, or clears your vote if already picked."],
   ],
   a11y: [
-    "Every choice is a native button with aria-pressed and a readable percentage and vote count once revealed.",
-    "Voting announces the choice, percentage and vote count once in a polite status region.",
-    "Color never carries selection alone: your pick shows a check mark and bold ink label, and forced colors outlines it in Highlight.",
-    "Under reduced motion the share bars appear at their final width with no spring overshoot.",
+    "The choices sit in a radiogroup labelled by the question, with one tab stop and native radio buttons carrying aria-checked.",
+    "Voting announces the chosen option, percentage and vote count once in a polite status region.",
+    "Color never carries selection alone: your pick shows a check mark and title-weight ink label, and forced colors outlines it in Highlight.",
+    "Under reduced motion the arrival and scale dip are skipped and share bars appear at their final width at once.",
   ],
 };
 
@@ -71,7 +74,7 @@ function ReaderPollDemo() {
       question="Which series for Issue 15?"
       options={NEXT_ISSUE}
       defaultValue="coast"
-      note="Closes Thursday at 18:00. You can change your vote until then."
+      note="Closes Thursday at 18:00. Votes stay open until then."
       className="max-w-md"
     />
   );
@@ -83,7 +86,7 @@ function UnvotedPollDemo() {
       question="When do you read the Friday letter?"
       options={READING_TIME}
       showFigure={false}
-      note="Pick one to see when everyone else reads it."
+      note="Open until Friday at 09:00."
       className="max-w-md"
     />
   );
@@ -132,7 +135,7 @@ export default function PollPage() {
         title="Reader poll"
         tier="expressive"
         code="ReaderPollDemo"
-        caption="Four choices, each in its own color. Choose another to move your vote, or choose yours again to clear it."
+        caption="Four choices for an upcoming issue. Picking another moves the vote at once, and picking the same choice again clears it."
       >
         <ReaderPollDemo />
       </Stage>
@@ -140,7 +143,7 @@ export default function PollPage() {
         title="Before voting"
         tier="expressive"
         code="UnvotedPollDemo"
-        caption="Before anyone has voted here, the choices wait as plain pills. Once a reader picks one, every share opens."
+        caption="Before a reader votes, the choices wait as plain pills. Once one is picked, every share opens."
       >
         <UnvotedPollDemo />
       </Stage>

@@ -1,19 +1,23 @@
 /**
- * Poll, a Flat part (skills/litt-md/taste/litt-principles.md, Flat): a question for readers, built from Flat's pills,
- * its data hues and the expressive spring.
+ * Poll, a Flat part (skills/litt-md/taste/litt-principles.md, Flat): a question for readers, built from Flat's paper,
+ * pills, data hues and expressive spring.
  *
- * - Before a pick, every choice sits as a plain white paper pill on the grey ground (or a grey bubble inside paper) with
- *   an 8px data dot naming its option. No frames, no dividers, nothing cast.
+ * - Sits on a borderless Flat paper card (`litt-paper rounded-surface bg-surface-1 p-6`, `data-part="paper"`) with
+ *   every painted child marked in Flat's material vocabulary.
+ * - One arrival on first view (`useInView` with `once: true`): revealed share bars sweep smoothly open from zero and
+ *   the standing vote figure settles once on the expressive spring, then waits. Nothing animates under reduced motion.
  * - Picking a choice reveals the shares: each pill's tinted data bar springs open from the left on the expressive
  *   spring (instant under reduced motion), with the percentage and vote count in ink words.
- * - A standing 40px figure (text-figure, Flat's call 8) holds the total votes at the top when showFigure is set.
+ * - A standing figure (`text-figure`, Flat's call 8) holds the total votes at the top when `showFigure` is set.
  * - Color stays strictly on data (the hues carry each choice's vote share, R7), and no large fill uses the accent (R6).
- * - A hand always wins: picking another option moves your vote at once, and picking your current choice takes it back.
- * - Accessibility: native radiogroup / radio buttons with full text names, polite live announcement on change, and clear
- *   forced-colors borders on every pill and the chosen row.
+ * - A hand always wins: each choice answers on pointerdown with a brief scale dip, picking another option moves your
+ *   vote at once, and picking your current choice takes it back.
+ * - Accessibility: roving-tabindex `role="radiogroup"` (`aria-labelledby` pointing to the question) with `role="radio"`,
+ *   `aria-checked`, one tab stop, Arrow/Home/End navigation, polite live announcement on change, and forced-colors
+ *   borders on every pill and the chosen row.
  */
-import { useId, useState, type ReactNode } from "react";
-import { motion } from "motion/react";
+import { useId, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
+import { motion, useInView } from "motion/react";
 import { CheckIcon } from "@/components/icons";
 import { useMotionDial, useTransition } from "@/motion";
 
@@ -45,7 +49,7 @@ export type PollProps = {
   onVote?: (id: string | null) => void;
   /** Show the shares before the reader votes. Defaults to false (revealed on pick). */
   showResults?: boolean;
-  /** Show the total votes as Flat's standing 40px figure above the pills. Defaults to true. */
+  /** Show the total votes as Flat's standing figure above the pills. Defaults to true. */
   showFigure?: boolean;
   /** Optional short note under the poll, such as when it closes. */
   note?: ReactNode;
@@ -88,21 +92,22 @@ export function Poll({
   note,
   className = "",
 }: PollProps) {
+  const rootRef = useRef<HTMLDivElement>(null);
+  const inView = useInView(rootRef, { once: true });
   const headingId = useId();
   const [inner, setInner] = useState<string | null>(defaultValue);
+  const [focusId, setFocusId] = useState<string | null>(null);
   const [status, setStatus] = useState("");
   const picked = value !== undefined ? value : inner;
   const revealed = showResults || picked !== null;
   const spring = useTransition("expressive");
   const { reduced } = useMotionDial();
+  const arrived = reduced || inView;
 
   const counts = options.map((o) => o.votes + (picked === o.id ? 1 : 0));
   const total = counts.reduce((sum, n) => sum + n, 0);
 
-  const choose = (o: PollOption) => {
-    const next = picked === o.id ? null : o.id;
-    if (value === undefined) setInner(next);
-    onVote?.(next);
+  const announce = (o: PollOption, next: string | null) => {
     if (next === null) {
       setStatus(`Removed vote for ${o.label}.`);
     } else {
@@ -113,20 +118,70 @@ export function Poll({
     }
   };
 
+  /** Pointer or Enter/Space activation: votes for the choice, or clears the vote when already picked. */
+  const choose = (o: PollOption) => {
+    const next = picked === o.id ? null : o.id;
+    setFocusId(o.id);
+    if (value === undefined) setInner(next);
+    onVote?.(next);
+    announce(o, next);
+  };
+
+  /** Arrow, Home and End keys: move focus and select the choice without clearing an existing pick. */
+  const select = (o: PollOption) => {
+    setFocusId(o.id);
+    if (picked === o.id) return;
+    if (value === undefined) setInner(o.id);
+    onVote?.(o.id);
+    announce(o, o.id);
+  };
+
+  const activeId =
+    (picked !== null && options.some((o) => o.id === picked) ? picked : null) ??
+    (focusId !== null && options.some((o) => o.id === focusId) ? focusId : null) ??
+    options[0]?.id ??
+    null;
+
+  const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+    const n = options.length;
+    if (n === 0 || e.altKey || e.ctrlKey || e.metaKey) return;
+    const radios = [...e.currentTarget.querySelectorAll<HTMLElement>("[role=radio]")];
+    const focused = radios.indexOf(document.activeElement as HTMLElement);
+    const at = focused >= 0 ? focused : Math.max(0, options.findIndex((o) => o.id === activeId));
+    const rtl = getComputedStyle(e.currentTarget).direction === "rtl";
+    const fwd = e.key === "ArrowDown" || e.key === (rtl ? "ArrowLeft" : "ArrowRight");
+    const back = e.key === "ArrowUp" || e.key === (rtl ? "ArrowRight" : "ArrowLeft");
+    const to = fwd ? (at + 1) % n : back ? (at - 1 + n) % n : e.key === "Home" ? 0 : e.key === "End" ? n - 1 : -1;
+    if (to < 0) return;
+    e.preventDefault();
+    const target = options[to];
+    if (!target) return;
+    select(target);
+    radios[to]?.focus();
+  };
+
   return (
     <div
+      ref={rootRef}
       data-part="paper"
       className={"litt-paper grid w-full min-w-0 gap-4 rounded-surface bg-surface-1 p-6 forced-colors:border " + className}
     >
-      <header className="grid gap-1">
+      <header className="grid min-w-0 gap-1">
         <p id={headingId} data-part="lettering" className="text-body font-title text-fg">
           {question}
         </p>
         {showFigure ? (
-          <p className="flex items-baseline gap-2 text-fg">
-            <span data-part="figure" className="text-figure tabular-nums">
+          <p className="flex flex-wrap items-baseline gap-2 text-fg">
+            <motion.span
+              key={total}
+              data-part="figure"
+              initial={reduced ? false : { scale: 0.92 }}
+              animate={reduced ? undefined : { scale: arrived ? 1 : 0.92 }}
+              transition={spring}
+              className="inline-block origin-left text-figure tabular-nums"
+            >
               {total.toLocaleString()}
-            </span>
+            </motion.span>
             <span data-part="lettering" className="text-small text-fg-subtle">
               {total === 1 ? "vote" : "votes"}
             </span>
@@ -138,7 +193,7 @@ export function Poll({
         )}
       </header>
 
-      <div role="group" aria-labelledby={headingId} className="grid gap-2">
+      <div role="radiogroup" aria-labelledby={headingId} onKeyDown={onKeyDown} className="grid min-w-0 gap-2">
         {options.map((o, i) => {
           const hue = o.hue ?? HUE_ORDER[i % HUE_ORDER.length]!;
           const count = counts[i]!;
@@ -146,14 +201,19 @@ export function Poll({
           const pct = Math.round(share * 100);
           const isPicked = picked === o.id;
           return (
-            <button
+            <motion.button
               key={o.id}
               type="button"
+              role="radio"
+              aria-checked={isPicked}
+              tabIndex={o.id === activeId ? 0 : -1}
               data-part="pill"
-              aria-pressed={isPicked}
               onClick={() => choose(o)}
+              onFocus={() => setFocusId(o.id)}
+              whileTap={reduced ? undefined : { scale: 0.98 }}
+              transition={spring}
               className={
-                "litt-target relative isolate flex min-h-control-md w-full cursor-pointer items-center justify-between gap-3 overflow-hidden rounded-control bg-block px-4 py-2.5 text-left text-small text-fg select-none " +
+                "litt-target relative isolate flex min-h-control-md w-full min-w-0 cursor-pointer items-center justify-between gap-3 overflow-hidden rounded-control bg-block px-4 py-2 text-left text-small text-fg select-none " +
                 "transition-colors duration-(--dur-instant) ease-litt hover:bg-(--block-hover) [-webkit-tap-highlight-color:transparent] " +
                 "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus " +
                 (isPicked
@@ -165,16 +225,18 @@ export function Poll({
                 <motion.span
                   aria-hidden="true"
                   data-part="bubble"
-                  initial={reduced ? { scaleX: share } : { scaleX: 0 }}
-                  animate={{ scaleX: share }}
+                  initial={reduced ? false : { scaleX: 0 }}
+                  animate={{ scaleX: arrived ? share : 0 }}
                   transition={spring}
                   style={{ originX: 0 }}
                   className={"pointer-events-none absolute inset-0 -z-10 " + HUE_BAR[hue]}
                 />
               )}
-              <span className="flex min-w-0 items-center gap-2.5">
+              <span className="flex min-w-0 items-center gap-2">
                 <span aria-hidden="true" data-part="circle" className={"size-2.5 shrink-0 rounded-pill " + HUE_DOT[hue]} />
-                <span className={"min-w-0 truncate " + (isPicked ? "font-title" : "font-normal")}>{o.label}</span>
+                <span data-part="lettering" className={"min-w-0 truncate " + (isPicked ? "font-title" : "font-normal")}>
+                  {o.label}
+                </span>
                 {isPicked && (
                   <span aria-hidden="true" data-part="mark" className="inline-flex shrink-0 text-fg">
                     <CheckIcon />
@@ -182,7 +244,7 @@ export function Poll({
                 )}
               </span>
               {revealed && (
-                <span className="shrink-0 text-caption font-title tabular-nums text-fg-muted">
+                <span data-part="lettering" className="shrink-0 text-caption font-title tabular-nums text-fg-muted">
                   {pct}%
                   <span className="sr-only">
                     {", "}
@@ -190,7 +252,7 @@ export function Poll({
                   </span>
                 </span>
               )}
-            </button>
+            </motion.button>
           );
         })}
       </div>
