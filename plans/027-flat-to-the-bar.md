@@ -38,20 +38,20 @@ Flat today, against that:
 
 - 94 parts, scored 7 of 10 in plan 024's phase 5.
 - None of the 23 bodies in `gallery/src/worlds/flat/` carries a `data-part` mark.
-- Flat's six own parts answer a tap only; none follows a drag.
+- Flat's own ten parts answer a tap or hold only; none follows a drag.
 - Goal ring and Reading progress draw gradients that are not the sunset ramp, against Flat's own colour table.
 - Plan 024 does the look across six worlds and plan 025 adds the hand afterwards, so every part is built twice.
 
 ## What PR #168 settles (read 2026-11-22)
 
-PR #168 ("World-native agentic components + Flat showcase wave", open) is the same day's work on Flat, and this plan
-builds on it once it merges.
+PR #168 ("World-native agentic components + Flat showcase wave", merged) is the same day's work on Flat, and this plan
+builds on it.
 
 - **The reference study is Context budget.** Nick, on it: "much better, this is what it should look like, simplicity +
   color + ease of use! slightly bump % font back up. now let's start building flat".
 - **A Flat widget sits on paper.** A paper card on the grey ground (`litt-paper rounded-surface bg-surface-1 p-6`,
   `data-part="paper"`), frameless 400-weight dot tags with a hover wash only, and its one standing figure at 28px
-  (`--type-figure-size`, tuned from 40px). #168 frames Flat's own six this way.
+  (`--type-figure-size`, tuned from 40px). #168 frames Flat's own ten this way.
 - **Flat's set changes**: context-budget, hold-confirm, agent-run, toast-stack, poll, streak, kudos, reaction-bar,
   reading-progress, goal-ring, progress, toast. Gauge, heatmap, button and card leave the set.
 
@@ -90,7 +90,7 @@ review table.
    it is made of.
 9. **Its page can take it apart.** A `study` export: Anatomy parts, States, Replay.
 10. **Small blast radius.** Only Flat's body (`gallery/src/worlds/flat/<part>.tsx`, or the component for Flat's own
-    six) and the page change, unless the contract truly needs a prop.
+    ten) and the page change, unless the contract truly needs a prop.
 
 ## Phase 0. The bar, the skill, the check, the list. STOP for Nick.
 
@@ -190,3 +190,5 @@ npm run test:motion --prefix gallery
   Today, before #168, all twenty pages fail: the six own parts mostly on `root` alone, the rest for want of marks.
   Not caught yet: reading-progress paints its off-ramp colours as solid fills, and the gradient rule reads gradients.
 - 2026-11-22. Read PR #168 at Nick's word. The list, the reference and rule 3 follow it (above).
+- 2026-11-23. Merged PR #168; refreshed the `#canvas` sheet (`gallery/src/canvas/flat-studies.tsx`) to the post-#168
+  set of twelve and eight staples, and updated the skill and plan for Flat's own ten parts.

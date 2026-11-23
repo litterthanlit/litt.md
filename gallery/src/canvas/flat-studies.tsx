@@ -1,7 +1,7 @@
 /**
  * Flat studies: the list (plans/027, phase 0's stop). The twenty studies proposed for Flat, for Nick to confirm or
  * strike: an intro and Flat's bar, then every part as Flat's wall tile ships it today, live, with a quiet line under it
- * saying what it still lacks (its marks, its hand, its colour or words), and the two calls that wait.
+ * saying what it still lacks (its marks, its hand, its colour or words), and the call that waits.
  *
  * Each tile is the gallery's own WallTile (wall-tile.tsx) under WorldContext "flat", as #flat/components draws it, with
  * no mosaic. The frame sets Flat's theme and accent (lookAttributes) and a MaterialProvider, whatever the gallery's look,
@@ -28,21 +28,22 @@ type Study = {
 };
 
 const SET: Study[] = [
-  { id: "poll", marks: "Six kinds marked", hand: "Tap only, no drag; buttons, not a radio group", look: "Note says “click any pill”", pilot: true },
-  { id: "streak", marks: "Marked", hand: "Tap and hover", look: "Instruction text inside the part" },
-  { id: "kudos", marks: "Marked", hand: "Tap only", look: "Tap dip not picked yet" },
-  { id: "reaction-bar", marks: "Marked", hand: "Tap only", look: "Data hue fills a button; studio words" },
-  { id: "goal-ring", marks: "Marked", hand: "Two keys step it, no drag", look: "Gradient off the sunset ramp" },
-  { id: "reading-progress", marks: "Three kinds marked", hand: "Click a chapter", look: "Ramp off rule; studio words" },
+  { id: "context-budget", marks: "Marked on paper", hand: "Tap source tags and trim", look: "The reference; 28px figure, dot tags" },
+  { id: "hold-confirm", marks: "Marked on paper", hand: "Press and hold, release rewinds", look: "28px figure, sunset segments; hold hint inside" },
+  { id: "agent-run", marks: "Marked on paper", hand: "Tap to fold steps or run again", look: "Frameless dot tags; Flat's words" },
+  { id: "toast-stack", marks: "Paper cards marked", hand: "Hover or tap to fan out, tap to dismiss", look: "Frameless dots; Flat's words" },
+  { id: "poll", marks: "Marked on paper", hand: "Tap only, no drag; buttons, not a radio group", look: "28px figure; words and hues fine", pilot: true },
+  { id: "streak", marks: "Marked on paper", hand: "Tap and hover", look: "28px figure, sunset ramp; words fine" },
+  { id: "kudos", marks: "Marked on paper", hand: "Tap only", look: "28px figure, sunset dots; tap dip not picked yet" },
+  { id: "reaction-bar", marks: "Marked on paper", hand: "Tap only", look: "28px figure; neutral pills, hue on glyph only" },
+  { id: "reading-progress", marks: "Marked on paper", hand: "Tap a chapter, no drag", look: "28px figure; ramp off the sunset rule" },
+  { id: "goal-ring", marks: "Marked on paper; ring unmarked", hand: "Two keys step it, no drag", look: "28px figure; gradient off the sunset ramp" },
   { id: "progress", marks: "No marks", hand: "A press runs a script", look: "On the sunset ramp" },
-  { id: "gauge", marks: "No marks", hand: "A still picture", look: "On the ramp" },
-  { id: "heatmap", marks: "No marks", hand: "Hover readout only", look: "On the ramp" },
-  { id: "button", marks: "No marks", hand: "Press, nothing moves", look: "Words fine" },
-  { id: "card", marks: "No marks", hand: "Hover only", look: "Ink card ships" },
   { id: "toast", marks: "No marks", hand: "Press to raise, drag to dismiss", look: "Colour and words fine" },
 ];
 
 const STAPLES: Study[] = [
+  { id: "button", marks: "No marks", hand: "Press, nothing moves", look: "Words fine" },
   { id: "slider", marks: "No marks", hand: "Drags 1:1", look: "Colour and words fine", pilot: true },
   { id: "switch", marks: "No marks", hand: "Drags 1:1", look: "Colour and words fine" },
   { id: "segmented", marks: "No marks", hand: "Press and arrows", look: "No Flat stage" },
@@ -50,7 +51,6 @@ const STAPLES: Study[] = [
   { id: "tabs", marks: "No marks", hand: "Press and arrows", look: "Colour and words fine" },
   { id: "input", marks: "No marks", hand: "Type", look: "Colour and words fine" },
   { id: "select", marks: "No marks", hand: "Open and choose", look: "Colour and words fine" },
-  { id: "chart", marks: "No marks", hand: "Hover readout", look: "Candy hues" },
 ];
 
 const BAR = [
@@ -150,9 +150,8 @@ export function FlatStudies({ dark }: { dark: boolean }) {
       <Group title="Staples (eight)" studies={STAPLES} />
       <section aria-label="For Nick" className="flat-sheet grid max-w-[60ch] gap-3 rounded-surface p-8">
         <h2 className="text-h4 font-title text-fg">For Nick</h2>
-        <p className="text-small text-fg">Two calls wait.</p>
+        <p className="text-small text-fg">One call waits (reaction bar already gave its button fill back to the neutral pill).</p>
         <ul className="grid list-disc gap-1.5 pl-6 text-small text-fg marker:text-fg-subtle">
-          <li>Reaction bar: a data hue fills a button. Keep it, or give it back to the ink?</li>
           <li>Kudos: the tap dip, not picked yet.</li>
         </ul>
         <p className="text-small font-label text-fg">Confirm the list and the bar, or strike a tile.</p>
