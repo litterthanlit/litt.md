@@ -5,12 +5,13 @@
  * - Bodies (proposals/worlds.md): this file resolves the state once into StatBodyProps and renders the body the
  *   material picks (byWorld). Press, here, is a calm surface (.litt-raised: hairline and top highlight, zero cast)
  *   with the quiet label along its top and the figure standing directly on the stone in text-figure (no raised
- *   button box around a read-only number). Flat (worlds/flat/stat.tsx) is the figure in ink on
- *   the page with no box. Device (worlds/device/stat.tsx) is a plate with the label engraved above an LCD window that
+ *   button box around a read-only number). Flat (worlds/flat/stat.tsx) is a paper card holding one figure that rolls
+ *   to a new value, the large figure when the Stat stands alone (taste v1.22). Device (worlds/device/stat.tsx) is a plate with the label engraved above an LCD window that
  *   shows the figure in seven segments. Rack (worlds/rack/stat.tsx) is a panel with a value box (a light cut in the
  *   control line) for the figure and the delta as a small flat key. Never glass (R3), never an accent rail. A tile links nowhere, so it has no
  *   hover and no motion.
- * - Type: the label is the small size in fg-subtle, the value is the figure step (18px in Press, 40px in Flat) in fg
+ * - Type: the label is the small size in fg-subtle, the value is the figure step (18px in Press, 28px in Flat, 44px
+ *   for a Flat Stat on its own) in fg
  *   in the sans with tabular numbers (a figure that updates does not wobble), and a unit follows the value at the same
  *   size in regular fg-subtle. The value carries the title weight, and the label and delta stay at the text weight (R8).
  * - Delta: a word and the number ("Up 12% on last week") at the caption size. The word says the direction. The
@@ -24,7 +25,9 @@
  *   one below 20rem. Tiles in a row share the row's height.
  * - Semantics: each tile is a term (the label) and its description (the value), so a screen reader reads
  *   "Active projects, 12". A Stat outside a group wraps itself in its own list.
- * - Motion: none. A value that changes just changes; an entrance cascade belongs to the page.
+ * - Motion: none in Press, Device, Rack and Heat. A value that changes just changes; an entrance cascade belongs to the
+ *   page. Under Flat a new value rolls its digits into place on the expressive spring (worlds/flat/stat.tsx); the
+ *   first paint is still, and reduced motion sets it at once.
  * - Fun mode (motion/fun.tsx, a trial, off unless a <FunMode> is on): a value given as a number counts up on arrival
  *   with fun mode's pen, the same steady hand that draws a Sparkline in the trend slot, so the figure and its line
  *   arrive together. While it counts, screen readers get the value itself. At rest it is the static tile exactly.
@@ -79,6 +82,8 @@ export type StatBodyProps = {
   /** Hidden words after the delta: ", good news", ", bad news" or nothing. */
   toneWord: string;
   trend?: ReactNode;
+  /** The Stat stands on its own, outside a StatGroup: its figure is the whole object (Flat sets it large). */
+  alone: boolean;
   className: string;
 };
 
@@ -126,7 +131,7 @@ export function Stat({ label, value, unit, delta, tone = "neutral", trend, class
       value
     );
   const tile = (
-    <Body label={label} value={value} figure={figure} unit={unit} delta={delta} toneClass={TONE[tone]} toneWord={TONE_WORD[tone]} trend={trend} className={className} />
+    <Body label={label} value={value} figure={figure} unit={unit} delta={delta} toneClass={TONE[tone]} toneWord={TONE_WORD[tone]} trend={trend} alone={!grouped} className={className} />
   );
   return grouped ? tile : <dl className="@container">{tile}</dl>;
 }

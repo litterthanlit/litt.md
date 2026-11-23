@@ -16,6 +16,7 @@ export const meta: PageMeta = {
     rack: "A value in a box you drag, filled up to where you set it.",
     heat: "A value as a row of dashes, lit up to where you set it.",
     press: "A cap you hold, riding in a slot on a raised plate.",
+    flat: "One value on a range: a fat pill that fills with ink to a white knob.",
   },
   order: 3.03,
   group: "Selection",
@@ -23,6 +24,7 @@ export const meta: PageMeta = {
   summary:
     "One value on a range, such as the default animation speed, or a span, such as the builds that took between 20s and 80s. Take the thumb and it follows your hand 1:1, or press the track and it goes there. Notches mark steps, and the default holds the value a little. The label row says the value.",
   summaryByWorld: {
+    flat: "One value on a range, such as how large a post's words are, or a span. A fat round-ended pill fills with the ink from its start to a white knob riding at the fill's end: take the knob and it follows your hand 1:1, press the track and it goes there. Short upright marks under the track mark steps, and the default holds the knob a little. The value reads in words at the track's end.",
     device: "One value on a range, such as a level, or a span. A fader: a well cut into the body with engraved ticks under it, the pulled-out part lit in the ink like a meter, and a key for a cap with a line across its face. Take the key and it follows your hand 1:1, or press the well and it goes there. The value reads on an LCD in the label row.",
     rack: "One value on a range, such as a track's gain, or a span. A box set into the panel fills as a solid bar up to the value, with a 2px line in the ink at it: take the box anywhere and the line and the bar follow your hand 1:1. Ticks under the box mark steps, home's the longer one, and the value reads at the box's end in words with its unit.",
     press: "One value on a range, such as the default animation speed, or a span, such as the builds that took between 20s and 80s. A raised plate holds a slot, and a cap rides in it: take the cap and it follows your hand 1:1, press the slot and it goes there on the spring. Notches mark steps, and the default holds the cap a little. The label row says the value.",
@@ -30,12 +32,12 @@ export const meta: PageMeta = {
   },
   tiers: ["instant", "responsive"],
   mechanism:
-    "Take the cap and it follows the hand one to one, with no easing, sinking half a pixel as its cast tightens. Press the slot, or use an arrow key, and the cap glides there on the responsive tier, 200ms with no bounce. Pushed fast it leans, at most 4 degrees, and rights itself when the hand slows. Home holds the cap a little. Moving parts are transforms only. Reduced motion stills the glide and the lean. Each world has its own body. Press is a cap riding a deep slot cut into a plate, its notches lighting as the fill passes them, and the value on a small raised face that rides over the cap and sinks with it; the cap casts and leans into a fast push. Under Flat there is no plate and no shadow: a pill track, an ink fill and a round ink knob that your hand moves like a page, with nothing to sink into, and the value in words at the end of the track. Under Device it is a fader: a well cut into the aluminium with engraved ticks beneath it, a key for a cap that sinks its whole 2px under your finger, the fill lit like a meter, and the value on an LCD in the mono. The cap jumps under reduced motion in every body.",
+    "Take the cap and it follows the hand one to one, with no easing, sinking half a pixel as its cast tightens. Press the slot, or use an arrow key, and the cap glides there on the responsive tier, 200ms with no bounce. Pushed fast it leans, at most 4 degrees, and rights itself when the hand slows. Home holds the cap a little. Moving parts are transforms only. Reduced motion stills the glide and the lean. Each world has its own body. Press is a cap riding a deep slot cut into a plate, its notches lighting as the fill passes them, and the value on a small raised face that rides over the cap and sinks with it; the cap casts and leans into a fast push. Under Flat there is no plate and no shadow: a fat pill track, an ink fill and a white round knob that your hand moves like a page, with nothing to sink into, and the value in words at the end of the track. Under Device it is a fader: a well cut into the aluminium with engraved ticks beneath it, a key for a cap that sinks its whole 2px under your finger, the fill lit like a meter, and the value on an LCD in the mono. The cap jumps under reduced motion in every body.",
   movesByWorld: {
     press: "Take the cap and it follows the hand one to one, with no easing, sinking half a pixel as its cast tightens. Press the slot, or use an arrow key, and the cap glides there on the responsive tier, 200ms with no bounce. Pushed fast it leans, at most 4 degrees, and rights itself when the hand slows. The cap rides a deep slot cut into a plate, its notches lighting as the fill passes them, and the value sits on a small raised face that rides over the cap and sinks with it. Home holds the cap a little. Moving parts are transforms only. Reduced motion stills the glide and the lean, and the cap jumps.",
     device: "Take the key and it follows the hand one to one, with no easing, sinking its whole 2px onto its skirt while held. Press the well, or use an arrow key, and the key moves there on the responsive tier, 200ms with no bounce. A fader is a mechanism, so it never tips into a fast push. Home holds the key a little, at its longer tick. Reduced motion sends the key straight to its value.",
     rack: "Take the box anywhere and the line and the bar follow the hand one to one, with no easing. Press the box, or use an arrow key, and the bar moves there on the responsive tier. There is no cap to grab, and nothing sinks or leans. The default holds the value a little, at the longer tick. Reduced motion sends the bar straight to its value.",
-    flat: "Take the knob and it follows the hand one to one, with no easing, swelling a little under the finger. Press the track, or use an arrow key, and the knob and the ink fill move there on the responsive tier, 200ms with no bounce. Home holds the knob a little, at its larger dot. There is nothing to sink into and nothing leans. Reduced motion sends the knob straight to its value.",
+    flat: "Take the knob and it follows the hand one to one, with no easing, shrinking a little under the finger on the instant tier. Press the track, or use an arrow key, and the knob and the ink fill move there together on the responsive spring, 200ms with no bounce: the fill is one round-ended pill whose end rides with the knob, moved by transform only. Home holds the knob a little, at its taller mark. There is nothing to sink into and nothing leans. Reduced motion sends the knob straight to its value.",
     heat: "Take the row and a thin marker follows the hand one to one, lighting each dash it passes on the instant tier, 100ms. Press the row, or use an arrow key, and the marker cuts there at once: nothing glides or leans. While it is held or has the keys, four brackets frame the row. The default holds the value a little, at the longer notch. Under reduced motion the dashes light at once.",
   },
 };
@@ -206,7 +208,7 @@ export const study: PageStudy = {
       { name: "The slider", selector: "[data-no-drag]" },
       { name: "The track", selector: "[data-no-drag] > span:first-child" },
       { name: "The ink fill", selector: "[data-no-drag] > span:first-child > span > span" },
-      { name: "The dots", selector: "[data-no-drag] > span:nth-child(2)" },
+      { name: "The marks", selector: "[data-no-drag] > span:nth-child(2)" },
       { name: "The knob", selector: "[data-no-drag] > span:nth-last-child(2)" },
       { name: "The end words", selector: ".text-caption" },
     ],
@@ -1113,7 +1115,7 @@ export default function SliderPage() {
             title: "Text size",
             code: "TextSizeDemo",
             caption:
-              "How large the words of a post are, from 14 px to 22 px. Take the knob and push: it follows your hand 1:1, and the track fills up to it. Press the track and the knob goes there on the responsive spring, as it does on the arrow keys. A notch marks each end, and 18 px, the default, holds the knob a little, so it is easy to find again. The label row says 18 px, and a screen reader says the same. The save note appears on release, from onValueCommit.",
+              "How large the words of a post are, from 14 px to 22 px. Take the knob and push: it follows your hand 1:1, and the track fills up to it. Press the track and the knob goes there on the responsive spring, as it does on the arrow keys. A mark under the track marks each end, and 18 px, the default, holds the knob a little, so it is easy to find again. The label row says 18 px, and a screen reader says the same. The save note appears on release, from onValueCommit.",
           },
           device: {
             demo: <MonitorLevelDemo />,
@@ -1209,7 +1211,14 @@ export default function SliderPage() {
         title="Disabled"
         tier="instant"
         code="DisabledDemo"
-        byWorld={{ device: { demo: <RecorderDisabledDemo />, code: "RecorderDisabledDemo" } }}
+        byWorld={{
+          flat: {
+            demo: <DisabledDemo />,
+            code: "DisabledDemo",
+            caption: "A disabled slider has nothing to push: the track goes to the light grey, the fill to a faint ink and the marks away, and the value stays readable. A range does the same. Tab skips it, and the help text says why it is locked.",
+          },
+          device: { demo: <RecorderDisabledDemo />, code: "RecorderDisabledDemo" },
+        }}
         caption="The disabled slider lies flat, with nothing to push: the plate and the cap go to surface-2 with hairlines, the slot to surface-3, and the value stays readable. A range does the same. Tab skips it, and the help text says why it is locked."
       >
         <DisabledDemo />

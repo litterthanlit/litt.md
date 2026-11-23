@@ -14,7 +14,7 @@ export const meta: PageMeta = {
   summary:
     "A slot cut into the page for work that is happening now, such as an upload or an import: the label and a reading above it, the done part in the foreground, filling the channel under its walls on the instant tier. It ends done or failed, said in words and announced once. With no value yet the slot stays empty: nothing sweeps, pulses or shimmers.",
   summaryByWorld: {
-    flat: "A rounded channel on the grey for work that is happening now, such as an upload or an import: the label and a reading above it, and the done part filling it in warmth, along the sunset from gold to plum by day and plum to gold by night, on the instant tier. It ends done or failed, said in words and announced once. With no value yet the channel stays empty: nothing sweeps, pulses or shimmers.",
+    flat: "A rounded channel on the grey for work that is happening now, such as an upload or an import: the label and a reading above it, and the done part filling it in the ink, one fill, on the instant tier. It ends done or failed, said in words and announced once. With no value yet the channel stays empty: nothing sweeps, pulses or shimmers.",
     heat: "A row of dashes in a flat channel for work that is happening now, such as an upload or an import: the label and a reading above it, and each dash lighting once its share is done, on the instant tier. It ends done or failed, said in words and announced once. With no value yet no dash is lit: nothing sweeps, pulses or shimmers.",
   },
   tiers: ["instant"],
@@ -135,11 +135,11 @@ function PictureUploadDemo() {
   );
 }
 
-/* ---------- Flat heatwave (v1.21): how far along you are is warmth ---------- */
+/* ---------- Flat's own: a series of pictures, filled in the ink ---------- */
 
 const PICTURES = 12;
 
-/** A series filling up, a picture at a time: each one done lights its segment at its place on the sunset. */
+/** A series filling up, a picture at a time: each one done lights its segment in the ink. */
 function SpringSeriesDemo() {
   const [done, setDone] = useState(7);
   const full = done >= PICTURES;
@@ -166,7 +166,7 @@ function SpringSeriesDemo() {
   );
 }
 
-/** Flat's states: a picture going up warms as it fills, a series lights segment by segment, failed keeps danger. */
+/** Flat's states: a picture going up fills in the ink, a series lights segment by segment, failed keeps danger. */
 function FlatStatesDemo() {
   return (
     <div className="grid w-full max-w-sm gap-8">
@@ -235,7 +235,7 @@ export default function ProgressPage() {
             title: "A series, a picture at a time",
             code: "SpringSeriesDemo",
             caption:
-              "Press Add a picture. Each picture done lights its segment at its own place on Flat's sunset, gold to plum in light and plum to gold in dark, so the series warms as it nears the end: in Flat, how far along you are is warmth. A segment lights with a color fade on the instant tier, at once under reduced motion. The reading says the count in words, since the first steps stand only about 2:1 off the slot. At twelve it says Done.",
+              "Press Add a picture. Each picture done lights its segment in the ink, the same ink for every one, so the series reads as one fill growing. A segment lights with a color fade on the instant tier, at once under reduced motion. The reading says the count in words, and at twelve it says Done.",
           },
           heat: {
             demo: <PursuitCooldownDemo />,
@@ -261,7 +261,7 @@ export default function ProgressPage() {
             title: "A picture going up, and every state",
             code: "FlatStatesDemo",
             caption:
-              "Press Upload: the fill is one color, the sunset's step at its value, so it warms as the bytes go and is the deepest step when done, never a gradient. A series lights segment by segment. Waiting is an empty slot and a word. Failed keeps the fill where it stopped in the danger color and says Failed.",
+              "Press Upload: the fill is the ink, one band that grows as the bytes go, never a gradient or a step of grey. A series lights segment by segment in the same ink. Waiting is an empty slot and a word. Failed keeps the ink where it stopped and says Failed in the danger color, since in Flat danger is a word, never a fill.",
           },
           heat: {
             demo: <HeatStatesDemo />,

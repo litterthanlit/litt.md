@@ -1,4 +1,5 @@
-import { Card } from "@/components/card";
+import { useState } from "react";
+import { Segmented } from "@/components/segmented";
 import { Sparkline } from "@/components/sparkline";
 import { Stat, StatGroup } from "@/components/stat";
 import { Page, Stage, TryIt, type PageDocs, type PageMeta } from "../kit";
@@ -7,11 +8,15 @@ export const meta: PageMeta = {
   id: "stat",
   title: "Stat",
   lede: "One figure, in a tile.",
-  ledeByWorld: { heat: "One figure in a cell, under a striped label band." },
+  ledeByWorld: {
+    heat: "One figure in a cell, under a striped label band.",
+    flat: "One figure on a paper card, that rolls to a new value.",
+  },
   order: 9.03, group: "Data",
   summary:
     "A number tile for one figure: a small label, the value large in the sans with tabular numbers, an optional delta in words and an optional trend at the foot. Green and red are for news only. A group of tiles measures itself, and nothing about a tile moves.",
   summaryByWorld: {
+    flat: "A paper card for one figure: a small label, the value standing up in the ink with tabular numbers (28px in a row of cards, 44px when the card stands alone), an optional delta in words and an optional trend at the foot. Bad news is a word in the danger colour, and nothing is a dot. When the value changes, each digit rolls to its new figure on its own spring, the rightmost first; the first paint is still.",
     heat: "A telemetry slab for one figure: the label on a striped band, the value in its own square cell with tabular numbers, an optional delta in words and an optional trend at the foot. Green and red are for news only. A group of tiles measures itself, and nothing about a tile moves.",
   },
   fun: "The figure counts up with the same pen as the sparkline under it.",
@@ -170,20 +175,13 @@ function StatTile() {
   );
 }
 
-/* ---------- Flat's tile: the stat in the ink card (call 4), one per view, its one color on its line ---------- */
-
-const TILE_READERS = [142, 160, 151, 170, 158, 149, 166, 171, 158, 180, 166, 175, 190, 164];
+/* ---------- Flat's tile: one count on its own paper card, the large figure (v1.22) ---------- */
 
 function ReadersTile() {
   return (
-    <Card tone="ink" className="w-full max-w-xs">
-      <Stat
-        label="Readers this week"
-        value="1,204"
-        delta="Up 86 on last week"
-        trend={<Sparkline label="Readers a day, last 14 days" values={TILE_READERS} hue="blue" />}
-      />
-    </Card>
+    <div className="w-full max-w-xs">
+      <Stat label="Subscribers" value="12,480" delta="Up 1,240 this month" tone="good" />
+    </div>
   );
 }
 
@@ -279,15 +277,30 @@ function TakesTile() {
 
 /* ---------- Flat's own (plans/024, phase 3): a small site's week in figures ---------- */
 
-function SiteStatsDemo() {
+type Period = "today" | "week" | "all";
+
+const READER_PERIODS: Record<Period, { label: string; value: string; delta: string }> = {
+  today: { label: "Today", value: "38", delta: "Up 12 on yesterday" },
+  week: { label: "This week", value: "412", delta: "Up 64 on last week" },
+  all: { label: "All time", value: "12,480", delta: "Up 1,240 this month" },
+};
+
+/** A newsletter's subscriber count on its own card: pick a period and the figure rolls to it, digit by digit. */
+function SubscriberCountDemo() {
+  const [period, setPeriod] = useState<Period>("all");
+  const shown = READER_PERIODS[period];
   return (
-    <div className="w-full max-w-3xl">
-      <StatGroup>
-        <Stat label="Readers this week" value="1,204" delta="Up 86 on last week" tone="good" />
-        <Stat label="Subscribers" value={412} delta="Up 12 on last month" tone="good" />
-        <Stat label="Time on a post" value={4} unit="min" delta="Up 30 s on last week" tone="good" />
-        <Stat label="Letter opened" value={68} unit="%" />
-      </StatGroup>
+    <div className="grid w-full max-w-xs justify-items-center gap-4">
+      <div className="w-full">
+        <Stat label="Subscribers" value={shown.value} delta={shown.delta} tone="good" />
+      </div>
+      <Segmented
+        legend="Period"
+        size="sm"
+        value={period}
+        onValueChange={setPeriod}
+        options={(Object.keys(READER_PERIODS) as Period[]).map((value) => ({ value, label: READER_PERIODS[value].label }))}
+      />
     </div>
   );
 }
@@ -390,7 +403,13 @@ export default function StatPage() {
         title="The studio this week"
         code="StudioStatsDemo"
         byWorld={{
-          flat: { demo: <SiteStatsDemo />, title: "The site this week", code: "SiteStatsDemo" },
+          flat: {
+            demo: <SubscriberCountDemo />,
+            title: "Subscribers",
+            code: "SubscriberCountDemo",
+            caption:
+              "One count on its own paper card, so its figure is the large one. Pick a period and each digit rolls to its new figure on its own spring, the rightmost first: forward through nine to nought when the count goes up, as a counter carries, and back when it goes down. It moves only when the value changes, and a screen reader reads the number itself.",
+          },
           device: {
             demo: <ShootStatsDemo />,
             title: "The shoot this week",
@@ -419,7 +438,7 @@ export default function StatPage() {
             demo: <LetterNewsDemo />,
             code: "LetterNewsDemo",
             caption:
-              "A change that is good news gets a green status circle and one that is bad a red one, whichever way the number went. Time on a post that rose is good news, and readers who left are bad. A change that is neither has no circle. The words carry the direction in the quiet ink, and a screen reader also hears whether it was good or bad.",
+              "A change that is good news is the ink and one that is bad warns in the danger colour, whichever way the number went; a change that is neither stays in the quiet grey. Time on a post that rose is good news, and readers who left are bad. Nothing stands before the words, no dot and no arrow: they carry the direction, and a screen reader also hears whether it was good or bad.",
           },
           device: {
             demo: <ClipsDemo />,

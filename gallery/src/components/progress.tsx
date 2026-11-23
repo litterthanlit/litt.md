@@ -7,46 +7,29 @@
  *   size in --fg-subtle ("3.2 of 8 MB", or the percent), and under them a slot cut into the page (R3, material.md 6: a
  *   slot is what fills), 8px tall at the control radius: the floor --slot, the done part in it in --fg. The walls
  *   (--slot-shade: the top one's shade, the lit lower one) are drawn on a layer above the fill, so the fill sits down in
- *   the channel instead of covering its walls. Never the accent, and never a data hue but under Flat: it is one quantity.
+ *   the channel instead of covering its walls. Never the accent, and never a data hue: it is one quantity.
  * - Segments (`segments`): for work counted in whole things (twelve pictures, five steps), the slot is cut into one
  *   segment per thing, 4px apart, each its own slot; a segment lights in the fill once its share is done, never half.
- * - Flat heatwave (v1.21; Nick, 2026-11-19: "C is amazing tho. Flat heatwave is the move"): under Flat how far along
- *   you are is warmth. The fill walks Flat's sunset ramp (its sequential steps, gold to plum in light, plum to gold in
- *   dark), read off the four steps as the Gauge's `ramp` reads them, blended in OKLab between the two a place falls
- *   between. Each done segment lights at its own place on the ramp, the first in the first step and the last in the
- *   fourth. A continuous fill is one color, the step at its value, so it warms as it grows and done is the deepest:
- *   a band of one color, never a gradient (R1, R7). The first steps stand about 2:1 off the slot, so the reading says the
- *   value in words, as the Gauge's figure does. Failed is still --danger. Every other world keeps the ink.
+ * - Flat (taste v1.22, monochrome): the fill is the ink, one fill, as in every other world. A continuous fill is one ink
+ *   band and every done segment lights in the same ink, never a step per segment. Danger is never a fill in Flat, so a failed fill stays the ink where it stopped and
+ *   the reading and the message say Failed in --danger.
  * - Ending: done fills the slot and the reading says "Done"; failed keeps the fill where it stopped, in --danger (a status
  *   mark, which R7 allows), and the reading says "Failed". A message under the slot says the rest (what failed and what
  *   to do, or the time left).
  * - Not known yet: with no value the slot stays empty and the reading says so in words ("Waiting"). Nothing moves on its
  *   own: no stripes, no shimmer, no sweep. A wait that has no end in sight is a spinner in a button, not a slot.
  * - Motion: the done part is a full-width band scaled from the left, so only a transform changes, on the instant tier,
- *   which keeps up with a value that updates often. Its end is square: a radius would squash with the scale. Under Flat
- *   its color fades to the new step on the same tier, and a segment lights with a color fade on the instant tier. Under
- *   reduced motion both jump.
+ *   which keeps up with a value that updates often. Its end is square: a radius would squash with the scale. A segment
+ *   lights with a color fade on the instant tier. Under reduced motion both jump.
  * - Forced colors drops the walls and the floor, so the slot (or each segment) gets a real border and the fill takes
- *   CanvasText, over the ramp's color.
+ *   CanvasText.
  * - Accessibility: role="progressbar", named by the label, with aria-valuenow while the value is known and the reading
  *   as aria-valuetext. Ending done or failed is said once in a polite status, so a long wait need not be watched.
  */
 import { useId, type ReactNode } from "react";
-import { byWorld, useMaterial } from "@/motion";
+import { useMaterial } from "@/motion";
 
 export type ProgressStatus = "active" | "done" | "failed";
-
-/** Under Flat, the place `t` (0 at the start of the slot, 1 at its end) read off the sunset ramp's four steps, the two
-    it falls between mixed in OKLab, as the Gauge's `ramp` reads a tick. Every other world has no ramp: the ink. */
-type Ramp = (t: number) => string;
-/* Each name whole in a string, so the registry renames it. */
-const SEQ = ["var(--data-seq-1)", "var(--data-seq-2)", "var(--data-seq-3)", "var(--data-seq-4)"] as const;
-const RAMP: Ramp = (t) => {
-  const at = Math.max(0, Math.min(1, t)) * 3;
-  const k = Math.min(2, Math.floor(at));
-  const u = Math.round((at - k) * 100);
-  return `color-mix(in oklab, ${SEQ[k + 1]} ${u}%, ${SEQ[k]})`;
-};
 
 export type ProgressProps = {
   /** What is in progress: "Uploading brief.pdf", "Importing 1,204 pages". */
@@ -79,10 +62,9 @@ export function Progress({ label, value, max = 100, valueText, status = "active"
   const tone = status === "failed" ? "text-danger" : "text-fg-subtle";
   const material = useMaterial();
   const isHeat = material === "heat";
-  /* Under Flat the fill walks the sunset (Flat heatwave, v1.21); under Heat it lights amber dashes in a square channel; failed keeps danger. */
-  const worldRamp = byWorld<Ramp | null>(material, { press: null, flat: RAMP });
-  const ramp = status === "failed" ? null : worldRamp;
-  const fill = status === "failed" ? "bg-danger" : isHeat ? "bg-accent-text" : "bg-fg";
+  /* The ink in every world but Heat, which lights amber dashes in a square channel; failed turns it danger, but in
+     Flat, where danger is a word and never a fill. */
+  const fill = status === "failed" && material !== "flat" ? "bg-danger" : isHeat ? "bg-accent-text" : "bg-fg";
   const count = segments !== undefined ? Math.max(1, Math.round(segments)) : isHeat ? 16 : 0;
   /* A segment lights only once its whole share is done. */
   const lit = count ? Math.floor(share * count + 1e-6) : 0;
@@ -113,7 +95,7 @@ export function Progress({ label, value, max = 100, valueText, status = "active"
         style={count ? { gridTemplateColumns: `repeat(${count}, minmax(0, 1fr))` } : undefined}
       >
         {count ? (
-          /* One slot per thing counted: a done one lights in the fill, at its own place on the ramp under Flat. */
+          /* One slot per thing counted: a done one lights in the fill. */
           Array.from({ length: count }, (_, i) => (
             <span
               key={i}
@@ -125,7 +107,6 @@ export function Progress({ label, value, max = 100, valueText, status = "active"
               {/* Always there, so lighting is a color fade on the instant tier (a jump under reduced motion). */}
               <span
                 className={"absolute inset-0 transition-colors duration-(--dur-instant) ease-litt " + (i < lit ? "forced-colors:bg-[CanvasText]! " + fill : "")}
-                style={i < lit && ramp ? { backgroundColor: ramp(i / Math.max(1, count - 1)) } : undefined}
               />
               {!isHeat && <span aria-hidden="true" className="pointer-events-none absolute inset-0 rounded-control shadow-(--slot-shade) in-[[data-material=flat]]:shadow-none" />}
             </span>
@@ -135,7 +116,7 @@ export function Progress({ label, value, max = 100, valueText, status = "active"
             {/* A full-width band scaled from the left: only a transform changes as the value grows. */}
             <div
               className={"h-full w-full origin-left transition-[transform,background-color] duration-(--dur-instant) ease-litt forced-colors:bg-[CanvasText]! " + fill}
-              style={{ transform: `scaleX(${share})`, ...(ramp ? { backgroundColor: ramp(share) } : {}) }}
+              style={{ transform: `scaleX(${share})` }}
             />
             <span aria-hidden="true" className="pointer-events-none absolute inset-0 rounded-control shadow-(--slot-shade) in-[[data-material=flat]]:shadow-none" />
           </>

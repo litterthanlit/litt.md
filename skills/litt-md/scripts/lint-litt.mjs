@@ -614,8 +614,6 @@ function flatPartOf(file, text, host) {
 /* Dots not taken out yet, by the part they are in: each prints as a warning, and a whole gallery run fails when one
    stops happening, so take the entry out with the fix. */
 const KNOWN_DOTS = {
-  "flat/slider": "the notches under the track are dots; Flat's slider is being redrawn after the studies",
-  "flat/stat": "the tone mark before the change is a status dot; Flat's stat is being redrawn after the studies",
   "flat/legend": "each series' key is a round swatch beside its name; a short bar or the line's own dash is the Flat way",
   "flat/tag": "the status tag's mark (data-status-mark) is a dot tag; the status word alone is the Flat way",
   timeline: "a result is its word after an 8px circle behind Flat's variant (v1.17, call 6), which v1.22 takes back",

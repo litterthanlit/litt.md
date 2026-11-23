@@ -1,16 +1,17 @@
 /**
- * Heatmap: a dot matrix whose depth says how much. One data hue (R7) in four steps over an empty dot, so
+ * Heatmap: a dot matrix whose depth says how much (under Flat, a grid of rounded squares: Flat has no dots, taste
+ * v1.22). One data hue (R7) in four steps over an empty dot, so
  * the eye reads where the weight sits: usage per day in a month, deploys per day over a year, mail per hour
  * of the week. Plain DOM and CSS, no chart library.
  *
  * - Color (components.md, Heatmap): zero is an empty dot at fg 8%. The four steps are the hue's mark tone over
  *   transparent at 30, 55, 80 and 100%, so one hue carries one quantity (R7) and the dots fit any surface. With no
- *   `hue`, the steps are the world's sequential ramp where it has one (Flat's sunset, v1.20)
+ *   `hue`, the steps are the world's sequential ramp where it has one (Flat's four steps of the ink, v1.22)
  *   and blue's four mixes in every other world, as before.
  *   `null` (no data: a day still to come, a day the month does not have) draws nothing. The default steps are
  *   the quartiles of the non-zero values, so the four levels hold about the same number of dots. The legend
  *   under the grid is "Less", the five levels as dots, "More".
- * - Anatomy: circles on a pitch of the dot plus 4px of air (12px for the default 8px dot). Each row has a label
+ * - Anatomy: circles (Flat: rounded squares, 4px round at 12px and up, square below) on a pitch of the dot plus 4px of air (12px for the default 8px dot). Each row has a label
  *   at the start (caption, fg-subtle, in a column as wide as the longest label) and an optional total at
  *   the end (small, fg, tabular, end-aligned). Optional ticks over chosen columns name them (month names
  *   over a year of weeks). A label needs 16px of height, so when rows are closer than that (the default pitch)
@@ -75,7 +76,7 @@ export type HeatmapProps = {
   columns?: string[];
   /** Labels over chosen columns, such as month names over a year of weeks: `{ index: 4, label: "Nov" }`. Keep them at least a label's width apart. */
   columnTicks?: { index: number; label: string }[];
-  /** The one data hue the steps are made of. Pick it for what the grid is about and keep it the same for the same thing across a view. Leave it out for the world's sequential ramp: Flat's sunset ramp, or blue's four steps in a world with no ramp. `sky`, `bubblegum` and `sun` are Flat's slots six to eight; elsewhere its teal, rose and amber. */
+  /** The one data hue the steps are made of. Pick it for what the grid is about and keep it the same for the same thing across a view. Leave it out for the world's sequential ramp: Flat's four steps of the ink, or blue's four steps in a world with no ramp. `sky`, `bubblegum` and `sun` are Flat's slots six to eight; elsewhere its teal, rose and amber. */
   hue?: HeatmapHue;
   /** Where each of the four levels starts, lowest first. Zero is always the empty dot, and a value under the first step is still the lightest level. The default is the quartiles of the non-zero values. */
   steps?: [number, number, number, number];
@@ -107,6 +108,11 @@ const LENS_PUSH = 3;
 /* Fun mode's arrival: when the data starts filling in after the grid, and the extra beat per level, in seconds. */
 const DATA_AT = 0.32;
 const DATA_PER_LEVEL = 0.11;
+
+/** Flat's cells: rounded squares, 4px round at Flat's 16px surface radius (a cell of 12px or more), and square below
+    that, where 4px would round a cell into a dot. */
+const FLAT_CELL = "rounded-[calc(var(--radius-surface)-12px)]";
+const FLAT_CELL_SMALL = "rounded-[calc(var(--radius-surface)-16px)]";
 
 /** An empty dot: the foreground at 8%. */
 const EMPTY = "bg-[color-mix(in_oklab,var(--fg)_8%,transparent)]";
@@ -215,9 +221,13 @@ export function Heatmap({
 }: HeatmapProps) {
   const fmt = formatValue ?? groupDigits;
   /* The four steps: the hue's mixes, or with no hue the world's ramp (Flat's), else blue's as before. */
-  const ramp = byWorld(useMaterial(), { press: HUE.blue, flat: RAMP });
+  const material = useMaterial();
+  const ramp = byWorld(material, { press: HUE.blue, flat: RAMP });
   const fills = hue ? HUE[hue] : ramp;
   const cell = Math.max(4, Math.round(cellProp));
+  /* Under Flat a cell is a rounded square, never a dot (taste v1.22): 4px round from 12px up, square below. */
+  const flat = material === "flat";
+  const shape = flat ? (cell >= 12 ? FLAT_CELL : FLAT_CELL_SMALL) : "rounded-pill";
   const pitch = cell + GAP;
   /* Labels are 16px tall, so rows closer than that name every nth row, counted from the first. */
   const labelEvery = Math.max(1, Math.ceil(LABEL_H / pitch));
@@ -339,6 +349,14 @@ export function Heatmap({
     const clamp = (v: number) => Math.max(0, Math.min(1, v));
     const half = cell / 2;
     const levels = rows.map((row) => row.values.map((v) => (v === null ? -1 : levelOf(v, scale))));
+    /* A dot, or under Flat a rounded square as the cells are drawn. */
+    const corner = flat ? (cell >= 12 ? 4 : 0.01) : 0;
+    const mark = (x: number, y: number, r: number) => {
+      ctx.beginPath();
+      if (corner) ctx.roundRect(x - r, y - r, 2 * r, 2 * r, (corner * r) / half);
+      else ctx.arc(x, y, r, 0, Math.PI * 2);
+      ctx.fill();
+    };
     const end = Math.max((rows.length + cols) * fun.wave, DATA_AT + 3 * DATA_PER_LEVEL + cols * fun.wave * 0.5) + 1.2;
     let frame = 0;
     const began = performance.now();
@@ -366,18 +384,14 @@ export function Heatmap({
           if (emptyAlpha > 0) {
             ctx.globalAlpha = clamp(a) * emptyAlpha;
             ctx.fillStyle = colors[0]!;
-            ctx.beginPath();
-            ctx.arc(cx, cy, Math.max(0, half * size), 0, Math.PI * 2);
-            ctx.fill();
+            mark(cx, cy, Math.max(0, half * size));
           }
           if (level > 0) {
             const g = at(t - data);
             if (g > 0) {
               ctx.globalAlpha = clamp(a) * clamp(g);
               ctx.fillStyle = colors[level]!;
-              ctx.beginPath();
-              ctx.arc(cx, cy, Math.max(0, half * size * (0.4 + 0.6 * g)), 0, Math.PI * 2);
-              ctx.fill();
+              mark(cx, cy, Math.max(0, half * size * (0.4 + 0.6 * g)));
             }
           }
         }),
@@ -634,7 +648,7 @@ export function Heatmap({
                       aria-label={`${cellName(r, c)}, ${valueText(r, c)}`}
                       style={{ width: cell, height: cell }}
                       className={
-                        "shrink-0 rounded-pill transition-[background-color] duration-(--dur-instant) ease-litt " +
+                        "shrink-0 " + shape + " transition-[background-color] duration-(--dur-instant) ease-litt " +
                         "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus " +
                         (ringed ? "outline-1 outline-offset-1 outline-fg " : "") +
                         (level < 0 ? "" : level === 0 ? EMPTY : fills[level - 1])
@@ -690,7 +704,7 @@ export function Heatmap({
         </div>
       )}
 
-      <Legend fills={fills} cell={cell} />
+      <Legend fills={fills} cell={cell} shape={shape} />
 
       <AnimatePresence>
         {active && tip && (
@@ -725,13 +739,13 @@ function CountingTotal({ text }: { text: string }) {
 
 /* ----------------------------------------------------------------- legend */
 
-function Legend({ fills, cell }: { fills: readonly string[]; cell: number }) {
+function Legend({ fills, cell, shape }: { fills: readonly string[]; cell: number; shape: string }) {
   return (
     <div aria-hidden="true" className="col-start-2 col-end-3 mt-3 flex items-center gap-2 justify-self-end text-caption font-normal whitespace-nowrap text-fg-subtle">
       <span>Less</span>
       <span className="flex items-center" style={{ gap: GAP }}>
         {[EMPTY, ...fills].map((fill, i) => (
-          <span key={i} className={"rounded-pill " + fill} style={{ width: cell, height: cell }} />
+          <span key={i} className={shape + " " + fill} style={{ width: cell, height: cell }} />
         ))}
       </span>
       <span>More</span>

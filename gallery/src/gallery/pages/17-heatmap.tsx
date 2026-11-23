@@ -6,7 +6,7 @@ export const meta: PageMeta = {
   title: "Heatmap",
   lede: "How much, in four steps of one hue.",
   ledeByWorld: {
-    flat: "How much, in four warm steps of the sunset.",
+    flat: "How much, in four steps of the ink.",
   },
   order: 10.10,
   group: "Charts",
@@ -14,7 +14,7 @@ export const meta: PageMeta = {
   summary:
     "A dot matrix whose depth says how much: usage per day, deploys per week, mail per hour. One data hue in four steps over an empty dot, labels in tabular figures, a tooltip on hover, touch and focus, and a legend from less to more.",
   summaryByWorld: {
-    flat: "A dot matrix whose depth says how much: posts per week, readers per day, letters per hour. With no hue the four steps walk the sunset, gold to plum by day and plum to gold by night, over an empty dot; labels in tabular figures, a tooltip on hover, touch and focus, and a legend from less to more.",
+    flat: "A grid of small rounded squares whose depth says how much: posts per week, readers per day, letters per hour. With no hue the four steps are the ink, from a light grey to the full ink, over an empty square; labels in tabular figures, a tooltip on hover, touch and focus, and a legend from less to more.",
   },
   fun: "The grid arrives in two waves, the peaks last; move over it and a lens follows the pointer.",
   tiers: ["instant", "responsive"],
@@ -361,10 +361,10 @@ export default function HeatmapPage() {
         byWorld={{
           flat: {
             demo: <ReadsWeekDemo />,
-            title: "The week on the ramp",
+            title: "The week in the ink",
             code: "ReadsWeekDemo",
             caption:
-              "Reads of your site by hour, a row a day, with Friday's swell when the letter goes out. No hue is passed, so the four steps are Flat's sequential ramp, a sunset: gold through crimson to plum (plum to gold in dark), its lightness walking one way for one quantity, and the deepest dots are the busiest hours. The legend under the grid walks the same steps. Hover a dot, or arrow to it, and a ring and a tooltip name the hour and the reads. Nothing moves on arrival.",
+              "Reads of your site by hour, a row a day, with Friday's swell when the letter goes out. Each hour is a small rounded square. No hue is passed, so the four steps are Flat's sequential ramp, four steps of the ink, and the darkest squares are the busiest hours. The legend under the grid walks the same steps. Hover a square, or arrow to it, and a ring and a tooltip name the hour and the reads. Nothing moves on arrival.",
           },
           device: {
             demo: <MinutesDemo />,
