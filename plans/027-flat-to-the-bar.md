@@ -192,3 +192,7 @@ npm run test:motion --prefix gallery
 - 2026-11-22. Read PR #168 at Nick's word. The list, the reference and rule 3 follow it (above).
 - 2026-11-23. Merged PR #168; refreshed the `#canvas` sheet (`gallery/src/canvas/flat-studies.tsx`) to the post-#168
   set of twelve and eight staples, and updated the skill and plan for Flat's own ten parts.
+- 2026-11-23. Nick, on a preview of three studies outside the repo: "design looks too android, we need it do be iOS".
+  A second preview follows iOS (system type, grouped lists with hairlines, a white shadowed thumb, springs that bounce
+  only after a flick). That bends Flat's face, bounce, no-lines and no-shadow rules, so it waits for Nick's word and
+  goes through `evolve.md` before more studies are built. The Poll and Slider pilots on this branch predate it.
