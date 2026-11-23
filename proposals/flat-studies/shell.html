@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Flat Studies</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Flat (litt-md, taste/litt-principles.md): ground, then paper, then part. Grey ground, white paper with no edge and
+   nothing cast, pills and circles, the ink as the one accent, Candy hues only on data, the sunset ramp for how far.
+   Values are litt's tokens.css, Flat's block. */
+:root {
+  --ground: #ededed; --paper: #ffffff; --bubble: #ededed; --surface-2: #f5f5f5; --wash: rgb(15 15 15 / 0.06);
+  --ink: #0f0f0f; --on-ink: #ffffff; --muted: #676767; --disabled: #9e9e9e; --outline: #868686; --line: #e5e5e5;
+  --float: 0 1px 2px rgb(0 0 0 / 0.06), 0 12px 32px -8px rgb(0 0 0 / 0.16);
+  --blue: #3688f0; --tangerine: #da6203; --mint: #019964; --grape: #b15afe; --cherry: #ff3148;
+  --sky: #0090bf; --bubblegum: #f92797; --sun: #a68105;
+  --blue-text: #266bbb; --mint-text: #007a4f; --cherry-text: #d50230;
+  --seq-1: #de9814; --seq-2: #e15f0a; --seq-3: #ca2356; --seq-4: #892784;
+  --success: #019964; --warning: #da6203; --danger: #ff3148;
+  --font: "Geist", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --r-paper: 16px; --r-control: 28px; --r-pill: 999px;
+  --dur-instant: 100ms; --dur-responsive: 250ms;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --ground: #171717; --paper: #090909; --bubble: #1e1e1e; --surface-2: #171717; --wash: rgb(248 248 248 / 0.08);
+  --ink: #f8f8f8; --on-ink: #090909; --muted: #c6c6c6; --disabled: #656565; --outline: #686868; --line: #252525;
+  --float: 0 1px 2px rgb(0 0 0 / 0.5), 0 12px 32px -8px rgb(0 0 0 / 0.7);
+  --blue: #4792fe; --tangerine: #e86904; --mint: #03af73; --grape: #b564ff; --cherry: #ff4451;
+  --sky: #03a1d5; --bubblegum: #fd2d9b; --sun: #b68e0a;
+  --blue-text: #74acfe; --mint-text: #0bca86; --cherry-text: #ff7e7d;
+  --seq-1: #5c46a7; --seq-2: #c547a3; --seq-3: #fa8054; --seq-4: #f7cc4b;
+  --success: #03af73; --warning: #e86904; --danger: #ff4451; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --ground: #171717; --paper: #090909; --bubble: #1e1e1e; --surface-2: #171717; --wash: rgb(248 248 248 / 0.08);
+  --ink: #f8f8f8; --on-ink: #090909; --muted: #c6c6c6; --disabled: #656565; --outline: #686868; --line: #252525;
+  --float: 0 1px 2px rgb(0 0 0 / 0.5), 0 12px 32px -8px rgb(0 0 0 / 0.7);
+  --blue: #4792fe; --tangerine: #e86904; --mint: #03af73; --grape: #b564ff; --cherry: #ff4451;
+  --sky: #03a1d5; --bubblegum: #fd2d9b; --sun: #b68e0a;
+  --blue-text: #74acfe; --mint-text: #0bca86; --cherry-text: #ff7e7d;
+  --seq-1: #5c46a7; --seq-2: #c547a3; --seq-3: #fa8054; --seq-4: #f7cc4b;
+  --success: #03af73; --warning: #e86904; --danger: #ff4451; color-scheme: dark }
+@media (prefers-reduced-motion: reduce) { :root { --dur-instant: 0ms; --dur-responsive: 0ms } }
+
+*, *::before, *::after { box-sizing: border-box }
+html, body { margin: 0 }
+body { background: var(--ground); color: var(--ink); font: 400 15px/1.45 var(--font); letter-spacing: -0.005em;
+  -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums;
+  padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(24px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)) }
+button { font: inherit; color: inherit }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap }
+
+/* The gallery: Flat's wall. Grey ground; each study live at a small size with its name under it; a tile opens the study
+   large in a sheet that grows out of it. */
+.fg { max-width: 1240px; margin: 0 auto; padding: 32px 8px 64px }
+.fg-head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px 24px; margin: 0 0 32px }
+.fg-head h1 { margin: 0; font: 600 34px/1.1 var(--font); letter-spacing: -0.03em }
+.fg-head p { margin: 6px 0 0; color: var(--muted); max-width: 52ch }
+.fg-pill { display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 16px; border: 0; border-radius: var(--r-pill);
+  background: var(--paper); color: var(--ink); font: 500 14px var(--font); cursor: pointer; transition: background-color var(--dur-instant) }
+.fg-pill:hover { background: color-mix(in oklab, var(--paper), var(--ink) 4%) }
+.fg-wall { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); gap: 40px 24px }
+.fg-tile { display: grid; gap: 10px; width: 100%; padding: 0; border: 0; background: transparent; text-align: left; cursor: pointer; border-radius: var(--r-paper) }
+.fg-stage { position: relative; height: 280px; border-radius: var(--r-paper); background: var(--ground); overflow: hidden; display: grid; place-items: center;
+  transition: background-color var(--dur-responsive) }
+.fg-tile:hover .fg-stage { background: color-mix(in oklab, var(--ground), var(--ink) 3%) }
+.fg-stage > .fp-mount { width: 100%; height: 100%; display: grid; place-items: center; padding: 16px; container-type: inline-size; pointer-events: none }
+.fg-name { display: flex; align-items: baseline; gap: 10px; padding: 0 4px; min-width: 0 }
+.fg-name b { font-weight: 500; white-space: nowrap; flex: none }
+.fg-name span { color: var(--muted); font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0 }
+
+/* The sheet: the study open, large, on the ground, over the wall. */
+.fg-sheet { position: fixed; inset: 0; z-index: 10; display: none; background: var(--ground); overflow: auto; overscroll-behavior: contain }
+.fg-sheet.is-open { display: grid; grid-template-rows: auto 1fr auto }
+.fg-bar { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 8px; padding: 16px 16px 0 }
+.fg-bar h2 { margin: 0; font: 500 16px/1.2 var(--font); text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
+.fg-bar .fg-close { justify-self: start } .fg-bar .fg-steps { justify-self: end; display: flex; gap: 6px }
+.fg-circle { width: 36px; height: 36px; display: grid; place-items: center; border: 0; border-radius: 50%; background: var(--paper); color: var(--ink); cursor: pointer }
+.fg-circle svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round }
+.fg-open { display: grid; place-items: center; min-height: 0; padding: 24px 16px }
+.fg-open > .fp-mount { width: min(100%, 960px); min-height: min(560px, 100%); display: grid; place-items: center; container-type: inline-size }
+.fg-about { max-width: 640px; margin: 0 auto; padding: 0 16px 32px; text-align: center; color: var(--muted) }
+.fg-about b { display: block; color: var(--ink); font-weight: 500; font-size: 15px }
+.fg-foot { margin-top: 48px; color: var(--muted); font-size: 13px }
+.fg-foot a { color: inherit }
+@media (max-width: 720px) { .fg-head h1 { font-size: 28px } .fg-stage { height: 260px } }
+</style>
+</head>
+<body>
+<main class="fg">
+  <header class="fg-head">
+    <div><h1>Flat studies</h1><p>Small studies in motion, feedback and touch, after litterthanlit/components, redesigned in litt's Flat.</p></div>
+    <button class="fg-pill" type="button" id="fg-theme">Dark</button>
+  </header>
+  <ul class="fg-wall" id="fg-wall"></ul>
+  <p class="fg-foot">Each study runs by itself until you touch it. Open one to use it.</p>
+</main>
+<div class="fg-sheet" id="fg-sheet" role="dialog" aria-modal="true" aria-labelledby="fg-sheet-title">
+  <div class="fg-bar">
+    <button class="fg-circle fg-close" type="button" id="fg-close" aria-label="Close"><svg viewBox="0 0 14 14"><path d="M3.5 3.5l7 7M10.5 3.5l-7 7"/></svg></button>
+    <h2 id="fg-sheet-title"></h2>
+    <div class="fg-steps">
+      <button class="fg-circle" type="button" id="fg-prev" aria-label="Previous study"><svg viewBox="0 0 14 14"><path d="M9 3.5 5.5 7 9 10.5"/></svg></button>
+      <button class="fg-circle" type="button" id="fg-next" aria-label="Next study"><svg viewBox="0 0 14 14"><path d="M5 3.5 8.5 7 5 10.5"/></svg></button>
+    </div>
+  </div>
+  <div class="fg-open" id="fg-open"></div>
+  <p class="fg-about" id="fg-about"></p>
+</div>
+<p class="sr-only" id="fg-live" aria-live="polite"></p>
+<script>
+/* The contract every study keeps (FlatPlayer.register), and the one spring they share. */
+window.FlatPlayer = (function () {
+  const studies = [];
+  const reduced = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  /* A damped spring, stepped at 1/240s. bounce 0 is critically damped; 0.28 is Flat's expressive arrival. */
+  function spring(initial, onUpdate, opts) {
+    const o = Object.assign({ duration: 0.35, bounce: 0 }, opts);
+    const w = (2 * Math.PI) / o.duration, k = w * w, c = 2 * (1 - o.bounce) * w;
+    let x = initial, v = 0, target = initial, raf = 0, last = 0;
+    const step = (now) => {
+      let dt = Math.min(0.064, (now - last) / 1000); last = now;
+      while (dt > 0) { const h = Math.min(dt, 1 / 240); v += (-k * (x - target) - c * v) * h; x += v * h; dt -= h; }
+      if (Math.abs(x - target) < 0.0005 && Math.abs(v) < 0.0005) { x = target; v = 0; raf = 0; onUpdate(x); return; }
+      onUpdate(x); raf = requestAnimationFrame(step);
+    };
+    return {
+      set(t, velocity) { target = t; if (velocity !== undefined) v = velocity;
+        if (reduced()) { x = t; v = 0; onUpdate(x); return; }
+        if (!raf) { last = performance.now(); raf = requestAnimationFrame(step); } },
+      jump(t) { x = target = t; v = 0; if (raf) cancelAnimationFrame(raf); raf = 0; onUpdate(x); },
+      value: () => x, velocity: () => v, target: () => target,
+      stop() { if (raf) cancelAnimationFrame(raf); raf = 0; },
+    };
+  }
+  return { studies, spring, reduced, register(s) {
+    studies.push(s);
+    if (s.css) { const st = document.createElement("style"); st.dataset.study = s.slug; st.textContent = s.css; document.head.appendChild(st); }
+  } };
+})();
+</script>
+<!--STUDY_JS-->
+<script>
+(function () {
+  const P = window.FlatPlayer;
+  const ORDER = ["gradient-keys", "agent-indicators", "agent-status", "command-menu", "fader", "switch", "one-time-code", "ticker",
+    "step-sequencer", "knob", "tape-reels", "vu-meter", "agent-shapes", "agent-run", "agent-loaders", "dither-card",
+    "spotlight-card", "toast-stack", "hold-to-confirm", "number-ticker", "segmented-control", "magnetic-button", "copy-button"];
+  const set = ORDER.map((slug) => P.studies.find((s) => s.slug === slug)).filter(Boolean);
+  const n = set.length;
+  const $ = (id) => document.getElementById(id);
+  const wall = $("fg-wall"), sheet = $("fg-sheet"), openEl = $("fg-open"), live = $("fg-live");
+
+  /* Mount a study into a container. Everything it starts is tied to the returned handle and torn down by unmount(). */
+  function mountInto(box, s, tile) {
+    box.textContent = "";
+    const host = document.createElement("div");
+    host.className = "fp-mount fs-" + s.slug + (tile ? " is-tile" : "");
+    host.dataset.study = s.slug;
+    box.appendChild(host);
+    const ac = new AbortController();
+    const rec = { ac, timers: [], intervals: [], rafs: [], hands: [], api: null, host };
+    let lastTouch = 0;
+    const ctx = {
+      host, signal: ac.signal, spring: P.spring, reduced: P.reduced, tile: !!tile,
+      after(ms, fn) { const t = setTimeout(fn, ms); rec.timers.push(t); return t; },
+      every(ms, fn) { const t = setInterval(fn, ms); rec.intervals.push(t); return t; },
+      loop(fn) { const r = { stop: false }; rec.rafs.push(r); let last = performance.now();
+        const f = (now) => { if (r.stop || ac.signal.aborted) return; const dt = Math.min(0.1, (now - last) / 1000); last = now; if (fn(dt, now) === false) { r.stop = true; return; } requestAnimationFrame(f); };
+        requestAnimationFrame(f); return r; },
+      onHand(fn) { rec.hands.push(fn); },
+      touched: () => lastTouch,
+    };
+    let handed = false;
+    const hand = () => { lastTouch = performance.now(); if (!handed) { handed = true; rec.hands.forEach((f) => { try { f(); } catch (e) { console.error(e); } }); } };
+    if (!tile) for (const t of ["pointerdown", "keydown", "wheel"]) host.addEventListener(t, hand, { signal: ac.signal, capture: true, passive: t === "wheel" });
+    try { rec.api = s.mount(host, ctx) || null; } catch (e) { console.error(s.slug, e); host.textContent = s.title; }
+    return rec;
+  }
+  function unmount(rec) {
+    if (!rec) return;
+    try { rec.api && rec.api.destroy && rec.api.destroy(); } catch (e) { console.error(e); }
+    rec.ac.abort(); rec.timers.forEach(clearTimeout); rec.intervals.forEach(clearInterval); rec.rafs.forEach((r) => (r.stop = true));
+    rec.host.remove();
+  }
+
+  /* The wall: a tile per study, mounted only while it is on screen and no sheet covers it. */
+  const tiles = set.map((s, i) => {
+    const li = document.createElement("li");
+    li.innerHTML = '<button class="fg-tile" type="button"><div class="fg-stage" inert></div><span class="fg-name"><b></b><span></span></span></button>';
+    const btn = li.firstChild, stage = btn.querySelector(".fg-stage");
+    btn.querySelector("b").textContent = s.title;
+    btn.querySelector(".fg-name span").textContent = s.tagline || "";
+    btn.setAttribute("aria-label", "Open " + s.title);
+    btn.addEventListener("click", () => open(i, btn));
+    wall.appendChild(li);
+    return { s, btn, stage, rec: null, visible: false };
+  });
+  let sheetOpen = false;
+  const sync = (t) => {
+    const want = t.visible && !sheetOpen;
+    if (want && !t.rec) t.rec = mountInto(t.stage, t.s, true);
+    if (!want && t.rec) { unmount(t.rec); t.rec = null; }
+  };
+  const io = new IntersectionObserver((entries) => {
+    for (const e of entries) { const t = tiles.find((x) => x.stage === e.target); t.visible = e.isIntersecting; sync(t); }
+  }, { rootMargin: "120px 0px" });
+  tiles.forEach((t) => io.observe(t.stage));
+
+  /* The sheet grows out of the tile that opened it and gathers back into it. */
+  let cur = -1, openRec = null, opener = null;
+  const EXPRESSIVE = "linear(0, 0.0897, 0.2671, 0.4643, 0.6434, 0.7874, 0.8925, 0.9624, 1.004, 1.0249, 1.0322, 1.0295, 1.0237, 1.0173, 1.0115, 1.0068, 1.0034, 1.0012, 0.9998, 0.9992, 1)";
+  function grow(from) {
+    if (P.reduced() || !from || !sheet.animate) return;
+    const r = from.getBoundingClientRect();
+    const sx = r.width / innerWidth, sy = r.height / innerHeight;
+    sheet.animate([{ transformOrigin: "0 0", transform: `translate(${r.left}px, ${r.top}px) scale(${sx}, ${sy})`, borderRadius: "40px", opacity: 0.6 },
+      { transformOrigin: "0 0", transform: "none", borderRadius: "0px", opacity: 1 }], { duration: 520, easing: EXPRESSIVE });
+  }
+  function show(i, dir) {
+    cur = ((i % n) + n) % n;
+    const s = set[cur];
+    unmount(openRec);
+    openRec = mountInto(openEl, s, false);
+    if (dir && !P.reduced() && openRec.host.animate)
+      openRec.host.animate([{ transform: `translateX(${dir * 28}px)`, opacity: 0 }, { transform: "none", opacity: 1 }], { duration: 579, easing: EXPRESSIVE });
+    $("fg-sheet-title").textContent = s.title;
+    $("fg-about").innerHTML = "";
+    const b = document.createElement("b"); b.textContent = s.tagline || ""; $("fg-about").appendChild(b);
+    try { history.replaceState(null, "", "#" + s.slug); } catch (e) {}
+    document.title = s.title + " · Flat Studies";
+    live.textContent = s.title + ", " + (cur + 1) + " of " + n;
+  }
+  function open(i, from) {
+    opener = from || tiles[i].btn;
+    sheetOpen = true; tiles.forEach(sync);
+    sheet.classList.add("is-open"); document.body.style.overflow = "hidden";
+    $("fg-wall").inert = true;
+    show(i, 0); grow(from);
+    $("fg-close").focus({ preventScroll: true });
+  }
+  function close() {
+    if (!sheetOpen) return;
+    unmount(openRec); openRec = null;
+    sheet.classList.remove("is-open"); document.body.style.overflow = "";
+    $("fg-wall").inert = false;
+    sheetOpen = false;
+    const back = tiles[cur].btn;
+    tiles.forEach(sync);
+    back.focus({ preventScroll: true });
+    back.scrollIntoView({ block: "nearest" });
+    try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {}
+    document.title = "Flat Studies";
+  }
+  $("fg-close").addEventListener("click", close);
+  $("fg-prev").addEventListener("click", () => show(cur - 1, -1));
+  $("fg-next").addEventListener("click", () => show(cur + 1, 1));
+  sheet.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") { e.preventDefault(); close(); }
+    if (e.key === "Tab") { // keep focus in the sheet
+      const f = [...sheet.querySelectorAll('button, [href], input, [tabindex]:not([tabindex="-1"]), select, textarea')].filter((el) => !el.disabled && el.offsetParent !== null);
+      if (!f.length) return;
+      if (e.shiftKey && document.activeElement === f[0]) { e.preventDefault(); f[f.length - 1].focus(); }
+      else if (!e.shiftKey && document.activeElement === f[f.length - 1]) { e.preventDefault(); f[0].focus(); }
+    }
+  });
+
+  const themeBtn = $("fg-theme");
+  const isDark = () => document.documentElement.dataset.theme ? document.documentElement.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+  const paintTheme = () => (themeBtn.textContent = isDark() ? "Light" : "Dark");
+  themeBtn.addEventListener("click", () => { document.documentElement.dataset.theme = isDark() ? "light" : "dark"; paintTheme(); });
+  paintTheme();
+
+  const start = set.findIndex((s) => s.slug === location.hash.slice(1));
+  if (start >= 0) open(start, tiles[start].btn);
+  window.FlatGallery = { open: (slug) => { const i = set.findIndex((s) => s.slug === slug); if (i >= 0) open(i, tiles[i].btn); }, close };
+})();
+</script>
+</body>
+</html>
