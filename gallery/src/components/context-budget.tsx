@@ -163,9 +163,9 @@ export function ContextBudget({
           aria-hidden="true"
           data-part="mark"
           initial={false}
-          animate={{ scaleX: pct / 100 }}
+          animate={{ x: `${pct - 100}%` }}
           transition={spring}
-          className="block h-full origin-left rounded-pill bg-fg forced-colors:bg-[Highlight]"
+          className="block h-full rounded-pill bg-fg forced-colors:bg-[Highlight]"
         />
       </div>
 

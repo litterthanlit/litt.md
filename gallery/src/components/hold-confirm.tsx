@@ -207,8 +207,8 @@ export function HoldConfirm({
           <span
             data-part="mark"
             aria-hidden="true"
-            className="block h-full origin-left rounded-pill bg-fg forced-colors:bg-[Highlight]"
-            style={{ transform: `scaleX(${progress})` }}
+            className="block h-full rounded-pill bg-fg forced-colors:bg-[Highlight]"
+            style={{ transform: `translateX(${(progress - 1) * 100}%)` }}
           />
         </div>
       </div>

@@ -144,7 +144,7 @@
     },
     "context-budget": {
       "version": "2026.11.23",
-      "hash": "b6385e76640d8f38"
+      "hash": "a1e4f3c783858bff"
     },
     "context-menu": {
       "version": "2026.11.12",
@@ -696,7 +696,7 @@
     },
     "flat-context-budget": {
       "version": "2026.11.23",
-      "hash": "b6385e76640d8f38"
+      "hash": "a1e4f3c783858bff"
     },
     "flat-context-menu": {
       "version": "2026.11.16",
@@ -764,7 +764,7 @@
     },
     "flat-hold-confirm": {
       "version": "2026.11.23",
-      "hash": "6c07be688cff1a10"
+      "hash": "7bd66d68b5e39283"
     },
     "flat-hover-card": {
       "version": "2026.11.16",
@@ -788,7 +788,7 @@
     },
     "flat-kudos": {
       "version": "2026.11.23",
-      "hash": "699e26a1580ec4ec"
+      "hash": "8d898c7a74ac4f27"
     },
     "flat-legend": {
       "version": "2026.11.20",
@@ -1456,7 +1456,7 @@
     },
     "hold-confirm": {
       "version": "2026.11.23",
-      "hash": "6c07be688cff1a10"
+      "hash": "7bd66d68b5e39283"
     },
     "hover-card": {
       "version": "2026.11.15",
@@ -1484,7 +1484,7 @@
     },
     "kudos": {
       "version": "2026.11.23",
-      "hash": "699e26a1580ec4ec"
+      "hash": "8d898c7a74ac4f27"
     },
     "lap-timer": {
       "version": "2026.11.20",

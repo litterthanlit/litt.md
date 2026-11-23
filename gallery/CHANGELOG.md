@@ -13,7 +13,7 @@ Flat's showcase parts lose their colored dots and the hues that only fed them. E
 - **breaking** `toast-stack`, `flat-toast-stack`: a notice is its title, time, detail and dismiss, with no status dot. `StackNotice` drops `hue` and `NoticeHue` is gone: remove `hue` from your notices.
 - **breaking** `poll`, `flat-poll`: no dot beside a choice, and every share is one quiet ink wash. `PollOption` drops `hue` and `PollHue` is gone: remove `hue` from your options.
 - **changed** `hold-confirm`, `flat-hold-confirm`: holding fills one ink bar where four sunset segments lit, the note under the title has no status dot, and the done check is ink. Props are unchanged.
-- **changed** `kudos`, `flat-kudos`: the row of warming dots is gone and the heart fills in ink; the +N says how many you gave. Props are unchanged.
+- **changed** `kudos`, `flat-kudos`: the row of warming dots is gone and the heart fills in ink; the +N says how many you gave, and a quiet "3 of 5" beside the pill says how many of the most you have given. Props are unchanged.
 - **changed** `streak`, `flat-streak`: the status word stands alone, with no dot before it. Props are unchanged.
 
 ## 2026-11-22 · World-native agentic components

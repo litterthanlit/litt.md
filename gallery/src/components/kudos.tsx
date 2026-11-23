@@ -94,76 +94,83 @@ export function Kudos({
         </div>
       )}
 
-      <div className="relative inline-flex">
-        <motion.button
-          type="button"
-          data-part="pill"
-          aria-pressed={mine > 0}
-          aria-label={
-            prominent
-              ? mine >= cap
-                ? `+${mine}, clear your ${cap} kudos for ${subject}, ${total} total`
-                : mine > 0
-                  ? `+${mine}, give kudos to ${subject}, ${total} total, ${mine} of ${cap}`
-                  : `Give kudos to ${subject}, ${total} total`
-              : mine >= cap
-                ? `${total.toLocaleString()} +${mine}, clear your ${cap} kudos for ${subject}`
-                : mine > 0
-                  ? `${total.toLocaleString()} +${mine}, give kudos to ${subject}, ${mine} of ${cap}`
-                  : `${total.toLocaleString()}, give kudos to ${subject}`
-          }
-          onClick={tap}
-          whileTap={reduced ? undefined : { scale: 0.92 }}
-          animate={reduced ? undefined : mine > 0 ? { scale: [0.92, 1] } : { scale: 1 }}
-          transition={spring}
-          className={
-            "litt-target relative inline-flex h-control-md cursor-pointer items-center gap-2.5 rounded-pill px-4 text-small font-title text-fg select-none [-webkit-tap-highlight-color:transparent] " +
-            "bg-block hover:bg-(--block-hover) transition-[background-color] duration-(--dur-instant) ease-litt " +
-            "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus " +
-            (mine > 0 ? "forced-colors:border-2 forced-colors:border-[Highlight]" : "forced-colors:border forced-colors:border-[ButtonBorder]")
-          }
-        >
-          <svg
-            width={16}
-            height={16}
-            viewBox="0 0 16 16"
-            aria-hidden="true"
-            focusable="false"
-            className="shrink-0"
+      <div className="flex items-center gap-3">
+        <div className="relative inline-flex">
+          <motion.button
+            type="button"
+            data-part="pill"
+            aria-pressed={mine > 0}
+            aria-label={
+              prominent
+                ? mine >= cap
+                  ? `+${mine}, clear your ${cap} kudos for ${subject}, ${total} total`
+                  : mine > 0
+                    ? `+${mine}, give kudos to ${subject}, ${total} total, ${mine} of ${cap}`
+                    : `Give kudos to ${subject}, ${total} total`
+                : mine >= cap
+                  ? `${total.toLocaleString()} +${mine}, clear your ${cap} kudos for ${subject}`
+                  : mine > 0
+                    ? `${total.toLocaleString()} +${mine}, give kudos to ${subject}, ${mine} of ${cap}`
+                    : `${total.toLocaleString()}, give kudos to ${subject}`
+            }
+            onClick={tap}
+            whileTap={reduced ? undefined : { scale: 0.92 }}
+            animate={reduced ? undefined : mine > 0 ? { scale: [0.92, 1] } : { scale: 1 }}
+            transition={spring}
+            className={
+              "litt-target relative inline-flex h-control-md cursor-pointer items-center gap-2.5 rounded-pill px-4 text-small font-title text-fg select-none [-webkit-tap-highlight-color:transparent] " +
+              "bg-block hover:bg-(--block-hover) transition-[background-color] duration-(--dur-instant) ease-litt " +
+              "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus " +
+              (mine > 0 ? "forced-colors:border-2 forced-colors:border-[Highlight]" : "forced-colors:border forced-colors:border-[ButtonBorder]")
+            }
           >
-            <path
-              d="M8 13.25S2 10 2 6.1a3.1 3.1 0 0 1 6-1.5 3.1 3.1 0 0 1 6 1.5c0 3.9-6 7.15-6 7.15z"
-              fill={mine > 0 ? "currentColor" : "none"}
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinejoin="round"
-            />
-          </svg>
-          <span className="tabular-nums">{prominent ? (mine > 0 ? `+${mine}` : "Give kudos") : total.toLocaleString()}</span>
-          {!prominent && mine > 0 && (
-            <span aria-hidden="true" className="text-caption font-normal tabular-nums text-fg-subtle">
-              +{mine}
-            </span>
-          )}
-        </motion.button>
-
-        {!reduced && (
-          <AnimatePresence>
-            {burst > 0 && mine > 0 && (
-              <motion.span
-                key={burst}
-                aria-hidden="true"
-                data-part="pill"
-                initial={{ opacity: 1, y: 0, scale: 0.7 }}
-                animate={{ opacity: 0, y: -30, scale: 1 }}
-                exit={{ opacity: 0 }}
-                transition={flight}
-                className="pointer-events-none absolute -top-2 left-1/2 inline-flex -translate-x-1/2 items-center rounded-pill bg-block px-2 py-0.5 text-caption font-title tabular-nums text-fg shadow-tooltip"
-              >
+            <svg
+              width={16}
+              height={16}
+              viewBox="0 0 16 16"
+              aria-hidden="true"
+              focusable="false"
+              className="shrink-0"
+            >
+              <path
+                d="M8 13.25S2 10 2 6.1a3.1 3.1 0 0 1 6-1.5 3.1 3.1 0 0 1 6 1.5c0 3.9-6 7.15-6 7.15z"
+                fill={mine > 0 ? "currentColor" : "none"}
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinejoin="round"
+              />
+            </svg>
+            <span className="tabular-nums">{prominent ? (mine > 0 ? `+${mine}` : "Give kudos") : total.toLocaleString()}</span>
+            {!prominent && mine > 0 && (
+              <span aria-hidden="true" className="text-caption font-normal tabular-nums text-fg-subtle">
                 +{mine}
-              </motion.span>
+              </span>
             )}
-          </AnimatePresence>
+          </motion.button>
+
+          {!reduced && (
+            <AnimatePresence>
+              {burst > 0 && mine > 0 && (
+                <motion.span
+                  key={burst}
+                  aria-hidden="true"
+                  data-part="pill"
+                  initial={{ opacity: 1, y: 0, scale: 0.7 }}
+                  animate={{ opacity: 0, y: -30, scale: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={flight}
+                  className="pointer-events-none absolute -top-2 left-1/2 inline-flex -translate-x-1/2 items-center rounded-pill bg-block px-2 py-0.5 text-caption font-title tabular-nums text-fg shadow-tooltip"
+                >
+                  +{mine}
+                </motion.span>
+              )}
+            </AnimatePresence>
+          )}
+        </div>
+        {mine > 0 && (
+          <span aria-hidden="true" data-part="lettering" className="text-caption font-normal tabular-nums text-fg-subtle">
+            {mine} of {cap}
+          </span>
         )}
       </div>
 

@@ -15,7 +15,7 @@ export const meta: PageMeta = {
     "A cheer for a post, a picture series or an issue. Each kudos fills the heart in ink, counts up and sends a small +N up. One more at the cap clears the reader's kudos, so it can always be undone. It belongs to Flat.",
   tiers: ["instant", "expressive"],
   mechanism:
-    "A native button counts the reader's kudos from zero up to max (five by default). Each one fills the heart glyph in ink, pops the pill on the expressive spring (350ms), and releases a floating +1 badge that rises on the expressive spring and fades on the exit tween. Reduced motion updates the count at once.",
+    "A native button counts the reader's kudos from zero up to max (five by default). Each one fills the heart glyph in ink, pops the pill on the expressive spring (350ms), writes how many of max the reader has given beside the pill, and releases a floating +N badge that rises on the expressive spring and fades on the exit tween. Reduced motion updates the count at once.",
 };
 
 export const docs: PageDocs = {
