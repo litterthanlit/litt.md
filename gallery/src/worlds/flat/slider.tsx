@@ -8,8 +8,9 @@
  * so a slider reads as a line of text with a track in it.
  *
  * When it first enters view (`useInView`, once), the sunset fill and knob sweep in once to the starting value on Flat's
- * expressive spring, then wait. Any pointerdown, key press, or value change cancels the arrival immediately so the
- * hand always wins. Under reduced motion (`useMotionDial().reduced`) the arrival is skipped completely.
+ * expressive spring, then wait; until then they rest at the start, from the first frame. Any pointerdown, key press,
+ * or value change cancels the arrival immediately so the hand always wins. Under reduced motion
+ * (`useMotionDial().reduced`) the arrival is skipped completely.
  *
  * The travel's inset is --sl-pad, the knob's radius (10px), which the root sets and the hand reads back as its left
  * padding. The ring for keyboard focus goes on the knob, since the root is invisible. It takes the contract the Slider
@@ -78,13 +79,16 @@ export function SliderFlat({ range, caps, fill, notches, glide, held, shown, dis
   const instant = useTransition("instant");
   const inView = useInView(rootElRef, { once: true, amount: 0.2 });
 
-  const progress = useMotionValue(1);
-  const [arriving, setArriving] = useState(false);
+  const p0 = caps[0]?.p ?? 0;
+  const p1 = caps[1]?.p ?? p0;
+  /* While the arrival is pending the fill and knob start at the start from the first frame, so they never show the
+     value, snap back and sweep. Under reduced motion, disabled, or with nothing to sweep they start at the value. */
+  const pending = !reduced && !disabled && !held && (range ? Math.abs(p1 - p0) > 1e-4 : p0 > 1e-4);
+  const progress = useMotionValue(pending ? 0 : 1);
+  const [arriving, setArriving] = useState(pending);
   const animRef = useRef<AnimationPlaybackControls | null>(null);
   const doneRef = useRef(false);
 
-  const p0 = caps[0]?.p ?? 0;
-  const p1 = caps[1]?.p ?? p0;
   const initialRef = useRef({ p0, p1 });
   const targetRef = useRef({ p0, p1, range });
   targetRef.current = { p0, p1, range };

@@ -4,6 +4,16 @@ Every change to the litt registry at https://littmd.vercel.app/r/, newest first.
 
 To update an item, read the entries since your version, then reinstall it with `--overwrite`. A **breaking** entry says what to change in your code.
 
+## 2026-11-23 · Flat parts, review fixes
+
+A review of Flat's new parts found five behaviours that did not keep their contracts. Nothing looks different at rest, and no props change.
+
+- **fixed** `agent-status`, `flat-agent-status`: the elapsed clock runs whenever the state is live (`thinking`, `tool`, `writing`), including when the card mounts in one, so `<AgentStatus state="thinking" />` counts instead of standing at `0.0s`. It still pauses on `waiting` and freezes on `done`, `error` and `stopped`.
+- **fixed** `dial`, `flat-dial`: the wheel turns the dial only while it has focus or is held, and lets the page scroll when the dial is unfocused or already at the end the wheel turns toward. Arrow, Page, Home and End keys no longer repeat the value in the live region (the focused slider says it); pointer, wheel and reset changes are still announced. The arc starts at `min` while its arrival is pending, so it never shows the value, snaps back and sweeps.
+- **fixed** `slider`, `flat-slider`: Flat's body starts its fill and knob at the start while its arrival is pending, so it never shows the value, snaps back and sweeps. Under reduced motion it starts at the value, as before.
+- **fixed** `ticker`, `flat-ticker`: the strip is a real button named Next update and described by the current notice, inside a group that carries the label and `aria-roledescription="ticker"`, so a screen reader can tell it can be pressed. One tab stop, the same look, the same keys and live region.
+- **fixed** `step-sequencer`, `flat-step-sequencer`: Flat's body works out a step's announcement outside the state updater, which React's StrictMode runs twice.
+
 ## 2026-11-22 · World-native agentic components
 
 One signature agentic component for each of the six worlds, built strictly from that world's own materials, color grammar, motion language and voice, and placed first in each world's player set for review.

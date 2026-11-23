@@ -47,7 +47,7 @@ const ticker = useTicker({
     [["Home", "End"], "Jumps to the first or last notice in the queue."],
   ],
   a11y: [
-    "The strip exposes role=\"group\" with aria-roledescription=\"ticker\", a clear label, and a single tab stop.",
+    "The card is a group with aria-roledescription=\"ticker\" and a clear label; the strip is one button named Next update, described by the current notice, and a single tab stop.",
     "Changing or pushing a notice announces the severity prefix, text and queue position once in a polite status region.",
     "Severity never relies on color alone: warnings and alerts announce their prefix and carry plain descriptive text, and forced colors outlines both the card and strip.",
     "Under reduced motion nothing springs or slides; notices replace each other at once.",
@@ -155,7 +155,7 @@ export const study: PageStudy = {
   parts: [
     { name: "The strip", selector: "[data-part=pill]" },
     { name: "The status dot", selector: "[data-part=circle]" },
-    { name: "The message", selector: "[data-part=pill] > div [data-part=lettering]" },
+    { name: "The message", selector: "[data-part=pill] > span [data-part=lettering]" },
     { name: "The position", selector: "[data-part=pill] > [data-part=lettering]" },
   ],
   states: {

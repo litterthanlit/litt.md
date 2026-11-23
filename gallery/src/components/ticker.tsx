@@ -10,8 +10,9 @@
  *   `alert` -> `--data-rose`). The pill stays neutral ink on block.
  * - Hover and focus track a held state (`data-paused` and optional `onPauseChange`) so live callers can hold incoming
  *   updates while a reader is reading.
- * - Accessibility: `role="group"` with `aria-roledescription="ticker"`, one tab stop, ArrowLeft / ArrowRight / Home /
- *   End / Enter / Space stepping, polite live announcement once per message change, and forced-colors borders.
+ * - Accessibility: the card is a `role="group"` with `aria-roledescription="ticker"` and the label; the strip is one
+ *   button named "Next update" and described by the current notice, one tab stop, ArrowLeft / ArrowRight / Home / End /
+ *   Enter / Space stepping, polite live announcement once per message change, and forced-colors borders.
  */
 import { useCallback, useEffect, useId, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import { AnimatePresence, motion, useInView } from "motion/react";
@@ -251,10 +252,11 @@ export function Ticker({
     });
   };
 
-  const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+  /* Enter and Space press the button, whose click steps forward. */
+  const onKeyDown = (e: KeyboardEvent<HTMLButtonElement>) => {
     if (list.length === 0 || e.altKey || e.ctrlKey || e.metaKey) return;
     const rtl = getComputedStyle(e.currentTarget).direction === "rtl";
-    const fwd = e.key === (rtl ? "ArrowLeft" : "ArrowRight") || e.key === "Enter" || e.key === " ";
+    const fwd = e.key === (rtl ? "ArrowLeft" : "ArrowRight");
     const back = e.key === (rtl ? "ArrowRight" : "ArrowLeft");
     if (fwd) {
       e.preventDefault();
@@ -276,15 +278,17 @@ export function Ticker({
   return (
     <div
       ref={rootRef}
+      role="group"
+      aria-roledescription="ticker"
+      aria-label={label}
       data-part="paper"
       className={"litt-paper grid w-full min-w-0 gap-3 rounded-surface bg-surface-1 p-6 forced-colors:border " + className}
     >
-      <motion.div
-        role="group"
-        aria-roledescription="ticker"
-        aria-label={label}
+      <motion.button
+        type="button"
+        aria-label="Next update"
         aria-describedby={descId}
-        tabIndex={0}
+        aria-disabled={canStep ? undefined : true}
         data-part="pill"
         data-tone={current?.tone ?? "empty"}
         data-paused={paused || undefined}
@@ -301,13 +305,13 @@ export function Ticker({
         whileTap={reduced || !canStep ? undefined : { scale: 0.99 }}
         transition={spring}
         className={
-          "litt-target relative flex min-h-control-md w-full min-w-0 items-center justify-between gap-3 overflow-hidden rounded-pill bg-block px-4 py-2 select-none " +
+          "litt-target relative flex min-h-control-md w-full min-w-0 items-center justify-between gap-3 overflow-hidden rounded-pill bg-block px-4 py-2 text-start select-none " +
           "transition-colors duration-(--dur-instant) ease-litt [-webkit-tap-highlight-color:transparent] " +
           "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus forced-colors:border " +
           (canStep ? "cursor-pointer hover:bg-(--block-hover)" : "")
         }
       >
-        <div className="flex min-w-0 flex-1 items-center gap-2.5">
+        <span className="flex min-w-0 flex-1 items-center gap-2.5">
           <motion.span
             aria-hidden="true"
             data-part="circle"
@@ -319,7 +323,7 @@ export function Ticker({
               (current ? TONE_DOT[current.tone] : "bg-[color-mix(in_oklab,var(--fg)_20%,transparent)]")
             }
           />
-          <div className="relative flex min-w-0 flex-1 items-center overflow-hidden">
+          <span className="relative flex min-w-0 flex-1 items-center overflow-hidden">
             <AnimatePresence mode="popLayout" initial={false}>
               <motion.span
                 key={current ? current.id : "empty"}
@@ -333,13 +337,13 @@ export function Ticker({
                 {current ? current.text : emptyLabel}
               </motion.span>
             </AnimatePresence>
-          </div>
-        </div>
+          </span>
+        </span>
 
         <span data-part="lettering" aria-hidden="true" className="shrink-0 text-caption font-normal tabular-nums text-fg-subtle">
           {list.length > 0 ? `${safeIndex + 1} / ${list.length}` : "—"}
         </span>
-      </motion.div>
+      </motion.button>
 
       <span id={descId} className="sr-only">
         {current ? `${TONE_SAID[current.tone]}${current.text}, ${safeIndex + 1} of ${list.length}` : emptyLabel}

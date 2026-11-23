@@ -10,13 +10,15 @@
  *   and a clean circular face (`data-part="circle"`, `bg-block`) carrying one solid ink indicator dot (`bg-fg`,
  *   `data-part="circle"`).
  * - Hand first: 1:1 vertical pointer drag with pointer capture (indicator swells subtly on `useTransition("instant")`
- *   while held and settles on `useTransition("expressive")`), mouse wheel stepping, double-click reset to
+ *   while held and settles on `useTransition("expressive")`), mouse wheel stepping while focused or held (the page
+ *   scrolls on otherwise, and at either end), double-click reset to
  *   `defaultValue`, and full keyboard support (`Arrow` keys, `PageUp`/`PageDown`, `Home`/`End`). External value updates
  *   recall smoothly on `useTransition("expressive")`.
  * - One-shot arrival on first view (`useInView` with `once: true`) sweeps the dial from `min` to its starting value on
  *   `useTransition("expressive")`, cancelled immediately on pointer, wheel, key, or value change, and skipped completely
  *   under `useMotionDial().reduced`.
- * - Silent, zero shadows, and a polite `sr-only` live region announcing committed value changes once.
+ * - Silent, zero shadows, and a polite `sr-only` live region announcing committed pointer, wheel and reset changes
+ *   once (keys are spoken by the focused slider itself).
  */
 import {
   useCallback,
@@ -192,7 +194,9 @@ export function Dial({
   const expressive = useTransition("expressive");
   const inView = useInView(rootRef, { once: true, amount: 0.2 });
 
-  const fraction = useMotionValue(currentFraction);
+  /* While the arrival is pending the arc starts at min from the first frame, so it never shows the value, snaps back and
+     sweeps. Under reduced motion or disabled it starts at the value. */
+  const fraction = useMotionValue(reduced || disabled ? currentFraction : 0);
   const strokeDashoffset = useTransform(fraction, (f) => ARC_LENGTH * (1 - clamp01(f)));
   const arcOpacity = useTransform(fraction, (f) => (clamp01(f) > 0.002 ? 1 : 0));
   const rotate = useTransform(fraction, (f) => -SWEEP / 2 + clamp01(f) * SWEEP);
@@ -342,8 +346,9 @@ export function Dial({
     glideTo(target, latestRef.current.expressive, current);
   }, [current, fraction, glideTo, stopAnim, writeReadout]);
 
+  /* `say` is false for keys: the focused slider already speaks its new aria-valuetext, so the live region would say it twice. */
   const commitStep = useCallback(
-    (nextIndex: number, transition: Transition, reset = false) => {
+    (nextIndex: number, transition: Transition, say: "value" | "reset" | false = "value") => {
       const { scale: s, current: cur, isControlled: ctrl, onValueChange: onChg, onValueCommit: onCom } = latestRef.current;
       doneRef.current = true;
       const nextVal = valueAtIndex(nextIndex, s);
@@ -354,25 +359,34 @@ export function Dial({
       onChg?.(nextVal);
       onCom?.(nextVal);
       glideTo(fractionOf(nextVal, s), transition, nextVal);
-      announce(nextVal, reset);
+      if (say) announce(nextVal, say === "reset");
     },
     [announce, glideTo],
   );
 
-  /* Native wheel listener so turning the dial prevents the page from scrolling. */
+  /* Native wheel listener: the wheel turns the dial only while it has focus or is held, and the page scrolls on when
+     the dial is unfocused or already at the end the wheel turns toward. */
   useEffect(() => {
     const el = dialRef.current;
     if (!el) return;
     let acc = 0;
     const onWheel = (e: WheelEvent) => {
       const { disabled: off, scale: s, current: cur, responsive: resp } = latestRef.current;
-      if (off) return;
+      if (off || e.deltaY === 0 || (document.activeElement !== el && !dragRef.current)) {
+        acc = 0;
+        return;
+      }
+      const idx = Math.round(fractionOf(cur, s) * s.steps);
+      const toward = e.deltaY < 0 ? 1 : -1;
+      if ((toward > 0 && idx >= s.steps) || (toward < 0 && idx <= 0)) {
+        acc = 0;
+        return;
+      }
       e.preventDefault();
       acc -= e.deltaY;
       if (Math.abs(acc) < WHEEL_THRESHOLD) return;
       const dir = acc > 0 ? 1 : -1;
       acc = 0;
-      const idx = Math.round(fractionOf(cur, s) * s.steps);
       commitStep(idx + dir, resp);
     };
     el.addEventListener("wheel", onWheel, { passive: false });
@@ -469,7 +483,7 @@ export function Dial({
   function onDoubleClick() {
     if (disabled) return;
     const targetIdx = Math.round(fractionOf(resetTarget, scale) * scale.steps);
-    commitStep(targetIdx, expressive, true);
+    commitStep(targetIdx, expressive, "reset");
   }
 
   function onKeyDown(e: KeyboardEvent<HTMLDivElement>) {
@@ -485,7 +499,7 @@ export function Dial({
     else if (e.key === "End") targetIdx = scale.steps;
     if (targetIdx === null) return;
     e.preventDefault();
-    commitStep(targetIdx, responsive);
+    commitStep(targetIdx, responsive, false);
   }
 
   const formatted = formatValue(current);

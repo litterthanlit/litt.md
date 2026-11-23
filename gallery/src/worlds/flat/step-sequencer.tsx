@@ -127,14 +127,11 @@ export function StepSequencerFlat({
 
   function toggleStep(laneId: string, stepIdx: number) {
     setTouched(true);
+    /* The message is worked out here, not in the updater, which StrictMode runs twice. */
+    const lane = lanes.find((l) => l.id === laneId);
+    if (lane) setLive(`${lane.name}, step ${stepIdx + 1} ${lane.steps[stepIdx] ? "off" : "on"}.`);
     setLanes((cur) =>
-      cur.map((l) => {
-        if (l.id !== laneId) return l;
-        const nextSteps = l.steps.map((v, i) => (i === stepIdx ? !v : v));
-        const turnedOn = nextSteps[stepIdx];
-        setLive(`${l.name}, step ${stepIdx + 1} ${turnedOn ? "on" : "off"}.`);
-        return { ...l, steps: nextSteps };
-      }),
+      cur.map((l) => (l.id === laneId ? { ...l, steps: l.steps.map((v, i) => (i === stepIdx ? !v : v)) } : l)),
     );
   }
 

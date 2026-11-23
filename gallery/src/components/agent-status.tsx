@@ -10,8 +10,9 @@
  *   sequential ramp (`--data-seq-1` to `--data-seq-3`, `data-part="mark"`), while pending phases rest quietly in
  *   `bg-slot` (`data-part="pill"`).
  * - One-shot arrival (`useInView` with `once: true`) sweeps reached phase pills open on `useTransition("expressive")`
- *   (skipped under reduced motion), then waits completely still. No timer runs on mount; elapsed time counts only after
- *   a live state transition, pauses during `waiting`, and freezes on `done`, `error`, or `stopped`.
+ *   (skipped under reduced motion), then waits completely still. Elapsed time counts whenever the state is live
+ *   (`thinking`, `tool`, `writing`), including at mount, pauses during `waiting`, and freezes on `done`, `error`, or
+ *   `stopped`.
  * - A polite status region announces state changes once and never on timer ticks.
  */
 import { useEffect, useId, useRef, useState, type KeyboardEvent } from "react";
@@ -148,16 +149,8 @@ export function AgentStatus({
   const prevElapsedRef = useRef<number | undefined>(elapsed);
   const bankedRef = useRef<number>(elapsed ?? 0);
   const sinceRef = useRef<number | null>(null);
-  const intervalRef = useRef<number | null>(null);
 
-  const stopTimer = () => {
-    if (intervalRef.current !== null) {
-      window.clearInterval(intervalRef.current);
-      intervalRef.current = null;
-    }
-  };
-
-  // Sync explicit elapsed updates without starting any timer on mount.
+  // Sync explicit elapsed updates.
   useEffect(() => {
     if (elapsed === prevElapsedRef.current) return;
     prevElapsedRef.current = elapsed;
@@ -168,7 +161,7 @@ export function AgentStatus({
     setDisplaySeconds(safe);
   }, [elapsed]);
 
-  // React only to post-mount state transitions: latch phases, manage live/paused/frozen timer, and announce once.
+  // React only to post-mount state transitions: latch phases, reset a fresh run, and announce once.
   useEffect(() => {
     const prev = prevStateRef.current;
     if (prev === state) return;
@@ -177,33 +170,34 @@ export function AgentStatus({
     setLatched((current) => nextPhasesFor(prev, state, current));
     setAnnouncement(STATE_ANNOUNCEMENT[state]);
 
-    const now = performance.now();
-    if (isLive(state)) {
-      if (isEnd(prev) && elapsed === undefined) {
-        bankedRef.current = 0;
-        setDisplaySeconds(0);
-      }
-      if (sinceRef.current === null) sinceRef.current = now;
-      stopTimer();
-      const stepMs = reduced ? 1000 : 100;
-      intervalRef.current = window.setInterval(() => {
-        if (sinceRef.current === null) return;
-        const next = bankedRef.current + (performance.now() - sinceRef.current) / 1000;
-        setDisplaySeconds(reduced ? Math.floor(next) : next);
-      }, stepMs);
-    } else {
-      // Waiting pauses the banked clock; done, error and stopped freeze it.
+    if (isLive(state) && isEnd(prev) && elapsed === undefined) {
+      bankedRef.current = 0;
+      setDisplaySeconds(0);
+    }
+  }, [state, elapsed]);
+
+  // The clock runs whenever the state is live, including at mount. Waiting pauses the banked clock; done, error and
+  // stopped freeze it.
+  useEffect(() => {
+    if (!isLive(state)) {
       if (sinceRef.current !== null) {
-        bankedRef.current += (now - sinceRef.current) / 1000;
+        bankedRef.current += (performance.now() - sinceRef.current) / 1000;
         sinceRef.current = null;
         setDisplaySeconds(bankedRef.current);
       }
-      stopTimer();
+      return;
     }
-  }, [state, elapsed, reduced]);
-
-  // Clean up any active timer on unmount.
-  useEffect(() => () => stopTimer(), []);
+    if (sinceRef.current === null) sinceRef.current = performance.now();
+    const id = window.setInterval(
+      () => {
+        if (sinceRef.current === null) return;
+        const next = bankedRef.current + (performance.now() - sinceRef.current) / 1000;
+        setDisplaySeconds(reduced ? Math.floor(next) : next);
+      },
+      reduced ? 1000 : 100,
+    );
+    return () => window.clearInterval(id);
+  }, [state, reduced]);
 
   const activePhases = reachedPhases ?? latched;
   const currentPhase: AgentPhase | null = isLive(state) ? state : state === "waiting" ? "tool" : null;
