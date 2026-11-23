@@ -1,48 +1,48 @@
 # Proposal: Rack Studies
 
-Sixteen interactive studies in **Rack** (`proposals/rack.md`) — built from Rack's exact `tokens.css` grammar, Ableton Live's dense modular panel architecture, agentic + interface-first instruments, and Rack's **"on the beat"** motion language.
+Sixteen interactive agentic & interface-first studies in **Rack** (`proposals/rack.md`) — taking Rack's square outlined software grammar, crisp bright neutrals paired with electric high-chroma fills, sunlit yellow lit keys, and Emil Kowalski's direct-manipulation motion language (without leaning on music/DAW clichés or copying reference layouts).
 
 - Live standalone bundle: [`proposals/rack-studies/studies.html`](rack-studies/studies.html)
 - Wall previews: [`wall-light.jpg`](rack-studies/wall-light.jpg) · [`wall-dark.jpg`](rack-studies/wall-dark.jpg)
 
-## Visual grammar (strictly Rack)
+## Visual grammar
 
-Every value comes straight from Rack's block in [`skills/litt-md/assets/tokens.css`](../skills/litt-md/assets/tokens.css):
+- **Bright, crisp neutrals (light & dark):** cool architectural canvas (`#e6e8ee` light / `#0f1115` dark), clean panels (`#f7f8fa` / `#181b22`), pure inner cuts (`#ffffff` / `#111318`), and crisp `1px` outlines — zero shadows, zero glass blur, zero muddy grey.
+- **Square geometry:** `2px` controls nested inside `4px` panels — the sharp architectural foil to Flat's borderless pills.
+- **Electric Rack yellow (`#ffd014`):** strictly a lit key fill inside a `1px` dark outline (`#111318` ink on yellow).
+- **High-chroma 5-hue series:** electric cobalt (`#1a6dff`), vivid coral (`#ff471a`), electric emerald (`#00b377`), electric violet (`#7a3cff`), and electric pink (`#e6268c`) — reserved for status badges, tags, diff rails, eval cells, and telemetry signals.
 
-- **Ground & panels:** darker grey canvas (`#c8c8c8` light / `#161616` dark) parting flat modular panels (`#e2e2e2` / `#262626`), cut value boxes (`#f3f3f3` / `#1b1b1b`), and raised control blocks (`#ededed` / `#3b3b3b`).
-- **Shape & depth:** `2px` controls nested inside `4px` panels, crisp `1px` outlines, zero drop shadows, zero blur/glass.
-- **Rack yellow (`#ffc933`):** strictly a lit key fill inside a `1px` outline (`#111111` ink on yellow) — never a floating border, glow, or decorative highlight.
-- **Five clip colors:** blue, amber-orange, teal-cyan, violet, and green — used strictly to identify tracks, clips, device modules, lanes, and meter/eval series, never as chrome decoration.
+## Motion language (Emil Kowalski / Rack)
 
-## Motion language ("on the beat")
-
-Rack moves like a hardware studio console clocked to a grid — never like a spring physics toy:
-
-1. **0ms under a hand:** vertical pointer-capture drag (`Shift` fine mode, double-click home), playhead scrubbing, XY pad tracking, matrix patching, and key toggles track 1:1 on the frame and stop dead on release.
-2. **100ms cut-in on the beat:** panels cut in via opacity (`100ms ease-out`), with columns grouped by left edge and launched `36ms` apart.
-3. **75ms stop:** sheet dismissals and stops cut out in `75ms` with zero overshoot.
-4. **Quantized 120 BPM (`125ms` 1/16th) clock:** clip launches, job sequencer steps, automation readouts, and worker meters step on the shared beat. `prefers-reduced-motion: reduce` stills all clocks and cuts.
+1. **0ms under a hand:** vertical pointer-capture drag (`Shift` fine mode, double-click home), command filtering, tab switching, facet toggles, and switchboard flips answer on the exact frame with zero settle or overshoot.
+2. **100ms cut-in, 36ms column stagger:** panels and notifications cut in by opacity (`100ms ease-out`), with multi-column surfaces launching `36ms` apart.
+3. **75ms cut-out:** exits finish faster than enters (`75ms ease-out`) with zero travel.
+4. **0.98 press feedback:** active buttons compress subtly (`scale(0.98)`) on click. `prefers-reduced-motion: reduce` zeroes all durations.
 
 ## The 16 studies
 
-| # | Slug | Study | Category | Instrument & interaction |
-|---|------|-------|----------|--------------------------|
-| 01 | `agent-chain` | Agent Signal Chain | Agentic | 5 clip-colored device modules parted by ground, yellow power keys, 1:1 vertical-drag value boxes, armed tool toggles |
-| 02 | `session-launcher` | Session Clip Launcher | Agentic | 4 agent tracks × 4 scenes, clip-colored left borders, beat-quantized cueing, yellow Master scene launch |
-| 03 | `macro-rack` | 8-Macro Agent Rack | Instrument | 4×2 rotary arc macros dragged 1:1 vertically + instant yellow Snapshot recall |
-| 04 | `trace-arrangement` | Trace Arrangement View | Agentic | Multi-track colored clips with mirrored token-density waveforms + 1:1 scrubbable black playhead with yellow cap |
-| 05 | `context-mixer` | Context Channel Mixer | Agentic | 5 vertical mixer channels with 1:1 vertical-drag token faders, yellow channel activators `1`–`5`, Master Budget meter + `Trim` |
-| 06 | `xy-router` | XY Policy Pad | Instrument | Crisp grid pad with 1:1 draggable yellow crosshair, corner snaps, live Depth/Verify readouts & routed tier |
-| 07 | `automation-lane` | Automation Envelope Lane | Instrument | Draggable breakpoint nodes on a teal envelope lane, `Linear | Stepped` toggle, live beat playhead readout |
-| 08 | `routing-matrix` | Agent Routing Matrix | Agentic | Ableton I/O patchbay of 4 agents × 6 tools with 0ms patch toggles and hover crosshair highlight |
-| 09 | `approval-matrix` | Permission & Tool Rack | Agentic | Compact `Auto | Ask | Block` key matrix + live incoming tool call bar with yellow `Allow` / `Deny` keys |
-| 10 | `eval-grid` | Eval Pass Grid | Meter / Eval | 64 clickable eval cells across 4 colored tracks (`Routing`, `Editing`, `Testing`, `Safety`), status filters, live inspector strip |
-| 11 | `step-scheduler` | Beat-Locked Job Sequencer | Instrument | 4 colored job lanes × 16 steps on the 120 BPM clock, click-drag paint, `M`/`S` switches, yellow Play/Stop |
-| 12 | `value-inspector` | Parameter Inspector Strip | Instrument | 6 cut value boxes (`Temp`, `Top-P`, `Max tok`, `Retries`, `Timeout`, `Workers`) with 1:1 drag, `Shift` fine mode, fill bars |
-| 13 | `patch-inspector` | Diff Device Panel | Agentic | Browser file rail with single-line paths, verdict pips, and yellow `Accept [A]` / `Reject [R]` + `J`/`K` navigation |
-| 14 | `command-strip` | Instant Command Strip | Instrument | Zero-animation cut command input, clip-colored category tags, keycaps, 0ms frame-snapped row inversion |
-| 15 | `meter-bridge` | Worker Meter Bridge | Meter / Eval | 8 vertical segmented throughput meters (`W1`–`W8`) with held peak bars on the beat and per-worker power keys |
-| 16 | `motion-shaper` | Rack Motion Shaper | Instrument | Interactive bench for Rack's `0ms Frame | 100ms Cut | 75ms Stop | Beat 1/16` curves + `36ms` column stagger test blocks |
+| # | Slug | Study | Category | Component & interaction |
+|---|------|-------|----------|-------------------------|
+| 01 | `agent-status` | Agent Status | Agentic | Live elapsed timer, square step pills (`Plan / Read / Patch / Verify`), electric yellow `Allow` & `Stop` keys |
+| 02 | `agent-trace` | Agent Trace Tree | Agentic | Collapsible tool-call list with vivid square tool badges (`READ / GREP / EDIT / TEST`) and 0ms detail expand |
+| 03 | `agent-indicators` | Agent Indicators | Agentic | Four crisp discrete-step loaders (`Matrix`, `Scan`, `Tokens`, `Verify`) with zero blur or glow |
+| 04 | `command-menu` | Command Menu | Controls | Zero-animation command palette with vivid category badges, shortcut keycaps, and 0ms row inversion |
+| 05 | `value-controls` | Drag Value Controls | Controls | Inline numeric cut boxes (`Temperature`, `Max tokens`, `Timeout`, `Workers`) dragged 1:1 vertically + `Shift` fine mode |
+| 06 | `segmented-switch` | Segmented Switchboard | Controls | Square segmented mode chooser (`Fast / Balanced / Strict`) and 0ms mechanical ON/OFF toggle keys |
+| 07 | `permission-gate` | Permission Gate | Agentic | Per-tool `Auto / Ask / Block` policy keys paired with a live incoming tool call bar and yellow `Approve` key |
+| 08 | `context-budget` | Context Budget Bar | Agentic | Interactive stacked context-window bar — click slices to prune/restore tokens or snap-`Compact` |
+| 09 | `diff-review` | Inline Diff Review | Agentic | Crisp square file tabs with verdict pips, vivid emerald/coral diff hunks, and yellow `Accept` / `Reject` |
+| 10 | `hold-confirm` | Hold to Commit | Controls | Press-and-hold destructive/deploy button with linear fill bar, high-contrast readout badge, and 0ms cancel reset |
+| 11 | `eval-matrix` | Eval Run Matrix | Signals | 48 clickable pass/warn/fail eval cells across 4 vivid suites with instant filter cut and live bottom inspector |
+| 12 | `toast-queue` | Toast Queue | Controls | Sharp outlined notification cards with vivid colored status rails (`100ms` cut-in, `75ms` dismiss) |
+| 13 | `copy-block` | Streaming Copy Block | Controls | Crisp mono snippet bar with format tabs (`CLI / curl / TS`) and 0ms `Copy` → yellow `Copied ✓` flip |
+| 14 | `facet-bar` | Filter & Facet Bar | Signals | Multi-select square facet chips with live counts, vivid fills, and 0ms list filtering |
+| 15 | `metric-strip` | Live Metric Strip | Signals | 4-column agent telemetry (`Latency`, `Pass rate`, `Tokens/s`, `Cost`) with vivid sparkbars and `1h / 24h / 7d` toggle |
+| 16 | `rack-motion` | Cut & Stagger Motion | Controls | Interactive bench for Rack's `0ms Hand`, `100ms Cut-In`, `36ms Stagger`, and `75ms Cut-Out` timing |
+
+## Open calls for Nick
+
+1. **Token promotion into `skills/litt-md/assets/tokens.css`:** these studies deliberately lift Rack's light canvas from `#c8c8c8` → `#e6e8ee` (panels `#e2e2e2` → `#f7f8fa`) and push the 5 series hues to full electric chroma. Want us to promote this brighter, higher-chroma palette into Rack's core `tokens.css` block in a follow-up PR?
 
 ## Rebuilding locally
 
