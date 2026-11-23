@@ -26,7 +26,8 @@
  */
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { animate } from "motion/react";
-import { useMotionDial, useTransition } from "@/motion";
+import { byWorld, useMaterial, useMotionDial, useTransition } from "@/motion";
+import { CopyButtonFlat } from "@/worlds/flat/copy-button";
 
 export type CopyButtonProps = {
   /** What a press puts on the clipboard. */
@@ -183,6 +184,11 @@ const glyph = "col-start-1 row-start-1 size-4 transition-[opacity,scale] duratio
 
 /** A key that copies `text`, beside an LCD line that shows the command and decodes it back in after the copy. */
 export function CopyButton({ text, label = "Copy command", command, className = "" }: CopyButtonProps) {
+  const Body = byWorld(useMaterial(), { press: CopyButtonDevice, flat: CopyButtonFlat });
+  return <Body text={text} label={label} command={command} className={className} />;
+}
+
+function CopyButtonDevice({ text, label = "Copy command", command, className = "" }: CopyButtonProps) {
   const shown = command ?? text;
   const [state, setState] = useState<"idle" | "copied" | "failed">("idle");
   const { reduced } = useMotionDial();

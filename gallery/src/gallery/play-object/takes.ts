@@ -28,7 +28,7 @@ export type Take = {
  */
 const SET: Record<Material, string[]> = {
   press: ["autonomy-gate", "deploy-status", "env-switch", "release-rail", "stat", "button", "switch", "segmented", "slider", "input", "select", "menu"],
-  flat: ["context-budget", "hold-confirm", "agent-run", "toast-stack", "poll", "streak", "kudos", "reaction-bar", "reading-progress", "goal-ring", "progress", "toast"],
+  flat: ["context-budget", "dial", "copy-button", "agent-status", "agent-indicator", "ticker", "step-sequencer", "slider", "poll", "hold-confirm", "agent-run", "toast-stack"],
   device: ["agent-dispatch", "composer", "agent-indicator", "tool-call", "message", "seven-segment", "tape-progress", "switch", "slider", "gauge", "copy-button", "command-menu"],
   plain: ["agent-transcript", "form", "input", "select", "checkbox", "button", "table", "details", "callout", "breadcrumb", "tabs", "dialog"],
   rack: ["agent-chain", "clip-launcher", "device-rack", "step-sequencer", "slider", "curve-editor", "pad", "time-scrubber", "inspector", "number-field", "segmented", "switch"],
@@ -42,7 +42,7 @@ const SET: Record<Material, string[]> = {
  * read it yet: they switch to it when Flat's list holds twelve.
  */
 export const BAR: Partial<Record<Material, string[]>> = {
-  flat: ["poll", "slider"],
+  flat: ["poll", "slider", "dial", "copy-button", "agent-status", "agent-indicator", "ticker", "step-sequencer"],
 };
 
 /** Whether a part's study has passed its world's bar (BAR). */

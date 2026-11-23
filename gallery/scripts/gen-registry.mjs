@@ -786,16 +786,16 @@ function transformFile(file, targets, source) {
  * short sentences, no em dashes. A missing entry fails the build, so a new component gets words.
  */
 const COPY = {
-  /* Device's own parts (proposals/worlds.md, Depth): each needs data-material="device" on <html>; its page says so. */
+  /* Device and Flat parts: each adapts its body to data-material="device" or data-material="flat" on <html>. */
   "agent-indicator": {
     title: "Agent indicator",
-    description: "What an agent is doing, in hardware: a seven-segment chase for thinking, a tuner for searching, stereo meters for reading, a dot matrix for reasoning, step lights for running and tape reels for writing, each moving only while tokens arrive. A Device part.",
-    docs: "Needs data-material=\"device\" on <html>. Pass the phase and it crossfades between mechanisms; pass paused to hold it. Under reduced motion each holds one frame. It says the phase in words for a screen reader.",
+    description: "What an agent is doing across six phases (thinking, searching, reading, reasoning, running, writing): hardware mechanisms under Device and geometric color shapes under Flat, moving only while live.",
+    docs: "Works under data-material=\"device\" and data-material=\"flat\" on <html>. Pass the phase and it crossfades smoothly; pass paused to hold a frame. Under reduced motion each holds still.",
   },
   "copy-button": {
     title: "Copy button",
-    description: "A key that copies a command shown on LCD glass: the key sinks its 2px, the check draws in, and the command's glyphs decode back in a wave. A Device part.",
-    docs: "Needs data-material=\"device\" on <html>. Pass the text to copy; it says Copied for a moment and goes back. Under reduced motion the glyphs swap at once.",
+    description: "Copies a command or link with immediate feedback: a sinking key beside LCD glass under Device, and a paper card with a pill that flips to teal Copied under Flat.",
+    docs: "Works under data-material=\"device\" and data-material=\"flat\" on <html>. Pass the text to copy; it says Copied for a moment and returns. Under reduced motion the swap is instant.",
   },
   "tape-progress": {
     title: "Tape progress",
@@ -838,6 +838,21 @@ const COPY = {
     description: "Progress toward one goal you can count, such as books read this year: a ring that fills, the count inside it as one large figure, and round − and + keys. A Flat part.",
     docs: "Needs data-material=\"flat\" on <html>. Pass title, target and unit; the circular − and + keys step the ring and announce progress once.",
   },
+  dial: {
+    title: "Dial",
+    description: "A circular rotary dial on Flat paper with a sunset arc, ink indicator dot, standing figure readout, 1:1 vertical drag, scroll wheel, keyboard steps and spring preset recall. A Flat part.",
+    docs: "Needs data-material=\"flat\" on <html>. Drag vertically, scroll, double-click to reset, or use Arrow, Page and Home/End keys.",
+  },
+  "agent-status": {
+    title: "Agent status",
+    description: "A framed Flat paper status card pairing a frameless colored state dot, live tabular elapsed figure, three sunset phase pills and an optional action pill. A Flat part.",
+    docs: "Needs data-material=\"flat\" on <html>. Pass state across thinking, tool, writing, waiting, done, error or stopped; the elapsed clock counts only while live.",
+  },
+  ticker: {
+    title: "Ticker",
+    description: "A single pill strip on Flat paper showing queued updates with a colored tone dot, vertical expressive transitions, position readout and arrow-key stepping. A Flat part.",
+    docs: "Needs data-material=\"flat\" on <html>. Pass messages or drive it with useTicker(); click or press Left and Right arrows to step through queued notices.",
+  },
   /* Heat's own parts (proposals/heat.md; taste/litt-principles.md, Heat): each needs data-material="heat" on <html>; its page says so. */
   "pursuit-meter": {
     title: "Pursuit meter",
@@ -867,8 +882,8 @@ const COPY = {
   },
   "step-sequencer": {
     title: "Step sequencer",
-    description: "A colorful 8-step drum and bass pattern grid with four color-coded instrument lanes, pattern presets, and a Play / Stop playhead. A Rack part.",
-    docs: "Needs data-material=\"rack\" on <html>. Starts stopped; click any step to toggle a hit on the frame, cycle patterns, or press Play to step across all 8 beats.",
+    description: "A colorful 8-step pattern grid with four color-coded lanes, pattern presets and a Play / Stop playhead: a technical pad grid under Rack and rounded color pills on paper under Flat.",
+    docs: "Works under data-material=\"rack\" and data-material=\"flat\" on <html>. Starts stopped; click or use arrow keys in the grid to toggle steps, cycle patterns, or press Play.",
   },
   /* Press's own parts (plans/024, Press; taste/litt-principles.md, Press): tactile warm-stone product/deploy controls. */
   "deploy-status": {

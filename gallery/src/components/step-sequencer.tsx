@@ -18,6 +18,8 @@
  */
 import { useEffect, useId, useRef, useState, type CSSProperties, type KeyboardEvent, type ReactNode } from "react";
 import { Button } from "@/components/button";
+import { byWorld, useMaterial } from "@/motion";
+import { StepSequencerFlat } from "@/worlds/flat/step-sequencer";
 
 export type StepHue = "amber" | "blue" | "teal" | "violet" | "rose";
 
@@ -88,7 +90,12 @@ export const DEFAULT_LANES: StepLane[] = [
 const STEPS = 8;
 
 /** Rack's Ableton-style colorful 8-step drum & bass pattern sequencer. */
-export function StepSequencer({
+export function StepSequencer(props: StepSequencerProps) {
+  const Body = byWorld(useMaterial(), { press: StepSequencerRack, flat: StepSequencerFlat });
+  return <Body {...props} />;
+}
+
+function StepSequencerRack({
   title = "Drum rack · Pattern A",
   bpm = 124,
   lanes: initialLanes = DEFAULT_LANES,

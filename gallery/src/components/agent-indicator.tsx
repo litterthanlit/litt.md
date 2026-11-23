@@ -26,7 +26,8 @@
  *   word (R5). The drawing is aria-hidden. `label` replaces the words.
  */
 import { useEffect, useLayoutEffect, useRef, useState, type ComponentType } from "react";
-import { useMotionDial } from "@/motion";
+import { byWorld, useMaterial, useMotionDial } from "@/motion";
+import { AgentIndicatorFlat } from "@/worlds/flat/agent-indicator";
 
 /* ----------------------------------------------------------------- the shared loop */
 
@@ -532,6 +533,11 @@ function Layer({ phase, live, leaving, fresh }: { phase: AgentPhase; live: boole
 
 /** What an agent is doing, in hardware: one of six mechanisms for the phase, moving only while it is not paused. A Device part: it needs data-material="device" on <html>. */
 export function AgentIndicator({ phase, paused = false, label, className = "" }: AgentIndicatorProps) {
+  const Body = byWorld(useMaterial(), { press: AgentIndicatorDevice, flat: AgentIndicatorFlat });
+  return <Body phase={phase} paused={paused} label={label} className={className} />;
+}
+
+function AgentIndicatorDevice({ phase, paused = false, label, className = "" }: AgentIndicatorProps) {
   const { reduced } = useMotionDial();
   const box = useRef<HTMLSpanElement>(null);
   const [visible, setVisible] = useState(true);
