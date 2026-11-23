@@ -614,9 +614,13 @@ function flatPartOf(file, text, host) {
 /* Dots not taken out yet, by the part they are in: each prints as a warning, and a whole gallery run fails when one
    stops happening, so take the entry out with the fix. */
 const KNOWN_DOTS = {
-  "flat/legend": "each series' key is a round swatch beside its name; a short bar or the line's own dash is the Flat way",
   "flat/tag": "the status tag's mark (data-status-mark) is a dot tag; the status word alone is the Flat way",
   timeline: "a result is its word after an 8px circle behind Flat's variant (v1.17, call 6), which v1.22 takes back",
+};
+/* Parts whose round mark is a series key, not a dot: the swatch beside a series' name says which series, as a chart's
+   own marks do (taste v1.22, Nick, 2026-11-23: a series key is data). Never a status. */
+const SERIES_KEYS = {
+  "flat/legend": "each series' swatch beside its name is the key to which series is which",
 };
 /** Fail (or, for a KNOWN part, warn) every dot in a file. `shipped` says a KNOWN entry may excuse it. Returns the parts excused. */
 function lintDots(file, text, host, shipped, push) {
@@ -625,7 +629,7 @@ function lintDots(file, text, host, shipped, push) {
   const key = part ?? path.basename(file).replace(/\.[jt]sx?$/, "");
   const excused = new Set();
   for (const line of dotMarks(text, !!part)) {
-    if (lines[line - 1]?.includes("litt-allow")) continue;
+    if (lines[line - 1]?.includes("litt-allow") || SERIES_KEYS[key]) continue;
     if (shipped && KNOWN_DOTS[key]) { excused.add(key); push("warn", line, `${DOT_MESSAGE} (known: ${KNOWN_DOTS[key]})`); }
     else push("fail", line, DOT_MESSAGE);
   }
