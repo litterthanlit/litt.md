@@ -44,7 +44,7 @@ export const docs: PageDocs = {
     [["Enter", "Space"], "Opens the file picker."],
   ],
   a11y: [
-    "Choose files is a real button, described by the hint, so the types and the limit are heard before the picker opens. Dragging is never the only way.",
+    "The button that opens the picker is a real button whose name begins with the words it shows, described by the hint, so the types and the limit are heard before the picker opens. Dragging is never the only way.",
     "The area is a group named by the label. A click anywhere on it opens the picker too, for the pointer's convenience.",
     "Files turned away are said in an alert, one sentence each, naming the file and the reason.",
     "Each row's Progress is named \"Uploading <file>\", ends in words, and a failure's reason is read with it. Retry and Remove are named for their file.",

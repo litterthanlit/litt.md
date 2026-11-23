@@ -7,8 +7,9 @@
  * - While files are over it the sheet is ringed in ink (a 2px outline drawn inside the sheet, the only line Flat
  *   makes) and the sentence says what a drop will do: "Drop to add these files". The pill steps aside (clipped away,
  *   not removed) so the sheet has one sentence, not two. Forced colors keeps the outline in Highlight.
- * - Choose is a real button named by the contract ("Choose files", with the hint as its description): the visible
- *   word is inside the name, so a voice user who says "choose" reaches it.
+ * - Choose is a real button with the hint as its description. With a mouse it shows "choose" and is named by the
+ *   contract ("Choose files"), the visible word inside the name, so a voice user who says "choose" reaches it. On a
+ *   touch screen it is named by what it shows, "Add files", so the name begins with its visible words (WCAG 2.5.3).
  * - A file is a line of words: its name in ink and its size in grey, Retry and Remove as words in pills at the
  *   end, and under them the Progress rail while it uploads (an ink fill on grey, nothing else) and, if it failed,
  *   why in --danger. No icon, no rule between rows; space parts them.
@@ -25,7 +26,7 @@ export function FileDropFlatBody({ area, words, hint, hintId, dragging, disabled
   /* While files are over it the pill is clipped away (sr-only), not removed, so it is still the button that was there. */
   const pill = (
     <span className={dragging ? "sr-only" : "contents"}>
-      <Button size="sm" variant="secondary" className="enabled:bg-surface-1" disabled={disabled} aria-label={chooseLabel} aria-describedby={hint ? hintId : undefined} onClick={onChoose}>
+      <Button size="sm" variant="secondary" className="enabled:bg-surface-1" disabled={disabled} aria-label={coarse ? undefined : chooseLabel} aria-describedby={hint ? hintId : undefined} onClick={onChoose}>
         {coarse ? "Add files" : "choose"}
       </Button>
     </span>

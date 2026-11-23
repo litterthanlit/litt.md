@@ -4,6 +4,10 @@ Every change to the litt registry at https://littmd.vercel.app/r/, newest first.
 
 To update an item, read the entries since your version, then reinstall it with `--overwrite`. A **breaking** entry says what to change in your code.
 
+## 2026-11-23 · File drop's name on a touch screen
+
+- **fixed** `file-drop`, `flat-file-drop`: on a touch screen, Flat's choose button shows "Add files" and is now named "Add files" too, with the hint still its description, so its name begins with the words it shows (WCAG 2.5.3, Label in Name). With a mouse it still shows "choose" and is named "Choose files" (or "Choose a file"). Press, Device, Rack and Heat already show their name on the button and are unchanged. Props are unchanged.
+
 ## 2026-11-22 · World-native agentic components
 
 One signature agentic component for each of the six worlds, built strictly from that world's own materials, color grammar, motion language and voice, and placed first in each world's player set for review.
