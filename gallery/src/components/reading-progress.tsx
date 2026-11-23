@@ -121,11 +121,11 @@ export function ReadingProgress({
             >
               <span
                 aria-hidden="true"
-                data-part="track"
+                data-part="bubble"
                 className="relative block h-2.5 w-full overflow-hidden rounded-pill bg-surface-3 forced-colors:border"
               >
                 <motion.span
-                  data-part="fill"
+                  data-part="ink"
                   initial={false}
                   animate={{ x: isRead ? "0%" : "-100%" }}
                   transition={settle}

@@ -872,7 +872,7 @@
     },
     "flat-poll": {
       "version": "2026.11.23",
-      "hash": "6ba958db1dfdcbb9"
+      "hash": "d98834925d38bab8"
     },
     "flat-popover": {
       "version": "2026.11.16",
@@ -900,7 +900,7 @@
     },
     "flat-reading-progress": {
       "version": "2026.11.23",
-      "hash": "04eae67bc70a6933"
+      "hash": "85cfea81a1493e6c"
     },
     "flat-resizable": {
       "version": "2026.11.16",
@@ -1968,7 +1968,7 @@
     },
     "poll": {
       "version": "2026.11.23",
-      "hash": "6ba958db1dfdcbb9"
+      "hash": "d98834925d38bab8"
     },
     "popover": {
       "version": "2026.11.15",
@@ -2800,7 +2800,7 @@
     },
     "reading-progress": {
       "version": "2026.11.23",
-      "hash": "04eae67bc70a6933"
+      "hash": "85cfea81a1493e6c"
     },
     "release-rail": {
       "version": "2026.11.21",

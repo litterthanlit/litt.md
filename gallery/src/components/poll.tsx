@@ -137,7 +137,7 @@ export function Poll({
               {revealed && (
                 <motion.span
                   aria-hidden="true"
-                  data-part="share"
+                  data-part="bubble"
                   initial={reduced ? false : { x: "-100%" }}
                   animate={{ x: `${(share - 1) * 100}%` }}
                   transition={spring}
