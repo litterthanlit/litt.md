@@ -24,7 +24,7 @@ export const meta: PageMeta = {
   summary:
     "One value on a range, such as the default animation speed, or a span, such as the builds that took between 20s and 80s. Take the thumb and it follows your hand 1:1, or press the track and it goes there. Notches mark steps, and the default holds the value a little. The label row says the value.",
   summaryByWorld: {
-    flat: "One value on a range, such as a post's text size, or a span, such as posts by reading time. Take the knob and it follows your hand 1:1, or press the track and it moves there. Dots mark steps, and the default holds the knob a little. The value reads at the track's end.",
+    flat: "One value on a range, such as a post's text size, or a span, such as posts by reading time. Take the knob and it follows your hand 1:1, or press the track and it moves there. The value reads at the track's end.",
     device: "One value on a range, such as a level, or a span. A fader: a well cut into the body with engraved ticks under it, the pulled-out part lit in the ink like a meter, and a key for a cap with a line across its face. Take the key and it follows your hand 1:1, or press the well and it goes there. The value reads on an LCD in the label row.",
     rack: "One value on a range, such as a track's gain, or a span. A box set into the panel fills as a solid bar up to the value, with a 2px line in the ink at it: take the box anywhere and the line and the bar follow your hand 1:1. Ticks under the box mark steps, home's the longer one, and the value reads at the box's end in words with its unit.",
     press: "One value on a range, such as the default animation speed, or a span, such as the builds that took between 20s and 80s. A raised plate holds a slot, and a cap rides in it: take the cap and it follows your hand 1:1, press the slot and it goes there on the spring. Notches mark steps, and the default holds the cap a little. The label row says the value.",
@@ -32,12 +32,12 @@ export const meta: PageMeta = {
   },
   tiers: ["instant", "responsive"],
   mechanism:
-    "Take the cap and it follows the hand one to one, with no easing, sinking half a pixel as its cast tightens. Press the slot, or use an arrow key, and the cap glides there on the responsive tier, 200ms with no bounce. Pushed fast it leans, at most 4 degrees, and rights itself when the hand slows. Home holds the cap a little. Moving parts are transforms only. Reduced motion stills the glide and the lean. Each world has its own body. Press is a cap riding a deep slot cut into a plate, its notches lighting as the fill passes them, and the value on a small raised face that rides over the cap and sinks with it; the cap casts and leans into a fast push. Under Flat there is no plate and no shadow: a pill track, an ink fill and a round ink knob that your hand moves like a page, with nothing to sink into, and the value in words at the end of the track. Under Device it is a fader: a well cut into the aluminium with engraved ticks beneath it, a key for a cap that sinks its whole 2px under your finger, the fill lit like a meter, and the value on an LCD in the mono. The cap jumps under reduced motion in every body.",
+    "Take the cap and it follows the hand one to one, with no easing, sinking half a pixel as its cast tightens. Press the slot, or use an arrow key, and the cap glides there on the responsive tier, 200ms with no bounce. Pushed fast it leans, at most 4 degrees, and rights itself when the hand slows. Home holds the cap a little. Moving parts are transforms only. Reduced motion stills the glide and the lean. Each world has its own body. Press is a cap riding a deep slot cut into a plate, its notches lighting as the fill passes them, and the value on a small raised face that rides over the cap and sinks with it; the cap casts and leans into a fast push. Under Flat there is no plate and no shadow: a pill track, a sunset fill and a round ink knob that your hand moves like a page, with nothing to sink into, and the value in words at the end of the track. Under Device it is a fader: a well cut into the aluminium with engraved ticks beneath it, a key for a cap that sinks its whole 2px under your finger, the fill lit like a meter, and the value on an LCD in the mono. The cap jumps under reduced motion in every body.",
   movesByWorld: {
     press: "Take the cap and it follows the hand one to one, with no easing, sinking half a pixel as its cast tightens. Press the slot, or use an arrow key, and the cap glides there on the responsive tier, 200ms with no bounce. Pushed fast it leans, at most 4 degrees, and rights itself when the hand slows. The cap rides a deep slot cut into a plate, its notches lighting as the fill passes them, and the value sits on a small raised face that rides over the cap and sinks with it. Home holds the cap a little. Moving parts are transforms only. Reduced motion stills the glide and the lean, and the cap jumps.",
     device: "Take the key and it follows the hand one to one, with no easing, sinking its whole 2px onto its skirt while held. Press the well, or use an arrow key, and the key moves there on the responsive tier, 200ms with no bounce. A fader is a mechanism, so it never tips into a fast push. Home holds the key a little, at its longer tick. Reduced motion sends the key straight to its value.",
     rack: "Take the box anywhere and the line and the bar follow the hand one to one, with no easing. Press the box, or use an arrow key, and the bar moves there on the responsive tier. There is no cap to grab, and nothing sinks or leans. The default holds the value a little, at the longer tick. Reduced motion sends the bar straight to its value.",
-    flat: "When it first enters view, the ink fill and knob sweep in once to the starting value on Flat's expressive spring, then wait; any touch or key ends the arrival at once. Take the knob and it follows the hand one to one, swelling slightly under the finger and settling on release. Press the track, or use an arrow key, and the knob and ink fill move there on the responsive tier. Home holds the knob a little, at its larger dot. Reduced motion skips the arrival and sends the knob straight to its value.",
+    flat: "When it first enters view, the fill and knob sweep in once to the starting value on Flat's expressive spring, then wait; any touch or key ends the arrival at once. Take the knob and it follows the hand one to one, swelling slightly under the finger and settling on release. Press the track, or use an arrow key, and the knob and fill move there on the responsive tier. Reduced motion skips the arrival and sends the knob straight to its value.",
     heat: "Take the row and a thin marker follows the hand one to one, lighting each dash it passes on the instant tier, 100ms. Press the row, or use an arrow key, and the marker cuts there at once: nothing glides or leans. While it is held or has the keys, four brackets frame the row. The default holds the value a little, at the longer notch. Under reduced motion the dashes light at once.",
   },
 };
@@ -140,16 +140,13 @@ const studySlider = {
   formatValue: formatSpeed,
 };
 
-/* Under Flat the study speaks a post's text size on paper, as its lead stage does (TextSizeDemo). */
+/* Under Flat the study speaks a post's text size on paper, subtracted to label, track, fill, knob and value. */
 const textSizeSlider = {
   label: "Text size",
   min: 14,
   max: 22,
   step: 1,
-  marks: [14, 22],
-  home: 18,
-  minLabel: "Smaller",
-  maxLabel: "Larger",
+  home: null as number | null,
   formatValue: formatPx,
 };
 
@@ -166,7 +163,20 @@ const monitorSlider = {
   formatValue: (v: number) => `${v < 0 ? "−" : v > 0 ? "+" : ""}${Math.abs(v)} dB`,
 };
 
-function ReplayGlide({ slider = studySlider, from = 0.5, to = 1.5 }: { slider?: typeof studySlider; from?: number; to?: number }) {
+function ReplayGlide({
+  slider = studySlider,
+  from = 0.5,
+  to = 1.5,
+}: {
+  slider?: Omit<typeof studySlider, "marks" | "minLabel" | "maxLabel" | "home"> & {
+    marks?: number[];
+    home?: number | null;
+    minLabel?: string;
+    maxLabel?: string;
+  };
+  from?: number;
+  to?: number;
+}) {
   const { reduced } = useMotionDial();
   const [v, setV] = useState(reduced ? to : from);
   useEffect(() => {
@@ -222,10 +232,8 @@ export const study: PageStudy = {
       { name: "The label", selector: "[id$=\"-label\"]" },
       { name: "The value", selector: "[data-no-drag] + [data-part=lettering]" },
       { name: "The track", selector: "[data-part=pill]" },
-      { name: "The ink fill", selector: "[data-part=ink]" },
-      { name: "The dots", selector: "[data-no-drag] > [data-part=circle]" },
+      { name: "The fill", selector: "[data-part=pill] > span > [data-part=mark]" },
       { name: "The knob", selector: "[data-no-drag] > span [data-part=circle]" },
-      { name: "The end words", selector: ".text-caption" },
     ],
   },
   states: {
@@ -272,7 +280,7 @@ export const study: PageStudy = {
       },
       replay: {
         label: "Replay the move",
-        caption: "Watch the knob move from 14 px to 20 px while the ink fill and value follow.",
+        caption: "Watch the knob move from 14 px to 20 px while the fill and value follow.",
         run: () => (
           <div data-part="paper" className="litt-paper w-full max-w-sm min-w-0 rounded-surface bg-surface-1 p-6 forced-colors:border">
             <div data-part="lettering" className="min-w-0">
@@ -922,45 +930,28 @@ function MonitorPhoneDemo() {
 
 function TextSizeDemo() {
   const [size, setSize] = useState(18);
-  const [saved, setSaved] = useState<string | null>(null);
+  const [saved, setSaved] = useState("");
   return (
     <div
       data-part="paper"
-      className="litt-paper grid w-full max-w-sm min-w-0 gap-4 rounded-surface bg-surface-1 p-6 forced-colors:border"
+      className="litt-paper grid w-full max-w-sm min-w-0 rounded-surface bg-surface-1 p-6 forced-colors:border"
     >
       <div data-part="lettering" className="min-w-0">
         <Slider
           label="Text size"
-          help="How large the words of a post are on your site."
           min={14}
           max={22}
           step={1}
+          home={null}
           value={size}
           onValueChange={setSize}
           onValueCommit={(v) => setSaved(`Saved ${formatPx(v)} for your site.`)}
-          marks={[14, 22]}
-          home={18}
-          minLabel="Smaller"
-          maxLabel="Larger"
           formatValue={formatPx}
         />
       </div>
-      <div className="flex flex-wrap items-center gap-4">
-        <Button
-          size="sm"
-          data-part="pill"
-          disabled={size === 18}
-          onClick={() => {
-            setSize(18);
-            setSaved(`Saved ${formatPx(18)} for your site.`);
-          }}
-        >
-          Reset to 18 px
-        </Button>
-        <p role="status" data-part="lettering" className="min-h-5 text-small text-fg-subtle">
-          {saved}
-        </p>
-      </div>
+      <p role="status" className="sr-only">
+        {saved}
+      </p>
     </div>
   );
 }
@@ -970,7 +961,7 @@ function PhotoQualityFlatDemo() {
   return (
     <form
       data-part="paper"
-      className="litt-paper grid w-full max-w-sm min-w-0 gap-6 rounded-surface bg-surface-1 p-6 forced-colors:border"
+      className="litt-paper grid w-full max-w-sm min-w-0 gap-5 rounded-surface bg-surface-1 p-6 forced-colors:border"
       onSubmit={(e) => {
         e.preventDefault();
         const quality = new FormData(e.currentTarget).get("quality");
@@ -981,14 +972,11 @@ function PhotoQualityFlatDemo() {
         <Slider
           name="quality"
           label="Picture quality"
-          help="Lower quality makes the post load faster for readers."
           min={60}
           max={100}
           step={5}
           defaultValue={85}
-          marks={[60, 70, 80, 90, 100]}
-          minLabel="Smaller files"
-          maxLabel="Sharper pictures"
+          home={null}
           formatValue={formatQuality}
         />
       </div>
@@ -996,9 +984,11 @@ function PhotoQualityFlatDemo() {
         <Button type="submit" data-part="pill" className="justify-self-start">
           Export 12 pictures
         </Button>
-        <p role="status" data-part="lettering" className="min-h-10 text-small text-fg-subtle">
-          {status}
-        </p>
+        {status && (
+          <p role="status" data-part="lettering" className="text-small text-fg-subtle">
+            {status}
+          </p>
+        )}
       </div>
     </form>
   );
@@ -1035,7 +1025,7 @@ function PostsReadingTimeDemo() {
   return (
     <div
       data-part="paper"
-      className="litt-paper grid w-full min-w-0 max-w-lg grid-cols-1 gap-6 rounded-surface bg-surface-1 p-6 forced-colors:border"
+      className="litt-paper grid w-full min-w-0 max-w-lg grid-cols-1 gap-5 rounded-surface bg-surface-1 p-6 forced-colors:border"
     >
       <div data-part="lettering" className="min-w-0">
         <RangeSlider
@@ -1046,8 +1036,6 @@ function PostsReadingTimeDemo() {
           value={span}
           onValueChange={setSpan}
           onValueCommit={([a, b]) => setSaid(postMatchText(FLAT_POSTS.filter((p) => p.minutes >= a && p.minutes <= b).length))}
-          minLabel="Shorter"
-          maxLabel="Longer"
           showValue
           formatValue={formatMin}
         />
@@ -1091,7 +1079,7 @@ function IssueWindowFlatDemo() {
   return (
     <form
       data-part="paper"
-      className="litt-paper grid w-full max-w-sm min-w-0 gap-6 rounded-surface bg-surface-1 p-6 forced-colors:border"
+      className="litt-paper grid w-full max-w-sm min-w-0 gap-5 rounded-surface bg-surface-1 p-6 forced-colors:border"
       onSubmit={(e) => {
         e.preventDefault();
         const [from, to] = new FormData(e.currentTarget).getAll("issue");
@@ -1102,14 +1090,11 @@ function IssueWindowFlatDemo() {
         <RangeSlider
           name="issue"
           label="Issue range"
-          help="The two ends stay at least 2 issues apart."
           min={1}
           max={24}
           step={1}
           minStepsBetweenThumbs={2}
           defaultValue={[4, 14]}
-          minLabel="Earlier"
-          maxLabel="Latest"
           showValue
           formatValue={formatIssue}
         />
@@ -1118,9 +1103,11 @@ function IssueWindowFlatDemo() {
         <Button type="submit" data-part="pill" className="justify-self-start">
           Download archive
         </Button>
-        <p role="status" data-part="lettering" className="min-h-10 text-small text-fg-subtle">
-          {status}
-        </p>
+        {status && (
+          <p role="status" data-part="lettering" className="text-small text-fg-subtle">
+            {status}
+          </p>
+        )}
       </div>
     </form>
   );
@@ -1133,7 +1120,7 @@ function FlatDisabledDemo() {
       className="litt-paper grid w-full max-w-xl min-w-0 gap-x-10 gap-y-8 rounded-surface bg-surface-1 p-6 sm:grid-cols-2 forced-colors:border"
     >
       <div data-part="lettering" className="min-w-0">
-        <Slider label="Text size" min={14} max={22} step={1} defaultValue={16} formatValue={formatPx} help="Applies to the next post." />
+        <Slider label="Text size" min={14} max={22} step={1} defaultValue={16} home={null} formatValue={formatPx} />
       </div>
       <div data-part="lettering" className="min-w-0">
         <Slider
@@ -1142,13 +1129,14 @@ function FlatDisabledDemo() {
           max={22}
           step={1}
           defaultValue={18}
+          home={null}
           formatValue={formatPx}
           disabled
           help="Locked while the issue publishes."
         />
       </div>
       <div data-part="lettering" className="min-w-0">
-        <RangeSlider label="Reading time" min={1} max={12} defaultValue={[2, 8]} showValue formatValue={formatMin} help="Filters the post list." />
+        <RangeSlider label="Reading time" min={1} max={12} defaultValue={[2, 8]} showValue formatValue={formatMin} />
       </div>
       <div data-part="lettering" className="min-w-0">
         <RangeSlider
@@ -1211,10 +1199,9 @@ function FlatReadingSheetDemo() {
                 min={14}
                 max={22}
                 step={1}
+                home={null}
                 value={textSize}
                 onValueChange={setTextSize}
-                minLabel="Smaller"
-                maxLabel="Larger"
                 formatValue={formatPx}
               />
             </div>
@@ -1224,19 +1211,20 @@ function FlatReadingSheetDemo() {
                 min={60}
                 max={100}
                 step={5}
+                home={null}
                 value={pictureQuality}
                 onValueChange={setPictureQuality}
-                minLabel="Smaller files"
-                maxLabel="Sharper pictures"
                 formatValue={formatQuality}
               />
             </div>
           </div>
         </DialogContent>
       </Dialog>
-      <p role="status" data-part="lettering" className="min-h-5 text-center text-small text-fg-subtle">
-        {status}
-      </p>
+      {status && (
+        <p role="status" data-part="lettering" className="text-center text-small text-fg-subtle">
+          {status}
+        </p>
+      )}
     </div>
   );
 }
@@ -1455,7 +1443,7 @@ export default function SliderPage() {
             title: "Text size",
             code: "TextSizeDemo",
             caption:
-              "How large the words of a post are, from 14 px to 22 px. Take the knob and push: it follows your hand 1:1, and the track fills up to it. Press the track and the knob moves there on the responsive tier, as it does on the arrow keys. A dot marks each end, and 18 px, the default, holds the knob a little, so it is easy to find again. The end of the track says 18 px, and a screen reader says the same. The save note appears on release, from onValueCommit.",
+              "How large the words of a post are, from 14 px to 22 px. Take the knob and push: it follows your hand 1:1, and the sunset track fills up to it. Press the track and the knob moves there on the responsive tier, as it does on the arrow keys. The end of the track says 18 px, and a screen reader announces the saved size on release.",
           },
           device: {
             demo: <MonitorLevelDemo />,
@@ -1527,7 +1515,7 @@ export default function SliderPage() {
             title: "Posts by reading time",
             code: "PostsReadingTimeDemo",
             caption:
-              "Two knobs on one track, the ink fill between them. Take either knob, or focus one and use the arrow keys. The count and the post list follow at once. The ends never cross and stay one step apart. The value reads 2 min to 8 min, in words, and each end tells a screen reader its own value. A screen reader hears how many posts match once per key press or released drag, not on every move.",
+              "Two knobs on one track, the sunset fill between them. Take either knob, or focus one and use the arrow keys. The count and the post list follow at once. The ends never cross and stay one step apart. The value reads 2 min to 8 min, in words, and each end tells a screen reader its own value. A screen reader hears how many posts match once per key press or released drag, not on every move.",
           },
           device: {
             demo: <TakeLengthDemo />,

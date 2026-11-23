@@ -8,6 +8,11 @@ description: Take one Flat part to Flat's study bar (plans/027): built from Flat
 One study at a time, built whole: look, hand, keys, reduced motion and words together. Never start a second study
 before the first has passed and is committed.
 
+**Core ethos (Nick, 2026-11-22):** *"Subtract as much as possible, only then add color."* Before touching color, strip
+every redundant dot, end label, helper sentence, extra footer note and disabled chrome button until only the essential
+object remains on the paper card — and only then let Flat's color (Candy hues on data, sunset ramp on progress and range
+fills) carry the feeling.
+
 ## Read first
 
 - `plans/027-flat-to-the-bar.md` (the plan, Nick's calls, the list).
@@ -22,13 +27,14 @@ before the first has passed and is committed.
 - [ ] 1. **One arrival, then still.** One arrival when it first comes into view, on `useTransition("expressive")`.
       No loop and no timer after it. Nothing when `useMotionDial().reduced`.
 - [ ] 2. **It fits.** Its wall tile and the player's screen hold it at 320px with nothing spilling.
-- [ ] 3. **Built from the materials, and marked.** Ground, then paper, then part. A widget sits on a paper card
+- [ ] 3. **Built from the materials, subtracted and marked.** Ground, then paper, then part. Subtract every redundant
+      dot, end label, helper sentence and chrome button before styling. A widget sits on a paper card
       (`litt-paper rounded-surface bg-surface-1 p-6`, `data-part="paper"`); a lone pill, circle or switch may stand
       on the ground. Tags are frameless dots at weight 400 with a hover wash only. Every part carries `data-part`
       with one of `FLAT_KINDS` (`gallery/scripts/materials.mjs`). Context budget is the reference (Nick, 2026-11-22:
       "this is what it should look like, simplicity + color + ease of use").
-- [ ] 4. **Colour by Flat's table.** One ink fill per view. Candy hues on data only. How much, and how far along, is
-      the sunset ramp (`--data-seq-1..4`) and no other gradient.
+- [ ] 4. **Colour by Flat's table.** Only after subtracting, add color: one ink fill per view, Candy hues on data only,
+      and the sunset ramp (`--data-seq-1..4`) for how much / how far along (and no other gradient).
 - [ ] 5. **The hand moves it.** A continuous value follows a drag 1:1 through `useHand` and settles with `useSettle`.
       A press answers on pointerdown.
 - [ ] 6. **Keys match the hand.** One tab stop per composite, arrows, Home and End.

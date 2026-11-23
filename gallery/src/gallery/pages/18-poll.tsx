@@ -12,7 +12,7 @@ export const meta: PageMeta = {
   verbs: ["select"],
   worlds: ["flat"],
   summary:
-    "One question and its choices as pills, each with a dot in its own color. Once a reader picks one, every choice shows its share as a bar and the total votes stand above them as one large number. Choosing another moves the vote at once, and choosing the same one again takes it back. It belongs to Flat.",
+    "One question and its choices as pills. Once a reader picks one, every choice fills with its share in its own color and the total votes stand above them as one large number. Choosing another moves the vote at once, and choosing the same one again takes it back. It belongs to Flat.",
   tiers: ["instant", "expressive"],
   mechanism:
     "The choices form one radiogroup with roving focus, so Tab lands once and arrow keys, Home and End move and vote. When a poll first enters view, revealed share bars sweep open along X and the vote figure settles once on the expressive spring (350ms), then stays still. A choice dips subtly the moment a pointer lands on it, and voting updates the shares and announces the pick in a polite live region. Under reduced motion the bars and figure appear at rest with no animation.",
@@ -69,27 +69,11 @@ const READING_TIME: PollOption[] = [
 ];
 
 function ReaderPollDemo() {
-  return (
-    <Poll
-      question="Which series for Issue 15?"
-      options={NEXT_ISSUE}
-      defaultValue="coast"
-      note="Closes Thursday at 18:00. Votes stay open until then."
-      className="max-w-md"
-    />
-  );
+  return <Poll question="Which series for Issue 15?" options={NEXT_ISSUE} defaultValue="coast" className="max-w-md" />;
 }
 
 function UnvotedPollDemo() {
-  return (
-    <Poll
-      question="When do you read the Friday letter?"
-      options={READING_TIME}
-      showFigure={false}
-      note="Open until Friday at 09:00."
-      className="max-w-md"
-    />
-  );
+  return <Poll question="When do you read the Friday letter?" options={READING_TIME} showFigure={false} className="max-w-md" />;
 }
 
 function ReplayPoll() {
@@ -109,7 +93,6 @@ export const study: PageStudy = {
     { name: "The question", selector: "header > p:first-child" },
     { name: "The figure", selector: "[data-part=figure]" },
     { name: "A choice pill", selector: "button[data-part=pill]" },
-    { name: "The color dot", selector: "[data-part=circle]" },
     { name: "The share bar", selector: "[data-part=bubble]" },
   ],
   states: {

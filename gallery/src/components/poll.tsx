@@ -59,25 +59,15 @@ export type PollProps = {
 
 /* Literal variable strings so gen-registry renames every data token cleanly for host installs. */
 const HUE_ORDER: PollHue[] = ["blue", "amber", "teal", "violet", "rose", "sky", "bubblegum", "sun"];
-const HUE_DOT: Record<PollHue, string> = {
-  blue: "bg-data-blue",
-  amber: "bg-data-amber",
-  teal: "bg-data-teal",
-  violet: "bg-data-violet",
-  rose: "bg-data-rose",
-  sky: "bg-data-sky",
-  bubblegum: "bg-data-bubblegum",
-  sun: "bg-data-sun",
-};
 const HUE_BAR: Record<PollHue, string> = {
-  blue: "bg-[color-mix(in_oklab,var(--data-blue)_20%,transparent)]",
-  amber: "bg-[color-mix(in_oklab,var(--data-amber)_20%,transparent)]",
-  teal: "bg-[color-mix(in_oklab,var(--data-teal)_20%,transparent)]",
-  violet: "bg-[color-mix(in_oklab,var(--data-violet)_20%,transparent)]",
-  rose: "bg-[color-mix(in_oklab,var(--data-rose)_20%,transparent)]",
-  sky: "bg-[color-mix(in_oklab,var(--data-sky)_20%,transparent)]",
-  bubblegum: "bg-[color-mix(in_oklab,var(--data-bubblegum)_20%,transparent)]",
-  sun: "bg-[color-mix(in_oklab,var(--data-sun)_20%,transparent)]",
+  blue: "bg-[color-mix(in_oklab,var(--data-blue)_28%,transparent)]",
+  amber: "bg-[color-mix(in_oklab,var(--data-amber)_28%,transparent)]",
+  teal: "bg-[color-mix(in_oklab,var(--data-teal)_28%,transparent)]",
+  violet: "bg-[color-mix(in_oklab,var(--data-violet)_28%,transparent)]",
+  rose: "bg-[color-mix(in_oklab,var(--data-rose)_28%,transparent)]",
+  sky: "bg-[color-mix(in_oklab,var(--data-sky)_28%,transparent)]",
+  bubblegum: "bg-[color-mix(in_oklab,var(--data-bubblegum)_28%,transparent)]",
+  sun: "bg-[color-mix(in_oklab,var(--data-sun)_28%,transparent)]",
 };
 
 /** A question for readers: its choices as pills, with everyone's share once the reader votes. */
@@ -233,7 +223,6 @@ export function Poll({
                 />
               )}
               <span className="flex min-w-0 items-center gap-2">
-                <span aria-hidden="true" data-part="circle" className={"size-2.5 shrink-0 rounded-pill " + HUE_DOT[hue]} />
                 <span data-part="lettering" className={"min-w-0 truncate " + (isPicked ? "font-title" : "font-normal")}>
                   {o.label}
                 </span>
@@ -244,7 +233,7 @@ export function Poll({
                 )}
               </span>
               {revealed && (
-                <span data-part="lettering" className="shrink-0 text-caption font-title tabular-nums text-fg-muted">
+                <span data-part="lettering" className="shrink-0 text-caption font-normal tabular-nums text-fg-subtle">
                   {pct}%
                   <span className="sr-only">
                     {", "}
