@@ -1,59 +1,59 @@
 /**
- * File drop, the Flat body (proposals/worlds.md, Bodies; material.md, 7): ink on paper.
+ * File drop, the Flat body (proposals/worlds.md, Bodies; material.md, 7): ground, then paper, then part.
  *
- * - The area is a grey sheet (--cut is --surface-3) with one sentence on it, "Drop files or choose", the last word a
- *   pill (the one shape for what a hand touches) that opens the picker. No arrow, no block, no line, no shade. Under
- *   it the hint in grey words. On a touch screen the sentence is the pill alone, "Add files".
- * - While files are over it the sheet is ringed in ink (a 2px outline drawn inside the sheet, the only line Flat
- *   makes) and the sentence says what a drop will do: "Drop to add these files". The pill steps aside (clipped away,
- *   not removed) so the sheet has one sentence, not two. Forced colors keeps the outline in Highlight.
- * - Choose is a real button with the hint as its description. With a mouse it shows "choose" and is named by the
- *   contract ("Choose files"), the visible word inside the name, so a voice user who says "choose" reaches it. On a
- *   touch screen it is named by what it shows, "Add files", so the name begins with its visible words (WCAG 2.5.3).
- * - A file is a line of words: its name in ink and its size in grey, Retry and Remove as words in pills at the
- *   end, and under them the Progress rail while it uploads (an ink fill on grey, nothing else) and, if it failed,
- *   why in --danger. No icon, no rule between rows; space parts them.
- * - Disabled lies flat: a --surface-2 sheet, the sentence in --fg-subtle, no drop and no tab stop.
+ * - The area is a sheet of paper on the grey ground (--surface-1, marked litt-paper and data-part="paper", 16px
+ *   corners), with no edge and nothing cast, as every Flat card is. On it, centred: an ink circle holding the up arrow,
+ *   the words in ink at the title weight, the hint in grey under them, and the choose pill. Inside paper the pill is
+ *   the grey bubble (--block), so it reads as the one thing to press.
+ * - The words are the contract's: "Drop files here", or "Add files" on a touch screen, where nothing is dragged in.
+ *   The pill shows its name ("Choose files", or "Choose a file"), so the name is what is seen (WCAG 2.5.3), and the
+ *   hint is its description.
+ * - While files are over it the paper is ringed in ink (a 2px outline drawn inside it, the only line Flat makes) and
+ *   the words say what a drop will do: "Drop to add these files". The pill steps aside (clipped away, not removed) so
+ *   the paper has one sentence. Forced colors keeps the outline in Highlight.
+ * - A file is a line of words on its own paper (the list, in the contract): its name in ink and its size in grey,
+ *   Retry and Remove as words at the end, and under them the Progress rail while it uploads (an ink fill on grey,
+ *   nothing else) and, if it failed, why in --danger. No icon, no rule between rows; space parts them.
+ * - Disabled lies flat: a --surface-2 sheet, the circle and the words in --fg-subtle, no drop and no tab stop.
  */
 import { Button } from "@/components/button";
+import { ArrowUpIcon } from "@/components/icons";
 import { Progress } from "@/components/progress";
-import { useDevice } from "@/motion";
 import { formatSize, type FileDropBodyProps, type FileRowBodyProps } from "@/components/file-drop";
 
-/** Flat, a grey sheet with one sentence: "Drop files or choose", ringed in ink while a file is over it. */
+/** Flat, a sheet of paper on the ground: an ink circle, the words, the hint and the choose pill, ringed in ink while a file is over it. */
 export function FileDropFlatBody({ area, words, hint, hintId, dragging, disabled, chooseLabel, onChoose, picker }: FileDropBodyProps) {
-  const { coarse } = useDevice();
-  /* While files are over it the pill is clipped away (sr-only), not removed, so it is still the button that was there. */
-  const pill = (
-    <span className={dragging ? "sr-only" : "contents"}>
-      <Button size="sm" variant="secondary" className="enabled:bg-surface-1" disabled={disabled} aria-label={coarse ? undefined : chooseLabel} aria-describedby={hint ? hintId : undefined} onClick={onChoose}>
-        {coarse ? "Add files" : "choose"}
-      </Button>
-    </span>
-  );
   return (
     <div
       {...area}
       data-body="flat"
+      data-part="paper"
       className={
-        "grid justify-items-center gap-2 rounded-surface p-6 text-center forced-colors:border sm:p-8 " +
-        (disabled ? "cursor-not-allowed bg-surface-2" : "cursor-pointer bg-cut") +
+        "litt-paper grid justify-items-center gap-4 rounded-surface p-6 text-center forced-colors:border sm:p-8 " +
+        (disabled ? "cursor-not-allowed bg-surface-2" : "cursor-pointer bg-surface-1") +
         (dragging ? " outline-2 -outline-offset-2 outline-solid outline-fg forced-colors:outline-[Highlight]" : "")
       }
     >
-      <p className={"flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-body font-title " + (disabled ? "text-fg-subtle" : "text-fg")}>
-        {dragging ? (
-          words
-        ) : coarse ? null : (
-          "Drop files or"
+      <span
+        aria-hidden="true"
+        className={"grid size-10 place-items-center rounded-pill forced-colors:border " + (disabled ? "bg-surface-3 text-fg-subtle" : "bg-fg text-surface-1")}
+      >
+        <ArrowUpIcon />
+      </span>
+      <div className="grid gap-1">
+        <p className={"text-body font-title " + (disabled ? "text-fg-subtle" : "text-fg")}>{words}</p>
+        {hint && (
+          <p id={hintId} className="text-small text-fg-subtle">
+            {hint}
+          </p>
         )}
-        {pill}
-      </p>
-      {hint && (
-        <p id={hintId} className="text-small text-fg-subtle">
-          {hint}
-        </p>
-      )}
+      </div>
+      {/* While files are over it the pill is clipped away (sr-only), not removed, so it is still the button that was there. */}
+      <span className={dragging ? "sr-only" : "contents"}>
+        <Button size="sm" variant="secondary" disabled={disabled} aria-describedby={hint ? hintId : undefined} onClick={onChoose}>
+          {chooseLabel}
+        </Button>
+      </span>
       {picker}
     </div>
   );

@@ -208,7 +208,7 @@ function usePictureUploads() {
 function PostPicturesDemo() {
   const { uploads, add, retry, remove } = usePictureUploads();
   return (
-    <div className="grid w-full max-w-lg gap-6">
+    <div className="grid w-full max-w-lg gap-3">
       <FileDrop label="Pictures for this post" accept={["image/*"]} maxSize={20 * 1024 * 1024} hint="JPG, PNG or WebP, up to 20 MB a picture" onFiles={add} />
       {uploads.length > 0 && (
         <FileList label="Pictures for this post">

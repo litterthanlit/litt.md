@@ -6,7 +6,9 @@ To update an item, read the entries since your version, then reinstall it with `
 
 ## 2026-11-23 · File drop's name on a touch screen
 
-- **fixed** `file-drop`, `flat-file-drop`: on a touch screen, Flat's choose button shows "Add files" and is now named "Add files" too, with the hint still its description, so its name begins with the words it shows (WCAG 2.5.3, Label in Name). With a mouse it still shows "choose" and is named "Choose files" (or "Choose a file"). Press, Device, Rack and Heat already show their name on the button and are unchanged. Props are unchanged.
+- **fixed** `file-drop`, `flat-file-drop`: on a touch screen Flat's choose button showed "Add files" but was named "Choose files", failing WCAG 2.5.3 (Label in Name). The button now shows its name, "Choose files" (or "Choose a file"), everywhere, with the hint as its description. Props are unchanged.
+- **changed** `file-drop`, `flat-file-drop`: Flat's area is a sheet of paper on the grey ground (`litt-paper`, `data-part="paper"`), as Flat's other cards are: an ink circle with the up arrow, the words ("Drop files here", or "Add files" on a touch screen), the hint, and the Choose files pill as the grey bubble on the paper, where before the pill was the same paper as the area and hard to see. `FileList` under Flat is a sheet of paper too. Props are unchanged.
+- **changed** `press-file-drop`, `device-file-drop`, `plain-file-drop`, `rack-file-drop`, `heat-file-drop`: the contract's comments describe Flat's new body. Nothing else changes.
 
 ## 2026-11-22 · World-native agentic components
 

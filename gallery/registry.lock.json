@@ -307,8 +307,8 @@
       "hash": "0052384ef7539aaa"
     },
     "device-file-drop": {
-      "version": "2026.11.19",
-      "hash": "719ca2df3a76344c"
+      "version": "2026.11.23",
+      "hash": "1b3ca823f910feb0"
     },
     "device-form": {
       "version": "2026.11.16",
@@ -600,7 +600,7 @@
     },
     "file-drop": {
       "version": "2026.11.23",
-      "hash": "7a8bbe41858f7349"
+      "hash": "02a72c44f2ade63d"
     },
     "flat-accordion": {
       "version": "2026.11.18",
@@ -728,7 +728,7 @@
     },
     "flat-file-drop": {
       "version": "2026.11.23",
-      "hash": "ed99e83db0a5d20a"
+      "hash": "7640e23c4a0246f7"
     },
     "flat-form": {
       "version": "2026.11.16",
@@ -1175,8 +1175,8 @@
       "hash": "0052384ef7539aaa"
     },
     "heat-file-drop": {
-      "version": "2026.11.19",
-      "hash": "706f35afd13b60bf"
+      "version": "2026.11.23",
+      "hash": "91d902648c4cb1be"
     },
     "heat-form": {
       "version": "2026.11.16",
@@ -1667,8 +1667,8 @@
       "hash": "0052384ef7539aaa"
     },
     "plain-file-drop": {
-      "version": "2026.11.19",
-      "hash": "eefddfc5e35fb70e"
+      "version": "2026.11.23",
+      "hash": "7590960e9254bfaa"
     },
     "plain-form": {
       "version": "2026.11.16",
@@ -2071,8 +2071,8 @@
       "hash": "0052384ef7539aaa"
     },
     "press-file-drop": {
-      "version": "2026.11.19",
-      "hash": "eefddfc5e35fb70e"
+      "version": "2026.11.23",
+      "hash": "7590960e9254bfaa"
     },
     "press-form": {
       "version": "2026.11.16",
@@ -2491,8 +2491,8 @@
       "hash": "0052384ef7539aaa"
     },
     "rack-file-drop": {
-      "version": "2026.11.19",
-      "hash": "e1edaab907311be6"
+      "version": "2026.11.23",
+      "hash": "82339ad29128ffde"
     },
     "rack-form": {
       "version": "2026.11.16",
