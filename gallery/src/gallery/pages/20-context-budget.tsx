@@ -4,16 +4,16 @@ import { Page, Stage, TryIt, type PageDocs, type PageMeta } from "../kit";
 export const meta: PageMeta = {
   id: "context-budget",
   title: "Context budget",
-  lede: "A context window picker showing each source's share in color with frameless dot tags.",
+  lede: "A context window picker: one bar for the share used, and the sources to tap in or out.",
   order: 1.05,
   group: "Agents",
   verbs: ["select", "watch"],
   worlds: ["flat"],
   summary:
-    "How much of a writing assistant's context window is full, framed on a white paper card (or contrasting ink card) sitting on Flat's grey ground: a crisp percentage readout, a proportional bar, and frameless dot tags you tap to include or exclude. It belongs to Flat.",
+    "How much of a writing assistant's context window is full, framed on a white paper card (or contrasting ink card) sitting on Flat's grey ground: a crisp percentage readout, one bar, and plain source rows you tap to include or exclude. It belongs to Flat.",
   tiers: ["instant", "expressive"],
   mechanism:
-    "The card sits as white paper (or ink) on the grey ground with no outline. Each source sits cleanly on the paper with a round dot and its token count, adding its share to the proportional meter; excluding a source turns its dot to an outline and writes Off beside its name. Toggling any source bounces the percentage readout and reshapes the bar segments on Flat's expressive spring, and announces the updated token total once.",
+    "The card sits as white paper (or ink) on the grey ground with no outline. Each source sits on the paper as its name and token count, adding its share to the bar; excluding a source writes Off beside its name. Toggling any source bounces the percentage readout and moves the bar on Flat's expressive spring, and announces the updated token total once.",
 };
 
 export const docs: PageDocs = {
@@ -30,7 +30,7 @@ export const docs: PageDocs = {
     "Making token headroom tangible without technical chrome or dense tables.",
   ],
   skip: [
-    "Another world's page. ContextBudget belongs to Flat's grey ground, paper card, crisp standing percentage and frameless dot tags, and needs data-material=\"flat\" on <html>.",
+    "Another world's page. ContextBudget belongs to Flat's grey ground, paper card, crisp standing percentage and one bar, and needs data-material=\"flat\" on <html>.",
     "A single linear upload or download bar. Use Progress.",
     "A structured key-value telemetry readout. Use Stat.",
   ],
@@ -40,9 +40,9 @@ export const docs: PageDocs = {
   ],
   a11y: [
     "The proportional bar exposes role=\"meter\" with aria-valuemin, aria-valuemax, aria-valuenow and a spoken aria-valuetext naming percentage and tokens.",
-    "Each source tag is a native button with aria-pressed; excluded items show Off in plain words alongside their hollow dot.",
+    "Each source tag is a native button with aria-pressed; excluded items show Off in plain words.",
     "Every toggle and one-tap trim announces the new percentage and token count once in a polite status region.",
-    "Under reduced motion the figure and bar segments jump directly to their new size.",
+    "Under reduced motion the figure and bar jump directly to their new size.",
   ],
 };
 
@@ -51,10 +51,10 @@ function DraftContextDemo() {
 }
 
 const FULL_SOURCES: ContextSource[] = [
-  { id: "brief", label: "Issue 14 brief", tokens: 18000, hue: "sky", included: true },
-  { id: "interviews", label: "Coastal interviews", tokens: 44000, hue: "blue", included: true },
-  { id: "photos", label: "Caption notes", tokens: 26000, hue: "violet", included: true },
-  { id: "edits", label: "Editor thread", tokens: 24000, hue: "bubblegum", included: true },
+  { id: "brief", label: "Issue 14 brief", tokens: 18000, included: true },
+  { id: "interviews", label: "Coastal interviews", tokens: 44000, included: true },
+  { id: "photos", label: "Caption notes", tokens: 26000, included: true },
+  { id: "edits", label: "Editor thread", tokens: 24000, included: true },
 ];
 
 function NearLimitDemo() {
@@ -71,7 +71,7 @@ export default function ContextBudgetPage() {
       <Stage
         title="Draft context"
         tier="expressive"
-        caption="Framed on white paper with frameless dot tags; tap any source to exclude it or bring the archive back in."
+        caption="Framed on white paper; tap any source to exclude it or bring the archive back in."
         code="DraftContextDemo"
       >
         <DraftContextDemo />

@@ -13,7 +13,7 @@ export const meta: PageMeta = {
     "Recent notices tucked behind the newest card with a gentle peek; hover, focus, or tap Fan out to spread every card apart with clear air, dismiss individual notices, or drop a new notice onto the top of the deck. It belongs to Flat.",
   tiers: ["instant", "expressive"],
   mechanism:
-    "Collapsed, older paper cards scale slightly down and tuck 12px behind the front notice. Hovering the stack or tapping Fan out expands every notice to full height on Flat's expressive spring. Each notice pairs a frameless colored status dot with its title, detail line, timestamp and dismiss button, and every addition or dismissal announces once.",
+    "Collapsed, older paper cards scale slightly down and tuck 12px behind the front notice. Hovering the stack or tapping Fan out expands every notice to full height on Flat's expressive spring. Each notice is a title, detail line, timestamp and dismiss button, and every addition or dismissal announces once.",
 };
 
 export const docs: PageDocs = {
@@ -52,7 +52,6 @@ const SINGLE_NOTICE: StackNotice[] = [
     title: "Draft saved",
     body: "Issue 15 synced cleanly to your workspace.",
     time: "Just now",
-    hue: "teal",
   },
 ];
 

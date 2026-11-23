@@ -1,13 +1,13 @@
 /**
- * Poll, a Flat part (skills/litt-md/taste/litt-principles.md, Flat): a question for readers, built from Flat's pills,
- * its data hues and the expressive spring.
+ * Poll, a Flat part (skills/litt-md/taste/litt-principles.md, Flat): a question for readers, built from Flat's pills
+ * and the expressive spring.
  *
- * - Before a pick, every choice sits as a plain white paper pill on the grey ground (or a grey bubble inside paper) with
- *   an 8px data dot naming its option. No frames, no dividers, nothing cast.
- * - Picking a choice reveals the shares: each pill's tinted data bar springs open from the left on the expressive
+ * - Before a pick, every choice sits as a plain grey bubble inside the paper card, its label alone. No frames, no
+ *   dividers, nothing cast.
+ * - Picking a choice reveals the shares: each pill's quiet ink bar springs open from the left on the expressive
  *   spring (instant under reduced motion), with the percentage and vote count in ink words.
  * - A standing 40px figure (text-figure, Flat's call 8) holds the total votes at the top when showFigure is set.
- * - Color stays strictly on data (the hues carry each choice's vote share, R7), and no large fill uses the accent (R6).
+ * - No color: the shares are one quiet ink wash, and no fill uses the accent (R6).
  * - A hand always wins: picking another option moves your vote at once, and picking your current choice takes it back.
  * - Accessibility: native radiogroup / radio buttons with full text names, polite live announcement on change, and clear
  *   forced-colors borders on every pill and the chosen row.
@@ -17,9 +17,6 @@ import { motion } from "motion/react";
 import { CheckIcon } from "@/components/icons";
 import { useMotionDial, useTransition } from "@/motion";
 
-/** Data hues for poll options, in R7's fixed order (Flat's eight slots). */
-export type PollHue = "blue" | "amber" | "teal" | "violet" | "rose" | "sky" | "bubblegum" | "sun";
-
 /** One choice in a Poll. */
 export type PollOption = {
   /** Stable identifier returned to onVote. */
@@ -28,14 +25,12 @@ export type PollOption = {
   label: string;
   /** Starting votes for this choice before the current reader votes. */
   votes: number;
-  /** Optional data hue; defaults to the option's slot in R7's order. */
-  hue?: PollHue;
 };
 
 export type PollProps = {
   /** The question asked of the reader. */
   question: ReactNode;
-  /** Two to six choices. Each gets its own data hue in R7's order. */
+  /** Two to six choices. */
   options: PollOption[];
   /** Controlled picked option id, or null when the reader has not voted yet. */
   value?: string | null;
@@ -51,29 +46,6 @@ export type PollProps = {
   note?: ReactNode;
   /** Extra classes on the root element. */
   className?: string;
-};
-
-/* Literal variable strings so gen-registry renames every data token cleanly for host installs. */
-const HUE_ORDER: PollHue[] = ["blue", "amber", "teal", "violet", "rose", "sky", "bubblegum", "sun"];
-const HUE_DOT: Record<PollHue, string> = {
-  blue: "bg-data-blue",
-  amber: "bg-data-amber",
-  teal: "bg-data-teal",
-  violet: "bg-data-violet",
-  rose: "bg-data-rose",
-  sky: "bg-data-sky",
-  bubblegum: "bg-data-bubblegum",
-  sun: "bg-data-sun",
-};
-const HUE_BAR: Record<PollHue, string> = {
-  blue: "bg-[color-mix(in_oklab,var(--data-blue)_20%,transparent)]",
-  amber: "bg-[color-mix(in_oklab,var(--data-amber)_20%,transparent)]",
-  teal: "bg-[color-mix(in_oklab,var(--data-teal)_20%,transparent)]",
-  violet: "bg-[color-mix(in_oklab,var(--data-violet)_20%,transparent)]",
-  rose: "bg-[color-mix(in_oklab,var(--data-rose)_20%,transparent)]",
-  sky: "bg-[color-mix(in_oklab,var(--data-sky)_20%,transparent)]",
-  bubblegum: "bg-[color-mix(in_oklab,var(--data-bubblegum)_20%,transparent)]",
-  sun: "bg-[color-mix(in_oklab,var(--data-sun)_20%,transparent)]",
 };
 
 /** A question for readers: its choices as pills, with everyone's share once the reader votes. */
@@ -140,7 +112,6 @@ export function Poll({
 
       <div role="group" aria-labelledby={headingId} className="grid gap-2">
         {options.map((o, i) => {
-          const hue = o.hue ?? HUE_ORDER[i % HUE_ORDER.length]!;
           const count = counts[i]!;
           const share = total > 0 ? count / total : 0;
           const pct = Math.round(share * 100);
@@ -169,11 +140,10 @@ export function Poll({
                   animate={{ scaleX: share }}
                   transition={spring}
                   style={{ originX: 0 }}
-                  className={"pointer-events-none absolute inset-0 -z-10 " + HUE_BAR[hue]}
+                  className="pointer-events-none absolute inset-0 -z-10 bg-[color-mix(in_oklab,var(--fg)_8%,transparent)]"
                 />
               )}
               <span className="flex min-w-0 items-center gap-2.5">
-                <span aria-hidden="true" data-part="circle" className={"size-2.5 shrink-0 rounded-pill " + HUE_DOT[hue]} />
                 <span className={"min-w-0 truncate " + (isPicked ? "font-title" : "font-normal")}>{o.label}</span>
                 {isPicked && (
                   <span aria-hidden="true" data-part="mark" className="inline-flex shrink-0 text-fg">

@@ -1,6 +1,6 @@
 {
   "$comment": "Written by scripts/gen-registry.mjs. What each registry item installs, hashed, and the release that last changed it. Commit it with the change.",
-  "latest": "2026.11.22",
+  "latest": "2026.11.23",
   "items": {
     "accordion": {
       "version": "2026.11.18",
@@ -31,8 +31,8 @@
       "hash": "ff0a695ce52c48ed"
     },
     "agent-run": {
-      "version": "2026.11.22",
-      "hash": "bc50930cd0743191"
+      "version": "2026.11.23",
+      "hash": "8cc26422eb1366aa"
     },
     "agent-throttle": {
       "version": "2026.11.22",
@@ -143,8 +143,8 @@
       "hash": "06c030aa75ac1895"
     },
     "context-budget": {
-      "version": "2026.11.22",
-      "hash": "a2b28a07afc1fbf3"
+      "version": "2026.11.23",
+      "hash": "b6385e76640d8f38"
     },
     "context-menu": {
       "version": "2026.11.12",
@@ -611,8 +611,8 @@
       "hash": "09c6dfea8cc66216"
     },
     "flat-agent-run": {
-      "version": "2026.11.22",
-      "hash": "bc50930cd0743191"
+      "version": "2026.11.23",
+      "hash": "8cc26422eb1366aa"
     },
     "flat-app-shell": {
       "version": "2026.11.16",
@@ -695,8 +695,8 @@
       "hash": "512ee5ac9a9da5c0"
     },
     "flat-context-budget": {
-      "version": "2026.11.22",
-      "hash": "a2b28a07afc1fbf3"
+      "version": "2026.11.23",
+      "hash": "b6385e76640d8f38"
     },
     "flat-context-menu": {
       "version": "2026.11.16",
@@ -763,8 +763,8 @@
       "hash": "aec882e54f380aa1"
     },
     "flat-hold-confirm": {
-      "version": "2026.11.22",
-      "hash": "c2fb4cd7cb3081d7"
+      "version": "2026.11.23",
+      "hash": "6c07be688cff1a10"
     },
     "flat-hover-card": {
       "version": "2026.11.16",
@@ -787,8 +787,8 @@
       "hash": "17d1840b1643cf07"
     },
     "flat-kudos": {
-      "version": "2026.11.22",
-      "hash": "736107af58d0b1fe"
+      "version": "2026.11.23",
+      "hash": "699e26a1580ec4ec"
     },
     "flat-legend": {
       "version": "2026.11.20",
@@ -851,8 +851,8 @@
       "hash": "df73f4f043b78b69"
     },
     "flat-poll": {
-      "version": "2026.11.22",
-      "hash": "0283a0cd45718a8d"
+      "version": "2026.11.23",
+      "hash": "0142dd65b58adcad"
     },
     "flat-popover": {
       "version": "2026.11.16",
@@ -959,8 +959,8 @@
       "hash": "eb874003dc2c37b0"
     },
     "flat-streak": {
-      "version": "2026.11.22",
-      "hash": "78c38e05ad6db0d8"
+      "version": "2026.11.23",
+      "hash": "1dbd106b46f67301"
     },
     "flat-switch": {
       "version": "2026.11.16",
@@ -999,8 +999,8 @@
       "hash": "b30bfa89cc3a2976"
     },
     "flat-toast-stack": {
-      "version": "2026.11.22",
-      "hash": "33e206b8347d07d6"
+      "version": "2026.11.23",
+      "hash": "fe72f4681f7d5273"
     },
     "flat-token-input": {
       "version": "2026.11.19",
@@ -1455,8 +1455,8 @@
       "hash": "fe8ced325d8ddccd"
     },
     "hold-confirm": {
-      "version": "2026.11.22",
-      "hash": "c2fb4cd7cb3081d7"
+      "version": "2026.11.23",
+      "hash": "6c07be688cff1a10"
     },
     "hover-card": {
       "version": "2026.11.15",
@@ -1483,8 +1483,8 @@
       "hash": "17d1840b1643cf07"
     },
     "kudos": {
-      "version": "2026.11.22",
-      "hash": "736107af58d0b1fe"
+      "version": "2026.11.23",
+      "hash": "699e26a1580ec4ec"
     },
     "lap-timer": {
       "version": "2026.11.20",
@@ -1935,8 +1935,8 @@
       "hash": "df73f4f043b78b69"
     },
     "poll": {
-      "version": "2026.11.22",
-      "hash": "0283a0cd45718a8d"
+      "version": "2026.11.23",
+      "hash": "0142dd65b58adcad"
     },
     "popover": {
       "version": "2026.11.15",
@@ -2867,8 +2867,8 @@
       "hash": "eb874003dc2c37b0"
     },
     "streak": {
-      "version": "2026.11.22",
-      "hash": "78c38e05ad6db0d8"
+      "version": "2026.11.23",
+      "hash": "1dbd106b46f67301"
     },
     "switch": {
       "version": "2026.11.19",
@@ -2915,8 +2915,8 @@
       "hash": "b30bfa89cc3a2976"
     },
     "toast-stack": {
-      "version": "2026.11.22",
-      "hash": "33e206b8347d07d6"
+      "version": "2026.11.23",
+      "hash": "fe72f4681f7d5273"
     },
     "token-input": {
       "version": "2026.11.19",

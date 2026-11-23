@@ -12,10 +12,10 @@ export const meta: PageMeta = {
   verbs: ["select"],
   worlds: ["flat"],
   summary:
-    "One question and its choices as pills, each with a dot in its own color. Once a reader picks one, every choice shows its share as a bar and the total votes stand above them as one large number. Choosing another moves the vote at once, and choosing the same one again takes it back. It belongs to Flat.",
+    "One question and its choices as pills. Once a reader picks one, every choice shows its share as a bar and the total votes stand above them as one large number. Choosing another moves the vote at once, and choosing the same one again takes it back. It belongs to Flat.",
   tiers: ["instant", "expressive"],
   mechanism:
-    "Each option is a native button with aria-pressed. On a vote, a full-height tinted layer in the choice's data hue grows from zero to its share along X on the expressive spring (350ms). Percentage and vote count appear in ink words beside the label, and a polite live region announces the updated vote. Under reduced motion the bars land at their share at once.",
+    "Each option is a native button with aria-pressed. On a vote, a full-height quiet ink layer grows from zero to its share along X on the expressive spring (350ms). Percentage and vote count appear in ink words beside the label, and a polite live region announces the updated vote. Under reduced motion the bars land at their share at once.",
 };
 
 export const docs: PageDocs = {
@@ -26,9 +26,9 @@ export const docs: PageDocs = {
 <Poll
   question="Which series for Issue 15?"
   options={[
-    { id: "coast", label: "Coast at dusk", votes: 84, hue: "blue" },
-    { id: "greenhouse", label: "Greenhouse notes", votes: 52, hue: "teal" },
-    { id: "trains", label: "Morning trains", votes: 39, hue: "bubblegum" },
+    { id: "coast", label: "Coast at dusk", votes: 84 },
+    { id: "greenhouse", label: "Greenhouse notes", votes: 52 },
+    { id: "trains", label: "Morning trains", votes: 39 },
   ]}
 />`,
   use: [
@@ -36,7 +36,7 @@ export const docs: PageDocs = {
     "Two to six clear options where seeing everyone else's share is part of the answer.",
   ],
   skip: [
-    "Another world's page. Poll is drawn in Flat's pills, large figure and data hues; it needs data-material=\"flat\" on <html>.",
+    "Another world's page. Poll is drawn in Flat's pills and large figure; it needs data-material=\"flat\" on <html>.",
     "A form setting that submits with other fields. Use RadioGroup or CardPicker.",
     "A single binary choice. Use Switch or Button.",
   ],
@@ -53,16 +53,16 @@ export const docs: PageDocs = {
 };
 
 const NEXT_ISSUE: PollOption[] = [
-  { id: "coast", label: "Coast at dusk", votes: 84, hue: "blue" },
-  { id: "greenhouse", label: "Greenhouse notes", votes: 52, hue: "teal" },
-  { id: "trains", label: "Morning trains", votes: 39, hue: "bubblegum" },
-  { id: "books", label: "Books on the desk", votes: 21, hue: "amber" },
+  { id: "coast", label: "Coast at dusk", votes: 84 },
+  { id: "greenhouse", label: "Greenhouse notes", votes: 52 },
+  { id: "trains", label: "Morning trains", votes: 39 },
+  { id: "books", label: "Books on the desk", votes: 21 },
 ];
 
 const READING_TIME: PollOption[] = [
-  { id: "morning", label: "With morning coffee", votes: 112, hue: "amber" },
-  { id: "commute", label: "On the train", votes: 68, hue: "sky" },
-  { id: "evening", label: "Before bed", votes: 46, hue: "violet" },
+  { id: "morning", label: "With morning coffee", votes: 112 },
+  { id: "commute", label: "On the train", votes: 68 },
+  { id: "evening", label: "Before bed", votes: 46 },
 ];
 
 function ReaderPollDemo() {
@@ -106,7 +106,6 @@ export const study: PageStudy = {
     { name: "The question", selector: "header > p:first-child" },
     { name: "The figure", selector: "[data-part=figure]" },
     { name: "A choice pill", selector: "button[data-part=pill]" },
-    { name: "The color dot", selector: "[data-part=circle]" },
     { name: "The share bar", selector: "[data-part=bubble]" },
   ],
   states: {
@@ -132,7 +131,7 @@ export default function PollPage() {
         title="Reader poll"
         tier="expressive"
         code="ReaderPollDemo"
-        caption="Four choices, each in its own color. Choose another to move your vote, or choose yours again to clear it."
+        caption="Four choices. Choose another to move your vote, or choose yours again to clear it."
       >
         <ReaderPollDemo />
       </Stage>

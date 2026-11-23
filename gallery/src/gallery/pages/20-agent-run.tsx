@@ -4,16 +4,16 @@ import { Page, Stage, TryIt, type PageDocs, type PageMeta } from "../kit";
 export const meta: PageMeta = {
   id: "agent-run",
   title: "Agent run",
-  lede: "A writing assistant's turn from colored dot steps to streamed prose.",
+  lede: "A writing assistant's turn from plain steps to streamed prose.",
   order: 1.07,
   group: "Agents",
   verbs: ["press", "watch"],
   worlds: ["flat"],
   summary:
-    "One assistant turn framed on a white paper card: frameless colored dot steps that fold away behind a quiet toggle, followed by the drafted paragraph and a one-tap replay. It belongs to Flat.",
+    "One assistant turn framed on a white paper card: a plain list of steps that folds away behind a quiet toggle, followed by the drafted paragraph and a one-tap replay. It belongs to Flat.",
   tiers: ["instant", "expressive"],
   mechanism:
-    "Starts settled at rest so the card reads immediately with zero motion on load. Tapping Run again steps through each frameless dot row in sequence and streams the draft prose inside the card's soft inner block; tapping Hide steps folds the step list neatly away. Under reduced motion, replaying updates directly without stepping or streaming.",
+    "Starts settled at rest so the card reads immediately with zero motion on load. Tapping Run again steps through each row in sequence and streams the draft prose inside the card's soft inner block; tapping Hide steps folds the step list neatly away. Under reduced motion, replaying updates directly without stepping or streaming.",
 };
 
 export const docs: PageDocs = {
@@ -27,7 +27,7 @@ export const docs: PageDocs = {
     "Letting a reader fold the intermediate steps away while keeping the finished draft prominent.",
   ],
   skip: [
-    "Another world's page. AgentRun belongs to Flat's grey ground, paper card and frameless dot rows, and needs data-material=\"flat\" on <html>.",
+    "Another world's page. AgentRun belongs to Flat's grey ground, paper card and plain step rows, and needs data-material=\"flat\" on <html>.",
     "A multi-agent pipeline with editable parameters. Use Plan or RunList.",
     "A long chronological audit log of every tool payload. Use LogView.",
   ],
@@ -37,7 +37,7 @@ export const docs: PageDocs = {
   ],
   a11y: [
     "The disclosure button uses aria-expanded and aria-controls linked to the step list.",
-    "Step state is shown by both filled vs. hollow dots and plain words (duration, Now, Queued).",
+    "Step state is in plain words (duration, Now, Queued), with reached steps in ink.",
     "Starting and completing a replay announce once in a polite status region.",
   ],
 };
@@ -47,9 +47,9 @@ function OpeningDraftDemo() {
 }
 
 const BRIEF_STEPS: AgentRunStep[] = [
-  { id: "links", label: "Gather links", detail: "6 articles", duration: "0.9s", hue: "sky" },
-  { id: "dedupe", label: "Group themes", detail: "3 topics", duration: "0.7s", hue: "violet" },
-  { id: "write", label: "Summarize", detail: "38 words", duration: "1.0s", hue: "bubblegum" },
+  { id: "links", label: "Gather links", detail: "6 articles", duration: "0.9s" },
+  { id: "dedupe", label: "Group themes", detail: "3 topics", duration: "0.7s" },
+  { id: "write", label: "Summarize", detail: "38 words", duration: "1.0s" },
 ];
 
 function CollapsedBriefDemo() {
@@ -69,7 +69,7 @@ export default function AgentRunPage() {
       <Stage
         title="Opening draft"
         tier="expressive"
-        caption="Frameless colored dot steps above the drafted paragraph; tap Run again to watch the turn step and stream."
+        caption="Plain steps above the drafted paragraph; tap Run again to watch the turn step and stream."
         code="OpeningDraftDemo"
       >
         <OpeningDraftDemo />

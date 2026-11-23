@@ -5,7 +5,7 @@
  *   wrapper, the stage or a part changes size (fonts, theme, material). A selector that matches nothing warns in dev
  *   and leaves its callout out.
  * - Desktop: labels sit at the stage's sides, alternating left and right so lines never cross, and a 1px line in the
- *   strong hairline runs from each label to its part's edge. Labels that would touch step down.
+ *   strong hairline runs from each label to its part's edge, ending in a small dot (none under Flat). Labels that would touch step down.
  * - Phone: the lines give way to a numbered badge on each part's edge, on the side its label would be, and the labels become a numbered list under the stage.
  * - Everything is drawn in one svg over the stage, which sits out of the layout, so it can never widen the page.
  *   Nothing animates. The parts are also a real list for screen readers.
@@ -157,7 +157,7 @@ export function Anatomy({ object, parts, onObjectWidth }: { object: ReactNode; p
             <g key={c.n}>
               <g className="max-sm:hidden">
                 <line x1={c.from} y1={c.ly} x2={c.x} y2={c.y} className="stroke-line-strong" strokeWidth={1} />
-                <circle cx={c.x} cy={c.y} r={2} className="fill-fg-subtle" />
+                <circle cx={c.x} cy={c.y} r={2} className="fill-fg-subtle in-[[data-material=flat]]:hidden" />
               </g>
               <g className="sm:hidden">
                 <circle cx={c.x + (c.left ? -9 : 9)} cy={c.y} r={9} className="fill-fg" />

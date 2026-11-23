@@ -1,10 +1,9 @@
 /**
  * AgentRun, a Flat part (skills/litt-md/taste/litt-principles.md, Flat): an editorial assistant turn start to finish
- * on a white paper card, pairing frameless colored dot steps, a collapsible thinking summary and streamed draft prose.
+ * on a white paper card, pairing a plain step list, a collapsible thinking summary and streamed draft prose.
  *
  * - Framed in Flat's paper card (`litt-paper bg-surface-1 rounded-surface p-6`, no outline and nothing cast).
- * - Each step is a frameless dot tag (filled data hue dot when done, hollow outline dot while queued, matching Flat's
- *   Legend and status Tag) with `font-normal` labels and tabular timings.
+ * - Each step is one plain row: its label in ink once reached (subtle while queued), its detail, and a tabular timing.
  * - Starts settled on mount (zero auto-animation, R4). Tapping "Run again" walks through every step and streams the
  *   draft prose; under reduced motion it completes cleanly on the spot.
  */
@@ -12,14 +11,11 @@ import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { useMotionDial, useTransition } from "@/motion";
 
-export type RunHue = "sky" | "blue" | "violet" | "bubblegum" | "teal";
-
 export type AgentRunStep = {
   id: string;
   label: string;
   detail: string;
   duration: string;
-  hue: RunHue;
 };
 
 export type AgentRunProps = {
@@ -36,25 +32,17 @@ export type AgentRunProps = {
   className?: string;
 };
 
-const HUE_VAR: Record<RunHue, string> = {
-  sky: "var(--data-sky)",
-  blue: "var(--data-blue)",
-  violet: "var(--data-violet)",
-  bubblegum: "var(--data-bubblegum)",
-  teal: "var(--data-teal)",
-};
-
 export const DEFAULT_RUN_STEPS: AgentRunStep[] = [
-  { id: "voice", label: "Read voice guide", detail: "Short sentences", duration: "0.6s", hue: "teal" },
-  { id: "notes", label: "Scan field notes", detail: "4 passages", duration: "1.1s", hue: "blue" },
-  { id: "draft", label: "Draft opening", detail: "62 words", duration: "1.2s", hue: "violet" },
-  { id: "check", label: "Check tone", detail: "Clear", duration: "0.5s", hue: "bubblegum" },
+  { id: "voice", label: "Read voice guide", detail: "Short sentences", duration: "0.6s" },
+  { id: "notes", label: "Scan field notes", detail: "4 passages", duration: "1.1s" },
+  { id: "draft", label: "Draft opening", detail: "62 words", duration: "1.2s" },
+  { id: "check", label: "Check tone", detail: "Clear", duration: "0.5s" },
 ];
 
 export const DEFAULT_RUN_ANSWER =
   "Low tide comes early in November. By seven the salt marsh is quiet, the harbor posts stand clear of the water, and the whole coast smells of cedar smoke and rain.";
 
-/** Flat's editorial agent run card: frameless colored dot steps, collapsible thinking summary and live draft prose. */
+/** Flat's editorial agent run card: plain steps, collapsible thinking summary and live draft prose. */
 export function AgentRun({
   title = "Opening draft",
   steps = DEFAULT_RUN_STEPS,
@@ -136,13 +124,6 @@ export function AgentRun({
 
   const activeIndex = phase === "running" ? completedCount : -1;
   const visibleProse = words.slice(0, wordCount).join(" ");
-  const statusDot =
-    phase === "done"
-      ? "var(--success)"
-      : phase === "writing"
-        ? "var(--data-violet)"
-        : HUE_VAR[steps[Math.min(completedCount, Math.max(0, steps.length - 1))]?.hue ?? "blue"];
-
   const statusText =
     phase === "done"
       ? `Ready · ${steps.length} steps`
@@ -155,20 +136,14 @@ export function AgentRun({
       data-part="paper"
       className={"litt-paper grid w-full max-w-sm min-w-0 gap-4 rounded-surface bg-surface-1 p-6 text-fg forced-colors:border " + className}
     >
-      {/* Header with title and frameless status dot */}
+      {/* Header with title and status */}
       <header className="flex items-start justify-between gap-3">
         <div className="grid min-w-0 gap-1">
           <span id={headingId} data-part="lettering" className="truncate text-body font-title text-fg">
             {title}
           </span>
-          <span data-part="lettering" className="inline-flex items-center gap-2 text-caption font-normal text-fg-subtle">
-            <span
-              aria-hidden="true"
-              data-part="circle"
-              className="size-2 shrink-0 rounded-pill forced-colors:[forced-color-adjust:none] forced-colors:bg-[CanvasText]"
-              style={{ backgroundColor: statusDot }}
-            />
-            <span className="truncate">{statusText}</span>
+          <span data-part="lettering" className="truncate text-caption font-normal text-fg-subtle">
+            {statusText}
           </span>
         </div>
 
@@ -200,7 +175,7 @@ export function AgentRun({
         </button>
       </header>
 
-      {/* Collapsible frameless dot step list */}
+      {/* Collapsible step list */}
       <AnimatePresence initial={false}>
         {expanded && (
           <motion.ul
@@ -218,15 +193,6 @@ export function AgentRun({
               return (
                 <li key={step.id} className="flex items-center justify-between gap-3 text-caption font-normal">
                   <span className="inline-flex min-w-0 items-center gap-2">
-                    <span
-                      aria-hidden="true"
-                      data-part={isDone || isActive ? "circle" : "outline"}
-                      className={
-                        "size-2.5 shrink-0 rounded-pill border-2 transition-colors duration-(--dur-instant) ease-litt forced-colors:border-[CanvasText] " +
-                        (isDone || isActive ? "border-transparent" : "border-fg-subtle bg-transparent")
-                      }
-                      style={isDone || isActive ? { backgroundColor: HUE_VAR[step.hue] } : undefined}
-                    />
                     <span className={"truncate " + (isDone || isActive ? "text-fg" : "text-fg-subtle")}>
                       {step.label}
                     </span>

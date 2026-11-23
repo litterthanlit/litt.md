@@ -4,6 +4,18 @@ Every change to the litt registry at https://littmd.vercel.app/r/, newest first.
 
 To update an item, read the entries since your version, then reinstall it with `--overwrite`. A **breaking** entry says what to change in your code.
 
+## 2026-11-23 · Flat without dots
+
+Flat's showcase parts lose their colored dots and the hues that only fed them. Each says its state in words and ink, and each bar is one ink fill.
+
+- **breaking** `context-budget`, `flat-context-budget`: the meter is one ink bar for the share used, and each source is a plain row (its name and tokens, or Off) with no dot. `ContextSource` drops `hue` and `ContextHue` is gone: remove `hue` from your sources.
+- **breaking** `agent-run`, `flat-agent-run`: the status line and each step are plain words, with reached steps in ink; no dots. `AgentRunStep` drops `hue` and `RunHue` is gone: remove `hue` from your steps.
+- **breaking** `toast-stack`, `flat-toast-stack`: a notice is its title, time, detail and dismiss, with no status dot. `StackNotice` drops `hue` and `NoticeHue` is gone: remove `hue` from your notices.
+- **breaking** `poll`, `flat-poll`: no dot beside a choice, and every share is one quiet ink wash. `PollOption` drops `hue` and `PollHue` is gone: remove `hue` from your options.
+- **changed** `hold-confirm`, `flat-hold-confirm`: holding fills one ink bar where four sunset segments lit, the note under the title has no status dot, and the done check is ink. Props are unchanged.
+- **changed** `kudos`, `flat-kudos`: the row of warming dots is gone and the heart fills in ink; the +N says how many you gave. Props are unchanged.
+- **changed** `streak`, `flat-streak`: the status word stands alone, with no dot before it. Props are unchanged.
+
 ## 2026-11-22 · World-native agentic components
 
 One signature agentic component for each of the six worlds, built strictly from that world's own materials, color grammar, motion language and voice, and placed first in each world's player set for review.

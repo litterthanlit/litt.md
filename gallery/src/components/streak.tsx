@@ -2,8 +2,7 @@
  * Streak, a Flat part (skills/litt-md/taste/litt-principles.md, Flat): how long a run has lasted (issues sent, days
  * read), built on Flat's standing 40px figure, the sequential ramp (--data-seq-1 to --data-seq-4) and the expressive spring.
  *
- * - One 40px figure (text-figure, call 8) carries the live count, paired with its unit in quiet ink and an optional status
- *   dot + word (call 6 amended: small 8px circle in status color, word in ink, no pill).
+ * - One figure (text-figure, call 8) carries the live count, paired with its unit in quiet ink and a status word in ink.
  * - Each entry in the cadence is a pill: done slots walk the sequential ramp (gold to plum in light, plum to gold in
  *   dark) as the run grows; missed slots rest in a quiet 8% ink wash.
  * - An open current slot (when onToggle is set) is a native button drawn with Flat's 1.5px outline when off ("an outline
@@ -138,8 +137,7 @@ export function Streak({
             </span>
           </p>
         </div>
-        <span data-part="mark" className="inline-flex items-center gap-2 pb-1 text-small text-fg">
-          <span aria-hidden="true" data-part="circle" className={"size-2 shrink-0 rounded-pill " + (active ? "bg-success" : "bg-fg-subtle")} />
+        <span data-part="mark" className="pb-1 text-small text-fg">
           {statusText}
         </span>
       </header>

@@ -4,21 +4,17 @@
  *
  * - Collapsed, older cards tuck cleanly behind the newest notice with a crisp peek and gentle scale step; expanded,
  *   every card opens to full height with clear air between them.
- * - Each card carries a frameless colored status dot (no badge pill or outline), a title, a quiet detail line,
- *   a timestamp and a quiet dismiss button. Zero auto-dismiss timers on mount (R4).
+ * - Each card carries a title, a quiet detail line, a timestamp and a quiet dismiss button. Zero auto-dismiss timers on mount (R4).
  */
 import { useId, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { useExit, useMotionDial, useTransition } from "@/motion";
-
-export type NoticeHue = "teal" | "blue" | "violet" | "bubblegum" | "amber";
 
 export type StackNotice = {
   id: string;
   title: string;
   body: string;
   time: string;
-  hue: NoticeHue;
 };
 
 export type ToastStackProps = {
@@ -29,35 +25,24 @@ export type ToastStackProps = {
   className?: string;
 };
 
-const HUE_VAR: Record<NoticeHue, string> = {
-  teal: "var(--data-teal)",
-  blue: "var(--data-blue)",
-  violet: "var(--data-violet)",
-  bubblegum: "var(--data-bubblegum)",
-  amber: "var(--data-amber)",
-};
-
 export const DEFAULT_NOTICES: StackNotice[] = [
   {
     id: "n-1",
     title: "Issue 14 sent",
     body: "Delivered to 1,204 subscribers with zero bounces.",
     time: "Just now",
-    hue: "teal",
   },
   {
     id: "n-2",
     title: "Voice guide updated",
     body: "Saved three new opening notes to Coastline draft.",
     time: "4m ago",
-    hue: "blue",
   },
   {
     id: "n-3",
     title: "Reader reply",
     body: "Maya left a note on The lighthouse chapter.",
     time: "18m ago",
-    hue: "bubblegum",
   },
 ];
 
@@ -66,19 +51,16 @@ const EXTRA_NOTICES: Omit<StackNotice, "id">[] = [
     title: "Draft snapshot saved",
     body: "Issue 15 synced cleanly before export.",
     time: "Just now",
-    hue: "violet",
   },
   {
     title: "12 new subscribers",
     body: "Morning links brought twelve readers overnight.",
     time: "Just now",
-    hue: "amber",
   },
   {
     title: "Images optimized",
     body: "Six coastal plates compressed for fast reading.",
     time: "Just now",
-    hue: "teal",
   },
 ];
 
@@ -115,7 +97,6 @@ export function ToastStack({
       title: template.title,
       body: template.body,
       time: template.time,
-      hue: template.hue,
     };
     setSeq((n) => n + 1);
     setNotices((cur) => [next, ...cur]);
@@ -190,18 +171,12 @@ export function ToastStack({
                   >
                     <div className="grid min-w-0 gap-1">
                       <div className="flex items-center gap-2">
-                        <span
-                          aria-hidden="true"
-                          data-part="circle"
-                          className="size-2 shrink-0 rounded-pill forced-colors:[forced-color-adjust:none] forced-colors:bg-[CanvasText]"
-                          style={{ backgroundColor: HUE_VAR[item.hue] }}
-                        />
                         <span className="truncate text-small font-title text-fg">{item.title}</span>
                         <span className="shrink-0 text-caption font-normal tabular-nums text-fg-subtle">
                           {item.time}
                         </span>
                       </div>
-                      <p className="m-0 truncate pl-4 text-caption font-normal text-fg-subtle">{item.body}</p>
+                      <p className="m-0 truncate text-caption font-normal text-fg-subtle">{item.body}</p>
                     </div>
 
                     <button

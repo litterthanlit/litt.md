@@ -4,18 +4,15 @@
  *
  * - Material order (Ground -> Paper -> Bubble): framed in a white rounded paper card (`bg-surface-1
  *   rounded-surface`, black in dark) with generous 24px padding, or an optional `tone="ink"` ink card (`.litt-ink`).
- * - Pairs a quiet title with a crisp standing percentage (`text-display`), a proportional bar in Flat's
- *   data hues, and frameless `font-normal` source tags (matching Flat's Legend and status Tag): attached sources show
- *   a filled dot with label and token count; excluded sources show an outline dot with "Off" in words (R5) and no pill
- *   or border frame at rest (only a quiet tint on hover).
+ * - Pairs a quiet title with a crisp standing percentage (`text-figure`), one ink bar for the share used, and
+ *   plain `font-normal` source rows: an attached source reads its label and token count in ink, an excluded one
+ *   reads "Off" in the subtle ink (R5). No frame at rest, only a quiet tint on hover.
  * - Toggling any source bounces the percentage on Flat's expressive spring (0.28 bounce) and announces the updated
  *   token count once in a polite status region. Zero `--accent` fills (R6) and zero auto-animation on mount (R4).
  */
 import { useId, useState, type ReactNode } from "react";
 import { motion } from "motion/react";
 import { useMotionDial, useTransition } from "@/motion";
-
-export type ContextHue = "sky" | "blue" | "violet" | "bubblegum" | "teal";
 
 export type ContextSource = {
   /** Stable identifier for the context source. */
@@ -24,8 +21,6 @@ export type ContextSource = {
   label: string;
   /** Token count in raw tokens, e.g. 24000. */
   tokens: number;
-  /** Distinct Candy hue slot assigned to this source. */
-  hue: ContextHue;
   /** Whether the source starts attached in the window. Defaults to true. */
   included?: boolean;
 };
@@ -48,21 +43,12 @@ export type ContextBudgetProps = {
 };
 
 export const DEFAULT_CONTEXT_ITEMS: ContextSource[] = [
-  { id: "guide", label: "Voice guide", tokens: 12000, hue: "sky", included: true },
-  { id: "draft", label: "Coastline draft", tokens: 34000, hue: "blue", included: true },
-  { id: "notes", label: "Field notes", tokens: 22000, hue: "violet", included: true },
-  { id: "thread", label: "Recent replies", tokens: 14000, hue: "bubblegum", included: true },
-  { id: "archive", label: "Issue 13 archive", tokens: 19000, hue: "teal", included: false },
+  { id: "guide", label: "Voice guide", tokens: 12000, included: true },
+  { id: "draft", label: "Coastline draft", tokens: 34000, included: true },
+  { id: "notes", label: "Field notes", tokens: 22000, included: true },
+  { id: "thread", label: "Recent replies", tokens: 14000, included: true },
+  { id: "archive", label: "Issue 13 archive", tokens: 19000, included: false },
 ];
-
-/* Literal CSS variable strings so gen-registry renames every data token cleanly for host installs. */
-const HUE_VAR: Record<ContextHue, string> = {
-  sky: "var(--data-sky)",
-  blue: "var(--data-blue)",
-  violet: "var(--data-violet)",
-  bubblegum: "var(--data-bubblegum)",
-  teal: "var(--data-teal)",
-};
 
 function formatTokens(n: number): string {
   if (n >= 1000) {
@@ -72,7 +58,7 @@ function formatTokens(n: number): string {
   return String(Math.round(n));
 }
 
-/** Flat's interactive context-window card: paper or ink frame, crisp percentage, proportional bar and frameless source tags. */
+/** Flat's interactive context-window card: paper or ink frame, crisp percentage, one bar and plain source rows. */
 export function ContextBudget({
   title = "Draft context",
   tone = "paper",
@@ -161,7 +147,7 @@ export function ContextBudget({
         </p>
       </header>
 
-      {/* Proportional Candy context meter */}
+      {/* One ink bar for the share used */}
       <div
         role="meter"
         aria-labelledby={headingId}
@@ -170,31 +156,20 @@ export function ContextBudget({
         aria-valuenow={Math.min(usedTokens, safeCap)}
         aria-valuetext={`${pct}% of context window used, ${formatTokens(usedTokens)} of ${formatTokens(safeCap)} tokens`}
         data-part="bubble"
-        className="flex h-3 w-full gap-0.5 overflow-hidden rounded-pill p-0.5 forced-colors:border"
+        className="h-2 w-full overflow-hidden rounded-pill forced-colors:border"
         style={{ backgroundColor: "color-mix(in oklab, var(--fg) 10%, transparent)" }}
       >
-        {activeSources.map((src) => {
-          const share = Math.max(0.03, src.tokens / Math.max(safeCap, usedTokens));
-          return (
-            <motion.span
-              key={src.id}
-              aria-hidden="true"
-              data-part="mark"
-              initial={false}
-              animate={reduced ? undefined : { flexGrow: share }}
-              transition={spring}
-              className="block h-full min-w-1.5 rounded-pill forced-colors:bg-[Highlight]"
-              style={{
-                flexGrow: share,
-                flexBasis: 0,
-                backgroundColor: HUE_VAR[src.hue],
-              }}
-            />
-          );
-        })}
+        <motion.span
+          aria-hidden="true"
+          data-part="mark"
+          initial={false}
+          animate={{ scaleX: pct / 100 }}
+          transition={spring}
+          className="block h-full origin-left rounded-pill bg-fg forced-colors:bg-[Highlight]"
+        />
       </div>
 
-      {/* Frameless font-normal source tags: dot + word at rest, quiet hover wash */}
+      {/* Plain source rows: label and tokens, or Off */}
       <div role="group" aria-label="Attached context sources" className="-mx-2 flex flex-wrap gap-x-1 gap-y-1">
         {sources.map((src) => {
           const on = included.has(src.id);
@@ -213,15 +188,6 @@ export function ContextBudget({
                 (on ? "text-fg" : "text-fg-subtle hover:text-fg")
               }
             >
-              <span
-                aria-hidden="true"
-                data-part={on ? "circle" : "outline"}
-                className={
-                  "size-2.5 shrink-0 rounded-pill border-2 transition-colors duration-(--dur-instant) ease-litt forced-colors:border-[CanvasText] " +
-                  (on ? "border-transparent" : "border-fg-subtle bg-transparent")
-                }
-                style={on ? { backgroundColor: HUE_VAR[src.hue] } : undefined}
-              />
               <span className="truncate">{src.label}</span>
               <span className="tabular-nums text-fg-subtle">
                 {on ? formatTokens(src.tokens) : "Off"}

@@ -2,12 +2,11 @@
  * HoldConfirm, a Flat part (skills/litt-md/taste/litt-principles.md, Flat): an intentional publishing action
  * framed on a white paper card with no outline and nothing cast.
  *
- * - Press and hold the pill (mouse, touch, or Space/Enter) and four sunset segments light in sequence alongside a
- *   live 28px percentage readout (`text-figure`); releasing early springs smoothly back to zero, while holding to
+ * - Press and hold the pill (mouse, touch, or Space/Enter) and one ink bar fills alongside a live 28px percentage
+ *   readout (`text-figure`); releasing early springs smoothly back to zero, while holding to
  *   100% completes the action with Flat's expressive bounce (0.28) and offers one-tap Undo.
  * - Under reduced motion, a single click or key press confirms without requiring a timed hold.
- * - Zero `--accent` misuse (one primary ink action button per card, R6), frameless status dot (no pill/border),
- *   and zero auto-animation on mount (R4).
+ * - Zero `--accent` misuse (one primary ink action button per card, R6) and zero auto-animation on mount (R4).
  */
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { motion } from "motion/react";
@@ -18,9 +17,9 @@ export type HoldConfirmProps = {
   eyebrow?: string;
   /** Main action title shown on the paper card. */
   title?: string;
-  /** Quiet note paired with the frameless status dot before confirming. */
+  /** Quiet note under the title before confirming. */
   readyNote?: string;
-  /** Quiet note paired with the green status dot after confirming. */
+  /** Quiet note under the title after confirming. */
   doneNote?: string;
   /** Primary button label while idle. */
   actionLabel?: string;
@@ -37,14 +36,7 @@ export type HoldConfirmProps = {
   className?: string;
 };
 
-const SEGMENTS = [
-  "var(--data-seq-1)",
-  "var(--data-seq-2)",
-  "var(--data-seq-3)",
-  "var(--data-seq-4)",
-] as const;
-
-/** Flat's press-and-hold confirmation card: sunset progress segments, 28px live readout, spring pop and Undo. */
+/** Flat's press-and-hold confirmation card: one ink bar, 28px live readout, spring pop and Undo. */
 export function HoldConfirm({
   eyebrow = "Newsletter",
   title = "Publish Issue 15",
@@ -170,7 +162,7 @@ export function HoldConfirm({
       data-part="paper"
       className={"litt-paper grid w-full max-w-sm min-w-0 gap-4 rounded-surface bg-surface-1 p-6 text-fg forced-colors:border " + className}
     >
-      {/* Quiet eyebrow, title, and frameless status dot */}
+      {/* Quiet eyebrow, title and note */}
       <header className="grid gap-1">
         <span data-part="lettering" className="truncate text-caption font-normal text-fg-subtle">
           {eyebrow}
@@ -178,18 +170,12 @@ export function HoldConfirm({
         <span id={headingId} data-part="lettering" className="truncate text-body font-title text-fg">
           {title}
         </span>
-        <span data-part="lettering" className="inline-flex items-center gap-2 pt-1 text-caption font-normal text-fg-subtle">
-          <span
-            aria-hidden="true"
-            data-part="circle"
-            className="size-2 shrink-0 rounded-pill forced-colors:[forced-color-adjust:none] forced-colors:bg-[CanvasText]"
-            style={{ backgroundColor: confirmed ? "var(--success)" : holding ? "var(--data-seq-2)" : "var(--data-seq-1)" }}
-          />
-          <span className="truncate">{confirmed ? doneNote : readyNote}</span>
+        <span data-part="lettering" className="truncate pt-1 text-caption font-normal text-fg-subtle">
+          {confirmed ? doneNote : readyNote}
         </span>
       </header>
 
-      {/* Standing 28px live readout + four sunset segments */}
+      {/* Standing 28px live readout + one ink bar */}
       <div className="grid gap-2">
         <div className="flex items-baseline gap-2">
           <motion.span
@@ -215,30 +201,15 @@ export function HoldConfirm({
           aria-valuenow={pct}
           aria-valuetext={confirmed ? doneNote : `${pct}% held`}
           data-part="bubble"
-          className="grid grid-cols-4 gap-1.5"
+          className="h-2 overflow-hidden rounded-pill forced-colors:border"
+          style={{ backgroundColor: "color-mix(in oklab, var(--fg) 10%, transparent)" }}
         >
-          {SEGMENTS.map((color, i) => {
-            const start = i / SEGMENTS.length;
-            const span = 1 / SEGMENTS.length;
-            const localFill = Math.max(0, Math.min(1, (progress - start) / span));
-            return (
-              <span
-                key={color}
-                aria-hidden="true"
-                className="relative block h-2.5 overflow-hidden rounded-pill forced-colors:border"
-                style={{ backgroundColor: "color-mix(in oklab, var(--fg) 10%, transparent)" }}
-              >
-                <span
-                  data-part="mark"
-                  className="block h-full origin-left rounded-pill forced-colors:bg-[Highlight]"
-                  style={{
-                    transform: `scaleX(${localFill})`,
-                    backgroundColor: confirmed ? "var(--success)" : color,
-                  }}
-                />
-              </span>
-            );
-          })}
+          <span
+            data-part="mark"
+            aria-hidden="true"
+            className="block h-full origin-left rounded-pill bg-fg forced-colors:bg-[Highlight]"
+            style={{ transform: `scaleX(${progress})` }}
+          />
         </div>
       </div>
 
@@ -253,7 +224,7 @@ export function HoldConfirm({
               data-part="lettering"
               className="inline-flex items-center gap-2 text-small font-title text-fg"
             >
-              <svg width={16} height={16} viewBox="0 0 16 16" aria-hidden="true" className="shrink-0 text-success">
+              <svg width={16} height={16} viewBox="0 0 16 16" aria-hidden="true" className="shrink-0">
                 <path
                   d="M3.5 8.5 6.5 11.5 12.5 4.5"
                   fill="none"

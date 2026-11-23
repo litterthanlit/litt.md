@@ -10,10 +10,10 @@ export const meta: PageMeta = {
   verbs: ["press", "watch"],
   worlds: ["flat"],
   summary:
-    "An intentional action framed on a white paper card: press and hold the pill for a moment and four warm segments fill alongside a live percentage readout. Letting go early rewinds smoothly; holding to the end confirms and offers Undo. It belongs to Flat.",
+    "An intentional action framed on a white paper card: press and hold the pill for a moment and one ink bar fills alongside a live percentage readout. Letting go early rewinds smoothly; holding to the end confirms and offers Undo. It belongs to Flat.",
   tiers: ["instant", "expressive"],
   mechanism:
-    "Holding the primary ink pill (by pointer, touch, or Space and Enter) drives four sequential progress segments and a live 28px percentage readout. Releasing early rewinds smoothly to zero; completing 100% swaps in a settled confirmation with a one-tap Undo pill and announces the outcome once. Under reduced motion, a single click or key press confirms directly.",
+    "Holding the primary ink pill (by pointer, touch, or Space and Enter) fills one ink bar and a live 28px percentage readout. Releasing early rewinds smoothly to zero; completing 100% swaps in a settled confirmation with a one-tap Undo pill and announces the outcome once. Under reduced motion, a single click or key press confirms directly.",
 };
 
 export const docs: PageDocs = {
@@ -32,16 +32,16 @@ export const docs: PageDocs = {
     "Actions that benefit from live progress feedback and an immediate Undo without opening a modal dialog.",
   ],
   skip: [
-    "Another world's page. HoldConfirm belongs to Flat's grey ground, paper card and sequential color segments, and needs data-material=\"flat\" on <html>.",
+    "Another world's page. HoldConfirm belongs to Flat's grey ground, paper card and ink bar, and needs data-material=\"flat\" on <html>.",
     "Everyday actions that can simply run on a click. Use Button.",
     "Irreversible account deletion where a typed confirmation is needed. Use Dialog.",
   ],
   keyboard: [
     [["Tab"], "Moves focus to the primary hold pill, or to Undo once confirmed."],
-    [["Space", "Enter"], "Hold to fill the progress segments and confirm; release early to cancel. Under reduced motion, a single press confirms."],
+    [["Space", "Enter"], "Hold to fill the bar and confirm; release early to cancel. Under reduced motion, a single press confirms."],
   ],
   a11y: [
-    "The four segments expose role=\"progressbar\" with live aria-valuenow and aria-valuetext.",
+    "The bar exposes role=\"progressbar\" with live aria-valuenow and aria-valuetext.",
     "Pointer capture and keyboard hold handlers share the same state machine, and reduced motion collapses the hold to a single press.",
     "Cancelling, confirming and undoing each announce once in a polite status region.",
   ],
@@ -72,7 +72,7 @@ export default function HoldConfirmPage() {
       <Stage
         title="Publish an issue"
         tier="expressive"
-        caption="Hold the button to light all four segments and send; let go early to rewind, or tap Undo once sent."
+        caption="Hold the button to fill the bar and send; let go early to rewind, or tap Undo once sent."
         code="PublishIssueDemo"
       >
         <PublishIssueDemo />
