@@ -12,6 +12,10 @@ Flat's rules are now the Flat studies' (taste v1.22). Nothing changes outside Fl
 - **changed** `base-styles`: `h1` takes `--litt-type-h1-weight`, the title weight everywhere but Flat.
 - **fixed** `range-chart`, `press-range-chart`, `flat-range-chart`, `device-range-chart`, `plain-range-chart`, `rack-range-chart`, `heat-range-chart`: the reading's row wraps, so "Whole range" goes under the figure when the two do not fit side by side, as on a 320px screen under Flat's 34px display step, where the row ran 24px past the edge. Props are unchanged.
 - **changed** `button`, `flat-button`: under Flat a press shrinks the pill to `--litt-press-scale` (0.96) on the instant tier; a disabled or busy button stays put, and reduced motion keeps it still. Props are unchanged.
+- **fixed** `file-drop`, `flat-file-drop`: on a touch screen Flat's choose button showed "Add files" but was named "Choose files", failing WCAG 2.5.3 (Label in Name). The button now shows its name, "Choose files" (or "Choose a file"), everywhere, with the hint as its description. Props are unchanged.
+- **changed** `file-drop`, `flat-file-drop`: Flat's area is a sheet of paper on the grey ground (`litt-paper`, `data-part="paper"`), as Flat's other cards are: an ink circle with the up arrow, the words ("Drop files here", or "Add files" on a touch screen), the hint, and the Choose files pill as the grey bubble on the paper, where before the pill was the same paper as the area and hard to see. `FileList` under Flat is a sheet of paper too. Props are unchanged.
+- **fixed** `code-input`, `flat-code-input`: under Flat an empty cell is paper on the ground (`--block`), as a field is, where before it was `--surface-2`, which in dark is the ground itself, so the empty cells could not be seen. A disabled cell is `--surface-3`, as a disabled Flat button is. Props are unchanged.
+- **changed** `press-file-drop`, `device-file-drop`, `plain-file-drop`, `rack-file-drop`, `heat-file-drop`: the contract's comments describe Flat's new body. Nothing else changes.
 
 ## 2026-11-22 · World-native agentic components
 

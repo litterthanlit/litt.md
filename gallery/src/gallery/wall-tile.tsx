@@ -20,12 +20,13 @@ import type { PageEntry } from "./registry";
 export const TALL = new Set(["plan", "app-shell", "list", "action-bar", "timeline", "message", "rule-builder"]);
 
 /**
- * Under Flat (plans/024, Flat, leftovers) a tile is a sheet of its own on the grey ground (.flat-sheet in app.css: paper
- * in light, the ground lifted a step in dark), and its name sits under its object as a caption, the two centred together
- * in the sheet, so the name belongs to its object by more than position. Every other world keeps its tile as it was.
+ * Under Flat a tile is the grey ground itself, as in the Flat studies (.flat-stage in app.css: the ground, a step darker
+ * under a hovering pointer), so paper stays white paper and an object looks as it does on its page. Its name sits under
+ * its object as a caption, the two centred together, so the name belongs to its object by more than position. Every
+ * other world keeps its tile as it was.
  */
-const FLAT_SHEET = "flat-sheet in-[[data-material=flat]]:min-h-72 in-[[data-material=flat]]:grid-rows-[auto_auto] in-[[data-material=flat]]:content-center";
-/** The object's room: under Flat it gives its height to the sheet, so the name follows the object. */
+const FLAT_STAGE = "flat-stage in-[[data-material=flat]]:min-h-72 in-[[data-material=flat]]:grid-rows-[auto_auto] in-[[data-material=flat]]:content-center";
+/** The object's room: under Flat it gives its height to the stage, so the name follows the object. */
 const FLAT_ROOM = "min-h-80 md:min-h-96 in-[[data-material=flat]]:min-h-0 md:in-[[data-material=flat]]:min-h-0 in-[[data-material=flat]]:pb-2 sm:in-[[data-material=flat]]:pb-3";
 /** The name: under Flat a caption centred under its object, across both columns, the expand button laid over its end. */
 const FLAT_NAME = "in-[[data-material=flat]]:col-span-2 in-[[data-material=flat]]:col-start-1 in-[[data-material=flat]]:row-start-2 in-[[data-material=flat]]:justify-center in-[[data-material=flat]]:pb-5";
@@ -97,7 +98,7 @@ export function WallTile({ page, href, onOpen, onFollow, heading: Heading = "h2"
       onClick={onOpen && ((e) => (e.target as HTMLElement).hasAttribute("data-open-zone") && ref.current && onOpen(ref.current, button.current))}
       data-open-zone={zone}
       data-part={device ? "plate" : world === "flat" ? "paper" : undefined}
-      className={"group/tile grid min-w-0 grid-cols-[minmax(0,1fr)_auto] grid-rows-[minmax(0,1fr)_auto] " + (device ? DEVICE_PLATE : "rounded-surface bg-well " + FLAT_SHEET)}
+      className={"group/tile grid min-w-0 grid-cols-[minmax(0,1fr)_auto] grid-rows-[minmax(0,1fr)_auto] " + (device ? DEVICE_PLATE : "rounded-surface bg-well " + FLAT_STAGE)}
     >
       <div inert={!settled} data-open-zone={zone} className={"col-span-2 grid min-w-0 place-items-center p-6 sm:p-10 " + FLAT_ROOM}>
         {near && (

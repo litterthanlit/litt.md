@@ -21,8 +21,9 @@
  *     (--tray, --tray-shade) that holds a raised arrow block (--block, --block-lift), the words and Choose files. While
  *     files are over it the tray goes deeper (--slot, --slot-shade) and its lower wall catches the light. The list is
  *     a tray of slats: each file a raised block with its name, size and a Progress rail cut into it.
- *   - worlds/flat/file-drop.tsx: a grey sheet with one sentence, "Drop files or choose", ringed in ink while a file is
- *     over it. Each file is a line of words with Retry and Remove as words.
+ *   - worlds/flat/file-drop.tsx: a sheet of paper on the grey ground with an ink circle, the words and a Choose files
+ *     pill, ringed in ink while a file is over it. The list is a second sheet; each file a line of words on it with
+ *     Retry and Remove as words.
  *   - worlds/device/file-drop.tsx: a slot with an engraved legend over LCD glass and a Choose key; each file a line of
  *     glass whose upload lights segments in steps.
  *   - worlds/rack/file-drop.tsx: a well (--tray) in a dashed edge, lit in the ink while a file is over it; the files
@@ -249,10 +250,10 @@ function PressBody({ area, words, hint, hintId, dragging, disabled, chooseLabel,
 
 /* ------------------------------------------------------------------ FileList and FileRow */
 
-/* Press: the list is a tray, and each file stands in it as a slat. Flat: rows parted by space. Device: lines of glass. Rack: one panel of thin rows. */
+/* Press: the list is a tray, and each file stands in it as a slat. Flat: rows parted by space on a sheet of paper. Device: lines of glass. Rack: one panel of thin rows. */
 const listLook = {
   press: "gap-1 rounded-surface bg-tray p-1 shadow-(--tray-shade) forced-colors:border ",
-  flat: "gap-1 ",
+  flat: "litt-paper gap-1 rounded-surface bg-surface-1 px-5 py-3 forced-colors:border ",
   device: "gap-2 ",
   rack: "overflow-hidden rounded-surface border border-line-strong bg-surface-1 [&>li:last-child]:border-b-0 ",
   heat: "overflow-hidden rounded-none border border-line-strong bg-canvas ",
