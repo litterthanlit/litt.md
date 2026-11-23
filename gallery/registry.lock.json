@@ -852,7 +852,7 @@
     },
     "flat-poll": {
       "version": "2026.11.22",
-      "hash": "0283a0cd45718a8d"
+      "hash": "4a4db73565ae294a"
     },
     "flat-popover": {
       "version": "2026.11.16",
@@ -927,8 +927,8 @@
       "hash": "7961c4270fa30a0e"
     },
     "flat-slider": {
-      "version": "2026.11.18",
-      "hash": "30f7d24b71262605"
+      "version": "2026.11.22",
+      "hash": "ec64aa84b676beba"
     },
     "flat-sources": {
       "version": "2026.11.18",
@@ -1936,7 +1936,7 @@
     },
     "poll": {
       "version": "2026.11.22",
-      "hash": "0283a0cd45718a8d"
+      "hash": "4a4db73565ae294a"
     },
     "popover": {
       "version": "2026.11.15",
@@ -2831,8 +2831,8 @@
       "hash": "f248f509d9e11776"
     },
     "slider": {
-      "version": "2026.11.19",
-      "hash": "e7c6b2ec671dbbda"
+      "version": "2026.11.22",
+      "hash": "aaae867eb56c513f"
     },
     "sources": {
       "version": "2026.11.18",

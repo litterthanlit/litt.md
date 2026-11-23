@@ -1,7 +1,7 @@
 /**
  * Flat studies: the list (plans/027, phase 0's stop). The twenty studies proposed for Flat, for Nick to confirm or
  * strike: an intro and Flat's bar, then every part as Flat's wall tile ships it today, live, with a quiet line under it
- * saying what it still lacks (its marks, its hand, its colour or words), and the two calls that wait.
+ * saying what it still lacks (its marks, its hand, its colour or words), and the call that waits.
  *
  * Each tile is the gallery's own WallTile (wall-tile.tsx) under WorldContext "flat", as #flat/components draws it, with
  * no mosaic. The frame sets Flat's theme and accent (lookAttributes) and a MaterialProvider, whatever the gallery's look,
@@ -28,18 +28,18 @@ type Study = {
 };
 
 const SET: Study[] = [
-  { id: "context-budget", marks: "Passes rules 3 and 4", hand: "Press to pick a window", look: "The reference: what Flat should look like" },
-  { id: "hold-confirm", marks: "Passes rules 3 and 4", hand: "Hold the pill; an early release rewinds", look: "On the sunset ramp" },
-  { id: "agent-run", marks: "Some parts unmarked", hand: "Open the steps, replay", look: "Colour and words fine" },
-  { id: "toast-stack", marks: "Some parts unmarked", hand: "Hover, focus or tap fans it out", look: "Colour and words fine" },
-  { id: "poll", marks: "Passes rules 3 and 4", hand: "Tap only, no drag; buttons, not a radio group", look: "Note says “click any pill”", pilot: true },
-  { id: "streak", marks: "Passes rules 3 and 4", hand: "Tap and hover", look: "Instruction text inside the part" },
-  { id: "kudos", marks: "A few words unmarked", hand: "Tap only", look: "Tap dip not picked yet" },
-  { id: "reaction-bar", marks: "Passes rules 3 and 4", hand: "Tap only", look: "Words to check" },
-  { id: "reading-progress", marks: "Passes rules 3 and 4", hand: "Click a chapter", look: "Solid fills off the ramp, not caught by the check" },
-  { id: "goal-ring", marks: "A few parts unmarked", hand: "Two keys step it, no drag", look: "Gradient off the sunset ramp" },
-  { id: "progress", marks: "No paper, no marks", hand: "A press runs a script", look: "On the sunset ramp" },
-  { id: "toast", marks: "No paper, no marks", hand: "Press to raise, drag to dismiss", look: "Colour and words fine" },
+  { id: "context-budget", marks: "Marked on paper", hand: "Tap source tags and trim", look: "The reference; 28px figure, dot tags" },
+  { id: "hold-confirm", marks: "Marked on paper", hand: "Press and hold, release rewinds", look: "28px figure, sunset segments; hold hint inside" },
+  { id: "agent-run", marks: "Marked on paper", hand: "Tap to fold steps or run again", look: "Frameless dot tags; Flat's words" },
+  { id: "toast-stack", marks: "Paper cards marked", hand: "Hover or tap to fan out, tap to dismiss", look: "Frameless dots; Flat's words" },
+  { id: "poll", marks: "Marked on paper", hand: "Tap only, no drag; buttons, not a radio group", look: "28px figure; words and hues fine", pilot: true },
+  { id: "streak", marks: "Marked on paper", hand: "Tap and hover", look: "28px figure, sunset ramp; words fine" },
+  { id: "kudos", marks: "Marked on paper", hand: "Tap only", look: "28px figure, sunset dots; tap dip not picked yet" },
+  { id: "reaction-bar", marks: "Marked on paper", hand: "Tap only", look: "28px figure; neutral pills, hue on glyph only" },
+  { id: "reading-progress", marks: "Marked on paper", hand: "Tap a chapter, no drag", look: "28px figure; ramp off the sunset rule" },
+  { id: "goal-ring", marks: "Marked on paper; ring unmarked", hand: "Two keys step it, no drag", look: "28px figure; gradient off the sunset ramp" },
+  { id: "progress", marks: "No marks", hand: "A press runs a script", look: "On the sunset ramp" },
+  { id: "toast", marks: "No marks", hand: "Press to raise, drag to dismiss", look: "Colour and words fine" },
 ];
 
 const STAPLES: Study[] = [
@@ -150,9 +150,8 @@ export function FlatStudies({ dark }: { dark: boolean }) {
       <Group title="Staples (eight)" studies={STAPLES} />
       <section aria-label="For Nick" className="flat-sheet grid max-w-[60ch] gap-3 rounded-surface p-8">
         <h2 className="text-h4 font-title text-fg">For Nick</h2>
-        <p className="text-small text-fg">Two calls wait.</p>
+        <p className="text-small text-fg">One call waits (reaction bar already gave its button fill back to the neutral pill).</p>
         <ul className="grid list-disc gap-1.5 pl-6 text-small text-fg marker:text-fg-subtle">
-          <li>Reaction bar: a data hue fills a button. Keep it, or give it back to the ink?</li>
           <li>Kudos: the tap dip, not picked yet.</li>
         </ul>
         <p className="text-small font-label text-fg">Confirm the list and the bar, or strike a tile.</p>

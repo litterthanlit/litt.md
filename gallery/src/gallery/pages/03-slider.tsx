@@ -12,6 +12,7 @@ export const meta: PageMeta = {
   title: "Slider",
   lede: "One value on a range, set by hand or by key.",
   ledeByWorld: {
+    flat: "One value on a range, set directly by hand or by key.",
     device: "A fader: a key you slide along a well, its value on the glass.",
     rack: "A value in a box you drag, filled up to where you set it.",
     heat: "A value as a row of dashes, lit up to where you set it.",
@@ -23,6 +24,7 @@ export const meta: PageMeta = {
   summary:
     "One value on a range, such as the default animation speed, or a span, such as the builds that took between 20s and 80s. Take the thumb and it follows your hand 1:1, or press the track and it goes there. Notches mark steps, and the default holds the value a little. The label row says the value.",
   summaryByWorld: {
+    flat: "One value on a range, such as a post's text size, or a span, such as posts by reading time. Take the knob and it follows your hand 1:1, or press the track and it moves there. Dots mark steps, and the default holds the knob a little. The value reads at the track's end.",
     device: "One value on a range, such as a level, or a span. A fader: a well cut into the body with engraved ticks under it, the pulled-out part lit in the ink like a meter, and a key for a cap with a line across its face. Take the key and it follows your hand 1:1, or press the well and it goes there. The value reads on an LCD in the label row.",
     rack: "One value on a range, such as a track's gain, or a span. A box set into the panel fills as a solid bar up to the value, with a 2px line in the ink at it: take the box anywhere and the line and the bar follow your hand 1:1. Ticks under the box mark steps, home's the longer one, and the value reads at the box's end in words with its unit.",
     press: "One value on a range, such as the default animation speed, or a span, such as the builds that took between 20s and 80s. A raised plate holds a slot, and a cap rides in it: take the cap and it follows your hand 1:1, press the slot and it goes there on the spring. Notches mark steps, and the default holds the cap a little. The label row says the value.",
@@ -35,7 +37,7 @@ export const meta: PageMeta = {
     press: "Take the cap and it follows the hand one to one, with no easing, sinking half a pixel as its cast tightens. Press the slot, or use an arrow key, and the cap glides there on the responsive tier, 200ms with no bounce. Pushed fast it leans, at most 4 degrees, and rights itself when the hand slows. The cap rides a deep slot cut into a plate, its notches lighting as the fill passes them, and the value sits on a small raised face that rides over the cap and sinks with it. Home holds the cap a little. Moving parts are transforms only. Reduced motion stills the glide and the lean, and the cap jumps.",
     device: "Take the key and it follows the hand one to one, with no easing, sinking its whole 2px onto its skirt while held. Press the well, or use an arrow key, and the key moves there on the responsive tier, 200ms with no bounce. A fader is a mechanism, so it never tips into a fast push. Home holds the key a little, at its longer tick. Reduced motion sends the key straight to its value.",
     rack: "Take the box anywhere and the line and the bar follow the hand one to one, with no easing. Press the box, or use an arrow key, and the bar moves there on the responsive tier. There is no cap to grab, and nothing sinks or leans. The default holds the value a little, at the longer tick. Reduced motion sends the bar straight to its value.",
-    flat: "Take the knob and it follows the hand one to one, with no easing, swelling a little under the finger. Press the track, or use an arrow key, and the knob and the ink fill move there on the responsive tier, 200ms with no bounce. Home holds the knob a little, at its larger dot. There is nothing to sink into and nothing leans. Reduced motion sends the knob straight to its value.",
+    flat: "When it first enters view, the ink fill and knob sweep in once to the starting value on Flat's expressive spring, then wait; any touch or key ends the arrival at once. Take the knob and it follows the hand one to one, swelling slightly under the finger and settling on release. Press the track, or use an arrow key, and the knob and ink fill move there on the responsive tier. Home holds the knob a little, at its larger dot. Reduced motion skips the arrival and sends the knob straight to its value.",
     heat: "Take the row and a thin marker follows the hand one to one, lighting each dash it passes on the instant tier, 100ms. Press the row, or use an arrow key, and the marker cuts there at once: nothing glides or leans. While it is held or has the keys, four brackets frame the row. The default holds the value a little, at the longer notch. Under reduced motion the dashes light at once.",
   },
 };
@@ -123,6 +125,8 @@ export const docs: PageDocs = {
 };
 
 const formatSpeed = (v: number) => `${v.toFixed(1)}x`;
+const formatPx = (v: number) => `${v} px`;
+const formatMin = (v: number) => `${v} min`;
 
 const studySlider = {
   label: "Animation speed",
@@ -134,6 +138,19 @@ const studySlider = {
   minLabel: "Slower",
   maxLabel: "Faster",
   formatValue: formatSpeed,
+};
+
+/* Under Flat the study speaks a post's text size on paper, as its lead stage does (TextSizeDemo). */
+const textSizeSlider = {
+  label: "Text size",
+  min: 14,
+  max: 22,
+  step: 1,
+  marks: [14, 22],
+  home: 18,
+  minLabel: "Smaller",
+  maxLabel: "Larger",
+  formatValue: formatPx,
 };
 
 /* Under Device the study speaks the recorder, as its lead stage does (MonitorLevelDemo). */
@@ -201,13 +218,13 @@ export const study: PageStudy = {
       { name: "The end words", selector: ".text-caption" },
     ],
     flat: [
+      { name: "The paper", selector: "[data-part=paper]" },
       { name: "The label", selector: "[id$=\"-label\"]" },
-      { name: "The value", selector: "[id$=\"-label\"] + span" },
-      { name: "The slider", selector: "[data-no-drag]" },
-      { name: "The track", selector: "[data-no-drag] > span:first-child" },
-      { name: "The ink fill", selector: "[data-no-drag] > span:first-child > span > span" },
-      { name: "The dots", selector: "[data-no-drag] > span:nth-child(2)" },
-      { name: "The knob", selector: "[data-no-drag] > span:nth-last-child(2)" },
+      { name: "The value", selector: "[data-no-drag] + [data-part=lettering]" },
+      { name: "The track", selector: "[data-part=pill]" },
+      { name: "The ink fill", selector: "[data-part=ink]" },
+      { name: "The dots", selector: "[data-no-drag] > [data-part=circle]" },
+      { name: "The knob", selector: "[data-no-drag] > span [data-part=circle]" },
       { name: "The end words", selector: ".text-caption" },
     ],
   },
@@ -229,6 +246,42 @@ export const study: PageStudy = {
     run: () => <ReplayGlide />,
   },
   byWorld: {
+    flat: {
+      object: (
+        <div data-part="paper" className="litt-paper w-full max-w-sm min-w-0 rounded-surface bg-surface-1 p-6 forced-colors:border">
+          <div data-part="lettering" className="min-w-0">
+            <Slider {...textSizeSlider} defaultValue={18} />
+          </div>
+        </div>
+      ),
+      states: {
+        default: (
+          <div data-part="paper" className="litt-paper w-full max-w-sm min-w-0 rounded-surface bg-surface-1 p-6 forced-colors:border">
+            <div data-part="lettering" className="min-w-0">
+              <Slider {...textSizeSlider} defaultValue={18} />
+            </div>
+          </div>
+        ),
+        disabled: (
+          <div data-part="paper" className="litt-paper w-full max-w-sm min-w-0 rounded-surface bg-surface-1 p-6 forced-colors:border">
+            <div data-part="lettering" className="min-w-0">
+              <Slider {...textSizeSlider} defaultValue={18} disabled />
+            </div>
+          </div>
+        ),
+      },
+      replay: {
+        label: "Replay the move",
+        caption: "Watch the knob move from 14 px to 20 px while the ink fill and value follow.",
+        run: () => (
+          <div data-part="paper" className="litt-paper w-full max-w-sm min-w-0 rounded-surface bg-surface-1 p-6 forced-colors:border">
+            <div data-part="lettering" className="min-w-0">
+              <ReplayGlide slider={textSizeSlider} from={14} to={20} />
+            </div>
+          </div>
+        ),
+      },
+    },
     device: {
       object: (
         <div className="w-full max-w-sm">
@@ -865,33 +918,37 @@ function MonitorPhoneDemo() {
   );
 }
 
-/* ---------- Flat's own (plans/024, phase 3): how large a post's words are ---------- */
-
-const formatPx = (v: number) => `${v} px`;
+/* ---------- Flat's own (plans/024, phase 3; plans/027): posts, pictures and newsletter issues on paper ---------- */
 
 function TextSizeDemo() {
   const [size, setSize] = useState(18);
   const [saved, setSaved] = useState<string | null>(null);
   return (
-    <div className="grid w-full max-w-sm gap-4">
-      <Slider
-        label="Text size"
-        help="How large the words of a post are on your site."
-        min={14}
-        max={22}
-        step={1}
-        value={size}
-        onValueChange={setSize}
-        onValueCommit={(v) => setSaved(`Saved ${formatPx(v)} for your site.`)}
-        marks={[14, 22]}
-        home={18}
-        minLabel="Smaller"
-        maxLabel="Larger"
-        formatValue={formatPx}
-      />
+    <div
+      data-part="paper"
+      className="litt-paper grid w-full max-w-sm min-w-0 gap-4 rounded-surface bg-surface-1 p-6 forced-colors:border"
+    >
+      <div data-part="lettering" className="min-w-0">
+        <Slider
+          label="Text size"
+          help="How large the words of a post are on your site."
+          min={14}
+          max={22}
+          step={1}
+          value={size}
+          onValueChange={setSize}
+          onValueCommit={(v) => setSaved(`Saved ${formatPx(v)} for your site.`)}
+          marks={[14, 22]}
+          home={18}
+          minLabel="Smaller"
+          maxLabel="Larger"
+          formatValue={formatPx}
+        />
+      </div>
       <div className="flex flex-wrap items-center gap-4">
         <Button
           size="sm"
+          data-part="pill"
           disabled={size === 18}
           onClick={() => {
             setSize(18);
@@ -900,11 +957,296 @@ function TextSizeDemo() {
         >
           Reset to 18 px
         </Button>
-        <p role="status" className="min-h-5 text-small text-fg-subtle">
+        <p role="status" data-part="lettering" className="min-h-5 text-small text-fg-subtle">
           {saved}
         </p>
       </div>
     </div>
+  );
+}
+
+function PhotoQualityFlatDemo() {
+  const [status, setStatus] = useState<string | null>(null);
+  return (
+    <form
+      data-part="paper"
+      className="litt-paper grid w-full max-w-sm min-w-0 gap-6 rounded-surface bg-surface-1 p-6 forced-colors:border"
+      onSubmit={(e) => {
+        e.preventDefault();
+        const quality = new FormData(e.currentTarget).get("quality");
+        setStatus(`Exporting 12 pictures from Spring series. The form sent quality=${quality}.`);
+      }}
+    >
+      <div data-part="lettering" className="min-w-0">
+        <Slider
+          name="quality"
+          label="Picture quality"
+          help="Lower quality makes the post load faster for readers."
+          min={60}
+          max={100}
+          step={5}
+          defaultValue={85}
+          marks={[60, 70, 80, 90, 100]}
+          minLabel="Smaller files"
+          maxLabel="Sharper pictures"
+          formatValue={formatQuality}
+        />
+      </div>
+      <div className="grid gap-3">
+        <Button type="submit" data-part="pill" className="justify-self-start">
+          Export 12 pictures
+        </Button>
+        <p role="status" data-part="lettering" className="min-h-10 text-small text-fg-subtle">
+          {status}
+        </p>
+      </div>
+    </form>
+  );
+}
+
+type Post = { id: string; title: string; minutes: number };
+
+const FLAT_POSTS: Post[] = [
+  { id: "p10", title: "Spring series · twelve pictures from the coast", minutes: 4 },
+  { id: "p9", title: "Issue 14 · Friday letter", minutes: 6 },
+  { id: "p8", title: "Greenhouse notes", minutes: 3 },
+  { id: "p7", title: "Morning trains to Oban", minutes: 7 },
+  { id: "p6", title: "Books on the desk", minutes: 5 },
+  { id: "p5", title: "Winter harbor light", minutes: 9 },
+  { id: "p4", title: "Welcome note for new readers", minutes: 2 },
+  { id: "p3", title: "Salt air and film grain", minutes: 8 },
+  { id: "p2", title: "Postcard from the ferry", minutes: 1 },
+  { id: "p1", title: "Year-end letter to subscribers", minutes: 11 },
+];
+
+function postMatchText(count: number) {
+  if (count === 0) return "No posts match";
+  return count === 1 ? "1 post matches" : `${count} posts match`;
+}
+
+const FLAT_LISTED = 5;
+
+function PostsReadingTimeDemo() {
+  const [span, setSpan] = useState<[number, number]>([2, 8]);
+  const [said, setSaid] = useState("");
+  const [from, to] = span;
+  const matches = FLAT_POSTS.filter((p) => p.minutes >= from && p.minutes <= to);
+
+  return (
+    <div
+      data-part="paper"
+      className="litt-paper grid w-full min-w-0 max-w-lg grid-cols-1 gap-6 rounded-surface bg-surface-1 p-6 forced-colors:border"
+    >
+      <div data-part="lettering" className="min-w-0">
+        <RangeSlider
+          label="Reading time"
+          min={1}
+          max={12}
+          step={1}
+          value={span}
+          onValueChange={setSpan}
+          onValueCommit={([a, b]) => setSaid(postMatchText(FLAT_POSTS.filter((p) => p.minutes >= a && p.minutes <= b).length))}
+          minLabel="Shorter"
+          maxLabel="Longer"
+          showValue
+          formatValue={formatMin}
+        />
+      </div>
+      <div className="grid min-w-0 gap-3">
+        <p aria-hidden="true" data-part="lettering" className="flex flex-wrap items-baseline justify-between gap-x-4 text-small">
+          <span className="tabular-nums text-fg">{postMatchText(matches.length)}</span>
+          {matches.length > FLAT_LISTED && (
+            <span className="text-caption font-normal text-fg-subtle">The {FLAT_LISTED} newest are listed</span>
+          )}
+        </p>
+        <p role="status" className="sr-only">
+          {said}
+        </p>
+        <ul aria-label="Posts in the span" className="grid min-w-0 gap-1.5">
+          {matches.slice(0, FLAT_LISTED).map((p) => (
+            <li
+              key={p.id}
+              data-part="bubble"
+              className="flex min-w-0 items-baseline justify-between gap-4 rounded-control bg-surface-3 px-4 py-2 text-small"
+            >
+              <span className="min-w-0 truncate text-fg">{p.title}</span>
+              <span className="shrink-0 text-caption tabular-nums text-fg-subtle">{formatMin(p.minutes)}</span>
+            </li>
+          ))}
+          {matches.length === 0 && (
+            <li data-part="lettering" className="py-4 text-center text-small text-fg-muted">
+              No posts between {formatMin(from)} and {formatMin(to)}.
+            </li>
+          )}
+        </ul>
+      </div>
+    </div>
+  );
+}
+
+const formatIssue = (v: number) => `Issue ${v}`;
+
+function IssueWindowFlatDemo() {
+  const [status, setStatus] = useState<string | null>(null);
+  return (
+    <form
+      data-part="paper"
+      className="litt-paper grid w-full max-w-sm min-w-0 gap-6 rounded-surface bg-surface-1 p-6 forced-colors:border"
+      onSubmit={(e) => {
+        e.preventDefault();
+        const [from, to] = new FormData(e.currentTarget).getAll("issue");
+        setStatus(`Preparing Issue ${from} to Issue ${to} from the newsletter archive. The form sent issue=${from} and issue=${to}.`);
+      }}
+    >
+      <div data-part="lettering" className="min-w-0">
+        <RangeSlider
+          name="issue"
+          label="Issue range"
+          help="The two ends stay at least 2 issues apart."
+          min={1}
+          max={24}
+          step={1}
+          minStepsBetweenThumbs={2}
+          defaultValue={[4, 14]}
+          minLabel="Earlier"
+          maxLabel="Latest"
+          showValue
+          formatValue={formatIssue}
+        />
+      </div>
+      <div className="grid gap-3">
+        <Button type="submit" data-part="pill" className="justify-self-start">
+          Download archive
+        </Button>
+        <p role="status" data-part="lettering" className="min-h-10 text-small text-fg-subtle">
+          {status}
+        </p>
+      </div>
+    </form>
+  );
+}
+
+function FlatDisabledDemo() {
+  return (
+    <div
+      data-part="paper"
+      className="litt-paper grid w-full max-w-xl min-w-0 gap-x-10 gap-y-8 rounded-surface bg-surface-1 p-6 sm:grid-cols-2 forced-colors:border"
+    >
+      <div data-part="lettering" className="min-w-0">
+        <Slider label="Text size" min={14} max={22} step={1} defaultValue={16} formatValue={formatPx} help="Applies to the next post." />
+      </div>
+      <div data-part="lettering" className="min-w-0">
+        <Slider
+          label="Text size"
+          min={14}
+          max={22}
+          step={1}
+          defaultValue={18}
+          formatValue={formatPx}
+          disabled
+          help="Locked while the issue publishes."
+        />
+      </div>
+      <div data-part="lettering" className="min-w-0">
+        <RangeSlider label="Reading time" min={1} max={12} defaultValue={[2, 8]} showValue formatValue={formatMin} help="Filters the post list." />
+      </div>
+      <div data-part="lettering" className="min-w-0">
+        <RangeSlider
+          label="Reading time"
+          min={1}
+          max={12}
+          defaultValue={[2, 8]}
+          showValue
+          formatValue={formatMin}
+          disabled
+          help="Locked while the archive loads."
+        />
+      </div>
+    </div>
+  );
+}
+
+function FlatReadingSheetDemo() {
+  const [open, setOpen] = useState(false);
+  const [textSize, setTextSize] = useState(18);
+  const [pictureQuality, setPictureQuality] = useState(85);
+  const [status, setStatus] = useState<string | null>(null);
+
+  return (
+    <div
+      data-part="paper"
+      className="litt-paper grid w-full max-w-xs min-w-0 justify-items-center gap-3 rounded-surface bg-surface-1 p-6 forced-colors:border"
+    >
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogTrigger asChild>
+          <Button data-part="pill" icon={<SettingsIcon />}>
+            Reading settings
+          </Button>
+        </DialogTrigger>
+        <DialogContent
+          title="Reading settings"
+          description="Applies to every post on your site."
+          footer={
+            <>
+              <DialogClose asChild>
+                <Button data-part="pill">Cancel</Button>
+              </DialogClose>
+              <Button
+                variant="primary"
+                data-part="ink"
+                onClick={() => {
+                  setOpen(false);
+                  setStatus(`Saved ${formatPx(textSize)} and ${formatQuality(pictureQuality)} for your site.`);
+                }}
+              >
+                Save changes
+              </Button>
+            </>
+          }
+        >
+          <div className="grid gap-6">
+            <div data-part="lettering" className="min-w-0">
+              <Slider
+                label="Text size"
+                min={14}
+                max={22}
+                step={1}
+                value={textSize}
+                onValueChange={setTextSize}
+                minLabel="Smaller"
+                maxLabel="Larger"
+                formatValue={formatPx}
+              />
+            </div>
+            <div data-part="lettering" className="min-w-0">
+              <Slider
+                label="Picture quality"
+                min={60}
+                max={100}
+                step={5}
+                value={pictureQuality}
+                onValueChange={setPictureQuality}
+                minLabel="Smaller files"
+                maxLabel="Sharper pictures"
+                formatValue={formatQuality}
+              />
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+      <p role="status" data-part="lettering" className="min-h-5 text-center text-small text-fg-subtle">
+        {status}
+      </p>
+    </div>
+  );
+}
+
+/** The same sheet, forced to the phone path so a desktop can preview it. A real phone needs no wrapper. */
+function FlatPhoneDemo() {
+  return (
+    <DeviceProvider mode="phone">
+      <FlatReadingSheetDemo />
+    </DeviceProvider>
   );
 }
 
@@ -1113,7 +1455,7 @@ export default function SliderPage() {
             title: "Text size",
             code: "TextSizeDemo",
             caption:
-              "How large the words of a post are, from 14 px to 22 px. Take the knob and push: it follows your hand 1:1, and the track fills up to it. Press the track and the knob goes there on the responsive spring, as it does on the arrow keys. A notch marks each end, and 18 px, the default, holds the knob a little, so it is easy to find again. The label row says 18 px, and a screen reader says the same. The save note appears on release, from onValueCommit.",
+              "How large the words of a post are, from 14 px to 22 px. Take the knob and push: it follows your hand 1:1, and the track fills up to it. Press the track and the knob moves there on the responsive tier, as it does on the arrow keys. A dot marks each end, and 18 px, the default, holds the knob a little, so it is easy to find again. The end of the track says 18 px, and a screen reader says the same. The save note appears on release, from onValueCommit.",
           },
           device: {
             demo: <MonitorLevelDemo />,
@@ -1147,6 +1489,12 @@ export default function SliderPage() {
         tier="instant"
         code="QualityDemo"
         byWorld={{
+          flat: {
+            demo: <PhotoQualityFlatDemo />,
+            code: "PhotoQualityFlatDemo",
+            caption:
+              "The slider steps in fives, snaps as you drag, and sends its name and value with the form, like a native field. Press Export 12 pictures to see what was sent.",
+          },
           device: {
             demo: <BitrateDemo />,
             code: "BitrateDemo",
@@ -1174,6 +1522,13 @@ export default function SliderPage() {
         size="lg"
         code="BuildsDemo"
         byWorld={{
+          flat: {
+            demo: <PostsReadingTimeDemo />,
+            title: "Posts by reading time",
+            code: "PostsReadingTimeDemo",
+            caption:
+              "Two knobs on one track, the ink fill between them. Take either knob, or focus one and use the arrow keys. The count and the post list follow at once. The ends never cross and stay one step apart. The value reads 2 min to 8 min, in words, and each end tells a screen reader its own value. A screen reader hears how many posts match once per key press or released drag, not on every move.",
+          },
           device: {
             demo: <TakeLengthDemo />,
             title: "Takes by length",
@@ -1192,6 +1547,13 @@ export default function SliderPage() {
         tier="instant"
         code="PriceDemo"
         byWorld={{
+          flat: {
+            demo: <IssueWindowFlatDemo />,
+            title: "Issues in a form",
+            code: "IssueWindowFlatDemo",
+            caption:
+              "In a form, both ends send their value under one name, so the form holds issue twice, from first. This one stays two steps apart, and the help text says so. Press Download archive to see what was sent.",
+          },
           device: {
             demo: <LoopRegionDemo />,
             title: "A loop in a form",
@@ -1209,7 +1571,15 @@ export default function SliderPage() {
         title="Disabled"
         tier="instant"
         code="DisabledDemo"
-        byWorld={{ device: { demo: <RecorderDisabledDemo />, code: "RecorderDisabledDemo" } }}
+        byWorld={{
+          flat: {
+            demo: <FlatDisabledDemo />,
+            code: "FlatDisabledDemo",
+            caption:
+              "A disabled slider softens its track and knob and keeps the value readable. A range does the same. Tab skips it, and the help text says why it is locked.",
+          },
+          device: { demo: <RecorderDisabledDemo />, code: "RecorderDisabledDemo" },
+        }}
         caption="The disabled slider lies flat, with nothing to push: the plate and the cap go to surface-2 with hairlines, the slot to surface-3, and the value stays readable. A range does the same. Tab skips it, and the help text says why it is locked."
       >
         <DisabledDemo />
@@ -1219,7 +1589,15 @@ export default function SliderPage() {
         title="In a phone sheet"
         tier="instant"
         code="PhoneDemo"
-        byWorld={{ device: { demo: <MonitorPhoneDemo />, code: "MonitorPhoneDemo" } }}
+        byWorld={{
+          flat: {
+            demo: <FlatPhoneDemo />,
+            code: "FlatPhoneDemo",
+            caption:
+              "Open the sheet and push a knob sideways: only the knob moves. A drag that starts on a slider never moves the sheet, and a vertical swipe on it still scrolls the sheet's body. The hit area is 44px tall, so a finger finds it.",
+          },
+          device: { demo: <MonitorPhoneDemo />, code: "MonitorPhoneDemo" },
+        }}
         size="lg"
         caption="Open the sheet and push a cap sideways: only the cap moves. A drag that starts on a slider never moves the sheet, and a vertical swipe on it still scrolls the sheet's body. The plate is 44px tall, so a finger finds it."
       >

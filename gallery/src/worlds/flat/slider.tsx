@@ -1,16 +1,32 @@
 /**
- * The Slider's Flat body (proposals/worlds.md, Bodies; proposals/flat-pill.md): a page, not an instrument. No plate, no
- * shadow, no notch cut into anything. The track is a 6px --surface-3 pill, the pulled-out part is the ink, and the cap is
- * a round 20px ink knob with no grip line and nothing to sink into: held, it only swells a little under the finger. The
- * marks are dots under the track and home's is a larger dot. The value is said in words at the end of the track, in the
- * ink, so a slider reads as a line of text with a track in it. The travel's inset is --sl-pad, the knob's radius (10px),
- * which the root sets and the hand reads back as its left padding. The ring for keyboard focus goes on the knob, since
- * the root is invisible. It takes the contract the Slider and the RangeSlider resolve (SliderBodyProps): the props, the
- * keys and the hand are theirs, not this file's. A range has no end to say its span at, so its label row does.
+ * The Slider's Flat body (proposals/worlds.md, Bodies; proposals/flat-pill.md; plans/027): a page, not an instrument.
+ * No plate, no shadow, no notch cut into anything. The track is a 6px pill (`data-part="pill"`), the pulled-out part
+ * is the ink (`data-part="ink"`), and the knob is a round 20px ink circle (`data-part="circle"`) with no grip line:
+ * held, it swells immediately under the finger on the instant tier and settles on release on Flat's expressive spring.
+ * The marks are dots (`data-part="circle"`) under the track and home's is a larger dot. The value is said in words at
+ * the end of the track (`data-part="lettering"`), in the ink, so a slider reads as a line of text with a track in it.
+ *
+ * When it first enters view (`useInView`, once), the ink fill and knob sweep in once to the starting value on Flat's
+ * expressive spring, then wait. Any pointerdown, key press, or value change cancels the arrival immediately so the
+ * hand always wins. Under reduced motion (`useMotionDial().reduced`) the arrival is skipped completely.
+ *
+ * The travel's inset is --sl-pad, the knob's radius (10px), which the root sets and the hand reads back as its left
+ * padding. The ring for keyboard focus goes on the knob, since the root is invisible. It takes the contract the Slider
+ * and the RangeSlider resolve (SliderBodyProps): the props, the keys and the hand are theirs, not this file's.
  */
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type Ref,
+  type RefObject,
+} from "react";
 import * as RadixSlider from "@radix-ui/react-slider";
-import type { CSSProperties } from "react";
+import { animate, motion, useInView, useMotionValue, useTransform, type AnimationPlaybackControls } from "motion/react";
 import type { SliderBodyProps } from "@/components/slider";
+import { useMotionDial, useTransition } from "@/motion";
 
 const rootLook =
   "group relative block h-control-md min-w-0 cursor-grab touch-pan-y select-none rounded-none bg-transparent shadow-none " +
@@ -23,7 +39,7 @@ const capTravel = "pointer-events-none absolute inset-y-0";
 const fillTravel = "absolute inset-y-0 left-2 right-2";
 const fillLook = "bg-fg group-data-disabled:bg-[color-mix(in_oklab,var(--fg)_12%,transparent)] forced-colors:bg-[Highlight]";
 const glides = " transition-transform duration-(--dur-responsive) ease-responsive";
-const capBox = "absolute top-3 -right-2.5 h-5 w-5 origin-center transition-transform duration-(--dur-responsive) ease-responsive";
+const capBox = "absolute top-3 -right-2.5 h-5 w-5 origin-center";
 const capFace = "absolute inset-0 rounded-pill bg-fg forced-colors:border forced-colors:bg-[Highlight] group-data-disabled:bg-fg-disabled";
 /* One cap rings itself when the root has keyboard focus; on a range the focused cap rings itself (cap.ring). */
 const ringOne = " group-has-[:focus-visible]:outline-2 group-has-[:focus-visible]:outline-offset-2 group-has-[:focus-visible]:outline-focus";
@@ -31,31 +47,143 @@ const ringOf = " outline-2 outline-offset-2 outline-focus";
 const thumbTrack = "absolute inset-y-0";
 const thumbHidden = "block h-full w-2 opacity-0 focus-visible:outline-none";
 /* The value in words: the ink, tabular, a fixed width so the track does not breathe as it changes. */
-const valueLook = "min-w-[4ch] text-right text-small font-title tabular-nums text-fg group-data-disabled:text-fg-subtle";
+const valueLook = "shrink-0 min-w-[4ch] text-right text-small font-title tabular-nums text-fg group-data-disabled:text-fg-subtle";
 
 const inset = (less = 0) => `calc(var(--sl-pad) - ${less}px)`;
 const insetX = (less = 0): CSSProperties => ({ left: inset(less), right: inset(less) });
+const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
+
+function assignRef<T>(ref: Ref<T> | undefined, el: T | null) {
+  if (typeof ref === "function") ref(el);
+  else if (ref) (ref as RefObject<T | null>).current = el;
+}
 
 /** The Flat body: a pill track, an ink fill and a round knob, for one cap or two, with the value in words at the track's end. */
 export function SliderFlat({ range, caps, fill, notches, glide, held, shown, disabled, plateRef, root, thumbs }: SliderBodyProps) {
+  const rootElRef = useRef<HTMLSpanElement | null>(null);
+  const setRootRef = useCallback(
+    (el: HTMLSpanElement | null) => {
+      rootElRef.current = el;
+      assignRef(plateRef, el);
+    },
+    [plateRef],
+  );
+
+  const { reduced } = useMotionDial();
+  const expressive = useTransition("expressive");
+  const instant = useTransition("instant");
+  const inView = useInView(rootElRef, { once: true, amount: 0.2 });
+
+  const progress = useMotionValue(1);
+  const [arriving, setArriving] = useState(false);
+  const animRef = useRef<AnimationPlaybackControls | null>(null);
+  const doneRef = useRef(false);
+
+  const p0 = caps[0]?.p ?? 0;
+  const p1 = caps[1]?.p ?? p0;
+  const initialRef = useRef({ p0, p1 });
+  const targetRef = useRef({ p0, p1, range });
+  targetRef.current = { p0, p1, range };
+  const expressiveRef = useRef(expressive);
+  expressiveRef.current = expressive;
+
+  const cancelArrival = useCallback(() => {
+    doneRef.current = true;
+    if (animRef.current) {
+      animRef.current.stop();
+      animRef.current = null;
+    }
+    progress.set(1);
+    setArriving(false);
+  }, [progress]);
+
+  useEffect(() => () => animRef.current?.stop(), []);
+
+  useEffect(() => {
+    if (reduced || disabled || held) cancelArrival();
+  }, [reduced, disabled, held, cancelArrival]);
+
+  useEffect(() => {
+    if (p0 !== initialRef.current.p0 || p1 !== initialRef.current.p1) cancelArrival();
+  }, [p0, p1, cancelArrival]);
+
+  useEffect(() => {
+    if (!inView || doneRef.current || reduced || disabled || held) return;
+    doneRef.current = true;
+    const { p0: a, p1: b, range: isRange } = targetRef.current;
+    const hasSpan = isRange ? Math.abs(b - a) > 1e-4 : a > 1e-4;
+    if (!hasSpan) return;
+    progress.set(0);
+    setArriving(true);
+    const controls = animate(progress, 1, {
+      ...expressiveRef.current,
+      onComplete: () => {
+        if (animRef.current !== controls) return;
+        animRef.current = null;
+        setArriving(false);
+      },
+    });
+    animRef.current = controls;
+  }, [inView, reduced, disabled, held, progress]);
+
+  const arrivalFillTransform = useTransform(progress, (t) => {
+    const { p0: a, p1: b, range: isRange } = targetRef.current;
+    if (!isRange) {
+      const p = clamp01(a * t);
+      return `translateX(${((p - 1) * 100).toFixed(3)}%)`;
+    }
+    const mid = (a + b) / 2;
+    const pf = clamp01(mid + (a - mid) * t);
+    const pt = clamp01(mid + (b - mid) * t);
+    return `translateX(${(pf * 100).toFixed(3)}%) scaleX(${Math.max(0, pt - pf).toFixed(4)})`;
+  });
+
+  const arrivalCap0Transform = useTransform(progress, (t) => {
+    const { p0: a, p1: b, range: isRange } = targetRef.current;
+    const p = isRange ? clamp01((a + b) / 2 + (a - (a + b) / 2) * t) : clamp01(a * t);
+    return `translateX(${((p - 1) * 100).toFixed(3)}%)`;
+  });
+
+  const arrivalCap1Transform = useTransform(progress, (t) => {
+    const { p0: a, p1: b } = targetRef.current;
+    const p = clamp01((a + b) / 2 + (b - (a + b) / 2) * t);
+    return `translateX(${((p - 1) * 100).toFixed(3)}%)`;
+  });
+
+  const handlePointerDown: NonNullable<SliderBodyProps["root"]["onPointerDown"]> = (e) => {
+    if (arriving || !doneRef.current) cancelArrival();
+    root.onPointerDown?.(e);
+  };
+
+  const handleKeyDown: NonNullable<SliderBodyProps["root"]["onKeyDown"]> = (e) => {
+    if (arriving || !doneRef.current) cancelArrival();
+    root.onKeyDown?.(e);
+  };
+
   const slider = (
     <RadixSlider.Root
-      ref={plateRef}
+      ref={setRootRef}
       {...root}
+      onPointerDown={handlePointerDown}
+      onKeyDown={handleKeyDown}
       data-body={shown === undefined ? "flat" : undefined}
       data-no-drag=""
       data-held={held ? "" : undefined}
       className={rootLook + (shown === undefined ? " w-full" : " flex-1")}
     >
-      <span aria-hidden="true" className={track} style={insetX(8)}>
-        <span className={fillTravel + (range ? " origin-left" : "") + (glide ? glides : "")} style={fill}>
-          <span className={(range ? "absolute inset-0 " : "absolute inset-y-0 right-0 w-[calc(100%+0.5rem)] ") + fillLook} />
-        </span>
+      <span aria-hidden="true" data-part="pill" className={track} style={insetX(8)}>
+        <motion.span
+          className={fillTravel + (range ? " origin-left" : "") + (!arriving && glide ? glides : "")}
+          style={arriving ? { transform: arrivalFillTransform } : fill}
+        >
+          <span data-part="ink" className={(range ? "absolute inset-0 " : "absolute inset-y-0 right-0 w-[calc(100%+0.5rem)] ") + fillLook} />
+        </motion.span>
       </span>
       {notches.map((n) => (
         <span
           key={n.p}
           aria-hidden="true"
+          data-part="circle"
           className={
             "pointer-events-none absolute -translate-x-1/2 rounded-pill group-data-disabled:hidden forced-colors:bg-[CanvasText] " +
             (n.home ? "top-9 size-1.5 bg-fg" : "top-9.5 size-1 bg-fg-subtle")
@@ -64,11 +192,25 @@ export function SliderFlat({ range, caps, fill, notches, glide, held, shown, dis
         />
       ))}
       {caps.map((cap, i) => (
-        <span key={i} aria-hidden="true" className={capTravel + (glide ? glides : "")} style={{ ...insetX(), transform: `translateX(${((cap.p - 1) * 100).toFixed(3)}%)` }}>
-          <span className={capBox} style={{ transform: `scale(${cap.held ? 1.12 : 1})` }}>
-            <span className={capFace + (range ? (cap.ring ? ringOf : "") : ringOne)} />
-          </span>
-        </span>
+        <motion.span
+          key={i}
+          aria-hidden="true"
+          className={capTravel + (!arriving && glide ? glides : "")}
+          style={
+            arriving
+              ? { ...insetX(), transform: i === 0 ? arrivalCap0Transform : arrivalCap1Transform }
+              : { ...insetX(), transform: `translateX(${((cap.p - 1) * 100).toFixed(3)}%)` }
+          }
+        >
+          <motion.span
+            className={capBox}
+            initial={false}
+            animate={{ scale: cap.held ? 1.14 : 1 }}
+            transition={cap.held ? instant : expressive}
+          >
+            <span data-part="circle" className={capFace + (range ? (cap.ring ? ringOf : "") : ringOne)} />
+          </motion.span>
+        </motion.span>
       ))}
       <RadixSlider.Track className={thumbTrack} style={insetX(4)}>
         {thumbs.map(({ key, ...thumb }) => (
@@ -79,9 +221,9 @@ export function SliderFlat({ range, caps, fill, notches, glide, held, shown, dis
   );
   if (shown === undefined) return slider;
   return (
-    <div data-body="flat" data-disabled={disabled ? "" : undefined} className="group flex items-center gap-3">
+    <div data-body="flat" data-disabled={disabled ? "" : undefined} className="group flex min-w-0 items-center gap-3">
       {slider}
-      <span aria-hidden="true" className={valueLook}>
+      <span aria-hidden="true" data-part="lettering" className={valueLook}>
         {shown}
       </span>
     </div>

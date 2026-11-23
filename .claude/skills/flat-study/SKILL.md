@@ -1,6 +1,6 @@
 ---
 name: flat-study
-description: Take one Flat part to Flat's study bar (plans/027): built from Flat's materials and marked, moved by the hand, one arrival, Flat's words. Use for any work on a Flat study, a Flat body in gallery/src/worlds/flat, or one of Flat's own parts (poll, streak, kudos, reaction-bar, goal-ring, reading-progress).
+description: Take one Flat part to Flat's study bar (plans/027): built from Flat's materials and marked, moved by the hand, one arrival, Flat's words. Use for any work on a Flat study, a Flat body in gallery/src/worlds/flat, or one of Flat's ten own parts (context-budget, hold-confirm, agent-run, toast-stack, poll, streak, kudos, reaction-bar, reading-progress, goal-ring).
 ---
 
 # A Flat study
@@ -13,7 +13,7 @@ before the first has passed and is committed.
 - `plans/027-flat-to-the-bar.md` (the plan, Nick's calls, the list).
 - `skills/litt-md/taste/litt-principles.md`, Flat: the materials in order, the colour table, the voice.
 - The part: its contract in `gallery/src/components/<part>.tsx`, Flat's body in `gallery/src/worlds/flat/<part>.tsx`
-  (Flat's own six have no separate body), and its page in `gallery/src/gallery/pages/`.
+  (Flat's own ten have no separate body), and its page in `gallery/src/gallery/pages/`.
 - `gallery/src/motion/hand.ts` (`useHand`, `snap`, `useSettle`) and `gallery/src/motion/index.tsx` (`useTransition`,
   `useMotionDial`).
 
@@ -36,7 +36,7 @@ before the first has passed and is committed.
 - [ ] 8. **Flat's words.** Its nouns (site, post, issue, letter, reader) and demo strings. A lede says what the part
       does, never what it is made of.
 - [ ] 9. **Its page can take it apart.** A `study` export: Anatomy parts, States, Replay.
-- [ ] 10. **Small blast radius.** Only Flat's body (or the component, for Flat's own six) and the page change, unless
+- [ ] 10. **Small blast radius.** Only Flat's body (or the component, for Flat's own ten) and the page change, unless
       the contract truly needs a prop. If it does, stop and say so first.
 
 ## Never
