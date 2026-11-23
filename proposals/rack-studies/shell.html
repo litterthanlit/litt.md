@@ -1,0 +1,675 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Rack Studies</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Rack Studies (litt.md): Ableton Live modular interface × Swiss editorial data grid.
+   Flat grey ground, crisp 1px outlines, 0px–2px square corners, zero shadows or glass,
+   vivid flat clip/data hues strictly on data & tracks, Rack yellow (#ffc933) as the one
+   lit primary fill, and Rack's "on the beat" motion language: 0ms on the frame under a hand,
+   100ms opacity cut-in staggered by column on the beat, 75ms cut-out, zero springs or bounce. */
+:root {
+  --canvas: #e6e7ec;
+  --panel: #f1f2f5;
+  --surface-2: #dadce3;
+  --surface-3: #cfd2db;
+  --cut: #ffffff;
+  --block: #f7f8fa;
+  --block-hover: #e2e4ec;
+  --tray: #d4d6df;
+  --slot: #c8cbd6;
+  --slot-fill: #3d3f47;
+  --ink: #111113;
+  --on-ink: #ffffff;
+  --muted: #4b4d56;
+  --subtle: #666873;
+  --disabled: #8f929e;
+  --line: #c2c5cf;
+  --line-strong: #9ca0ad;
+  --border: #232429;
+  --border-soft: #757885;
+
+  /* Rack's one accent: yellow, only ever a flat fill inside a 1px outline. */
+  --accent: #ffc933;
+  --accent-hover: #ffd45c;
+  --on-accent: #111113;
+
+  /* Vivid flat data & track hues (Swiss editorial × Ableton clip palette). */
+  --violet: #7b61ff;
+  --violet-tint: #ded7ff;
+  --violet-text: #5136d4;
+  --amber: #e84b26;
+  --amber-tint: #ffd4c7;
+  --amber-text: #b83312;
+  --orchid: #c844df;
+  --orchid-tint: #f3d2fa;
+  --orchid-text: #9321a8;
+  --blue: #0077c2;
+  --blue-tint: #c5e7ff;
+  --blue-text: #00578f;
+  --teal: #008a6e;
+  --teal-tint: #c0f0e3;
+  --teal-text: #00614d;
+  --green: #227e00;
+  --green-tint: #c9ebc0;
+  --green-text: #145900;
+  --danger: #cc2229;
+  --danger-tint: #ffd3d5;
+
+  --font: "Inter", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --r-panel: 2px;
+  --r-control: 0px;
+  --dur-in: 100ms;
+  --dur-out: 75ms;
+  --dur-snap: 140ms;
+  --beat-col: 36ms;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --canvas: #141417;
+  --panel: #1d1e22;
+  --surface-2: #26272d;
+  --surface-3: #30323a;
+  --cut: #111114;
+  --block: #25262c;
+  --block-hover: #32343d;
+  --tray: #0e0e11;
+  --slot: #0d0d10;
+  --slot-fill: #a2a5b2;
+  --ink: #f1f2f5;
+  --on-ink: #111113;
+  --muted: #b5b7c2;
+  --subtle: #8f929f;
+  --disabled: #5c5f6b;
+  --line: #2e3038;
+  --line-strong: #434652;
+  --border: #767a8a;
+  --border-soft: #4e515e;
+
+  --accent: #ffc933;
+  --accent-hover: #ffd45c;
+  --on-accent: #111113;
+
+  --violet: #957dff;
+  --violet-tint: #2e2554;
+  --violet-text: #c2b3ff;
+  --amber: #f2623c;
+  --amber-tint: #4d2216;
+  --amber-text: #ff9c80;
+  --orchid: #d964ee;
+  --orchid-tint: #451e4d;
+  --orchid-text: #f0a8ff;
+  --blue: #22a0f2;
+  --blue-tint: #0d3652;
+  --blue-text: #7ccdff;
+  --teal: #0fb895;
+  --teal-tint: #0b3d33;
+  --teal-text: #6debd0;
+  --green: #58b83a;
+  --green-tint: #1d3c15;
+  --green-text: #95e07d;
+  --danger: #ff6b6b;
+  --danger-tint: #4a1c1e;
+  color-scheme: dark;
+} }
+:root[data-theme="dark"] {
+  --canvas: #141417;
+  --panel: #1d1e22;
+  --surface-2: #26272d;
+  --surface-3: #30323a;
+  --cut: #111114;
+  --block: #25262c;
+  --block-hover: #32343d;
+  --tray: #0e0e11;
+  --slot: #0d0d10;
+  --slot-fill: #a2a5b2;
+  --ink: #f1f2f5;
+  --on-ink: #111113;
+  --muted: #b5b7c2;
+  --subtle: #8f929f;
+  --disabled: #5c5f6b;
+  --line: #2e3038;
+  --line-strong: #434652;
+  --border: #767a8a;
+  --border-soft: #4e515e;
+
+  --accent: #ffc933;
+  --accent-hover: #ffd45c;
+  --on-accent: #111113;
+
+  --violet: #957dff;
+  --violet-tint: #2e2554;
+  --violet-text: #c2b3ff;
+  --amber: #f2623c;
+  --amber-tint: #4d2216;
+  --amber-text: #ff9c80;
+  --orchid: #d964ee;
+  --orchid-tint: #451e4d;
+  --orchid-text: #f0a8ff;
+  --blue: #22a0f2;
+  --blue-tint: #0d3652;
+  --blue-text: #7ccdff;
+  --teal: #0fb895;
+  --teal-tint: #0b3d33;
+  --teal-text: #6debd0;
+  --green: #58b83a;
+  --green-tint: #1d3c15;
+  --green-text: #95e07d;
+  --danger: #ff6b6b;
+  --danger-tint: #4a1c1e;
+  color-scheme: dark;
+}
+@media (prefers-reduced-motion: reduce) {
+  :root { --dur-in: 0ms; --dur-out: 0ms; --dur-snap: 0ms; --beat-col: 0ms; }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--canvas);
+  color: var(--ink);
+  font: 400 13px/1.4 var(--font);
+  letter-spacing: -0.005em;
+  -webkit-font-smoothing: antialiased;
+  font-variant-numeric: tabular-nums;
+}
+button, input { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* Shared Rack primitive classes used across the shell and studies */
+.rk-seg { display: inline-flex; border: 1px solid var(--border); background: var(--block); }
+.rk-seg button {
+  border: 0; border-right: 1px solid var(--border); background: transparent; color: var(--ink);
+  height: 28px; padding: 0 11px; font-size: 12px; font-weight: 500; cursor: pointer; white-space: nowrap;
+}
+.rk-seg button:last-child { border-right: 0; }
+.rk-seg button:hover { background: var(--block-hover); }
+.rk-seg button[aria-pressed="true"],
+.rk-seg button[aria-checked="true"],
+.rk-seg button.is-on { background: var(--ink); color: var(--on-ink); }
+.rk-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  height: 28px; padding: 0 11px; border: 1px solid var(--border); border-radius: var(--r-control);
+  background: var(--block); color: var(--ink); font-size: 12px; font-weight: 500; cursor: pointer;
+}
+.rk-btn:hover { background: var(--block-hover); }
+.rk-btn:active { background: var(--surface-3); }
+.rk-btn.is-accent { background: var(--accent); color: var(--on-accent); border-color: var(--ink); font-weight: 600; }
+.rk-btn.is-accent:hover { background: var(--accent-hover); }
+.rk-btn.is-ink { background: var(--ink); color: var(--on-ink); }
+.rk-fig { font: 400 10px/1.3 var(--mono); color: var(--subtle); letter-spacing: 0.04em; text-transform: uppercase; }
+.rk-mono { font-family: var(--mono); }
+
+/* Top editorial Masthead (1px ruled strip) */
+.rg-top {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px;
+  padding: 10px max(20px, env(safe-area-inset-left));
+  border-bottom: 1px solid var(--line-strong);
+  font-size: 12px;
+}
+.rg-brand { display: flex; align-items: baseline; gap: 10px; }
+.rg-brand strong { font-weight: 700; font-size: 14px; letter-spacing: -0.02em; }
+.rg-brand span { color: var(--muted); border-left: 1px solid var(--line-strong); padding-left: 10px; }
+.rg-meta { font: 400 10px/1 var(--mono); color: var(--subtle); letter-spacing: 0.05em; text-transform: uppercase; display: flex; align-items: center; gap: 14px; }
+.rg-bpm { display: inline-flex; align-items: center; gap: 6px; }
+.rg-pulse { width: 7px; height: 7px; background: var(--accent); border: 1px solid var(--border); opacity: 0.35; }
+.rg-pulse.is-beat { opacity: 1; }
+
+/* Main gallery layout */
+.rg { max-width: 1360px; margin: 0 auto; padding: 28px max(20px, env(safe-area-inset-left)) 64px; }
+.rg-head {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 16px 24px;
+  padding-bottom: 22px; border-bottom: 1px solid var(--border); margin-bottom: 24px;
+}
+.rg-kicker { font: 400 11px/1.2 var(--mono); color: var(--subtle); margin: 0 0 8px; }
+.rg-head h1 { margin: 0; font: 600 clamp(28px, 3.6vw, 44px)/1.02 var(--font); letter-spacing: -0.035em; }
+.rg-head p { margin: 10px 0 0; color: var(--muted); font-size: 14px; max-width: 62ch; line-height: 1.45; }
+.rg-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; justify-content: flex-end; }
+
+/* Filter row */
+.rg-bar-filter { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 20px; }
+.rg-count { font: 400 11px/1 var(--mono); color: var(--subtle); }
+
+/* The Wall: crisp 1px-ruled architectural grid of live studies */
+.rg-wall {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 380px), 1fr));
+  gap: 24px 20px;
+}
+.rg-wall li { display: grid; }
+.rg-wall li[hidden] { display: none; }
+.rg-tile {
+  display: grid; grid-template-rows: auto 1fr auto; width: 100%; padding: 0;
+  border: 1px solid var(--line-strong); border-radius: var(--r-panel);
+  background: var(--panel); text-align: left; cursor: pointer;
+}
+.rg-tile:hover { border-color: var(--ink); }
+.rg-tile-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  padding: 7px 10px; border-bottom: 1px solid var(--line); background: var(--surface-2);
+  font-size: 11px;
+}
+.rg-tile-head .rg-idx { font: 500 10px/1 var(--mono); color: var(--subtle); }
+.rg-tile-head .rg-cat { font: 500 10px/1 var(--mono); color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+.rg-stage {
+  position: relative; height: 276px; background: var(--panel); overflow: hidden;
+  display: grid; place-items: center;
+}
+.rg-stage > .rp-mount {
+  width: 100%; height: 100%; display: grid; place-items: center;
+  padding: 14px; container-type: inline-size; pointer-events: none;
+}
+.rg-tile-foot {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 10px;
+  padding: 9px 10px; border-top: 1px solid var(--line); background: var(--panel); min-width: 0;
+}
+.rg-tile-foot b { font-size: 13px; font-weight: 600; white-space: nowrap; flex: none; letter-spacing: -0.01em; }
+.rg-tile-foot span { color: var(--muted); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+
+/* The Sheet: Rack cuts in cleanly on the beat (100ms opacity, zero scale/bounce, column stagger). */
+.rg-sheet {
+  position: fixed; inset: 0; z-index: 20; display: none;
+  background: var(--canvas); overflow: auto; overscroll-behavior: contain;
+}
+.rg-sheet.is-open { display: grid; grid-template-rows: auto 1fr auto; }
+.rg-sheet-bar {
+  display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 8px;
+  padding: 10px 16px; border-bottom: 1px solid var(--border); background: var(--panel);
+}
+.rg-sheet-bar .rg-close-wrap { justify-self: start; display: flex; align-items: center; gap: 8px; }
+.rg-sheet-title { margin: 0; font: 600 14px/1.2 var(--font); text-align: center; display: flex; align-items: center; gap: 8px; }
+.rg-sheet-title code { font: 500 11px/1 var(--mono); color: var(--subtle); }
+.rg-sheet-steps { justify-self: end; display: flex; align-items: center; gap: 6px; }
+.rg-open { display: grid; place-items: center; min-height: 0; padding: 28px 20px; }
+.rg-open > .rp-mount {
+  width: min(100%, 980px); min-height: min(500px, 100%);
+  display: grid; place-items: center; container-type: inline-size;
+}
+.rg-about {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 20px;
+  padding: 12px 20px; border-top: 1px solid var(--line-strong); background: var(--panel);
+  font-size: 12px; color: var(--muted);
+}
+.rg-about b { color: var(--ink); font-weight: 600; margin-right: 8px; }
+.rg-foot {
+  margin-top: 32px; padding-top: 14px; border-top: 1px solid var(--line-strong);
+  display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 16px;
+  color: var(--subtle); font-size: 12px;
+}
+
+@media (max-width: 720px) {
+  .rg-head { grid-template-columns: 1fr; }
+  .rg-controls { justify-content: flex-start; }
+  .rg-stage { height: 260px; }
+}
+</style>
+</head>
+<body>
+<div class="rg-top">
+  <div class="rg-brand">
+    <strong>rack</strong>
+    <span>Agentic &amp; Interface Studies · Swiss Editorial × Modular Tooling</span>
+  </div>
+  <div class="rg-meta">
+    <span class="rg-bpm"><span class="rg-pulse" id="rg-pulse" aria-hidden="true"></span>120 BPM · ON THE BEAT</span>
+    <span>16 STUDIES · 0MS HAND · 100MS CUT</span>
+  </div>
+</div>
+
+<main class="rg">
+  <header class="rg-head">
+    <div>
+      <p class="rg-kicker">01 — RACK STUDIES PROTOTYPE</p>
+      <h1>Modular agent &amp; data tools built on the beat.</h1>
+      <p>Sixteen interface-first studies fusing Ableton Live's dense modular rack with crisp 1px-ruled editorial data grids. Zero shadows, zero bounce: direct controls answer on the frame, panels cut in by column on the beat, and vivid color belongs strictly to tracks and data.</p>
+    </div>
+    <div class="rg-controls">
+      <div class="rk-seg" role="group" aria-label="Theme">
+        <button type="button" id="rg-light">Light</button>
+        <button type="button" id="rg-dark">Dark</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="rg-bar-filter">
+    <div class="rk-seg" id="rg-filter" role="radiogroup" aria-label="Category filter">
+      <button type="button" role="radio" data-cat="all" aria-checked="true">All</button>
+      <button type="button" role="radio" data-cat="agent" aria-checked="false">Agentic</button>
+      <button type="button" role="radio" data-cat="data" aria-checked="false">Data &amp; Eval</button>
+      <button type="button" role="radio" data-cat="control" aria-checked="false">Modular Controls</button>
+    </div>
+    <span class="rg-count" id="rg-count">16 / 16 STUDIES LIVE</span>
+  </div>
+
+  <ul class="rg-wall" id="rg-wall"></ul>
+
+  <footer class="rg-foot">
+    <span>Each tile runs quantized to the beat until you open and touch it. Zero spring overshoot.</span>
+    <span class="rk-mono">LITT.MD · RACK WORLD PROTOTYPE</span>
+  </footer>
+</main>
+
+<div class="rg-sheet" id="rg-sheet" role="dialog" aria-modal="true" aria-labelledby="rg-sheet-title">
+  <div class="rg-sheet-bar">
+    <div class="rg-close-wrap">
+      <button class="rk-btn" type="button" id="rg-close">Close [Esc]</button>
+    </div>
+    <h2 class="rg-sheet-title" id="rg-sheet-title"></h2>
+    <div class="rg-sheet-steps">
+      <div class="rk-seg">
+        <button type="button" id="rg-prev" aria-label="Previous study">← Prev</button>
+        <button type="button" id="rg-next" aria-label="Next study">Next →</button>
+      </div>
+    </div>
+  </div>
+  <div class="rg-open" id="rg-open"></div>
+  <div class="rg-about" id="rg-about"></div>
+</div>
+<p class="sr-only" id="rg-live" aria-live="polite"></p>
+
+<script>
+/* RackPlayer: Rack's own motion & contract runtime.
+   No springs. Instead:
+   - cutIn(el): 100ms ease-out opacity cut (0ms under reduced motion).
+   - beatColumns(root, selector): groups matching nodes by left edge and launches each column 36ms after the previous.
+   - dragValue(el, opts): 1:1 vertical pointer-capture drag with Shift fine mode, double-click reset, keyboard arrows, zero settle.
+   - clock: shared quantized 120 BPM 16th-note pulse (125ms step). */
+window.RackPlayer = (function () {
+  const studies = [];
+  const reduced = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const STEP_MS = 125; /* 120 BPM 16th note */
+  let step = 0;
+  const beatListeners = new Set();
+
+  setInterval(() => {
+    if (reduced()) return;
+    step = (step + 1) % 64;
+    const pulse = document.getElementById("rg-pulse");
+    if (pulse) pulse.classList.toggle("is-beat", step % 4 === 0);
+    for (const fn of beatListeners) { try { fn(step); } catch (e) { console.error(e); } }
+  }, STEP_MS);
+
+  function cutIn(el, delayMs) {
+    if (!el || reduced() || !el.animate) return;
+    el.animate([{ opacity: 0 }, { opacity: 1 }], {
+      duration: 100, delay: delayMs || 0, easing: "ease-out", fill: "backwards",
+    });
+  }
+
+  /* Rack's signature entrance: columns launch together left-to-right on a rigid 36ms beat, opacity only. */
+  function beatColumns(root, selector) {
+    if (!root || reduced()) return;
+    const els = [...root.querySelectorAll(selector || "[data-col]")];
+    if (!els.length) return;
+    const buckets = [];
+    for (const el of els) {
+      const left = Math.round(el.getBoundingClientRect().left / 16) * 16;
+      let b = buckets.find((x) => Math.abs(x.left - left) <= 16);
+      if (!b) { b = { left, els: [] }; buckets.push(b); }
+      b.els.push(el);
+    }
+    buckets.sort((a, b) => a.left - b.left);
+    buckets.forEach((b, i) => b.els.forEach((el) => cutIn(el, i * 36)));
+  }
+
+  /* Direct 1:1 vertical-drag value box (Ableton Live grammar): stops dead the exact frame you let go. */
+  function bindDrag(el, opts) {
+    const { min, max, step: inc, def, get, set, signal, rangePx = 120 } = opts;
+    const clamp = (v) => {
+      const snapped = Math.round((v - min) / inc) * inc + min;
+      return Math.max(min, Math.min(max, Number(snapped.toFixed(6))));
+    };
+    let startY = 0, startVal = 0, dragging = false;
+    el.addEventListener("pointerdown", (e) => {
+      if (e.button !== 0) return;
+      dragging = true; startY = e.clientY; startVal = get();
+      el.setPointerCapture(e.pointerId);
+      el.classList.add("is-drag");
+      e.preventDefault();
+    }, { signal });
+    el.addEventListener("pointermove", (e) => {
+      if (!dragging) return;
+      const dy = startY - e.clientY;
+      const mult = e.shiftKey ? 0.25 : 1;
+      const next = clamp(startVal + (dy / rangePx) * (max - min) * mult);
+      if (next !== get()) set(next);
+    }, { signal });
+    const end = () => { if (dragging) { dragging = false; el.classList.remove("is-drag"); } };
+    el.addEventListener("pointerup", end, { signal });
+    el.addEventListener("pointercancel", end, { signal });
+    el.addEventListener("dblclick", () => set(def), { signal });
+    el.addEventListener("wheel", (e) => {
+      e.preventDefault();
+      const dir = e.deltaY < 0 ? 1 : -1;
+      set(clamp(get() + dir * inc * (e.shiftKey ? 5 : 1)));
+    }, { signal, passive: false });
+    el.addEventListener("keydown", (e) => {
+      const k = { ArrowUp: inc, ArrowRight: inc, ArrowDown: -inc, ArrowLeft: -inc, PageUp: inc * 5, PageDown: -inc * 5 }[e.key];
+      if (k !== undefined) { e.preventDefault(); set(clamp(get() + k)); }
+      else if (e.key === "Home") { e.preventDefault(); set(min); }
+      else if (e.key === "End") { e.preventDefault(); set(max); }
+      else if (e.key === "0" || e.key === "Backspace") { e.preventDefault(); set(def); }
+    }, { signal });
+  }
+
+  return {
+    studies, reduced, cutIn, beatColumns, bindDrag, STEP_MS,
+    onBeat(fn, signal) {
+      beatListeners.add(fn);
+      if (signal) signal.addEventListener("abort", () => beatListeners.delete(fn), { once: true });
+      return () => beatListeners.delete(fn);
+    },
+    register(s) {
+      studies.push(s);
+      if (s.css) {
+        const st = document.createElement("style");
+        st.dataset.study = s.slug;
+        st.textContent = s.css;
+        document.head.appendChild(st);
+      }
+    },
+  };
+})();
+</script>
+<!--STUDY_JS-->
+<script>
+(function () {
+  const P = window.RackPlayer;
+  const ORDER = [
+    "agent-chain", "token-matrix", "kpi-columns", "budget-bar",
+    "eval-dumbbell", "alignment-likert", "session-launcher", "approval-gate",
+    "value-strip", "step-router", "run-timeline", "diff-inspector",
+    "context-rack", "command-palette", "curve-shaper", "metric-strip"
+  ];
+  const CAT_LABEL = { agent: "Agentic", data: "Data & Eval", control: "Modular Control" };
+  const set = ORDER.map((slug) => P.studies.find((s) => s.slug === slug)).filter(Boolean);
+  const n = set.length;
+  const $ = (id) => document.getElementById(id);
+  const wall = $("rg-wall"), sheet = $("rg-sheet"), openEl = $("rg-open"), live = $("rg-live");
+
+  function mountInto(box, s, tile) {
+    box.textContent = "";
+    const host = document.createElement("div");
+    host.className = "rp-mount rs-" + s.slug + (tile ? " is-tile" : "");
+    host.dataset.study = s.slug;
+    box.appendChild(host);
+    const ac = new AbortController();
+    const rec = { ac, timers: [], intervals: [], hands: [], api: null, host };
+    const ctx = {
+      host, signal: ac.signal, reduced: P.reduced, tile: !!tile,
+      cutIn: P.cutIn, beatColumns: P.beatColumns, bindDrag: P.bindDrag,
+      onBeat: (fn) => P.onBeat(fn, ac.signal),
+      after(ms, fn) { const t = setTimeout(fn, ms); rec.timers.push(t); return t; },
+      every(ms, fn) { const t = setInterval(fn, ms); rec.intervals.push(t); return t; },
+      onHand(fn) { rec.hands.push(fn); },
+    };
+    let handed = false;
+    const hand = () => {
+      if (!handed) {
+        handed = true;
+        rec.hands.forEach((f) => { try { f(); } catch (e) { console.error(e); } });
+      }
+    };
+    if (!tile) {
+      for (const t of ["pointerdown", "keydown", "wheel"]) {
+        host.addEventListener(t, hand, { signal: ac.signal, capture: true, passive: t === "wheel" });
+      }
+    }
+    try { rec.api = s.mount(host, ctx) || null; }
+    catch (e) { console.error(s.slug, e); host.textContent = s.title; }
+    return rec;
+  }
+
+  function unmount(rec) {
+    if (!rec) return;
+    try { rec.api && rec.api.destroy && rec.api.destroy(); } catch (e) { console.error(e); }
+    rec.ac.abort();
+    rec.timers.forEach(clearTimeout);
+    rec.intervals.forEach(clearInterval);
+    rec.host.remove();
+  }
+
+  /* Build the wall */
+  const tiles = set.map((s, i) => {
+    const li = document.createElement("li");
+    li.dataset.cat = s.category || "control";
+    const num = String(i + 1).padStart(2, "0");
+    li.innerHTML =
+      '<button class="rg-tile" type="button">' +
+        '<div class="rg-tile-head"><span class="rg-idx">FIG. ' + num + '</span><span class="rg-cat">' + (CAT_LABEL[s.category] || "Study") + '</span></div>' +
+        '<div class="rg-stage" inert></div>' +
+        '<div class="rg-tile-foot"><b></b><span></span></div>' +
+      '</button>';
+    const btn = li.firstChild, stage = btn.querySelector(".rg-stage");
+    btn.querySelector("b").textContent = s.title;
+    btn.querySelector(".rg-tile-foot span").textContent = s.tagline || "";
+    btn.setAttribute("aria-label", "Open " + s.title);
+    btn.addEventListener("click", () => open(i, btn));
+    wall.appendChild(li);
+    return { s, li, btn, stage, rec: null, visible: false };
+  });
+
+  let sheetOpen = false;
+  const sync = (t) => {
+    const want = t.visible && !sheetOpen && !t.li.hidden;
+    if (want && !t.rec) t.rec = mountInto(t.stage, t.s, true);
+    if (!want && t.rec) { unmount(t.rec); t.rec = null; }
+  };
+  const io = new IntersectionObserver((entries) => {
+    for (const e of entries) {
+      const t = tiles.find((x) => x.stage === e.target);
+      if (t) { t.visible = e.isIntersecting; sync(t); }
+    }
+  }, { rootMargin: "200px 0px" });
+  tiles.forEach((t) => {
+    io.observe(t.stage);
+    const r = t.stage.getBoundingClientRect();
+    if (r.top < window.innerHeight + 200 && r.bottom > -200) {
+      t.visible = true;
+      sync(t);
+    }
+  });
+
+  /* Category filter */
+  const filterBtns = [...$("rg-filter").querySelectorAll("button")];
+  function applyFilter(cat) {
+    let shown = 0;
+    tiles.forEach((t) => {
+      const hide = cat !== "all" && t.li.dataset.cat !== cat;
+      t.li.hidden = hide;
+      if (!hide) shown++;
+      sync(t);
+    });
+    filterBtns.forEach((b) => b.setAttribute("aria-checked", String(b.dataset.cat === cat)));
+    $("rg-count").textContent = shown + " / " + n + " STUDIES LIVE";
+  }
+  filterBtns.forEach((b) => b.addEventListener("click", () => applyFilter(b.dataset.cat)));
+
+  /* Full-screen sheet: Rack cuts in at 100ms opacity, then columns cut in on the 36ms beat. */
+  let cur = -1, openRec = null;
+  function show(i) {
+    cur = ((i % n) + n) % n;
+    const s = set[cur];
+    unmount(openRec);
+    openRec = mountInto(openEl, s, false);
+    P.cutIn(openRec.host, 0);
+    requestAnimationFrame(() => P.beatColumns(openRec.host, "[data-col]"));
+    const num = String(cur + 1).padStart(2, "0");
+    $("rg-sheet-title").innerHTML = "<code>FIG. " + num + "</code><span></span>";
+    $("rg-sheet-title").querySelector("span").textContent = s.title;
+    $("rg-about").innerHTML = "<div><b></b><span></span></div><span class=\"rk-fig\">" + (s.motion || "0ms under hand · 100ms cut on the beat") + "</span>";
+    $("rg-about").querySelector("b").textContent = s.title;
+    $("rg-about").querySelector("div span").textContent = s.tagline || "";
+    try { history.replaceState(null, "", "#" + s.slug); } catch (e) {}
+    document.title = s.title + " · Rack Studies";
+    live.textContent = s.title + ", " + (cur + 1) + " of " + n;
+  }
+
+  function open(i) {
+    sheetOpen = true; tiles.forEach(sync);
+    sheet.classList.add("is-open");
+    document.body.style.overflow = "hidden";
+    $("rg-wall").inert = true;
+    P.cutIn(sheet, 0);
+    show(i);
+    $("rg-close").focus({ preventScroll: true });
+  }
+
+  function close() {
+    if (!sheetOpen) return;
+    const finish = () => {
+      unmount(openRec); openRec = null;
+      sheet.classList.remove("is-open");
+      document.body.style.overflow = "";
+      $("rg-wall").inert = false;
+      sheetOpen = false;
+      const back = tiles[cur].btn;
+      tiles.forEach(sync);
+      back.focus({ preventScroll: true });
+      back.scrollIntoView({ block: "nearest" });
+      try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {}
+      document.title = "Rack Studies";
+    };
+    if (!P.reduced() && sheet.animate) {
+      sheet.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 75, easing: "ease-out" }).onfinish = finish;
+    } else finish();
+  }
+
+  $("rg-close").addEventListener("click", close);
+  $("rg-prev").addEventListener("click", () => show(cur - 1));
+  $("rg-next").addEventListener("click", () => show(cur + 1));
+  sheet.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") { e.preventDefault(); close(); }
+    if (e.key === "ArrowLeft" && !e.target.closest("input,[role=slider],[role=grid],[role=radio]")) { e.preventDefault(); show(cur - 1); }
+    if (e.key === "ArrowRight" && !e.target.closest("input,[role=slider],[role=grid],[role=radio]")) { e.preventDefault(); show(cur + 1); }
+  });
+
+  /* Theme toggle: instant cut, zero transition (foundations.md: a theme switch is instant). */
+  const qTheme = new URLSearchParams(location.search).get("theme");
+  if (qTheme === "light" || qTheme === "dark") document.documentElement.dataset.theme = qTheme;
+  const lightBtn = $("rg-light"), darkBtn = $("rg-dark");
+  const isDark = () => document.documentElement.dataset.theme ? document.documentElement.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+  const paintTheme = () => {
+    const d = isDark();
+    lightBtn.setAttribute("aria-pressed", String(!d));
+    darkBtn.setAttribute("aria-pressed", String(d));
+  };
+  lightBtn.addEventListener("click", () => { document.documentElement.dataset.theme = "light"; paintTheme(); });
+  darkBtn.addEventListener("click", () => { document.documentElement.dataset.theme = "dark"; paintTheme(); });
+  paintTheme();
+
+  const start = set.findIndex((s) => s.slug === location.hash.slice(1));
+  if (start >= 0) open(start);
+  window.RackGallery = { open: (slug) => { const i = set.findIndex((s) => s.slug === slug); if (i >= 0) open(i); }, close };
+})();
+</script>
+</body>
+</html>

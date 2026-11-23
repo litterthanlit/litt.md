@@ -1,0 +1,2736 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Rack Studies</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Rack Studies (litt.md): Ableton Live modular interface × Swiss editorial data grid.
+   Flat grey ground, crisp 1px outlines, 0px–2px square corners, zero shadows or glass,
+   vivid flat clip/data hues strictly on data & tracks, Rack yellow (#ffc933) as the one
+   lit primary fill, and Rack's "on the beat" motion language: 0ms on the frame under a hand,
+   100ms opacity cut-in staggered by column on the beat, 75ms cut-out, zero springs or bounce. */
+:root {
+  --canvas: #e6e7ec;
+  --panel: #f1f2f5;
+  --surface-2: #dadce3;
+  --surface-3: #cfd2db;
+  --cut: #ffffff;
+  --block: #f7f8fa;
+  --block-hover: #e2e4ec;
+  --tray: #d4d6df;
+  --slot: #c8cbd6;
+  --slot-fill: #3d3f47;
+  --ink: #111113;
+  --on-ink: #ffffff;
+  --muted: #4b4d56;
+  --subtle: #666873;
+  --disabled: #8f929e;
+  --line: #c2c5cf;
+  --line-strong: #9ca0ad;
+  --border: #232429;
+  --border-soft: #757885;
+
+  /* Rack's one accent: yellow, only ever a flat fill inside a 1px outline. */
+  --accent: #ffc933;
+  --accent-hover: #ffd45c;
+  --on-accent: #111113;
+
+  /* Vivid flat data & track hues (Swiss editorial × Ableton clip palette). */
+  --violet: #7b61ff;
+  --violet-tint: #ded7ff;
+  --violet-text: #5136d4;
+  --amber: #e84b26;
+  --amber-tint: #ffd4c7;
+  --amber-text: #b83312;
+  --orchid: #c844df;
+  --orchid-tint: #f3d2fa;
+  --orchid-text: #9321a8;
+  --blue: #0077c2;
+  --blue-tint: #c5e7ff;
+  --blue-text: #00578f;
+  --teal: #008a6e;
+  --teal-tint: #c0f0e3;
+  --teal-text: #00614d;
+  --green: #227e00;
+  --green-tint: #c9ebc0;
+  --green-text: #145900;
+  --danger: #cc2229;
+  --danger-tint: #ffd3d5;
+
+  --font: "Inter", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --r-panel: 2px;
+  --r-control: 0px;
+  --dur-in: 100ms;
+  --dur-out: 75ms;
+  --dur-snap: 140ms;
+  --beat-col: 36ms;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --canvas: #141417;
+  --panel: #1d1e22;
+  --surface-2: #26272d;
+  --surface-3: #30323a;
+  --cut: #111114;
+  --block: #25262c;
+  --block-hover: #32343d;
+  --tray: #0e0e11;
+  --slot: #0d0d10;
+  --slot-fill: #a2a5b2;
+  --ink: #f1f2f5;
+  --on-ink: #111113;
+  --muted: #b5b7c2;
+  --subtle: #8f929f;
+  --disabled: #5c5f6b;
+  --line: #2e3038;
+  --line-strong: #434652;
+  --border: #767a8a;
+  --border-soft: #4e515e;
+
+  --accent: #ffc933;
+  --accent-hover: #ffd45c;
+  --on-accent: #111113;
+
+  --violet: #957dff;
+  --violet-tint: #2e2554;
+  --violet-text: #c2b3ff;
+  --amber: #f2623c;
+  --amber-tint: #4d2216;
+  --amber-text: #ff9c80;
+  --orchid: #d964ee;
+  --orchid-tint: #451e4d;
+  --orchid-text: #f0a8ff;
+  --blue: #22a0f2;
+  --blue-tint: #0d3652;
+  --blue-text: #7ccdff;
+  --teal: #0fb895;
+  --teal-tint: #0b3d33;
+  --teal-text: #6debd0;
+  --green: #58b83a;
+  --green-tint: #1d3c15;
+  --green-text: #95e07d;
+  --danger: #ff6b6b;
+  --danger-tint: #4a1c1e;
+  color-scheme: dark;
+} }
+:root[data-theme="dark"] {
+  --canvas: #141417;
+  --panel: #1d1e22;
+  --surface-2: #26272d;
+  --surface-3: #30323a;
+  --cut: #111114;
+  --block: #25262c;
+  --block-hover: #32343d;
+  --tray: #0e0e11;
+  --slot: #0d0d10;
+  --slot-fill: #a2a5b2;
+  --ink: #f1f2f5;
+  --on-ink: #111113;
+  --muted: #b5b7c2;
+  --subtle: #8f929f;
+  --disabled: #5c5f6b;
+  --line: #2e3038;
+  --line-strong: #434652;
+  --border: #767a8a;
+  --border-soft: #4e515e;
+
+  --accent: #ffc933;
+  --accent-hover: #ffd45c;
+  --on-accent: #111113;
+
+  --violet: #957dff;
+  --violet-tint: #2e2554;
+  --violet-text: #c2b3ff;
+  --amber: #f2623c;
+  --amber-tint: #4d2216;
+  --amber-text: #ff9c80;
+  --orchid: #d964ee;
+  --orchid-tint: #451e4d;
+  --orchid-text: #f0a8ff;
+  --blue: #22a0f2;
+  --blue-tint: #0d3652;
+  --blue-text: #7ccdff;
+  --teal: #0fb895;
+  --teal-tint: #0b3d33;
+  --teal-text: #6debd0;
+  --green: #58b83a;
+  --green-tint: #1d3c15;
+  --green-text: #95e07d;
+  --danger: #ff6b6b;
+  --danger-tint: #4a1c1e;
+  color-scheme: dark;
+}
+@media (prefers-reduced-motion: reduce) {
+  :root { --dur-in: 0ms; --dur-out: 0ms; --dur-snap: 0ms; --beat-col: 0ms; }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--canvas);
+  color: var(--ink);
+  font: 400 13px/1.4 var(--font);
+  letter-spacing: -0.005em;
+  -webkit-font-smoothing: antialiased;
+  font-variant-numeric: tabular-nums;
+}
+button, input { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* Shared Rack primitive classes used across the shell and studies */
+.rk-seg { display: inline-flex; border: 1px solid var(--border); background: var(--block); }
+.rk-seg button {
+  border: 0; border-right: 1px solid var(--border); background: transparent; color: var(--ink);
+  height: 28px; padding: 0 11px; font-size: 12px; font-weight: 500; cursor: pointer; white-space: nowrap;
+}
+.rk-seg button:last-child { border-right: 0; }
+.rk-seg button:hover { background: var(--block-hover); }
+.rk-seg button[aria-pressed="true"],
+.rk-seg button[aria-checked="true"],
+.rk-seg button.is-on { background: var(--ink); color: var(--on-ink); }
+.rk-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  height: 28px; padding: 0 11px; border: 1px solid var(--border); border-radius: var(--r-control);
+  background: var(--block); color: var(--ink); font-size: 12px; font-weight: 500; cursor: pointer;
+}
+.rk-btn:hover { background: var(--block-hover); }
+.rk-btn:active { background: var(--surface-3); }
+.rk-btn.is-accent { background: var(--accent); color: var(--on-accent); border-color: var(--ink); font-weight: 600; }
+.rk-btn.is-accent:hover { background: var(--accent-hover); }
+.rk-btn.is-ink { background: var(--ink); color: var(--on-ink); }
+.rk-fig { font: 400 10px/1.3 var(--mono); color: var(--subtle); letter-spacing: 0.04em; text-transform: uppercase; }
+.rk-mono { font-family: var(--mono); }
+
+/* Top editorial Masthead (1px ruled strip) */
+.rg-top {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px;
+  padding: 10px max(20px, env(safe-area-inset-left));
+  border-bottom: 1px solid var(--line-strong);
+  font-size: 12px;
+}
+.rg-brand { display: flex; align-items: baseline; gap: 10px; }
+.rg-brand strong { font-weight: 700; font-size: 14px; letter-spacing: -0.02em; }
+.rg-brand span { color: var(--muted); border-left: 1px solid var(--line-strong); padding-left: 10px; }
+.rg-meta { font: 400 10px/1 var(--mono); color: var(--subtle); letter-spacing: 0.05em; text-transform: uppercase; display: flex; align-items: center; gap: 14px; }
+.rg-bpm { display: inline-flex; align-items: center; gap: 6px; }
+.rg-pulse { width: 7px; height: 7px; background: var(--accent); border: 1px solid var(--border); opacity: 0.35; }
+.rg-pulse.is-beat { opacity: 1; }
+
+/* Main gallery layout */
+.rg { max-width: 1360px; margin: 0 auto; padding: 28px max(20px, env(safe-area-inset-left)) 64px; }
+.rg-head {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 16px 24px;
+  padding-bottom: 22px; border-bottom: 1px solid var(--border); margin-bottom: 24px;
+}
+.rg-kicker { font: 400 11px/1.2 var(--mono); color: var(--subtle); margin: 0 0 8px; }
+.rg-head h1 { margin: 0; font: 600 clamp(28px, 3.6vw, 44px)/1.02 var(--font); letter-spacing: -0.035em; }
+.rg-head p { margin: 10px 0 0; color: var(--muted); font-size: 14px; max-width: 62ch; line-height: 1.45; }
+.rg-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; justify-content: flex-end; }
+
+/* Filter row */
+.rg-bar-filter { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 20px; }
+.rg-count { font: 400 11px/1 var(--mono); color: var(--subtle); }
+
+/* The Wall: crisp 1px-ruled architectural grid of live studies */
+.rg-wall {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 380px), 1fr));
+  gap: 24px 20px;
+}
+.rg-wall li { display: grid; }
+.rg-wall li[hidden] { display: none; }
+.rg-tile {
+  display: grid; grid-template-rows: auto 1fr auto; width: 100%; padding: 0;
+  border: 1px solid var(--line-strong); border-radius: var(--r-panel);
+  background: var(--panel); text-align: left; cursor: pointer;
+}
+.rg-tile:hover { border-color: var(--ink); }
+.rg-tile-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  padding: 7px 10px; border-bottom: 1px solid var(--line); background: var(--surface-2);
+  font-size: 11px;
+}
+.rg-tile-head .rg-idx { font: 500 10px/1 var(--mono); color: var(--subtle); }
+.rg-tile-head .rg-cat { font: 500 10px/1 var(--mono); color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+.rg-stage {
+  position: relative; height: 276px; background: var(--panel); overflow: hidden;
+  display: grid; place-items: center;
+}
+.rg-stage > .rp-mount {
+  width: 100%; height: 100%; display: grid; place-items: center;
+  padding: 14px; container-type: inline-size; pointer-events: none;
+}
+.rg-tile-foot {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 10px;
+  padding: 9px 10px; border-top: 1px solid var(--line); background: var(--panel); min-width: 0;
+}
+.rg-tile-foot b { font-size: 13px; font-weight: 600; white-space: nowrap; flex: none; letter-spacing: -0.01em; }
+.rg-tile-foot span { color: var(--muted); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+
+/* The Sheet: Rack cuts in cleanly on the beat (100ms opacity, zero scale/bounce, column stagger). */
+.rg-sheet {
+  position: fixed; inset: 0; z-index: 20; display: none;
+  background: var(--canvas); overflow: auto; overscroll-behavior: contain;
+}
+.rg-sheet.is-open { display: grid; grid-template-rows: auto 1fr auto; }
+.rg-sheet-bar {
+  display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 8px;
+  padding: 10px 16px; border-bottom: 1px solid var(--border); background: var(--panel);
+}
+.rg-sheet-bar .rg-close-wrap { justify-self: start; display: flex; align-items: center; gap: 8px; }
+.rg-sheet-title { margin: 0; font: 600 14px/1.2 var(--font); text-align: center; display: flex; align-items: center; gap: 8px; }
+.rg-sheet-title code { font: 500 11px/1 var(--mono); color: var(--subtle); }
+.rg-sheet-steps { justify-self: end; display: flex; align-items: center; gap: 6px; }
+.rg-open { display: grid; place-items: center; min-height: 0; padding: 28px 20px; }
+.rg-open > .rp-mount {
+  width: min(100%, 980px); min-height: min(500px, 100%);
+  display: grid; place-items: center; container-type: inline-size;
+}
+.rg-about {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 20px;
+  padding: 12px 20px; border-top: 1px solid var(--line-strong); background: var(--panel);
+  font-size: 12px; color: var(--muted);
+}
+.rg-about b { color: var(--ink); font-weight: 600; margin-right: 8px; }
+.rg-foot {
+  margin-top: 32px; padding-top: 14px; border-top: 1px solid var(--line-strong);
+  display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 16px;
+  color: var(--subtle); font-size: 12px;
+}
+
+@media (max-width: 720px) {
+  .rg-head { grid-template-columns: 1fr; }
+  .rg-controls { justify-content: flex-start; }
+  .rg-stage { height: 260px; }
+}
+</style>
+</head>
+<body>
+<div class="rg-top">
+  <div class="rg-brand">
+    <strong>rack</strong>
+    <span>Agentic &amp; Interface Studies · Swiss Editorial × Modular Tooling</span>
+  </div>
+  <div class="rg-meta">
+    <span class="rg-bpm"><span class="rg-pulse" id="rg-pulse" aria-hidden="true"></span>120 BPM · ON THE BEAT</span>
+    <span>16 STUDIES · 0MS HAND · 100MS CUT</span>
+  </div>
+</div>
+
+<main class="rg">
+  <header class="rg-head">
+    <div>
+      <p class="rg-kicker">01 — RACK STUDIES PROTOTYPE</p>
+      <h1>Modular agent &amp; data tools built on the beat.</h1>
+      <p>Sixteen interface-first studies fusing Ableton Live's dense modular rack with crisp 1px-ruled editorial data grids. Zero shadows, zero bounce: direct controls answer on the frame, panels cut in by column on the beat, and vivid color belongs strictly to tracks and data.</p>
+    </div>
+    <div class="rg-controls">
+      <div class="rk-seg" role="group" aria-label="Theme">
+        <button type="button" id="rg-light">Light</button>
+        <button type="button" id="rg-dark">Dark</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="rg-bar-filter">
+    <div class="rk-seg" id="rg-filter" role="radiogroup" aria-label="Category filter">
+      <button type="button" role="radio" data-cat="all" aria-checked="true">All</button>
+      <button type="button" role="radio" data-cat="agent" aria-checked="false">Agentic</button>
+      <button type="button" role="radio" data-cat="data" aria-checked="false">Data &amp; Eval</button>
+      <button type="button" role="radio" data-cat="control" aria-checked="false">Modular Controls</button>
+    </div>
+    <span class="rg-count" id="rg-count">16 / 16 STUDIES LIVE</span>
+  </div>
+
+  <ul class="rg-wall" id="rg-wall"></ul>
+
+  <footer class="rg-foot">
+    <span>Each tile runs quantized to the beat until you open and touch it. Zero spring overshoot.</span>
+    <span class="rk-mono">LITT.MD · RACK WORLD PROTOTYPE</span>
+  </footer>
+</main>
+
+<div class="rg-sheet" id="rg-sheet" role="dialog" aria-modal="true" aria-labelledby="rg-sheet-title">
+  <div class="rg-sheet-bar">
+    <div class="rg-close-wrap">
+      <button class="rk-btn" type="button" id="rg-close">Close [Esc]</button>
+    </div>
+    <h2 class="rg-sheet-title" id="rg-sheet-title"></h2>
+    <div class="rg-sheet-steps">
+      <div class="rk-seg">
+        <button type="button" id="rg-prev" aria-label="Previous study">← Prev</button>
+        <button type="button" id="rg-next" aria-label="Next study">Next →</button>
+      </div>
+    </div>
+  </div>
+  <div class="rg-open" id="rg-open"></div>
+  <div class="rg-about" id="rg-about"></div>
+</div>
+<p class="sr-only" id="rg-live" aria-live="polite"></p>
+
+<script>
+/* RackPlayer: Rack's own motion & contract runtime.
+   No springs. Instead:
+   - cutIn(el): 100ms ease-out opacity cut (0ms under reduced motion).
+   - beatColumns(root, selector): groups matching nodes by left edge and launches each column 36ms after the previous.
+   - dragValue(el, opts): 1:1 vertical pointer-capture drag with Shift fine mode, double-click reset, keyboard arrows, zero settle.
+   - clock: shared quantized 120 BPM 16th-note pulse (125ms step). */
+window.RackPlayer = (function () {
+  const studies = [];
+  const reduced = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const STEP_MS = 125; /* 120 BPM 16th note */
+  let step = 0;
+  const beatListeners = new Set();
+
+  setInterval(() => {
+    if (reduced()) return;
+    step = (step + 1) % 64;
+    const pulse = document.getElementById("rg-pulse");
+    if (pulse) pulse.classList.toggle("is-beat", step % 4 === 0);
+    for (const fn of beatListeners) { try { fn(step); } catch (e) { console.error(e); } }
+  }, STEP_MS);
+
+  function cutIn(el, delayMs) {
+    if (!el || reduced() || !el.animate) return;
+    el.animate([{ opacity: 0 }, { opacity: 1 }], {
+      duration: 100, delay: delayMs || 0, easing: "ease-out", fill: "backwards",
+    });
+  }
+
+  /* Rack's signature entrance: columns launch together left-to-right on a rigid 36ms beat, opacity only. */
+  function beatColumns(root, selector) {
+    if (!root || reduced()) return;
+    const els = [...root.querySelectorAll(selector || "[data-col]")];
+    if (!els.length) return;
+    const buckets = [];
+    for (const el of els) {
+      const left = Math.round(el.getBoundingClientRect().left / 16) * 16;
+      let b = buckets.find((x) => Math.abs(x.left - left) <= 16);
+      if (!b) { b = { left, els: [] }; buckets.push(b); }
+      b.els.push(el);
+    }
+    buckets.sort((a, b) => a.left - b.left);
+    buckets.forEach((b, i) => b.els.forEach((el) => cutIn(el, i * 36)));
+  }
+
+  /* Direct 1:1 vertical-drag value box (Ableton Live grammar): stops dead the exact frame you let go. */
+  function bindDrag(el, opts) {
+    const { min, max, step: inc, def, get, set, signal, rangePx = 120 } = opts;
+    const clamp = (v) => {
+      const snapped = Math.round((v - min) / inc) * inc + min;
+      return Math.max(min, Math.min(max, Number(snapped.toFixed(6))));
+    };
+    let startY = 0, startVal = 0, dragging = false;
+    el.addEventListener("pointerdown", (e) => {
+      if (e.button !== 0) return;
+      dragging = true; startY = e.clientY; startVal = get();
+      el.setPointerCapture(e.pointerId);
+      el.classList.add("is-drag");
+      e.preventDefault();
+    }, { signal });
+    el.addEventListener("pointermove", (e) => {
+      if (!dragging) return;
+      const dy = startY - e.clientY;
+      const mult = e.shiftKey ? 0.25 : 1;
+      const next = clamp(startVal + (dy / rangePx) * (max - min) * mult);
+      if (next !== get()) set(next);
+    }, { signal });
+    const end = () => { if (dragging) { dragging = false; el.classList.remove("is-drag"); } };
+    el.addEventListener("pointerup", end, { signal });
+    el.addEventListener("pointercancel", end, { signal });
+    el.addEventListener("dblclick", () => set(def), { signal });
+    el.addEventListener("wheel", (e) => {
+      e.preventDefault();
+      const dir = e.deltaY < 0 ? 1 : -1;
+      set(clamp(get() + dir * inc * (e.shiftKey ? 5 : 1)));
+    }, { signal, passive: false });
+    el.addEventListener("keydown", (e) => {
+      const k = { ArrowUp: inc, ArrowRight: inc, ArrowDown: -inc, ArrowLeft: -inc, PageUp: inc * 5, PageDown: -inc * 5 }[e.key];
+      if (k !== undefined) { e.preventDefault(); set(clamp(get() + k)); }
+      else if (e.key === "Home") { e.preventDefault(); set(min); }
+      else if (e.key === "End") { e.preventDefault(); set(max); }
+      else if (e.key === "0" || e.key === "Backspace") { e.preventDefault(); set(def); }
+    }, { signal });
+  }
+
+  return {
+    studies, reduced, cutIn, beatColumns, bindDrag, STEP_MS,
+    onBeat(fn, signal) {
+      beatListeners.add(fn);
+      if (signal) signal.addEventListener("abort", () => beatListeners.delete(fn), { once: true });
+      return () => beatListeners.delete(fn);
+    },
+    register(s) {
+      studies.push(s);
+      if (s.css) {
+        const st = document.createElement("style");
+        st.dataset.study = s.slug;
+        st.textContent = s.css;
+        document.head.appendChild(st);
+      }
+    },
+  };
+})();
+</script>
+<script>
+/* 01-agent-chain.js */
+/* 01-agent-chain.js — Ableton Live modular agent signal chain: 5 clip-colored stages,
+   1:1 vertical-drag parameter boxes, instant-cut bypass & tool switches, and beat-cut presets. */
+(function () {
+  const S = ".rs-agent-chain";
+  const NODES = [
+    { id: "router", name: "Router", hue: "amber", param: "Gate", min: 50, max: 100, step: 5, def: 85, unit: "%", tool: "Classify", lat: 0.4, tok: 2 },
+    { id: "research", name: "Research", hue: "blue", param: "Depth", min: 1, max: 12, step: 1, def: 6, unit: "doc", tool: "Web", lat: 1.4, tok: 8 },
+    { id: "coder", name: "Coder", hue: "teal", param: "Budget", min: 4, max: 32, step: 2, def: 16, unit: "k", tool: "Shell", lat: 2.1, tok: 16 },
+    { id: "verifier", name: "Verifier", hue: "violet", param: "Strict", min: 20, max: 100, step: 10, def: 80, unit: "%", tool: "Tests", lat: 1.2, tok: 6 },
+    { id: "memory", name: "Memory", hue: "green", param: "Window", min: 2, max: 24, step: 2, def: 10, unit: "tr", tool: "Cache", lat: 0.3, tok: 4 },
+  ];
+  const PRESETS = [
+    { name: "Ship feature", on: [1, 1, 1, 1, 0], vals: [85, 6, 16, 80, 10] },
+    { name: "Deep audit", on: [1, 1, 1, 1, 1], vals: [95, 10, 24, 100, 18] },
+    { name: "Fast triage", on: [1, 1, 0, 0, 1], vals: [70, 3, 8, 50, 6] },
+  ];
+
+  RackPlayer.register({
+    slug: "agent-chain",
+    title: "Agent Signal Chain",
+    category: "agent",
+    tagline: "Five clip-colored stages with 1:1 vertical-drag parameters and instant presets.",
+    motion: "0ms vertical drag · 0ms bypass cut · column beat entrance",
+    css: `
+${S} .ac { width: min(100%, 860px); border: 1px solid var(--border); background: var(--panel); display: grid; }
+${S} .ac-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 10px; border-bottom: 1px solid var(--border); background: var(--surface-2); }
+${S} .ac-title { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 12px; }
+${S} .ac-readout { font: 500 11px/1 var(--mono); color: var(--muted); display: flex; gap: 10px; }
+${S} .ac-readout b { color: var(--ink); font-weight: 600; }
+${S} .ac-rack { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0; }
+${S} .ac-mod { border-right: 1px solid var(--line-strong); display: grid; grid-template-rows: auto 1fr auto; background: var(--panel); }
+${S} .ac-mod:last-child { border-right: 0; }
+${S} .ac-mod.is-off { background: var(--surface-2); }
+${S} .ac-mod.is-off .ac-body, ${S} .ac-mod.is-off .ac-foot { opacity: 0.45; }
+${S} .ac-head { display: flex; align-items: center; justify-content: space-between; gap: 6px; padding: 6px 8px; border-bottom: 1px solid var(--border); font-size: 11px; font-weight: 600; }
+${S} .ac-mod[data-hue="amber"] .ac-head { background: var(--amber-tint); color: var(--amber-text); }
+${S} .ac-mod[data-hue="blue"] .ac-head { background: var(--blue-tint); color: var(--blue-text); }
+${S} .ac-mod[data-hue="teal"] .ac-head { background: var(--teal-tint); color: var(--teal-text); }
+${S} .ac-mod[data-hue="violet"] .ac-head { background: var(--violet-tint); color: var(--violet-text); }
+${S} .ac-mod[data-hue="green"] .ac-head { background: var(--green-tint); color: var(--green-text); }
+${S} .ac-mod.is-off .ac-head { background: var(--surface-3); color: var(--muted); }
+${S} .ac-pwr { width: 16px; height: 16px; padding: 0; border: 1px solid var(--border); background: var(--block); cursor: pointer; display: grid; place-items: center; font: 600 9px/1 var(--mono); }
+${S} .ac-pwr[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); border-color: var(--ink); }
+${S} .ac-body { padding: 10px 8px; display: grid; gap: 6px; }
+${S} .ac-lbl { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; font-family: var(--mono); }
+${S} .ac-val { position: relative; border: 1px solid var(--border); background: var(--cut); padding: 8px 7px 11px; cursor: ns-resize; user-select: none; touch-action: none; }
+${S} .ac-val.is-drag { border-color: var(--ink); background: var(--block-hover); }
+${S} .ac-num { font-size: 18px; font-weight: 600; letter-spacing: -0.02em; line-height: 1; display: block; }
+${S} .ac-bar { position: absolute; left: 0; right: 0; bottom: 0; height: 4px; background: var(--slot); }
+${S} .ac-fill { height: 100%; width: 50%; }
+${S} .ac-mod[data-hue="amber"] .ac-fill { background: var(--amber); }
+${S} .ac-mod[data-hue="blue"] .ac-fill { background: var(--blue); }
+${S} .ac-mod[data-hue="teal"] .ac-fill { background: var(--teal); }
+${S} .ac-mod[data-hue="violet"] .ac-fill { background: var(--violet); }
+${S} .ac-mod[data-hue="green"] .ac-fill { background: var(--green); }
+${S} .ac-foot { padding: 6px 8px; border-top: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; font-size: 11px; }
+${S} .ac-tool { border: 1px solid var(--border-soft); background: var(--block); padding: 2px 6px; font-size: 10px; font-weight: 500; cursor: pointer; }
+${S} .ac-tool[aria-pressed="true"] { background: var(--ink); color: var(--on-ink); border-color: var(--ink); }
+${S}.is-tile .ac-readout, ${S}.is-tile .ac-foot { display: none; }
+${S}.is-tile .ac-title > span { display: none; }
+${S}.is-tile .ac-top { padding: 6px 8px; }
+${S}.is-tile .rk-seg button { height: 22px; padding: 0 7px; font-size: 10px; }
+${S}.is-tile .ac-rack { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+${S}.is-tile .ac-mod:nth-child(5) { display: none; }
+${S}.is-tile .ac-num { font-size: 15px; }
+@container (max-width: 540px) {
+  ${S} .ac-rack { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  ${S} .ac-mod { border-bottom: 1px solid var(--line-strong); }
+}
+`,
+    mount(host, ctx) {
+      let preset = 0;
+      const state = NODES.map((n, i) => ({ on: !!PRESETS[0].on[i], val: PRESETS[0].vals[i], tool: true }));
+
+      host.innerHTML =
+        '<div class="ac">' +
+          '<div class="ac-top">' +
+            '<div class="ac-title"><span>Agent signal chain</span>' +
+              '<div class="rk-seg" role="radiogroup" aria-label="Preset">' +
+                PRESETS.map((p, i) => '<button type="button" role="radio" data-p="' + i + '" aria-checked="' + (i === 0) + '">' + p.name + '</button>').join("") +
+              '</div>' +
+            '</div>' +
+            '<div class="ac-readout"><span id="ac-lat"></span><span id="ac-tok"></span></div>' +
+          '</div>' +
+          '<div class="ac-rack"></div>' +
+        '</div>';
+
+      const rack = host.querySelector(".ac-rack");
+      const latEl = host.querySelector("#ac-lat");
+      const tokEl = host.querySelector("#ac-tok");
+      const pBtns = [...host.querySelectorAll("[data-p]")];
+
+      const els = NODES.map((n, i) => {
+        const mod = document.createElement("div");
+        mod.className = "ac-mod";
+        mod.dataset.hue = n.hue;
+        mod.dataset.col = String(i);
+        mod.innerHTML =
+          '<div class="ac-head"><span>' + n.name + '</span><button type="button" class="ac-pwr" aria-label="Toggle ' + n.name + '">I</button></div>' +
+          '<div class="ac-body"><span class="ac-lbl">' + n.param + '</span>' +
+            '<div class="ac-val" role="slider" tabindex="0" aria-label="' + n.name + ' ' + n.param + '" aria-valuemin="' + n.min + '" aria-valuemax="' + n.max + '">' +
+              '<span class="ac-num"></span><div class="ac-bar"><div class="ac-fill"></div></div>' +
+            '</div>' +
+          '</div>' +
+          '<div class="ac-foot"><span class="rk-fig">Tool</span><button type="button" class="ac-tool" aria-pressed="true">' + n.tool + '</button></div>';
+        rack.appendChild(mod);
+        const pwr = mod.querySelector(".ac-pwr");
+        const valBox = mod.querySelector(".ac-val");
+        const num = mod.querySelector(".ac-num");
+        const fill = mod.querySelector(".ac-fill");
+        const tool = mod.querySelector(".ac-tool");
+
+        pwr.addEventListener("click", () => { state[i].on = !state[i].on; preset = -1; draw(); }, { signal: ctx.signal });
+        tool.addEventListener("click", () => { state[i].tool = !state[i].tool; draw(); }, { signal: ctx.signal });
+        ctx.bindDrag(valBox, {
+          min: n.min, max: n.max, step: n.step, def: n.def,
+          get: () => state[i].val,
+          set: (v) => { state[i].val = v; preset = -1; draw(); },
+          signal: ctx.signal,
+        });
+        return { mod, pwr, valBox, num, fill, tool };
+      });
+
+      function draw() {
+        let totalLat = 0, totalTok = 0;
+        NODES.forEach((n, i) => {
+          const st = state[i], e = els[i];
+          e.mod.classList.toggle("is-off", !st.on);
+          e.pwr.setAttribute("aria-pressed", String(st.on));
+          e.pwr.textContent = st.on ? "I" : "O";
+          e.num.textContent = st.val + n.unit;
+          const pct = ((st.val - n.min) / (n.max - n.min)) * 100;
+          e.fill.style.width = pct.toFixed(1) + "%";
+          e.valBox.setAttribute("aria-valuenow", String(st.val));
+          e.tool.setAttribute("aria-pressed", String(st.tool));
+          if (st.on) {
+            const scale = 0.6 + 0.8 * (pct / 100);
+            totalLat += n.lat * scale;
+            totalTok += Math.round(n.tok * scale);
+          }
+        });
+        pBtns.forEach((b, i) => b.setAttribute("aria-checked", String(i === preset)));
+        latEl.innerHTML = "LAT <b>" + totalLat.toFixed(1) + "s</b>";
+        tokEl.innerHTML = "BUDGET <b>" + totalTok + "k tok</b>";
+      }
+
+      function applyPreset(idx) {
+        preset = idx;
+        const p = PRESETS[idx];
+        NODES.forEach((_, i) => { state[i].on = !!p.on[i]; state[i].val = p.vals[i]; });
+        draw();
+      }
+
+      pBtns.forEach((b, i) => b.addEventListener("click", () => applyPreset(i), { signal: ctx.signal }));
+      draw();
+
+      let auto = !ctx.reduced();
+      ctx.onHand(() => { auto = false; });
+      let stepIdx = 0;
+      if (auto) {
+        ctx.every(2000, () => {
+          if (!auto) return;
+          stepIdx = (stepIdx + 1) % PRESETS.length;
+          applyPreset(stepIdx);
+        });
+      }
+    },
+  });
+})();
+
+</script>
+<script>
+/* 02-token-matrix.js */
+/* 02-token-matrix.js — Folio-inspired unit matrix for an agent run (1 square = 1k tokens).
+   Crisp 1px-ruled grouping strip disaggregates 120 squares into labeled quadrants on the beat,
+   with FIG. 02 caption and expandable Show data table ↓. */
+(function () {
+  const S = ".rs-token-matrix";
+  const TOTAL = 120;
+  const GROUPS = {
+    all: [{ label: "Full context window", hue: "mix", count: 120 }],
+    stage: [
+      { label: "Reasoning", hue: "violet", count: 44 },
+      { label: "Tool I/O", hue: "amber", count: 34 },
+      { label: "File reads", hue: "orchid", count: 26 },
+      { label: "Output", hue: "ink", count: 16 },
+    ],
+    agent: [
+      { label: "Coder", hue: "violet", count: 52 },
+      { label: "Research", hue: "amber", count: 30 },
+      { label: "Verifier", hue: "orchid", count: 24 },
+      { label: "Router", hue: "ink", count: 14 },
+    ],
+    cache: [
+      { label: "Cache hit", hue: "violet", count: 68 },
+      { label: "Fresh prompt", hue: "amber", count: 28 },
+      { label: "Tool delta", hue: "orchid", count: 14 },
+      { label: "Stream out", hue: "ink", count: 10 },
+    ],
+  };
+  const MODES = [
+    { id: "stage", name: "Stage" },
+    { id: "agent", name: "Agent" },
+    { id: "cache", name: "Cache" },
+    { id: "all", name: "All" },
+  ];
+
+  RackPlayer.register({
+    slug: "token-matrix",
+    title: "Unit Token Matrix",
+    category: "data",
+    tagline: "One square per 1k tokens, disaggregated on the beat with an accessible data table.",
+    motion: "100ms column cut-in · 0ms grouping snap · zero bounce",
+    css: `
+${S} .tm { width: min(100%, 760px); display: grid; gap: 12px; }
+${S} .tm-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+${S} .tm-cap { font-weight: 600; font-size: 13px; letter-spacing: -0.01em; }
+${S} .tm-quads { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 18px; }
+${S} .tm-quads.is-all { grid-template-columns: 1fr; }
+${S} .tm-q { display: grid; gap: 6px; align-content: start; }
+${S} .tm-qh { font-size: 11px; font-weight: 500; display: flex; align-items: baseline; justify-content: space-between; gap: 6px; }
+${S} .tm-qh span { color: var(--muted); font-family: var(--mono); font-size: 10px; }
+${S} .tm-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 3px; }
+${S} .tm-quads.is-all .tm-grid { grid-template-columns: repeat(24, 1fr); }
+${S} .tm-sq { aspect-ratio: 1; background: var(--ink); }
+${S} .tm-sq[data-h="violet"] { background: var(--violet); }
+${S} .tm-sq[data-h="amber"] { background: var(--amber); }
+${S} .tm-sq[data-h="orchid"] { background: var(--orchid); }
+${S} .tm-sq[data-h="ink"] { background: var(--ink); }
+${S} .tm-foot { border-top: 1px solid var(--line-strong); padding-top: 10px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+${S} .tm-tbl { width: 100%; border-collapse: collapse; font-size: 12px; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); background: var(--cut); }
+${S} .tm-tbl th, ${S} .tm-tbl td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); }
+${S} .tm-tbl th:not(:first-child), ${S} .tm-tbl td:not(:first-child) { text-align: right; font-family: var(--mono); }
+${S} .tm-tbl[hidden] { display: none; }
+${S}.is-tile .tm-foot, ${S}.is-tile .tm-tbl { display: none; }
+${S}.is-tile .tm-cap { font-size: 11px; }
+${S}.is-tile .rk-seg button { height: 22px; padding: 0 7px; font-size: 10px; }
+${S}.is-tile .tm-quads { gap: 8px 10px; }
+${S}.is-tile .tm-grid { gap: 2px; }
+`,
+    mount(host, ctx) {
+      let mode = "stage", tblOpen = false;
+      host.innerHTML =
+        '<div class="tm">' +
+          '<div class="tm-bar">' +
+            '<span class="tm-cap">Unit matrix, one square per 1k tokens</span>' +
+            '<div class="rk-seg" role="radiogroup" aria-label="Grouping">' +
+              MODES.map((m) => '<button type="button" role="radio" data-m="' + m.id + '" aria-checked="' + (m.id === mode) + '">' + m.name + '</button>').join("") +
+            '</div>' +
+          '</div>' +
+          '<div class="tm-quads"></div>' +
+          '<div class="tm-foot">' +
+            '<div><div class="rk-fig">FIG. 02</div><div style="font-size:11px;color:var(--muted)">120k context budget across active session; switch grouping to disaggregate.</div></div>' +
+            '<button type="button" class="rk-btn" id="tm-toggle">Show data table ↓</button>' +
+          '</div>' +
+          '<table class="tm-tbl" hidden><thead><tr><th>Bucket</th><th>Tokens</th><th>Share</th></tr></thead><tbody></tbody></table>' +
+        '</div>';
+
+      const quads = host.querySelector(".tm-quads");
+      const btns = [...host.querySelectorAll("[data-m]")];
+      const toggle = host.querySelector("#tm-toggle");
+      const tbl = host.querySelector(".tm-tbl");
+      const tbody = tbl.querySelector("tbody");
+
+      function render(animate) {
+        btns.forEach((b) => b.setAttribute("aria-checked", String(b.dataset.m === mode)));
+        quads.classList.toggle("is-all", mode === "all");
+        quads.textContent = "";
+        const items = GROUPS[mode];
+        if (mode === "all") {
+          const q = document.createElement("div");
+          q.className = "tm-q"; q.dataset.col = "0";
+          const h = document.createElement("div"); h.className = "tm-qh";
+          h.innerHTML = "<b>All buckets · 120k</b><span>100.0%</span>";
+          const g = document.createElement("div"); g.className = "tm-grid";
+          GROUPS.stage.forEach((sg) => {
+            for (let i = 0; i < sg.count; i++) {
+              const s = document.createElement("i"); s.className = "tm-sq"; s.dataset.h = sg.hue; g.appendChild(s);
+            }
+          });
+          q.append(h, g); quads.appendChild(q);
+        } else {
+          items.forEach((it, idx) => {
+            const pct = ((it.count / TOTAL) * 100).toFixed(1) + "%";
+            const q = document.createElement("div"); q.className = "tm-q"; q.dataset.col = String(idx % 2);
+            const h = document.createElement("div"); h.className = "tm-qh";
+            h.innerHTML = "<b>" + it.label + "</b><span>" + it.count + "k (" + pct + ")</span>";
+            const g = document.createElement("div"); g.className = "tm-grid";
+            for (let i = 0; i < it.count; i++) {
+              const s = document.createElement("i"); s.className = "tm-sq"; s.dataset.h = it.hue; g.appendChild(s);
+            }
+            q.append(h, g); quads.appendChild(q);
+          });
+        }
+        if (animate && !ctx.tile) ctx.beatColumns(quads, ".tm-q");
+        const rows = mode === "all" ? GROUPS.stage : items;
+        tbody.innerHTML = rows.map((r) =>
+          "<tr><td>" + r.label + "</td><td>" + r.count + ",000</td><td>" + ((r.count / TOTAL) * 100).toFixed(1) + "%</td></tr>"
+        ).join("");
+      }
+
+      btns.forEach((b) => b.addEventListener("click", () => { mode = b.dataset.m; render(true); }, { signal: ctx.signal }));
+      toggle.addEventListener("click", () => {
+        tblOpen = !tblOpen;
+        tbl.hidden = !tblOpen;
+        toggle.textContent = tblOpen ? "Hide data table ↑" : "Show data table ↓";
+      }, { signal: ctx.signal });
+
+      render(false);
+
+      let auto = !ctx.reduced();
+      ctx.onHand(() => { auto = false; });
+      const seq = ["stage", "agent", "cache", "all"];
+      let k = 0;
+      if (auto) {
+        ctx.every(2200, () => {
+          if (!auto) return;
+          k = (k + 1) % seq.length;
+          mode = seq[k];
+          render();
+        });
+      }
+    },
+  });
+})();
+
+</script>
+<script>
+/* 03-kpi-columns.js */
+/* 03-kpi-columns.js — Folio image_4-inspired monumental vertical KPI bars for agent run outcomes.
+   Full-bleed flat colored bars with rotated giant figures and crisp 1px-ruled filter strip. */
+(function () {
+  const S = ".rs-kpi-columns";
+  const SCOPES = [
+    { id: "all", name: "All agents", vals: [18, 58, 24] },
+    { id: "coder", name: "Coder", vals: [31, 52, 17] },
+    { id: "research", name: "Research", vals: [64, 28, 8] },
+    { id: "reviewer", name: "Reviewer", vals: [44, 41, 15] },
+    { id: "ops", name: "Ops", vals: [22, 66, 12] },
+  ];
+  const COLS = [
+    { label: "Auto-merged", hue: "violet" },
+    { label: "Needs review", hue: "amber" },
+    { label: "Escalated", hue: "orchid" },
+  ];
+
+  RackPlayer.register({
+    slug: "kpi-columns",
+    title: "Oversized KPI Bars",
+    category: "data",
+    tagline: "Monumental rotated percentages stamped straight across flat full-bleed outcome bars.",
+    motion: "140ms crisp height snap · zero bounce · 0ms filter inversion",
+    css: `
+${S} .kc { width: min(100%, 620px); display: grid; gap: 14px; }
+${S} .kc-head { display: grid; gap: 10px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+${S} .kc-head h3 { margin: 0; font: 600 22px/1.1 var(--font); letter-spacing: -0.03em; }
+${S} .kc-chart { display: grid; grid-template-columns: repeat(3, 1fr); align-items: end; height: 270px; border-bottom: 1.5px solid var(--ink); }
+${S} .kc-col { position: relative; height: 100%; display: flex; align-items: flex-end; justify-content: center; overflow: hidden; }
+${S} .kc-bar { width: 100%; transition: height var(--dur-snap) ease-out; }
+${S} .kc-col[data-h="violet"] .kc-bar { background: var(--violet); }
+${S} .kc-col[data-h="amber"] .kc-bar { background: var(--amber); }
+${S} .kc-col[data-h="orchid"] .kc-bar { background: var(--orchid); }
+${S} .kc-pct {
+  position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%);
+  writing-mode: vertical-rl; transform: translateX(-50%) rotate(180deg);
+  font: 500 clamp(44px, 11cqw, 92px)/0.85 var(--font); letter-spacing: -0.04em;
+  color: var(--ink); pointer-events: none; user-select: none;
+}
+${S} .kc-labels { display: grid; grid-template-columns: repeat(3, 1fr); font-size: 12px; font-weight: 500; padding-top: 6px; }
+${S}.is-tile .kc-head h3 { display: none; }
+${S}.is-tile .kc-head { padding-bottom: 6px; gap: 0; }
+${S}.is-tile .rk-seg button { height: 22px; padding: 0 7px; font-size: 10px; }
+${S}.is-tile .kc-chart { height: 165px; }
+${S}.is-tile .kc-pct { font-size: 46px; }
+`,
+    mount(host, ctx) {
+      let at = 0;
+      host.innerHTML =
+        '<div class="kc">' +
+          '<div class="kc-head">' +
+            '<h3>Filter agent outcomes with live quantized KPI bars.</h3>' +
+            '<div class="rk-seg" role="radiogroup" aria-label="Agent scope">' +
+              SCOPES.map((s, i) => '<button type="button" role="radio" data-i="' + i + '" aria-checked="' + (i === 0) + '">' + s.name + '</button>').join("") +
+            '</div>' +
+          '</div>' +
+          '<div>' +
+            '<div class="kc-chart">' +
+              COLS.map((c, i) => '<div class="kc-col" data-h="' + c.hue + '" data-col="' + i + '"><div class="kc-bar"></div><span class="kc-pct"></span></div>').join("") +
+            '</div>' +
+            '<div class="kc-labels">' + COLS.map((c) => '<span>' + c.label + '</span>').join("") + '</div>' +
+          '</div>' +
+        '</div>';
+
+      const btns = [...host.querySelectorAll("[data-i]")];
+      const bars = [...host.querySelectorAll(".kc-bar")];
+      const pcts = [...host.querySelectorAll(".kc-pct")];
+
+      function draw() {
+        const vals = SCOPES[at].vals;
+        const max = Math.max(...vals, 60);
+        btns.forEach((b, i) => b.setAttribute("aria-checked", String(i === at)));
+        vals.forEach((v, i) => {
+          bars[i].style.height = Math.max(12, Math.round((v / max) * 100)) + "%";
+          pcts[i].textContent = v + "%";
+        });
+      }
+
+      btns.forEach((b, i) => b.addEventListener("click", () => { at = i; draw(); }, { signal: ctx.signal }));
+      draw();
+
+      let auto = !ctx.reduced();
+      ctx.onHand(() => { auto = false; });
+      if (auto) {
+        ctx.every(1800, () => {
+          if (!auto) return;
+          at = (at + 1) % SCOPES.length;
+          draw();
+        });
+      }
+    },
+  });
+})();
+
+</script>
+<script>
+/* 04-budget-bar.js */
+/* 04-budget-bar.js — Folio image_2-inspired 100% stacked composition bar paired with a sortable
+   1px-ruled breakdown table. Hovering or focusing any row cross-highlights its segment on the frame. */
+(function () {
+  const S = ".rs-budget-bar";
+  const ROWS = [
+    { id: "coder", name: "Coder", hue: "violet", calls: 148, share: 34, median: 420 },
+    { id: "research", name: "Research", hue: "amber", calls: 121, share: 27, median: 375 },
+    { id: "verifier", name: "Verifier", hue: "orchid", calls: 87, share: 21, median: 284 },
+    { id: "router", name: "Router", hue: "ink", calls: 42, share: 12, median: 129 },
+    { id: "other", name: "Cache", hue: "muted", calls: 14, share: 6, median: 48 },
+  ];
+
+  RackPlayer.register({
+    slug: "budget-bar",
+    title: "100% Stacked Composition",
+    category: "data",
+    tagline: "Proportional compute breakdown paired with a sortable, cross-highlighting table.",
+    motion: "0ms cross-highlight · 0ms sort cut · zero blur",
+    css: `
+${S} .bb { width: min(100%, 720px); display: grid; gap: 14px; }
+${S} .bb-h { font-weight: 600; font-size: 13px; margin: 0; }
+${S} .bb-ticks { display: flex; width: 100%; font-size: 10px; color: var(--muted); }
+${S} .bb-tick { display: grid; justify-items: center; gap: 3px; min-width: 0; }
+${S} .bb-tick span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
+${S} .bb-tick i { width: 1px; height: 10px; background: var(--border-soft); }
+${S} .bb-bar { display: flex; width: 100%; height: 34px; border: 1px solid var(--border); }
+${S} .bb-seg {
+  display: flex; align-items: center; padding: 0 7px; font-size: 11px; font-weight: 600;
+  color: #ffffff; cursor: pointer; overflow: hidden; white-space: nowrap;
+}
+${S} .bb-seg[data-h="violet"] { background: var(--violet); }
+${S} .bb-seg[data-h="amber"] { background: var(--amber); }
+${S} .bb-seg[data-h="orchid"] { background: var(--orchid); }
+${S} .bb-seg[data-h="ink"] { background: var(--ink); color: var(--on-ink); }
+${S} .bb-seg[data-h="muted"] { background: var(--surface-3); color: var(--ink); }
+${S} .bb.has-hi .bb-seg:not(.is-hi) { opacity: 0.3; }
+${S} .bb-tbl { width: 100%; border-collapse: collapse; font-size: 12px; border-top: 1.5px solid var(--ink); border-bottom: 1.5px solid var(--ink); }
+${S} .bb-tbl th { text-align: left; padding: 7px 6px; border-bottom: 1px solid var(--line-strong); font-size: 11px; color: var(--muted); font-weight: 500; }
+${S} .bb-tbl th button { all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
+${S} .bb-tbl th:not(:first-child), ${S} .bb-tbl td:not(:first-child) { text-align: right; }
+${S} .bb-tbl td { padding: 7px 6px; border-bottom: 1px solid var(--line); }
+${S} .bb-tbl tbody tr { cursor: pointer; }
+${S} .bb-tbl tbody tr.is-hi { background: var(--surface-2); font-weight: 600; }
+${S} .bb-mini { display: inline-flex; align-items: center; gap: 6px; justify-content: flex-end; }
+${S} .bb-track { width: 46px; height: 4px; background: var(--surface-3); display: inline-block; text-align: left; }
+${S} .bb-track i { display: block; height: 100%; background: var(--violet); }
+${S}.is-tile .bb-tbl th:nth-child(4), ${S}.is-tile .bb-tbl td:nth-child(4) { display: none; }
+${S}.is-tile .bb-tbl td, ${S}.is-tile .bb-tbl th { padding: 4px 5px; font-size: 11px; }
+${S}.is-tile .bb-bar { height: 26px; }
+`,
+    mount(host, ctx) {
+      let sortKey = "share", sortDir = -1, hi = null;
+      host.innerHTML =
+        '<div class="bb">' +
+          '<div>' +
+            '<p class="bb-h">Compute share by stage (100% stacked bar)</p>' +
+            '<div class="bb-ticks" style="margin-top:8px"></div>' +
+            '<div class="bb-bar"></div>' +
+          '</div>' +
+          '<table class="bb-tbl">' +
+            '<thead><tr>' +
+              '<th><button type="button" data-k="name">Stage</button></th>' +
+              '<th><button type="button" data-k="calls">Calls</button></th>' +
+              '<th><button type="button" data-k="share">Share ↓</button></th>' +
+              '<th><button type="button" data-k="median">Median ms</button></th>' +
+            '</tr></thead>' +
+            '<tbody></tbody>' +
+          '</table>' +
+        '</div>';
+
+      const root = host.querySelector(".bb");
+      const ticks = host.querySelector(".bb-ticks");
+      const bar = host.querySelector(".bb-bar");
+      const tbody = host.querySelector("tbody");
+      const sortBtns = [...host.querySelectorAll("thead button")];
+
+      ROWS.forEach((r) => {
+        const t = document.createElement("div");
+        t.className = "bb-tick"; t.style.width = r.share + "%";
+        t.innerHTML = "<span>" + r.name + "</span><i></i>";
+        ticks.appendChild(t);
+
+        const seg = document.createElement("div");
+        seg.className = "bb-seg"; seg.dataset.id = r.id; seg.dataset.h = r.hue;
+        seg.style.width = r.share + "%";
+        seg.textContent = r.share >= 10 ? r.share + "%" : "";
+        seg.addEventListener("pointerenter", () => setHi(r.id), { signal: ctx.signal });
+        seg.addEventListener("pointerleave", () => setHi(null), { signal: ctx.signal });
+        bar.appendChild(seg);
+      });
+
+      const segEls = [...bar.children];
+      function setHi(id) {
+        hi = id;
+        root.classList.toggle("has-hi", !!hi);
+        segEls.forEach((s) => s.classList.toggle("is-hi", s.dataset.id === hi));
+        [...tbody.children].forEach((tr) => tr.classList.toggle("is-hi", tr.dataset.id === hi));
+      }
+
+      function renderTable() {
+        const sorted = [...ROWS].sort((a, b) =>
+          sortKey === "name" ? a.name.localeCompare(b.name) * sortDir : (a[sortKey] - b[sortKey]) * sortDir
+        );
+        tbody.innerHTML = sorted.map((r) =>
+          '<tr data-id="' + r.id + '" tabindex="0">' +
+            '<td>' + r.name + '</td>' +
+            '<td class="rk-mono">' + r.calls + '</td>' +
+            '<td><span class="bb-mini"><span class="bb-track"><i style="width:' + Math.min(100, r.share * 2.5) + '%"></i></span><span class="rk-mono">' + r.share.toFixed(1) + '%</span></span></td>' +
+            '<td class="rk-mono">' + r.median + '</td>' +
+          '</tr>'
+        ).join("");
+        [...tbody.children].forEach((tr) => {
+          const id = tr.dataset.id;
+          tr.addEventListener("pointerenter", () => setHi(id), { signal: ctx.signal });
+          tr.addEventListener("pointerleave", () => setHi(null), { signal: ctx.signal });
+          tr.addEventListener("focus", () => setHi(id), { signal: ctx.signal });
+          tr.addEventListener("blur", () => setHi(null), { signal: ctx.signal });
+        });
+        sortBtns.forEach((b) => {
+          const k = b.dataset.k;
+          const base = { name: "Stage", calls: "Calls", share: "Share", median: "Median ms" }[k];
+          b.textContent = base + (k === sortKey ? (sortDir < 0 ? " ↓" : " ↑") : "");
+        });
+        setHi(hi);
+      }
+
+      sortBtns.forEach((b) => b.addEventListener("click", () => {
+        if (sortKey === b.dataset.k) sortDir *= -1;
+        else { sortKey = b.dataset.k; sortDir = b.dataset.k === "name" ? 1 : -1; }
+        renderTable();
+      }, { signal: ctx.signal }));
+
+      renderTable();
+
+      let auto = !ctx.reduced();
+      ctx.onHand(() => { auto = false; });
+      let step = 0;
+      if (auto) {
+        ctx.every(1400, () => {
+          if (!auto) return;
+          setHi(ROWS[step % ROWS.length].id);
+          step++;
+        });
+      }
+    },
+  });
+})();
+
+</script>
+<script>
+/* 05-eval-dumbbell.js */
+/* 05-eval-dumbbell.js — Folio image_3-inspired dumbbell eval comparison (Baseline ○ vs Candidate ●)
+   with live 1px-ruled sort strip (By current | By delta | By baseline) and accessible data table. */
+(function () {
+  const S = ".rs-eval-dumbbell";
+  const DATA = [
+    { name: "Tool routing", base: 31, cur: 62 },
+    { name: "Multi-file edit", base: 22, cur: 54 },
+    { name: "Patch accuracy", base: 44, cur: 57 },
+    { name: "Test repair", base: 18, cur: 41 },
+    { name: "Context recall", base: 29, cur: 38 },
+    { name: "Legacy fallback", base: 47, cur: 36 },
+    { name: "Zero-shot plan", base: 6, cur: 19 },
+  ];
+
+  RackPlayer.register({
+    slug: "eval-dumbbell",
+    title: "Eval Delta Dumbbell",
+    category: "data",
+    tagline: "Baseline vs candidate agent eval scores with crisp beat-cut reordering.",
+    motion: "140ms bar snap · 0ms sort cut · zero overshoot",
+    css: `
+${S} .ed { width: min(100%, 720px); display: grid; gap: 12px; }
+${S} .ed-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+${S} .ed-cap { font-weight: 600; font-size: 13px; }
+${S} .ed-leg { display: flex; align-items: center; gap: 14px; font-size: 11px; color: var(--muted); padding-left: 150px; }
+${S} .ed-leg span { display: inline-flex; align-items: center; gap: 5px; }
+${S} .ed-o { width: 9px; height: 9px; border-radius: 50%; border: 2px solid var(--ink); background: var(--panel); display: inline-block; }
+${S} .ed-f { width: 9px; height: 9px; border-radius: 50%; background: var(--violet); display: inline-block; }
+${S} .ed-rows { display: grid; gap: 0; position: relative; }
+${S} .ed-row { display: grid; grid-template-columns: 144px 1fr 56px; align-items: center; gap: 10px; height: 32px; }
+${S} .ed-row:hover { background: var(--surface-2); }
+${S} .ed-name { font-size: 12px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-left: 4px; }
+${S} .ed-plot { position: relative; height: 100%; border-left: 1.5px solid var(--ink);
+  background: repeating-linear-gradient(90deg, transparent 0, transparent calc(14.285% - 1px), var(--line) calc(14.285% - 1px), var(--line) 14.285%); }
+${S} .ed-line { position: absolute; top: 50%; height: 2px; margin-top: -1px; background: var(--violet); }
+${S} .ed-line.is-neg { background: var(--amber); }
+${S} .ed-dot { position: absolute; top: 50%; width: 10px; height: 10px; margin: -5px 0 0 -5px; border-radius: 50%; }
+${S} .ed-dot.is-base { border: 2px solid var(--ink); background: var(--panel); z-index: 2; }
+${S} .ed-dot.is-cur { background: var(--violet); z-index: 3; }
+${S} .ed-delta { font: 600 11px/1 var(--mono); text-align: right; color: var(--violet-text); padding-right: 4px; }
+${S} .ed-delta.is-neg { color: var(--amber-text); }
+${S} .ed-axis { display: grid; grid-template-columns: 144px 1fr 56px; gap: 10px; font: 400 10px/1 var(--mono); color: var(--subtle); padding-top: 4px; }
+${S} .ed-ticks { display: flex; justify-content: space-between; }
+${S}.is-tile .ed-row { grid-template-columns: 98px 1fr 44px; height: 24px; gap: 6px; }
+${S}.is-tile .ed-row:nth-child(n+6) { display: none; }
+${S}.is-tile .ed-leg { padding-left: 104px; font-size: 10px; }
+${S}.is-tile .ed-axis { display: none; }
+${S}.is-tile .ed-name { font-size: 11px; }
+${S}.is-tile .rk-seg button { height: 22px; padding: 0 7px; font-size: 10px; }
+`,
+    mount(host, ctx) {
+      let mode = "cur";
+      host.innerHTML =
+        '<div class="ed">' +
+          '<div class="ed-top">' +
+            '<span class="ed-cap">% pass benchmark across agent skills, v1 vs v2</span>' +
+            '<div class="rk-seg" role="radiogroup" aria-label="Sort order">' +
+              '<button type="button" role="radio" data-m="cur" aria-checked="true">By v2</button>' +
+              '<button type="button" role="radio" data-m="delta" aria-checked="false">By delta</button>' +
+              '<button type="button" role="radio" data-m="base" aria-checked="false">By v1</button>' +
+            '</div>' +
+          '</div>' +
+          '<div class="ed-leg"><span><i class="ed-o"></i> v1 baseline</span><span><i class="ed-f"></i> v2 candidate</span></div>' +
+          '<div class="ed-rows"></div>' +
+          '<div class="ed-axis"><span></span><div class="ed-ticks"><span>0%</span><span>10%</span><span>20%</span><span>30%</span><span>40%</span><span>50%</span><span>60%</span><span>70%</span></div><span></span></div>' +
+        '</div>';
+
+      const rowsEl = host.querySelector(".ed-rows");
+      const btns = [...host.querySelectorAll("[data-m]")];
+
+      function draw(animate) {
+        btns.forEach((b) => b.setAttribute("aria-checked", String(b.dataset.m === mode)));
+        const list = [...DATA].sort((a, b) => {
+          if (mode === "delta") return (b.cur - b.base) - (a.cur - a.base);
+          return b[mode] - a[mode];
+        });
+        rowsEl.innerHTML = list.map((d) => {
+          const delta = d.cur - d.base;
+          const neg = delta < 0;
+          const x1 = (Math.min(d.base, d.cur) / 70) * 100;
+          const x2 = (Math.max(d.base, d.cur) / 70) * 100;
+          const xb = (d.base / 70) * 100;
+          const xc = (d.cur / 70) * 100;
+          return '<div class="ed-row">' +
+            '<span class="ed-name">' + d.name + '</span>' +
+            '<div class="ed-plot">' +
+              '<span class="ed-line' + (neg ? ' is-neg' : '') + '" style="left:' + x1.toFixed(2) + '%;width:' + (x2 - x1).toFixed(2) + '%"></span>' +
+              '<span class="ed-dot is-base" style="left:' + xb.toFixed(2) + '%"></span>' +
+              '<span class="ed-dot is-cur" style="left:' + xc.toFixed(2) + '%"></span>' +
+            '</div>' +
+            '<span class="ed-delta' + (neg ? ' is-neg' : '') + '">' + (delta > 0 ? '+' : '−') + Math.abs(delta) + ' pp</span>' +
+          '</div>';
+        }).join("");
+        if (animate && !ctx.tile) ctx.cutIn(rowsEl, 0);
+      }
+
+      btns.forEach((b) => b.addEventListener("click", () => { mode = b.dataset.m; draw(true); }, { signal: ctx.signal }));
+      draw(false);
+
+      let auto = !ctx.reduced();
+      ctx.onHand(() => { auto = false; });
+      const seq = ["cur", "delta", "base"];
+      let k = 0;
+      if (auto) {
+        ctx.every(2200, () => {
+          if (!auto) return;
+          k = (k + 1) % seq.length;
+          mode = seq[k];
+          draw();
+        });
+      }
+    },
+  });
+})();
+
+</script>
+<script>
+/* 06-alignment-likert.js */
+/* 06-alignment-likert.js — Folio image_5-inspired diverging 5-point Likert bars centered on a black
+   neutral midpoint for agent rubric evaluations. Sort cuts cleanly between original order and pass rate. */
+(function () {
+  const S = ".rs-alignment-likert";
+  const RUBRICS = [
+    { q: "Tool calls stay minimal and deterministic", v: [4, 9, 17, 36, 34] },
+    { q: "Diffs preserve unrelated comments and formatting", v: [18, 41, 22, 14, 5] },
+    { q: "Edits compile cleanly on first verification pass", v: [12, 24, 31, 23, 10] },
+    { q: "Escalates before destructive git or deploy actions", v: [6, 14, 25, 33, 22] },
+    { q: "Citations and file links resolve without hallucination", v: [3, 8, 19, 34, 36] },
+  ];
+
+  RackPlayer.register({
+    slug: "alignment-likert",
+    title: "Diverging Eval Sentiment",
+    category: "data",
+    tagline: "Five-point diverging rubric bars anchored on a crisp black neutral midpoint.",
+    motion: "100ms cut on sort · 0ms axis lock · zero bounce",
+    css: `
+${S} .al { width: min(100%, 740px); display: grid; gap: 12px; }
+${S} .al-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+${S} .al-cap { font-weight: 600; font-size: 13px; }
+${S} .al-leg { display: flex; flex-wrap: wrap; gap: 10px 14px; font-size: 11px; color: var(--muted); }
+${S} .al-leg span { display: inline-flex; align-items: center; gap: 5px; }
+${S} .al-sw { width: 10px; height: 10px; display: inline-block; }
+${S} .al-list { display: grid; gap: 12px; }
+${S} .al-item { display: grid; gap: 5px; }
+${S} .al-q { font-size: 12px; font-weight: 500; }
+${S} .al-track { position: relative; display: grid; grid-template-columns: 1fr 1fr; height: 18px; align-items: center; }
+${S} .al-track::after { content: ""; position: absolute; left: 50%; top: -3px; bottom: -3px; width: 1.5px; background: var(--ink); z-index: 3; }
+${S} .al-left { display: flex; justify-content: flex-end; align-items: center; height: 100%; }
+${S} .al-right { display: flex; justify-content: flex-start; align-items: center; height: 100%; }
+${S} .al-seg { height: 14px; }
+${S} .al-seg.s0 { background: var(--amber); }
+${S} .al-seg.s1 { background: color-mix(in oklab, var(--amber), var(--panel) 50%); }
+${S} .al-seg.s2 { background: var(--surface-3); }
+${S} .al-seg.s3 { background: color-mix(in oklab, var(--violet), var(--panel) 48%); }
+${S} .al-seg.s4 { background: var(--violet); }
+${S} .al-pct { font: 600 11px/1 var(--mono); padding: 0 6px; white-space: nowrap; }
+${S} .al-pct.is-l { color: var(--amber-text); }
+${S} .al-pct.is-r { color: var(--violet-text); }
+${S}.is-tile .al-item:nth-child(n+4) { display: none; }
+${S}.is-tile .al-leg { display: none; }
+${S}.is-tile .al-q { font-size: 11px; }
+${S}.is-tile .rk-seg button { height: 22px; padding: 0 7px; font-size: 10px; }
+`,
+    mount(host, ctx) {
+      let sort = "orig";
+      host.innerHTML =
+        '<div class="al">' +
+          '<div class="al-top">' +
+            '<span class="al-cap">Diverging rubric evaluation bars</span>' +
+            '<div class="rk-seg" role="radiogroup" aria-label="Order">' +
+              '<button type="button" role="radio" data-s="orig" aria-checked="true">Original order</button>' +
+              '<button type="button" role="radio" data-s="pass" aria-checked="false">Sort by pass</button>' +
+            '</div>' +
+          '</div>' +
+          '<div class="al-leg">' +
+            '<span><i class="al-sw" style="background:var(--amber)"></i>Fail</span>' +
+            '<span><i class="al-sw" style="background:color-mix(in oklab,var(--amber),var(--panel) 50%)"></i>Weak</span>' +
+            '<span><i class="al-sw" style="background:var(--surface-3)"></i>Neutral</span>' +
+            '<span><i class="al-sw" style="background:color-mix(in oklab,var(--violet),var(--panel) 48%)"></i>Strong</span>' +
+            '<span><i class="al-sw" style="background:var(--violet)"></i>Pass</span>' +
+          '</div>' +
+          '<div class="al-list"></div>' +
+        '</div>';
+
+      const list = host.querySelector(".al-list");
+      const btns = [...host.querySelectorAll("[data-s]")];
+
+      function draw(animate) {
+        btns.forEach((b) => b.setAttribute("aria-checked", String(b.dataset.s === sort)));
+        const rows = sort === "pass"
+          ? [...RUBRICS].sort((a, b) => (b.v[3] + b.v[4]) - (a.v[3] + a.v[4]))
+          : RUBRICS;
+        list.innerHTML = rows.map((r) => {
+          const [s0, s1, s2, s3, s4] = r.v;
+          const failTot = s0 + s1, passTot = s3 + s4;
+          const scale = 0.85;
+          return '<div class="al-item">' +
+            '<span class="al-q">' + r.q + '</span>' +
+            '<div class="al-track">' +
+              '<div class="al-left">' +
+                '<span class="al-pct is-l">' + failTot + '%</span>' +
+                '<span class="al-seg s0" style="width:' + (s0 * scale) + '%"></span>' +
+                '<span class="al-seg s1" style="width:' + (s1 * scale) + '%"></span>' +
+                '<span class="al-seg s2" style="width:' + ((s2 / 2) * scale) + '%"></span>' +
+              '</div>' +
+              '<div class="al-right">' +
+                '<span class="al-seg s2" style="width:' + ((s2 / 2) * scale) + '%"></span>' +
+                '<span class="al-seg s3" style="width:' + (s3 * scale) + '%"></span>' +
+                '<span class="al-seg s4" style="width:' + (s4 * scale) + '%"></span>' +
+                '<span class="al-pct is-r">' + passTot + '%</span>' +
+              '</div>' +
+            '</div>' +
+          '</div>';
+        }).join("");
+        if (animate && !ctx.tile) ctx.cutIn(list, 0);
+      }
+
+      btns.forEach((b) => b.addEventListener("click", () => { sort = b.dataset.s; draw(true); }, { signal: ctx.signal }));
+      draw(false);
+
+      let auto = !ctx.reduced();
+      ctx.onHand(() => { auto = false; });
+      if (auto) {
+        ctx.every(2400, () => {
+          if (!auto) return;
+          sort = sort === "orig" ? "pass" : "orig";
+          draw();
+        });
+      }
+    },
+  });
+})();
+
+</script>
+<script>
+/* 07-session-launcher.js */
+/* 07-session-launcher.js — Ableton Live Session View for multi-agent workflows:
+   4 colored agent tracks × 4 scenes + Master scene launch column. Clips cue and launch quantized to the beat. */
+(function () {
+  const S = ".rs-session-launcher";
+  const TRACKS = [
+    { name: "Plan", hue: "amber", clips: ["Scope issue", "Spec diff", "Trace bug", "Release plan"] },
+    { name: "Build", hue: "blue", clips: ["Scaffold UI", "Wire API", "Patch lint", "Tag build"] },
+    { name: "Test", hue: "teal", clips: ["Unit suite", "A11y pass", "Reflow 320", "Smoke run"] },
+    { name: "Ship", hue: "violet", clips: ["Open draft", "Review PR", "Merge main", "Deploy prod"] },
+  ];
+  const SCENES = ["01 Triage", "02 Feature", "03 Fix CI", "04 Release"];
+
+  RackPlayer.register({
+    slug: "session-launcher",
+    title: "Agent Session Launcher",
+    category: "agent",
+    tagline: "Four agent tracks and four scenes that cue and launch quantized to the next beat.",
+    motion: "beat-quantized launch · 36ms column sweep · instant stop",
+    css: `
+${S} .sl { width: min(100%, 780px); border: 1px solid var(--border); background: var(--panel); display: grid; }
+${S} .sl-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)) 112px; }
+${S} .sl-th { padding: 7px 8px; border-right: 1px solid var(--line-strong); border-bottom: 1px solid var(--border); font-size: 11px; font-weight: 600; display: flex; justify-content: space-between; }
+${S} .sl-th:last-child { border-right: 0; background: var(--surface-2); color: var(--muted); font-family: var(--mono); font-size: 10px; align-items: center; }
+${S} .sl-th[data-h="amber"] { background: var(--amber-tint); color: var(--amber-text); }
+${S} .sl-th[data-h="blue"] { background: var(--blue-tint); color: var(--blue-text); }
+${S} .sl-th[data-h="teal"] { background: var(--teal-tint); color: var(--teal-text); }
+${S} .sl-th[data-h="violet"] { background: var(--violet-tint); color: var(--violet-text); }
+${S} .sl-cell {
+  border: 0; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line);
+  background: var(--block); padding: 9px 8px; display: flex; align-items: center; gap: 6px;
+  font-size: 12px; font-weight: 500; cursor: pointer; text-align: left; min-width: 0;
+}
+${S} .sl-cell:hover { background: var(--block-hover); }
+${S} .sl-cell span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+${S} .sl-play { width: 14px; height: 14px; flex: none; border: 1px solid var(--border-soft); display: grid; place-items: center; font-size: 8px; }
+${S} .sl-cell.is-live { background: var(--ink); color: var(--on-ink); font-weight: 600; }
+${S} .sl-cell.is-live .sl-play { background: var(--accent); color: var(--on-accent); border-color: var(--ink); }
+${S} .sl-cell.is-cued { outline: 2px solid var(--accent); outline-offset: -2px; }
+${S} .sl-scene {
+  border: 0; border-bottom: 1px solid var(--line); background: var(--surface-2);
+  padding: 9px 8px; display: flex; align-items: center; justify-content: space-between; gap: 4px;
+  font: 500 11px/1 var(--mono); cursor: pointer; color: var(--ink); white-space: nowrap;
+}
+${S} .sl-scene:hover { background: var(--surface-3); }
+${S} .sl-scene.is-live { background: var(--accent); color: var(--on-accent); font-weight: 600; }
+${S} .sl-foot { padding: 7px 10px; border-top: 1px solid var(--border); background: var(--surface-2); display: flex; justify-content: space-between; align-items: center; font: 500 11px/1 var(--mono); color: var(--muted); }
+${S} .sl-foot b { color: var(--ink); }
+${S}.is-tile .sl-grid { grid-template-columns: repeat(3, minmax(0, 1fr)) 86px; }
+${S}.is-tile .sl-col-3 { display: none; }
+${S}.is-tile .sl-cell, ${S}.is-tile .sl-scene { padding: 7px 6px; font-size: 10px; }
+${S}.is-tile .sl-foot { display: none; }
+`,
+    mount(host, ctx) {
+      const active = [0, 0, 0, -1];
+      const cued = [-1, -1, -1, -1];
+      let liveScene = 0;
+
+      host.innerHTML =
+        '<div class="sl">' +
+          '<div class="sl-grid">' +
+            TRACKS.map((t, c) => '<div class="sl-th sl-col-' + c + '" data-h="' + t.hue + '"><span>' + t.name + '</span><span class="rk-mono">0' + (c + 1) + '</span></div>').join("") +
+            '<div class="sl-th">MASTER</div>' +
+            SCENES.map((sc, r) =>
+              TRACKS.map((t, c) =>
+                '<button type="button" class="sl-cell sl-col-' + c + '" data-r="' + r + '" data-c="' + c + '" data-col="' + c + '">' +
+                  '<i class="sl-play" aria-hidden="true">▶</i><span>' + t.clips[r] + '</span>' +
+                '</button>'
+              ).join("") +
+              '<button type="button" class="sl-scene" data-sc="' + r + '" data-col="4"><span>' + sc + '</span><span>▶</span></button>'
+            ).join("") +
+          '</div>' +
+          '<div class="sl-foot"><span id="sl-status"></span><button type="button" class="rk-btn" id="sl-stop">Stop all</button></div>' +
+        '</div>';
+
+      const cells = [...host.querySelectorAll(".sl-cell")];
+      const sceneBtns = [...host.querySelectorAll(".sl-scene")];
+      const status = host.querySelector("#sl-status");
+
+      function draw() {
+        cells.forEach((b) => {
+          const r = Number(b.dataset.r), c = Number(b.dataset.c);
+          b.classList.toggle("is-live", active[c] === r);
+          b.classList.toggle("is-cued", cued[c] === r);
+        });
+        sceneBtns.forEach((b, r) => b.classList.toggle("is-live", liveScene === r));
+        const running = active.filter((x) => x >= 0).length;
+        status.innerHTML = running ? "RUNNING <b>" + running + " / 4 TRACKS</b> · QUANTIZE 1/4 BEAT" : "STOPPED · CLICK ANY CLIP OR MASTER SCENE";
+      }
+
+      cells.forEach((b) => b.addEventListener("click", () => {
+        const r = Number(b.dataset.r), c = Number(b.dataset.c);
+        liveScene = -1;
+        if (ctx.reduced()) { active[c] = active[c] === r ? -1 : r; draw(); return; }
+        cued[c] = active[c] === r ? -2 : r;
+        draw();
+      }, { signal: ctx.signal }));
+
+      sceneBtns.forEach((b, r) => b.addEventListener("click", () => {
+        liveScene = r;
+        if (ctx.reduced()) { TRACKS.forEach((_, c) => (active[c] = r)); draw(); return; }
+        TRACKS.forEach((_, c) => (cued[c] = r));
+        draw();
+      }, { signal: ctx.signal }));
+
+      host.querySelector("#sl-stop").addEventListener("click", () => {
+        active.fill(-1); cued.fill(-1); liveScene = -1; draw();
+      }, { signal: ctx.signal });
+
+      ctx.onBeat((step) => {
+        if (step % 4 !== 0) return;
+        let changed = false;
+        for (let c = 0; c < 4; c++) {
+          if (cued[c] !== -1) {
+            active[c] = cued[c] === -2 ? -1 : cued[c];
+            cued[c] = -1;
+            changed = true;
+          }
+        }
+        if (changed) draw();
+      });
+
+      draw();
+
+      let auto = !ctx.reduced();
+      ctx.onHand(() => { auto = false; });
+      let nextScene = 1;
+      if (auto) {
+        ctx.every(2000, () => {
+          if (!auto) return;
+          liveScene = nextScene;
+          TRACKS.forEach((_, c) => (cued[c] = nextScene));
+          nextScene = (nextScene + 1) % SCENES.length;
+          draw();
+        });
+      }
+    },
+  });
+})();
+
+</script>
+<script>
+/* 08-approval-gate.js */
+/* 08-approval-gate.js — Dense 1px-ruled agent permission matrix (Auto | Ask | Block) +
+   live queued tool call bar featuring Rack's one yellow (#ffc933) primary action key. */
+(function () {
+  const S = ".rs-approval-gate";
+  const TOOLS = [
+    { name: "Read workspace", scope: "fs.read", mode: "auto" },
+    { name: "Run test suite", scope: "shell.test", mode: "auto" },
+    { name: "Patch source files", scope: "fs.write", mode: "ask" },
+    { name: "Push feature branch", scope: "git.push", mode: "ask" },
+    { name: "Deploy production", scope: "deploy.prod", mode: "block" },
+  ];
+  const QUEUE = [
+    { cmd: "git push -u origin rack-studies", risk: "ASK · GIT.PUSH" },
+    { cmd: "write proposals/rack-studies/studies.html", risk: "ASK · FS.WRITE" },
+    { cmd: "npm run verify --prefix gallery", risk: "AUTO · SHELL.TEST" },
+  ];
+
+  RackPlayer.register({
+    slug: "approval-gate",
+    title: "Tool Approval Matrix",
+    category: "agent",
+    tagline: "Crisp Auto / Ask / Block rules above a live tool queue with one yellow Allow key.",
+    motion: "0ms permission flip · 100ms queue cut-in",
+    css: `
+${S} .ag { width: min(100%, 660px); border: 1px solid var(--border); background: var(--panel); display: grid; }
+${S} .ag-head { display: flex; justify-content: space-between; align-items: center; padding: 8px 10px; border-bottom: 1px solid var(--border); background: var(--surface-2); font-size: 12px; font-weight: 600; }
+${S} .ag-rows { display: grid; }
+${S} .ag-row { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 10px; padding: 7px 10px; border-bottom: 1px solid var(--line); }
+${S} .ag-row b { font-size: 12px; font-weight: 500; display: block; }
+${S} .ag-row small { font: 400 10px/1 var(--mono); color: var(--subtle); }
+${S} .ag-seg button[data-v="block"][aria-checked="true"] { background: var(--danger); color: #ffffff; }
+${S} .ag-queue { padding: 10px; background: var(--surface-2); border-top: 1px solid var(--border); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+${S} .ag-call { display: grid; gap: 3px; min-width: 0; }
+${S} .ag-call code { font: 500 12px/1.2 var(--mono); color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+${S} .ag-acts { display: flex; gap: 6px; }
+${S}.is-tile .ag-row:nth-child(n+4) { display: none; }
+${S}.is-tile .ag-row { padding: 5px 8px; }
+${S}.is-tile .ag-row small { display: none; }
+${S}.is-tile .rk-seg button { height: 22px; padding: 0 7px; font-size: 10px; }
+${S}.is-tile .ag-queue { padding: 7px 8px; }
+${S}.is-tile .ag-call code { font-size: 10px; }
+${S}.is-tile .rk-btn { height: 24px; padding: 0 8px; font-size: 11px; }
+`,
+    mount(host, ctx) {
+      const modes = TOOLS.map((t) => t.mode);
+      let qIdx = 0, decided = 0;
+
+      host.innerHTML =
+        '<div class="ag">' +
+          '<div class="ag-head"><span>Autonomous permission gate</span><span class="rk-fig" id="ag-cnt"></span></div>' +
+          '<div class="ag-rows"></div>' +
+          '<div class="ag-queue">' +
+            '<div class="ag-call"><span class="rk-fig" id="ag-risk"></span><code id="ag-cmd"></code></div>' +
+            '<div class="ag-acts">' +
+              '<button type="button" class="rk-btn" id="ag-deny">Deny</button>' +
+              '<button type="button" class="rk-btn is-accent" id="ag-allow">Allow</button>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+
+      const rowsEl = host.querySelector(".ag-rows");
+      const cnt = host.querySelector("#ag-cnt");
+      const risk = host.querySelector("#ag-risk");
+      const cmd = host.querySelector("#ag-cmd");
+
+      TOOLS.forEach((t, i) => {
+        const r = document.createElement("div");
+        r.className = "ag-row";
+        r.innerHTML =
+          '<div><b>' + t.name + '</b><small>' + t.scope + '</small></div>' +
+          '<div class="rk-seg ag-seg" role="radiogroup" aria-label="' + t.name + '">' +
+            ["auto", "ask", "block"].map((v) =>
+              '<button type="button" role="radio" data-v="' + v + '" aria-checked="' + (modes[i] === v) + '">' + v[0].toUpperCase() + v.slice(1) + '</button>'
+            ).join("") +
+          '</div>';
+        rowsEl.appendChild(r);
+        const bs = [...r.querySelectorAll("button")];
+        bs.forEach((b) => b.addEventListener("click", () => {
+          modes[i] = b.dataset.v;
+          bs.forEach((x) => x.setAttribute("aria-checked", String(x.dataset.v === modes[i])));
+          drawQueue();
+        }, { signal: ctx.signal }));
+      });
+
+      function drawQueue() {
+        const cur = QUEUE[qIdx % QUEUE.length];
+        risk.textContent = cur.risk;
+        cmd.textContent = cur.cmd;
+        const autoCount = modes.filter((m) => m === "auto").length;
+        cnt.textContent = autoCount + " AUTO · " + decided + " DECIDED";
+      }
+
+      const advance = () => {
+        decided++;
+        qIdx = (qIdx + 1) % QUEUE.length;
+        drawQueue();
+        ctx.cutIn(host.querySelector(".ag-call"), 0);
+      };
+      host.querySelector("#ag-allow").addEventListener("click", advance, { signal: ctx.signal });
+      host.querySelector("#ag-deny").addEventListener("click", advance, { signal: ctx.signal });
+      drawQueue();
+
+      let auto = !ctx.reduced();
+      ctx.onHand(() => { auto = false; });
+      if (auto) {
+        ctx.every(2400, () => { if (auto) advance(); });
+      }
+    },
+  });
+})();
+
+</script>
+<script>
+/* 09-value-strip.js */
+/* 09-value-strip.js — Rack's signature vertical-drag parameter strip: 6 dense cut value boxes
+   with 1:1 pointer drag, Shift fine mode, wheel, arrow keys, double-click home reset, and zero settle. */
+(function () {
+  const S = ".rs-value-strip";
+  const PARAMS = [
+    { name: "Temp", hue: "amber", min: 0, max: 1, step: 0.02, def: 0.2, fmt: (v) => v.toFixed(2) },
+    { name: "Top-P", hue: "blue", min: 0.1, max: 1, step: 0.02, def: 0.92, fmt: (v) => v.toFixed(2) },
+    { name: "Max tok", hue: "violet", min: 2, max: 64, step: 2, def: 16, fmt: (v) => v + "k" },
+    { name: "Retries", hue: "teal", min: 0, max: 8, step: 1, def: 3, fmt: (v) => v + "×" },
+    { name: "Timeout", hue: "orchid", min: 5, max: 120, step: 5, def: 45, fmt: (v) => v + "s" },
+    { name: "Workers", hue: "green", min: 1, max: 16, step: 1, def: 4, fmt: (v) => String(v) },
+  ];
+
+  RackPlayer.register({
+    slug: "value-strip",
+    title: "Vertical-Drag Value Strip",
+    category: "control",
+    tagline: "Six dense cut value boxes that track 1:1 vertically and stop dead on release.",
+    motion: "0ms 1:1 vertical drag · 0ms home snap · zero settle",
+    css: `
+${S} .vs { width: min(100%, 760px); border: 1px solid var(--border); background: var(--panel); display: grid; }
+${S} .vs-top { display: flex; justify-content: space-between; align-items: center; padding: 7px 10px; border-bottom: 1px solid var(--border); background: var(--surface-2); font-size: 12px; font-weight: 600; }
+${S} .vs-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); }
+${S} .vs-cell { border-right: 1px solid var(--line-strong); padding: 10px 8px; display: grid; gap: 7px; }
+${S} .vs-cell:last-child { border-right: 0; }
+${S} .vs-lbl { font: 500 10px/1 var(--mono); color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; display: flex; justify-content: space-between; }
+${S} .vs-box {
+  position: relative; border: 1px solid var(--border); background: var(--cut);
+  padding: 12px 8px 14px; cursor: ns-resize; user-select: none; touch-action: none;
+}
+${S} .vs-box.is-drag { border-color: var(--ink); background: var(--block-hover); }
+${S} .vs-num { font: 600 22px/1 var(--font); letter-spacing: -0.03em; display: block; }
+${S} .vs-bar { position: absolute; left: 0; right: 0; bottom: 0; height: 5px; background: var(--slot); }
+${S} .vs-fill { height: 100%; }
+${S} .vs-cell[data-h="amber"] .vs-fill { background: var(--amber); }
+${S} .vs-cell[data-h="blue"] .vs-fill { background: var(--blue); }
+${S} .vs-cell[data-h="violet"] .vs-fill { background: var(--violet); }
+${S} .vs-cell[data-h="teal"] .vs-fill { background: var(--teal); }
+${S} .vs-cell[data-h="orchid"] .vs-fill { background: var(--orchid); }
+${S} .vs-cell[data-h="green"] .vs-fill { background: var(--green); }
+${S} .vs-foot { padding: 7px 10px; border-top: 1px solid var(--line-strong); background: var(--surface-2); display: flex; justify-content: space-between; align-items: center; font: 400 11px/1 var(--mono); color: var(--subtle); }
+${S}.is-tile .vs-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+${S}.is-tile .vs-cell { border-bottom: 1px solid var(--line-strong); padding: 7px 6px; }
+${S}.is-tile .vs-box { padding: 7px 6px 9px; }
+${S}.is-tile .vs-num { font-size: 16px; }
+${S}.is-tile .vs-foot { display: none; }
+@container (max-width: 560px) {
+  ${S} .vs-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  ${S} .vs-cell { border-bottom: 1px solid var(--line-strong); }
+}
+`,
+    mount(host, ctx) {
+      const vals = PARAMS.map((p) => p.def);
+      host.innerHTML =
+        '<div class="vs">' +
+          '<div class="vs-top"><span>Model &amp; runtime parameters</span><button type="button" class="rk-btn" id="vs-reset">Reset defaults</button></div>' +
+          '<div class="vs-grid"></div>' +
+          '<div class="vs-foot"><span>DRAG ↑↓ 1:1 · SHIFT FINE · DOUBLE-CLICK HOME</span><span id="vs-mod">0 MODIFIED</span></div>' +
+        '</div>';
+
+      const grid = host.querySelector(".vs-grid");
+      const modEl = host.querySelector("#vs-mod");
+
+      const boxes = PARAMS.map((p, i) => {
+        const cell = document.createElement("div");
+        cell.className = "vs-cell"; cell.dataset.h = p.hue; cell.dataset.col = String(i);
+        cell.innerHTML =
+          '<div class="vs-lbl"><span>' + p.name + '</span><span class="vs-dot"></span></div>' +
+          '<div class="vs-box" role="slider" tabindex="0" aria-label="' + p.name + '" aria-valuemin="' + p.min + '" aria-valuemax="' + p.max + '">' +
+            '<span class="vs-num"></span><div class="vs-bar"><div class="vs-fill"></div></div>' +
+          '</div>';
+        grid.appendChild(cell);
+        const box = cell.querySelector(".vs-box");
+        const num = cell.querySelector(".vs-num");
+        const fill = cell.querySelector(".vs-fill");
+        const dot = cell.querySelector(".vs-dot");
+        ctx.bindDrag(box, {
+          min: p.min, max: p.max, step: p.step, def: p.def,
+          get: () => vals[i],
+          set: (v) => { vals[i] = v; draw(); },
+          signal: ctx.signal,
+        });
+        return { box, num, fill, dot };
+      });
+
+      function draw() {
+        let changed = 0;
+        PARAMS.forEach((p, i) => {
+          const v = vals[i], b = boxes[i];
+          const pct = ((v - p.min) / (p.max - p.min)) * 100;
+          b.num.textContent = p.fmt(v);
+          b.fill.style.width = pct.toFixed(1) + "%";
+          b.box.setAttribute("aria-valuenow", String(v));
+          const mod = Math.abs(v - p.def) > 1e-6;
+          if (mod) changed++;
+          b.dot.textContent = mod ? "●" : "";
+        });
+        modEl.textContent = changed + " MODIFIED";
+      }
+
+      host.querySelector("#vs-reset").addEventListener("click", () => {
+        PARAMS.forEach((p, i) => (vals[i] = p.def));
+        draw();
+      }, { signal: ctx.signal });
+      draw();
+
+      let auto = !ctx.reduced();
+      ctx.onHand(() => { auto = false; });
+      const demo = [
+        [0.2, 0.92, 16, 3, 45, 4],
+        [0.64, 0.80, 32, 2, 60, 8],
+        [0.08, 0.96, 8, 5, 30, 2],
+      ];
+      let d = 0;
+      if (auto) {
+        ctx.every(1600, () => {
+          if (!auto) return;
+          d = (d + 1) % demo.length;
+          demo[d].forEach((v, i) => (vals[i] = v));
+          draw();
+        });
+      }
+    },
+  });
+})();
+
+</script>
+<script>
+/* 10-step-router.js */
+/* 10-step-router.js — Beat-locked 4×16 agent/tool step sequencer.
+   Four vivid clip-colored lanes, marching quantized playhead, click-drag paint, and Rack yellow Play toggle. */
+(function () {
+  const S = ".rs-step-router";
+  const LANES = [
+    { name: "Fetch", hue: "blue", pat: "1000100010001000" },
+    { name: "Parse", hue: "amber", pat: "0010001000100010" },
+    { name: "Verify", hue: "teal", pat: "0000100000001010" },
+    { name: "Ship", hue: "violet", pat: "0000000000000001" },
+  ];
+
+  RackPlayer.register({
+    slug: "step-router",
+    title: "Beat-Locked Sequencer",
+    category: "control",
+    tagline: "Four colored job lanes stepped strictly on the beat with click-drag cell painting.",
+    motion: "125ms quantized step · 0ms cell toggle · zero decay",
+    css: `
+${S} .sr { width: min(100%, 760px); border: 1px solid var(--border); background: var(--panel); display: grid; }
+${S} .sr-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 10px; border-bottom: 1px solid var(--border); background: var(--surface-2); }
+${S} .sr-meta { display: flex; align-items: center; gap: 10px; font-size: 12px; font-weight: 600; }
+${S} .sr-step-num { font: 600 12px/1 var(--mono); padding: 4px 8px; border: 1px solid var(--border); background: var(--cut); }
+${S} .sr-body { padding: 10px; display: grid; gap: 6px; }
+${S} .sr-ruler { display: grid; grid-template-columns: 62px repeat(16, 1fr); gap: 3px; font: 500 9px/1 var(--mono); color: var(--subtle); text-align: center; }
+${S} .sr-lane { display: grid; grid-template-columns: 62px repeat(16, 1fr); gap: 3px; align-items: center; }
+${S} .sr-lname { font-size: 11px; font-weight: 600; padding-right: 4px; }
+${S} .sr-cell {
+  aspect-ratio: 1; border: 1px solid var(--line-strong); background: var(--cut);
+  padding: 0; cursor: pointer;
+}
+${S} .sr-cell.is-beat4 { background: var(--surface-2); }
+${S} .sr-lane[data-h="blue"] .sr-cell.is-on { background: var(--blue); border-color: var(--ink); }
+${S} .sr-lane[data-h="amber"] .sr-cell.is-on { background: var(--amber); border-color: var(--ink); }
+${S} .sr-lane[data-h="teal"] .sr-cell.is-on { background: var(--teal); border-color: var(--ink); }
+${S} .sr-lane[data-h="violet"] .sr-cell.is-on { background: var(--violet); border-color: var(--ink); }
+${S} .sr-cell.is-head { outline: 2px solid var(--ink); outline-offset: -2px; }
+${S} .sr-cell.is-on.is-head { background: var(--accent) !important; border-color: var(--ink); }
+${S}.is-tile .sr-ruler { display: none; }
+${S}.is-tile .sr-body { padding: 8px; gap: 4px; }
+${S}.is-tile .sr-lane { grid-template-columns: 44px repeat(16, 1fr); gap: 2px; }
+${S}.is-tile .sr-lname { font-size: 10px; }
+${S}.is-tile .sr-top { padding: 5px 8px; }
+${S}.is-tile .rk-btn { height: 22px; padding: 0 7px; font-size: 10px; }
+`,
+    mount(host, ctx) {
+      const grid = LANES.map((l) => [...l.pat].map((c) => c === "1"));
+      let playing = !ctx.reduced();
+      let head = 0;
+
+      host.innerHTML =
+        '<div class="sr">' +
+          '<div class="sr-top">' +
+            '<div class="sr-meta"><span>Job scheduler</span><span class="sr-step-num" id="sr-pos">01 / 16</span></div>' +
+            '<div style="display:flex;gap:6px">' +
+              '<button type="button" class="rk-btn" id="sr-clear">Clear</button>' +
+              '<button type="button" class="rk-btn is-accent" id="sr-play"></button>' +
+            '</div>' +
+          '</div>' +
+          '<div class="sr-body">' +
+            '<div class="sr-ruler"><span></span>' + Array.from({ length: 16 }, (_, i) => '<span>' + (i % 4 === 0 ? (i / 4 + 1) : "·") + '</span>').join("") + '</div>' +
+            LANES.map((l, r) =>
+              '<div class="sr-lane" data-h="' + l.hue + '" data-r="' + r + '">' +
+                '<span class="sr-lname">' + l.name + '</span>' +
+                Array.from({ length: 16 }, (_, c) =>
+                  '<button type="button" class="sr-cell' + (c % 4 === 0 ? ' is-beat4' : '') + '" data-r="' + r + '" data-c="' + c + '" aria-label="' + l.name + ' step ' + (c + 1) + '"></button>'
+                ).join("") +
+              '</div>'
+            ).join("") +
+          '</div>' +
+        '</div>';
+
+      const cells = [...host.querySelectorAll(".sr-cell")];
+      const playBtn = host.querySelector("#sr-play");
+      const posEl = host.querySelector("#sr-pos");
+      let paintVal = null;
+
+      function draw() {
+        cells.forEach((b) => {
+          const r = Number(b.dataset.r), c = Number(b.dataset.c);
+          b.classList.toggle("is-on", grid[r][c]);
+          b.classList.toggle("is-head", c === head);
+          b.setAttribute("aria-pressed", String(grid[r][c]));
+        });
+        playBtn.textContent = playing ? "Stop" : "Run";
+        playBtn.classList.toggle("is-accent", playing);
+        posEl.textContent = String(head + 1).padStart(2, "0") + " / 16";
+      }
+
+      cells.forEach((b) => {
+        b.addEventListener("pointerdown", (e) => {
+          const r = Number(b.dataset.r), c = Number(b.dataset.c);
+          paintVal = !grid[r][c];
+          grid[r][c] = paintVal;
+          draw();
+          e.preventDefault();
+        }, { signal: ctx.signal });
+        b.addEventListener("pointerenter", () => {
+          if (paintVal === null) return;
+          grid[Number(b.dataset.r)][Number(b.dataset.c)] = paintVal;
+          draw();
+        }, { signal: ctx.signal });
+      });
+      window.addEventListener("pointerup", () => { paintVal = null; }, { signal: ctx.signal });
+
+      playBtn.addEventListener("click", () => { playing = !playing; draw(); }, { signal: ctx.signal });
+      host.querySelector("#sr-clear").addEventListener("click", () => {
+        grid.forEach((row) => row.fill(false));
+        draw();
+      }, { signal: ctx.signal });
+
+      ctx.onBeat(() => {
+        if (!playing) return;
+        head = (head + 1) % 16;
+        draw();
+      });
+
+      draw();
+    },
+  });
+})();
+
+</script>
+<script>
+/* 11-run-timeline.js */
+/* 11-run-timeline.js — Ableton Arrangement View for an agent trace: colored multi-track clip spans
+   with token-density bars and a 1:1 scrubbable black playhead that stops dead where you drop it. */
+(function () {
+  const S = ".rs-run-timeline";
+  const TOTAL_S = 8.0;
+  const TRACKS = [
+    { name: "Router", hue: "amber", spans: [{ s: 0.0, e: 1.1, lbl: "classify_task", tok: 420 }] },
+    { name: "Search", hue: "blue", spans: [{ s: 0.9, e: 3.0, lbl: "rg + read(6)", tok: 4820 }, { s: 4.9, e: 5.7, lbl: "check_refs", tok: 960 }] },
+    { name: "Coder", hue: "teal", spans: [{ s: 2.8, e: 5.4, lbl: "patch(4 files)", tok: 9410 }, { s: 6.4, e: 7.4, lbl: "fix_lint", tok: 1840 }] },
+    { name: "Tests", hue: "violet", spans: [{ s: 5.3, e: 6.6, lbl: "verify + build", tok: 1120 }, { s: 7.2, e: 8.0, lbl: "pass (23/23)", tok: 310 }] },
+  ];
+
+  RackPlayer.register({
+    slug: "run-timeline",
+    title: "Scrubbable Trace Timeline",
+    category: "agent",
+    tagline: "Multi-track agent execution spans with 1:1 playhead scrubbing and zero inertia.",
+    motion: "0ms 1:1 playhead scrub · zero settle · beat-stepped playback",
+    css: `
+${S} .rt { width: min(100%, 780px); border: 1px solid var(--border); background: var(--panel); display: grid; }
+${S} .rt-top { display: flex; justify-content: space-between; align-items: center; padding: 7px 10px; border-bottom: 1px solid var(--border); background: var(--surface-2); font-size: 12px; font-weight: 600; }
+${S} .rt-time { font: 600 12px/1 var(--mono); }
+${S} .rt-body { position: relative; display: grid; grid-template-columns: 76px 1fr; }
+${S} .rt-names { border-right: 1px solid var(--border); display: grid; }
+${S} .rt-name { height: 42px; display: flex; align-items: center; padding: 0 8px; border-bottom: 1px solid var(--line); font-size: 11px; font-weight: 600; background: var(--surface-2); }
+${S} .rt-name:last-child { border-bottom: 0; }
+${S} .rt-area { position: relative; cursor: ew-resize; user-select: none; touch-action: none;
+  background: repeating-linear-gradient(90deg, transparent 0, transparent calc(12.5% - 1px), var(--line) calc(12.5% - 1px), var(--line) 12.5%); }
+${S} .rt-lane { position: relative; height: 42px; border-bottom: 1px solid var(--line); }
+${S} .rt-lane:last-child { border-bottom: 0; }
+${S} .rt-clip {
+  position: absolute; top: 5px; bottom: 5px; border: 1px solid var(--border);
+  display: flex; align-items: center; padding: 0 6px; overflow: hidden;
+  font: 500 10px/1 var(--mono); white-space: nowrap;
+}
+${S} .rt-lane[data-h="amber"] .rt-clip { background: var(--amber-tint); color: var(--amber-text); }
+${S} .rt-lane[data-h="blue"] .rt-clip { background: var(--blue-tint); color: var(--blue-text); }
+${S} .rt-lane[data-h="teal"] .rt-clip { background: var(--teal-tint); color: var(--teal-text); }
+${S} .rt-lane[data-h="violet"] .rt-clip { background: var(--violet-tint); color: var(--violet-text); }
+${S} .rt-clip.is-hit { outline: 2px solid var(--ink); outline-offset: -2px; font-weight: 600; }
+${S} .rt-head { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--ink); pointer-events: none; z-index: 5; }
+${S} .rt-head::before { content: ""; position: absolute; top: 0; left: -4px; width: 10px; height: 7px; background: var(--accent); border: 1px solid var(--ink); }
+${S} .rt-foot { padding: 7px 10px; border-top: 1px solid var(--border); background: var(--surface-2); display: flex; justify-content: space-between; gap: 10px; font: 500 11px/1 var(--mono); color: var(--muted); }
+${S} .rt-foot b { color: var(--ink); }
+${S}.is-tile .rt-name, ${S}.is-tile .rt-lane { height: 32px; }
+${S}.is-tile .rt-body { grid-template-columns: 56px 1fr; }
+${S}.is-tile .rt-clip { font-size: 9px; padding: 0 4px; }
+${S}.is-tile .rt-foot { font-size: 10px; padding: 5px 8px; }
+`,
+    mount(host, ctx) {
+      let t = 3.4;
+      host.innerHTML =
+        '<div class="rt">' +
+          '<div class="rt-top"><span>Trace arrangement · 4 tracks</span><span class="rt-time" id="rt-t"></span></div>' +
+          '<div class="rt-body">' +
+            '<div class="rt-names">' + TRACKS.map((tr) => '<div class="rt-name">' + tr.name + '</div>').join("") + '</div>' +
+            '<div class="rt-area" role="slider" tabindex="0" aria-label="Trace playhead" aria-valuemin="0" aria-valuemax="8" aria-valuenow="3.4">' +
+              TRACKS.map((tr, ti) =>
+                '<div class="rt-lane" data-h="' + tr.hue + '">' +
+                  tr.spans.map((sp, si) =>
+                    '<div class="rt-clip" data-ti="' + ti + '" data-si="' + si + '" style="left:' + (sp.s / TOTAL_S * 100) + '%;width:' + ((sp.e - sp.s) / TOTAL_S * 100) + '%">' + sp.lbl + '</div>'
+                  ).join("") +
+                '</div>'
+              ).join("") +
+              '<div class="rt-head" id="rt-head"></div>' +
+            '</div>' +
+          '</div>' +
+          '<div class="rt-foot"><span id="rt-active"></span><span id="rt-tok"></span></div>' +
+        '</div>';
+
+      const area = host.querySelector(".rt-area");
+      const head = host.querySelector("#rt-head");
+      const timeEl = host.querySelector("#rt-t");
+      const actEl = host.querySelector("#rt-active");
+      const tokEl = host.querySelector("#rt-tok");
+      const clips = [...host.querySelectorAll(".rt-clip")];
+
+      function draw() {
+        const pct = (t / TOTAL_S) * 100;
+        head.style.left = pct.toFixed(2) + "%";
+        timeEl.textContent = t.toFixed(2) + "s / 8.00s";
+        area.setAttribute("aria-valuenow", t.toFixed(2));
+        const hits = [];
+        let tok = 0;
+        clips.forEach((c) => {
+          const sp = TRACKS[Number(c.dataset.ti)].spans[Number(c.dataset.si)];
+          const on = t >= sp.s && t <= sp.e;
+          c.classList.toggle("is-hit", on);
+          if (on) { hits.push(TRACKS[Number(c.dataset.ti)].name + ": " + sp.lbl); tok += sp.tok; }
+        });
+        actEl.innerHTML = hits.length ? "ACTIVE <b>" + hits.join(" · ") + "</b>" : "IDLE";
+        tokEl.innerHTML = "SPAN TOK <b>" + tok.toLocaleString() + "</b>";
+      }
+
+      let dragging = false;
+      const setFromClient = (x) => {
+        const r = area.getBoundingClientRect();
+        t = Math.max(0, Math.min(TOTAL_S, ((x - r.left) / r.width) * TOTAL_S));
+        draw();
+      };
+      area.addEventListener("pointerdown", (e) => {
+        dragging = true; area.setPointerCapture(e.pointerId); setFromClient(e.clientX); e.preventDefault();
+      }, { signal: ctx.signal });
+      area.addEventListener("pointermove", (e) => { if (dragging) setFromClient(e.clientX); }, { signal: ctx.signal });
+      const end = () => { dragging = false; };
+      area.addEventListener("pointerup", end, { signal: ctx.signal });
+      area.addEventListener("pointercancel", end, { signal: ctx.signal });
+      area.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowRight") { e.preventDefault(); t = Math.min(TOTAL_S, t + 0.25); draw(); }
+        if (e.key === "ArrowLeft") { e.preventDefault(); t = Math.max(0, t - 0.25); draw(); }
+      }, { signal: ctx.signal });
+
+      draw();
+
+      let auto = !ctx.reduced();
+      ctx.onHand(() => { auto = false; });
+      ctx.onBeat(() => {
+        if (!auto) return;
+        t = (t + 0.25) % TOTAL_S;
+        draw();
+      });
+    },
+  });
+})();
+
+</script>
+<script>
+/* 12-diff-inspector.js */
+/* 12-diff-inspector.js — Crisp 1px-ruled inline patch inspector with file rail, instant Accept / Reject
+   keys, keyboard navigation (J/K, A/R), and a stacked decision progress strip. */
+(function () {
+  const S = ".rs-diff-inspector";
+  const HUNKS = [
+    { file: "tokens.css", line: "@@ -2451,4 +2451,4 @@", del: "--rack-radius-control: 4px;", add: "--rack-radius-control: 0px;" },
+    { file: "agent-chain.tsx", line: "@@ -112,3 +112,3 @@", del: "transition: width 250ms ease;", add: "transition: none; /* 0ms on the frame */" },
+    { file: "wall-tile.tsx", line: "@@ -88,3 +88,3 @@", del: "box-shadow: var(--shadow-float);", add: "border: 1px solid var(--border);" },
+    { file: "deal.ts", line: "@@ -44,3 +44,3 @@", del: "stagger: 50, spring: true", add: "stagger: 36, opacityOnly: true" },
+  ];
+
+  RackPlayer.register({
+    slug: "diff-inspector",
+    title: "Inline Patch Inspector",
+    category: "agent",
+    tagline: "Crisp file rail and hunk reviewer with instant Accept / Reject keys and zero fade.",
+    motion: "0ms file switch · 0ms hunk verdict · stacked progress bar",
+    css: `
+${S} .di { width: min(100%, 760px); border: 1px solid var(--border); background: var(--panel); display: grid; }
+${S} .di-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 7px 10px; border-bottom: 1px solid var(--border); background: var(--surface-2); }
+${S} .di-prog { display: flex; gap: 3px; align-items: center; }
+${S} .di-pip { width: 18px; height: 8px; border: 1px solid var(--border-soft); background: var(--cut); }
+${S} .di-pip.is-acc { background: var(--green); border-color: var(--ink); }
+${S} .di-pip.is-rej { background: var(--amber); border-color: var(--ink); }
+${S} .di-main { display: grid; grid-template-columns: 180px 1fr; }
+${S} .di-rail { border-right: 1px solid var(--border); display: grid; align-content: start; background: var(--surface-2); }
+${S} .di-file { border: 0; border-bottom: 1px solid var(--line); background: transparent; padding: 9px 10px; text-align: left; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 6px; font: 500 11px/1.2 var(--mono); min-width: 0; }
+${S} .di-file span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+${S} .di-file:hover { background: var(--block-hover); }
+${S} .di-file.is-on { background: var(--ink); color: var(--on-ink); }
+${S} .di-badge { font-size: 9px; padding: 2px 4px; border: 1px solid currentColor; }
+${S} .di-pane { padding: 12px; display: grid; gap: 10px; align-content: space-between; background: var(--cut); }
+${S} .di-code { font: 400 12px/1.6 var(--mono); display: grid; border: 1px solid var(--line-strong); }
+${S} .di-line { padding: 4px 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+${S} .di-line.is-h { background: var(--surface-2); color: var(--subtle); font-size: 11px; border-bottom: 1px solid var(--line); }
+${S} .di-line.is-del { background: var(--amber-tint); color: var(--amber-text); }
+${S} .di-line.is-add { background: var(--green-tint); color: var(--green-text); }
+${S} .di-acts { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+${S}.is-tile .di-main { grid-template-columns: 110px 1fr; }
+${S}.is-tile .di-file { padding: 6px; font-size: 10px; }
+${S}.is-tile .di-pane { padding: 8px; gap: 6px; }
+${S}.is-tile .di-code { font-size: 10px; }
+${S}.is-tile .rk-btn { height: 22px; padding: 0 7px; font-size: 10px; }
+`,
+    mount(host, ctx) {
+      let at = 0;
+      const verdict = ["acc", null, null, null];
+
+      host.innerHTML =
+        '<div class="di">' +
+          '<div class="di-top"><span style="font-weight:600;font-size:12px">Patch review · 4 hunks</span><div class="di-prog" id="di-prog"></div></div>' +
+          '<div class="di-main">' +
+            '<div class="di-rail"></div>' +
+            '<div class="di-pane">' +
+              '<div class="di-code" id="di-code"></div>' +
+              '<div class="di-acts">' +
+                '<span class="rk-fig" id="di-stat"></span>' +
+                '<div style="display:flex;gap:6px"><button type="button" class="rk-btn" id="di-rej">Reject [R]</button><button type="button" class="rk-btn is-accent" id="di-acc">Accept [A]</button></div>' +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+
+      const rail = host.querySelector(".di-rail");
+      const prog = host.querySelector("#di-prog");
+      const code = host.querySelector("#di-code");
+      const stat = host.querySelector("#di-stat");
+
+      const fBtns = HUNKS.map((h, i) => {
+        const b = document.createElement("button");
+        b.type = "button"; b.className = "di-file";
+        b.innerHTML = '<span>' + h.file + '</span><span class="di-badge"></span>';
+        b.addEventListener("click", () => { at = i; draw(); }, { signal: ctx.signal });
+        rail.appendChild(b);
+        return b;
+      });
+
+      function draw() {
+        const h = HUNKS[at];
+        fBtns.forEach((b, i) => {
+          b.classList.toggle("is-on", i === at);
+          const v = verdict[i];
+          b.querySelector(".di-badge").textContent = v === "acc" ? "OK" : v === "rej" ? "NO" : "••";
+        });
+        prog.innerHTML = verdict.map((v) => '<i class="di-pip' + (v ? " is-" + v : "") + '"></i>').join("");
+        code.innerHTML =
+          '<div class="di-line is-h">' + h.file + " " + h.line + '</div>' +
+          '<div class="di-line is-del">− ' + h.del + '</div>' +
+          '<div class="di-line is-add">+ ' + h.add + '</div>';
+        const done = verdict.filter(Boolean).length;
+        stat.textContent = done + " / " + HUNKS.length + " DECIDED";
+      }
+
+      const decide = (v) => {
+        verdict[at] = v;
+        at = (at + 1) % HUNKS.length;
+        draw();
+      };
+      host.querySelector("#di-acc").addEventListener("click", () => decide("acc"), { signal: ctx.signal });
+      host.querySelector("#di-rej").addEventListener("click", () => decide("rej"), { signal: ctx.signal });
+      host.addEventListener("keydown", (e) => {
+        if (e.key === "a" || e.key === "A") decide("acc");
+        else if (e.key === "r" || e.key === "R") decide("rej");
+        else if (e.key === "j" || e.key === "ArrowDown") { at = (at + 1) % HUNKS.length; draw(); }
+        else if (e.key === "k" || e.key === "ArrowUp") { at = (at - 1 + HUNKS.length) % HUNKS.length; draw(); }
+      }, { signal: ctx.signal });
+
+      draw();
+
+      let auto = !ctx.reduced();
+      ctx.onHand(() => { auto = false; });
+      if (auto) {
+        ctx.every(1900, () => {
+          if (!auto) return;
+          verdict[at] = at === 2 ? "rej" : "acc";
+          at = (at + 1) % HUNKS.length;
+          draw();
+        });
+      }
+    },
+  });
+})();
+
+</script>
+<script>
+/* 13-context-rack.js */
+/* 13-context-rack.js — Dense modular context attachment rack: colored source chips,
+   instant On/Off switches, segmented multi-hue capacity bar, and one-frame Compact action. */
+(function () {
+  const S = ".rs-context-rack";
+  const MAX_K = 128;
+  const SOURCES = [
+    { name: "skills/litt-md/assets/tokens.css", tag: "Core", hue: "violet", tok: 24.4, on: true, prio: 1 },
+    { name: "gallery/src/components/agent-chain.tsx", tag: "Code", hue: "blue", tok: 14.2, on: true, prio: 1 },
+    { name: "proposals/rack.md", tag: "Spec", hue: "teal", tok: 8.6, on: true, prio: 2 },
+    { name: "git diff origin/main..HEAD", tag: "Diff", hue: "amber", tok: 19.8, on: true, prio: 1 },
+    { name: "playwright wall-shard-1.log", tag: "Logs", hue: "orchid", tok: 28.0, on: false, prio: 3 },
+    { name: "web: design-engineering notes", tag: "Web", hue: "green", tok: 11.4, on: false, prio: 3 },
+  ];
+
+  RackPlayer.register({
+    slug: "context-rack",
+    title: "Context Window Rack",
+    category: "agent",
+    tagline: "Attach or bypass context sources on the frame with a multi-hue capacity bar.",
+    motion: "0ms attach toggle · 140ms bar snap · zero bounce",
+    css: `
+${S} .cr { width: min(100%, 700px); border: 1px solid var(--border); background: var(--panel); display: grid; }
+${S} .cr-top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px; padding: 9px 10px; border-bottom: 1px solid var(--border); background: var(--surface-2); }
+${S} .cr-fig { font: 600 22px/1 var(--font); letter-spacing: -0.03em; }
+${S} .cr-sub { font: 500 11px/1 var(--mono); color: var(--muted); }
+${S} .cr-bar { display: flex; height: 14px; border-bottom: 1px solid var(--border); background: var(--slot); }
+${S} .cr-seg { height: 100%; transition: width var(--dur-snap) ease-out; }
+${S} .cr-seg[data-h="violet"] { background: var(--violet); }
+${S} .cr-seg[data-h="blue"] { background: var(--blue); }
+${S} .cr-seg[data-h="teal"] { background: var(--teal); }
+${S} .cr-seg[data-h="amber"] { background: var(--amber); }
+${S} .cr-seg[data-h="orchid"] { background: var(--orchid); }
+${S} .cr-seg[data-h="green"] { background: var(--green); }
+${S} .cr-list { display: grid; }
+${S} .cr-row { display: grid; grid-template-columns: 44px 54px 1fr 56px; align-items: center; gap: 8px; padding: 7px 10px; border-bottom: 1px solid var(--line); }
+${S} .cr-row:last-child { border-bottom: 0; }
+${S} .cr-row.is-off { opacity: 0.48; }
+${S} .cr-sw { height: 22px; border: 1px solid var(--border); background: var(--block); font: 600 10px/1 var(--mono); cursor: pointer; }
+${S} .cr-sw[aria-pressed="true"] { background: var(--ink); color: var(--on-ink); }
+${S} .cr-tag { font: 600 10px/1 var(--mono); padding: 4px 5px; text-align: center; text-transform: uppercase; }
+${S} .cr-tag[data-h="violet"] { background: var(--violet-tint); color: var(--violet-text); }
+${S} .cr-tag[data-h="blue"] { background: var(--blue-tint); color: var(--blue-text); }
+${S} .cr-tag[data-h="teal"] { background: var(--teal-tint); color: var(--teal-text); }
+${S} .cr-tag[data-h="amber"] { background: var(--amber-tint); color: var(--amber-text); }
+${S} .cr-tag[data-h="orchid"] { background: var(--orchid-tint); color: var(--orchid-text); }
+${S} .cr-tag[data-h="green"] { background: var(--green-tint); color: var(--green-text); }
+${S} .cr-name { font: 400 12px/1.2 var(--mono); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+${S} .cr-tok { font: 500 11px/1 var(--mono); text-align: right; color: var(--muted); }
+${S}.is-tile .cr-row:nth-child(n+5) { display: none; }
+${S}.is-tile .cr-row { padding: 5px 8px; grid-template-columns: 36px 46px 1fr 44px; gap: 6px; }
+${S}.is-tile .cr-name { font-size: 10px; }
+${S}.is-tile .cr-fig { font-size: 16px; }
+`,
+    mount(host, ctx) {
+      const on = SOURCES.map((s) => s.on);
+
+      host.innerHTML =
+        '<div class="cr">' +
+          '<div class="cr-top">' +
+            '<div style="display:flex;align-items:baseline;gap:10px"><span class="cr-fig" id="cr-pct"></span><span class="cr-sub" id="cr-used"></span></div>' +
+            '<div style="display:flex;gap:6px"><button type="button" class="rk-btn" id="cr-all">Attach all</button><button type="button" class="rk-btn" id="cr-cmp">Compact</button></div>' +
+          '</div>' +
+          '<div class="cr-bar">' + SOURCES.map((s, i) => '<div class="cr-seg" data-h="' + s.hue + '" data-i="' + i + '"></div>').join("") + '</div>' +
+          '<div class="cr-list"></div>' +
+        '</div>';
+
+      const list = host.querySelector(".cr-list");
+      const segs = [...host.querySelectorAll(".cr-seg")];
+      const pctEl = host.querySelector("#cr-pct");
+      const usedEl = host.querySelector("#cr-used");
+
+      const rows = SOURCES.map((s, i) => {
+        const r = document.createElement("div");
+        r.className = "cr-row";
+        r.innerHTML =
+          '<button type="button" class="cr-sw" aria-label="Toggle ' + s.name + '"></button>' +
+          '<span class="cr-tag" data-h="' + s.hue + '">' + s.tag + '</span>' +
+          '<span class="cr-name">' + s.name + '</span>' +
+          '<span class="cr-tok">' + s.tok.toFixed(1) + 'k</span>';
+        const sw = r.querySelector(".cr-sw");
+        sw.addEventListener("click", () => { on[i] = !on[i]; draw(); }, { signal: ctx.signal });
+        list.appendChild(r);
+        return { r, sw };
+      });
+
+      function draw() {
+        let used = 0;
+        SOURCES.forEach((s, i) => {
+          const active = on[i];
+          if (active) used += s.tok;
+          rows[i].r.classList.toggle("is-off", !active);
+          rows[i].sw.setAttribute("aria-pressed", String(active));
+          rows[i].sw.textContent = active ? "ON" : "OFF";
+          segs[i].style.width = (active ? (s.tok / MAX_K) * 100 : 0).toFixed(2) + "%";
+        });
+        pctEl.textContent = Math.round((used / MAX_K) * 100) + "%";
+        usedEl.textContent = used.toFixed(1) + "k / " + MAX_K + "k TOKENS";
+      }
+
+      host.querySelector("#cr-all").addEventListener("click", () => { on.fill(true); draw(); }, { signal: ctx.signal });
+      host.querySelector("#cr-cmp").addEventListener("click", () => {
+        SOURCES.forEach((s, i) => (on[i] = s.prio === 1));
+        draw();
+      }, { signal: ctx.signal });
+      draw();
+
+      let auto = !ctx.reduced();
+      ctx.onHand(() => { auto = false; });
+      let step = 0;
+      if (auto) {
+        ctx.every(1700, () => {
+          if (!auto) return;
+          const idx = (step + 4) % SOURCES.length;
+          on[idx] = !on[idx];
+          step++;
+          draw();
+        });
+      }
+    },
+  });
+})();
+
+</script>
+<script>
+/* 14-command-palette.js */
+/* 14-command-palette.js — Zero-animation Emil Kowalski / Raycast-style Rack command strip:
+   1px-ruled input, instant filtering, 0ms frame-snapped row inversion, and monospace keycaps. */
+(function () {
+  const S = ".rs-command-palette";
+  const CMDS = [
+    { name: "Launch agent signal chain", cat: "Agent", hue: "violet", key: "⌘R" },
+    { name: "Switch to Deep audit preset", cat: "Preset", hue: "amber", key: "⇧A" },
+    { name: "Verify tokens & registry lock", cat: "Check", hue: "teal", key: "⌘V" },
+    { name: "Compact context window", cat: "Memory", hue: "blue", key: "⌘K" },
+    { name: "Export unit matrix CSV", cat: "Data", hue: "orchid", key: "⌘E" },
+    { name: "Toggle light / dark theme", cat: "View", hue: "green", key: "T" },
+  ];
+
+  RackPlayer.register({
+    slug: "command-palette",
+    title: "Instant Cut Command Bar",
+    category: "control",
+    tagline: "Zero-animation command runner where active row inversion jumps on the exact frame.",
+    motion: "0ms row inversion · 0ms filter cut · no bounce",
+    css: `
+${S} .cp { width: min(100%, 560px); border: 1px solid var(--border); background: var(--panel); display: grid; }
+${S} .cp-in { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-bottom: 1px solid var(--border); background: var(--cut); }
+${S} .cp-in span { font: 600 13px/1 var(--mono); color: var(--ink); }
+${S} .cp-in input { flex: 1; min-width: 0; border: 0; background: transparent; outline: none; font-size: 13px; }
+${S} .cp-list { display: grid; }
+${S} .cp-row {
+  border: 0; border-bottom: 1px solid var(--line); background: transparent;
+  padding: 8px 10px; display: grid; grid-template-columns: 54px 1fr auto; align-items: center; gap: 10px;
+  text-align: left; cursor: pointer; font-size: 12px;
+}
+${S} .cp-row:last-child { border-bottom: 0; }
+${S} .cp-row.is-on { background: var(--ink); color: var(--on-ink); font-weight: 500; }
+${S} .cp-cat { font: 600 9px/1 var(--mono); padding: 3px 5px; text-align: center; text-transform: uppercase; }
+${S} .cp-cat[data-h="violet"] { background: var(--violet-tint); color: var(--violet-text); }
+${S} .cp-cat[data-h="amber"] { background: var(--amber-tint); color: var(--amber-text); }
+${S} .cp-cat[data-h="teal"] { background: var(--teal-tint); color: var(--teal-text); }
+${S} .cp-cat[data-h="blue"] { background: var(--blue-tint); color: var(--blue-text); }
+${S} .cp-cat[data-h="orchid"] { background: var(--orchid-tint); color: var(--orchid-text); }
+${S} .cp-cat[data-h="green"] { background: var(--green-tint); color: var(--green-text); }
+${S} .cp-row.is-on .cp-cat { background: var(--accent); color: var(--on-accent); }
+${S} .cp-key { font: 500 10px/1 var(--mono); padding: 3px 5px; border: 1px solid var(--border-soft); }
+${S} .cp-row.is-on .cp-key { border-color: currentColor; }
+${S} .cp-foot { padding: 7px 10px; border-top: 1px solid var(--border); background: var(--surface-2); display: flex; justify-content: space-between; font: 500 11px/1 var(--mono); color: var(--muted); }
+${S} .cp-foot b { color: var(--ink); }
+${S}.is-tile .cp-row:nth-child(n+5) { display: none; }
+${S}.is-tile .cp-row { padding: 6px 8px; font-size: 11px; }
+${S}.is-tile .cp-foot { font-size: 10px; padding: 5px 8px; }
+`,
+    mount(host, ctx) {
+      let query = "", active = 0, ran = "Ready · press Enter or click a row";
+      host.innerHTML =
+        '<div class="cp">' +
+          '<div class="cp-in"><span>&gt;</span><input type="text" placeholder="Filter commands…" aria-label="Filter commands"></div>' +
+          '<div class="cp-list" role="listbox"></div>' +
+          '<div class="cp-foot"><span id="cp-ran"></span><span>↑↓ · ↵ RUN</span></div>' +
+        '</div>';
+
+      const input = host.querySelector("input");
+      const list = host.querySelector(".cp-list");
+      const ranEl = host.querySelector("#cp-ran");
+
+      function matches() {
+        const q = query.trim().toLowerCase();
+        return q ? CMDS.filter((c) => c.name.toLowerCase().includes(q) || c.cat.toLowerCase().includes(q)) : CMDS;
+      }
+
+      function draw() {
+        const items = matches();
+        if (active >= items.length) active = Math.max(0, items.length - 1);
+        list.innerHTML = items.length ? items.map((c, i) =>
+          '<button type="button" class="cp-row' + (i === active ? ' is-on' : '') + '" role="option" aria-selected="' + (i === active) + '" data-i="' + i + '">' +
+            '<span class="cp-cat" data-h="' + c.hue + '">' + c.cat + '</span>' +
+            '<span>' + c.name + '</span>' +
+            '<kbd class="cp-key">' + c.key + '</kbd>' +
+          '</button>'
+        ).join("") : '<div style="padding:12px 10px;color:var(--muted);font-size:12px">No matching commands.</div>';
+
+        [...list.querySelectorAll(".cp-row")].forEach((b, i) => {
+          b.addEventListener("pointerenter", () => { active = i; draw(); }, { signal: ctx.signal });
+          b.addEventListener("click", () => { ran = "RAN: " + items[i].name; draw(); }, { signal: ctx.signal });
+        });
+        ranEl.innerHTML = "<b>" + ran + "</b>";
+      }
+
+      input.addEventListener("input", () => { query = input.value; active = 0; draw(); }, { signal: ctx.signal });
+      input.addEventListener("keydown", (e) => {
+        const items = matches();
+        if (!items.length) return;
+        if (e.key === "ArrowDown") { e.preventDefault(); active = (active + 1) % items.length; draw(); }
+        else if (e.key === "ArrowUp") { e.preventDefault(); active = (active - 1 + items.length) % items.length; draw(); }
+        else if (e.key === "Enter") { e.preventDefault(); ran = "RAN: " + items[active].name; draw(); }
+      }, { signal: ctx.signal });
+
+      draw();
+
+      let auto = !ctx.reduced();
+      ctx.onHand(() => { auto = false; });
+      if (auto) {
+        ctx.every(1100, () => {
+          if (!auto) return;
+          active = (active + 1) % 4;
+          draw();
+        });
+      }
+    },
+  });
+})();
+
+</script>
+<script>
+/* 15-curve-shaper.js */
+/* 15-curve-shaper.js — Rack motion & quantize shaper: 1px-ruled SVG transfer curve with
+   1:1 draggable control handles, Rack motion presets (Step | Cut | Snap | Beat), and a live preview rail. */
+(function () {
+  const S = ".rs-curve-shaper";
+  const PRESETS = [
+    { id: "cut", name: "Cut 100ms", x1: 0.0, y1: 0.0, x2: 0.25, y2: 1.0, steps: 0, note: "Rack overlay & column cut-in" },
+    { id: "step", name: "Frame 0ms", x1: 0.0, y1: 1.0, x2: 0.0, y2: 1.0, steps: 1, note: "Direct manipulation: instant snap" },
+    { id: "snap", name: "Snap 140ms", x1: 0.16, y1: 1.0, x2: 0.3, y2: 1.0, steps: 0, note: "Data bar & sort transition" },
+    { id: "beat", name: "Beat 4×", x1: 0.25, y1: 0.25, x2: 0.75, y2: 0.75, steps: 4, note: "Quantized 4-step transport" },
+  ];
+
+  RackPlayer.register({
+    slug: "curve-shaper",
+    title: "Quantize & Curve Shaper",
+    category: "control",
+    tagline: "Drag transfer points 1:1 on a 1px grid and preview Rack's zero-bounce curves live.",
+    motion: "0ms handle drag · live beat-triggered preview rail",
+    css: `
+${S} .cs { width: min(100%, 660px); border: 1px solid var(--border); background: var(--panel); display: grid; }
+${S} .cs-top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; padding: 7px 10px; border-bottom: 1px solid var(--border); background: var(--surface-2); }
+${S} .cs-body { display: grid; grid-template-columns: 220px 1fr; }
+${S} .cs-plot { padding: 12px; border-right: 1px solid var(--border); background: var(--cut); display: grid; place-items: center; }
+${S} .cs-svg { width: 100%; max-width: 196px; aspect-ratio: 1; display: block; touch-action: none; user-select: none; }
+${S} .cs-side { padding: 12px; display: grid; gap: 12px; align-content: space-between; }
+${S} .cs-rail { position: relative; height: 28px; border: 1px solid var(--border); background: var(--slot); }
+${S} .cs-fill { position: absolute; left: 0; top: 0; bottom: 0; width: 0%; background: var(--violet); }
+${S} .cs-blocks { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+${S} .cs-blk { height: 22px; border: 1px solid var(--border); background: var(--block); display: grid; place-items: center; font: 600 10px/1 var(--mono); }
+${S} .cs-blk.is-on { background: var(--accent); color: var(--on-accent); border-color: var(--ink); }
+${S} .cs-css { font: 500 11px/1.3 var(--mono); padding: 7px 8px; border: 1px solid var(--line-strong); background: var(--cut); color: var(--ink); }
+${S}.is-tile .cs-body { grid-template-columns: 145px 1fr; }
+${S}.is-tile .cs-plot { padding: 8px; }
+${S}.is-tile .cs-side { padding: 8px; gap: 6px; }
+${S}.is-tile .cs-css { font-size: 9px; padding: 5px 6px; }
+${S}.is-tile .rk-seg button { height: 22px; padding: 0 6px; font-size: 10px; }
+`,
+    mount(host, ctx) {
+      let cur = Object.assign({}, PRESETS[0]);
+      let activeId = PRESETS[0].id;
+      let phase = 0;
+
+      host.innerHTML =
+        '<div class="cs">' +
+          '<div class="cs-top">' +
+            '<span style="font-weight:600;font-size:12px">Transfer shaper</span>' +
+            '<div class="rk-seg" role="radiogroup" aria-label="Curve preset">' +
+              PRESETS.map((p) => '<button type="button" role="radio" data-p="' + p.id + '" aria-checked="' + (p.id === activeId) + '">' + p.name + '</button>').join("") +
+            '</div>' +
+          '</div>' +
+          '<div class="cs-body">' +
+            '<div class="cs-plot">' +
+              '<svg class="cs-svg" viewBox="0 0 200 200">' +
+                '<rect x="10" y="10" width="180" height="180" fill="none" stroke="var(--line-strong)" stroke-width="1"/>' +
+                '<path d="M55 10V190 M100 10V190 M145 10V190 M10 55H190 M10 100H190 M10 145H190" stroke="var(--line)" stroke-width="1"/>' +
+                '<line id="cs-h1" stroke="var(--subtle)" stroke-width="1" stroke-dasharray="3 3"/>' +
+                '<line id="cs-h2" stroke="var(--subtle)" stroke-width="1" stroke-dasharray="3 3"/>' +
+                '<path id="cs-path" fill="none" stroke="var(--violet)" stroke-width="2.5"/>' +
+                '<rect id="cs-p1" width="12" height="12" fill="var(--accent)" stroke="var(--ink)" stroke-width="1.5" style="cursor:grab"/>' +
+                '<rect id="cs-p2" width="12" height="12" fill="var(--ink)" stroke="var(--ink)" stroke-width="1.5" style="cursor:grab"/>' +
+              '</svg>' +
+            '</div>' +
+            '<div class="cs-side">' +
+              '<div><div class="rk-fig" style="margin-bottom:6px">PREVIEW RAIL (ON THE BEAT)</div><div class="cs-rail"><div class="cs-fill" id="cs-fill"></div></div></div>' +
+              '<div><div class="rk-fig" style="margin-bottom:6px">COLUMN STAGGER (36MS)</div><div class="cs-blocks" id="cs-blks"><div class="cs-blk">01</div><div class="cs-blk">02</div><div class="cs-blk">03</div><div class="cs-blk">04</div></div></div>' +
+              '<div class="cs-css" id="cs-css"></div>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+
+      const svg = host.querySelector(".cs-svg");
+      const path = host.querySelector("#cs-path");
+      const h1 = host.querySelector("#cs-h1"), h2 = host.querySelector("#cs-h2");
+      const p1 = host.querySelector("#cs-p1"), p2 = host.querySelector("#cs-p2");
+      const fill = host.querySelector("#cs-fill");
+      const blks = [...host.querySelectorAll(".cs-blk")];
+      const cssEl = host.querySelector("#cs-css");
+      const pBtns = [...host.querySelectorAll("[data-p]")];
+
+      const toX = (u) => 10 + u * 180;
+      const toY = (v) => 190 - v * 180;
+
+      function drawCurve() {
+        pBtns.forEach((b) => b.setAttribute("aria-checked", String(b.dataset.p === activeId)));
+        const x1 = toX(cur.x1), y1 = toY(cur.y1), x2 = toX(cur.x2), y2 = toY(cur.y2);
+        if (cur.steps > 1) {
+          let d = "M 10 190";
+          for (let i = 1; i <= cur.steps; i++) {
+            const xPrev = toX((i - 1) / cur.steps), xNext = toX(i / cur.steps), yNext = toY(i / cur.steps);
+            d += ` L ${xPrev.toFixed(1)} ${yNext.toFixed(1)} L ${xNext.toFixed(1)} ${yNext.toFixed(1)}`;
+          }
+          path.setAttribute("d", d);
+          h1.setAttribute("opacity", "0"); h2.setAttribute("opacity", "0");
+          p1.setAttribute("opacity", "0"); p2.setAttribute("opacity", "0");
+          cssEl.textContent = "steps(" + cur.steps + ", end) · quantized";
+        } else if (cur.steps === 1) {
+          path.setAttribute("d", "M 10 190 L 10 10 L 190 10");
+          h1.setAttribute("opacity", "0"); h2.setAttribute("opacity", "0");
+          p1.setAttribute("opacity", "0"); p2.setAttribute("opacity", "0");
+          cssEl.textContent = "0ms · cut on the frame";
+        } else {
+          path.setAttribute("d", `M 10 190 C ${x1.toFixed(1)} ${y1.toFixed(1)}, ${x2.toFixed(1)} ${y2.toFixed(1)}, 190 10`);
+          h1.setAttribute("opacity", "1"); h2.setAttribute("opacity", "1");
+          p1.setAttribute("opacity", "1"); p2.setAttribute("opacity", "1");
+          h1.setAttribute("x1", "10"); h1.setAttribute("y1", "190"); h1.setAttribute("x2", x1); h1.setAttribute("y2", y1);
+          h2.setAttribute("x1", "190"); h2.setAttribute("y1", "10"); h2.setAttribute("x2", x2); h2.setAttribute("y2", y2);
+          p1.setAttribute("x", (x1 - 6).toFixed(1)); p1.setAttribute("y", (y1 - 6).toFixed(1));
+          p2.setAttribute("x", (x2 - 6).toFixed(1)); p2.setAttribute("y", (y2 - 6).toFixed(1));
+          cssEl.textContent = `cubic-bezier(${cur.x1.toFixed(2)}, ${cur.y1.toFixed(2)}, ${cur.x2.toFixed(2)}, ${cur.y2.toFixed(2)})`;
+        }
+      }
+
+      let dragWhich = null;
+      const movePt = (e) => {
+        if (!dragWhich) return;
+        const r = svg.getBoundingClientRect();
+        const u = Math.max(0, Math.min(1, ((e.clientX - r.left) / r.width * 200 - 10) / 180));
+        const v = Math.max(0, Math.min(1, (190 - (e.clientY - r.top) / r.height * 200) / 180));
+        cur.steps = 0; activeId = "";
+        if (dragWhich === 1) { cur.x1 = u; cur.y1 = v; } else { cur.x2 = u; cur.y2 = v; }
+        drawCurve();
+      };
+      p1.addEventListener("pointerdown", (e) => { dragWhich = 1; svg.setPointerCapture(e.pointerId); e.preventDefault(); }, { signal: ctx.signal });
+      p2.addEventListener("pointerdown", (e) => { dragWhich = 2; svg.setPointerCapture(e.pointerId); e.preventDefault(); }, { signal: ctx.signal });
+      svg.addEventListener("pointermove", movePt, { signal: ctx.signal });
+      svg.addEventListener("pointerup", () => { dragWhich = null; }, { signal: ctx.signal });
+
+      pBtns.forEach((b) => b.addEventListener("click", () => {
+        const found = PRESETS.find((x) => x.id === b.dataset.p);
+        if (found) { cur = Object.assign({}, found); activeId = found.id; drawCurve(); }
+      }, { signal: ctx.signal }));
+
+      ctx.onBeat((step) => {
+        if (ctx.reduced()) return;
+        const s = step % 8;
+        if (cur.steps === 4) {
+          const k = Math.min(4, Math.floor((s % 4) + 1));
+          fill.style.transition = "none";
+          fill.style.width = (k * 25) + "%";
+        } else if (s === 0 || s === 4) {
+          phase = s === 0 ? 1 : 0;
+          fill.style.transition = cur.steps === 1 ? "none" : `width 140ms cubic-bezier(${cur.x1},${cur.y1},${cur.x2},${cur.y2})`;
+          fill.style.width = phase ? "100%" : "0%";
+        }
+        blks.forEach((b, i) => b.classList.toggle("is-on", i === (step % 4)));
+      });
+
+      drawCurve();
+    },
+  });
+})();
+
+</script>
+<script>
+/* 16-metric-strip.js */
+/* 16-metric-strip.js — Folio image_1 bottom hairline KPI strip × Rack segmented level meters.
+   Four bold tabular figures separated by crisp vertical hairlines with a 1H | 24H | 7D | 30D switcher. */
+(function () {
+  const S = ".rs-metric-strip";
+  const WINDOWS = [
+    { id: "1h", name: "1H", vals: ["38", "14", "$0.42", "97.4%"], bars: [72, 48, 30, 97], sub: ["agent runs", "active tools", "token spend", "first-pass rate"] },
+    { id: "24h", name: "24H", vals: ["412", "64", "$1.84", "94.1%"], bars: [86, 64, 52, 94], sub: ["agent runs", "active tools", "token spend", "first-pass rate"] },
+    { id: "7d", name: "7D", vals: ["2,840", "92", "$14.60", "92.8%"], bars: [92, 78, 68, 93], sub: ["agent runs", "active tools", "token spend", "first-pass rate"] },
+    { id: "30d", name: "30D", vals: ["11.4k", "128", "$58.20", "95.2%"], bars: [98, 90, 82, 95], sub: ["agent runs", "active tools", "token spend", "first-pass rate"] },
+  ];
+  const HUES = ["violet", "amber", "orchid", "teal"];
+
+  RackPlayer.register({
+    slug: "metric-strip",
+    title: "Live Telemetry Strip",
+    category: "data",
+    tagline: "Four hairline-divided editorial KPIs over crisp segmented Rack throughput meters.",
+    motion: "0ms window cut · 140ms meter snap · column beat entrance",
+    css: `
+${S} .ms { width: min(100%, 820px); display: grid; gap: 12px; }
+${S} .ms-top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; }
+${S} .ms-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1.5px solid var(--ink); border-bottom: 1px solid var(--line-strong); }
+${S} .ms-cell { padding: 14px 12px 12px; border-right: 1px solid var(--line-strong); display: grid; gap: 8px; }
+${S} .ms-cell:last-child { border-right: 0; }
+${S} .ms-num { font: 500 clamp(24px, 4.2cqw, 42px)/1 var(--font); letter-spacing: -0.04em; }
+${S} .ms-sub { font-size: 11px; color: var(--muted); }
+${S} .ms-meter { display: grid; grid-template-columns: repeat(10, 1fr); gap: 2px; height: 8px; }
+${S} .ms-pip { background: var(--surface-3); }
+${S} .ms-cell[data-h="violet"] .ms-pip.is-on { background: var(--violet); }
+${S} .ms-cell[data-h="amber"] .ms-pip.is-on { background: var(--amber); }
+${S} .ms-cell[data-h="orchid"] .ms-pip.is-on { background: var(--orchid); }
+${S} .ms-cell[data-h="teal"] .ms-pip.is-on { background: var(--teal); }
+${S}.is-tile .ms-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+${S}.is-tile .ms-cell { padding: 8px; border-bottom: 1px solid var(--line-strong); }
+${S}.is-tile .ms-num { font-size: 24px; }
+${S}.is-tile .rk-seg button { height: 22px; padding: 0 7px; font-size: 10px; }
+@container (max-width: 480px) {
+  ${S} .ms-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  ${S} .ms-cell { border-bottom: 1px solid var(--line-strong); }
+}
+`,
+    mount(host, ctx) {
+      let at = 1;
+      host.innerHTML =
+        '<div class="ms">' +
+          '<div class="ms-top">' +
+            '<span style="font-weight:600;font-size:13px">Workspace telemetry · live window</span>' +
+            '<div class="rk-seg" role="radiogroup" aria-label="Time window">' +
+              WINDOWS.map((w, i) => '<button type="button" role="radio" data-i="' + i + '" aria-checked="' + (i === at) + '">' + w.name + '</button>').join("") +
+            '</div>' +
+          '</div>' +
+          '<div class="ms-grid">' +
+            HUES.map((h, i) =>
+              '<div class="ms-cell" data-h="' + h + '" data-col="' + i + '">' +
+                '<span class="ms-num"></span>' +
+                '<span class="ms-sub"></span>' +
+                '<div class="ms-meter">' + Array.from({ length: 10 }, () => '<i class="ms-pip"></i>').join("") + '</div>' +
+              '</div>'
+            ).join("") +
+          '</div>' +
+        '</div>';
+
+      const btns = [...host.querySelectorAll("[data-i]")];
+      const cells = [...host.querySelectorAll(".ms-cell")];
+
+      function draw() {
+        const w = WINDOWS[at];
+        btns.forEach((b, i) => b.setAttribute("aria-checked", String(i === at)));
+        cells.forEach((c, i) => {
+          c.querySelector(".ms-num").textContent = w.vals[i];
+          c.querySelector(".ms-sub").textContent = w.sub[i];
+          const lit = Math.round(w.bars[i] / 10);
+          [...c.querySelectorAll(".ms-pip")].forEach((p, k) => p.classList.toggle("is-on", k < lit));
+        });
+      }
+
+      btns.forEach((b, i) => b.addEventListener("click", () => { at = i; draw(); }, { signal: ctx.signal }));
+      draw();
+
+      let auto = !ctx.reduced();
+      ctx.onHand(() => { auto = false; });
+      if (auto) {
+        ctx.every(1900, () => {
+          if (!auto) return;
+          at = (at + 1) % WINDOWS.length;
+          draw();
+        });
+      }
+    },
+  });
+})();
+
+</script>
+<script>
+(function () {
+  const P = window.RackPlayer;
+  const ORDER = [
+    "agent-chain", "token-matrix", "kpi-columns", "budget-bar",
+    "eval-dumbbell", "alignment-likert", "session-launcher", "approval-gate",
+    "value-strip", "step-router", "run-timeline", "diff-inspector",
+    "context-rack", "command-palette", "curve-shaper", "metric-strip"
+  ];
+  const CAT_LABEL = { agent: "Agentic", data: "Data & Eval", control: "Modular Control" };
+  const set = ORDER.map((slug) => P.studies.find((s) => s.slug === slug)).filter(Boolean);
+  const n = set.length;
+  const $ = (id) => document.getElementById(id);
+  const wall = $("rg-wall"), sheet = $("rg-sheet"), openEl = $("rg-open"), live = $("rg-live");
+
+  function mountInto(box, s, tile) {
+    box.textContent = "";
+    const host = document.createElement("div");
+    host.className = "rp-mount rs-" + s.slug + (tile ? " is-tile" : "");
+    host.dataset.study = s.slug;
+    box.appendChild(host);
+    const ac = new AbortController();
+    const rec = { ac, timers: [], intervals: [], hands: [], api: null, host };
+    const ctx = {
+      host, signal: ac.signal, reduced: P.reduced, tile: !!tile,
+      cutIn: P.cutIn, beatColumns: P.beatColumns, bindDrag: P.bindDrag,
+      onBeat: (fn) => P.onBeat(fn, ac.signal),
+      after(ms, fn) { const t = setTimeout(fn, ms); rec.timers.push(t); return t; },
+      every(ms, fn) { const t = setInterval(fn, ms); rec.intervals.push(t); return t; },
+      onHand(fn) { rec.hands.push(fn); },
+    };
+    let handed = false;
+    const hand = () => {
+      if (!handed) {
+        handed = true;
+        rec.hands.forEach((f) => { try { f(); } catch (e) { console.error(e); } });
+      }
+    };
+    if (!tile) {
+      for (const t of ["pointerdown", "keydown", "wheel"]) {
+        host.addEventListener(t, hand, { signal: ac.signal, capture: true, passive: t === "wheel" });
+      }
+    }
+    try { rec.api = s.mount(host, ctx) || null; }
+    catch (e) { console.error(s.slug, e); host.textContent = s.title; }
+    return rec;
+  }
+
+  function unmount(rec) {
+    if (!rec) return;
+    try { rec.api && rec.api.destroy && rec.api.destroy(); } catch (e) { console.error(e); }
+    rec.ac.abort();
+    rec.timers.forEach(clearTimeout);
+    rec.intervals.forEach(clearInterval);
+    rec.host.remove();
+  }
+
+  /* Build the wall */
+  const tiles = set.map((s, i) => {
+    const li = document.createElement("li");
+    li.dataset.cat = s.category || "control";
+    const num = String(i + 1).padStart(2, "0");
+    li.innerHTML =
+      '<button class="rg-tile" type="button">' +
+        '<div class="rg-tile-head"><span class="rg-idx">FIG. ' + num + '</span><span class="rg-cat">' + (CAT_LABEL[s.category] || "Study") + '</span></div>' +
+        '<div class="rg-stage" inert></div>' +
+        '<div class="rg-tile-foot"><b></b><span></span></div>' +
+      '</button>';
+    const btn = li.firstChild, stage = btn.querySelector(".rg-stage");
+    btn.querySelector("b").textContent = s.title;
+    btn.querySelector(".rg-tile-foot span").textContent = s.tagline || "";
+    btn.setAttribute("aria-label", "Open " + s.title);
+    btn.addEventListener("click", () => open(i, btn));
+    wall.appendChild(li);
+    return { s, li, btn, stage, rec: null, visible: false };
+  });
+
+  let sheetOpen = false;
+  const sync = (t) => {
+    const want = t.visible && !sheetOpen && !t.li.hidden;
+    if (want && !t.rec) t.rec = mountInto(t.stage, t.s, true);
+    if (!want && t.rec) { unmount(t.rec); t.rec = null; }
+  };
+  const io = new IntersectionObserver((entries) => {
+    for (const e of entries) {
+      const t = tiles.find((x) => x.stage === e.target);
+      if (t) { t.visible = e.isIntersecting; sync(t); }
+    }
+  }, { rootMargin: "200px 0px" });
+  tiles.forEach((t) => {
+    io.observe(t.stage);
+    const r = t.stage.getBoundingClientRect();
+    if (r.top < window.innerHeight + 200 && r.bottom > -200) {
+      t.visible = true;
+      sync(t);
+    }
+  });
+
+  /* Category filter */
+  const filterBtns = [...$("rg-filter").querySelectorAll("button")];
+  function applyFilter(cat) {
+    let shown = 0;
+    tiles.forEach((t) => {
+      const hide = cat !== "all" && t.li.dataset.cat !== cat;
+      t.li.hidden = hide;
+      if (!hide) shown++;
+      sync(t);
+    });
+    filterBtns.forEach((b) => b.setAttribute("aria-checked", String(b.dataset.cat === cat)));
+    $("rg-count").textContent = shown + " / " + n + " STUDIES LIVE";
+  }
+  filterBtns.forEach((b) => b.addEventListener("click", () => applyFilter(b.dataset.cat)));
+
+  /* Full-screen sheet: Rack cuts in at 100ms opacity, then columns cut in on the 36ms beat. */
+  let cur = -1, openRec = null;
+  function show(i) {
+    cur = ((i % n) + n) % n;
+    const s = set[cur];
+    unmount(openRec);
+    openRec = mountInto(openEl, s, false);
+    P.cutIn(openRec.host, 0);
+    requestAnimationFrame(() => P.beatColumns(openRec.host, "[data-col]"));
+    const num = String(cur + 1).padStart(2, "0");
+    $("rg-sheet-title").innerHTML = "<code>FIG. " + num + "</code><span></span>";
+    $("rg-sheet-title").querySelector("span").textContent = s.title;
+    $("rg-about").innerHTML = "<div><b></b><span></span></div><span class=\"rk-fig\">" + (s.motion || "0ms under hand · 100ms cut on the beat") + "</span>";
+    $("rg-about").querySelector("b").textContent = s.title;
+    $("rg-about").querySelector("div span").textContent = s.tagline || "";
+    try { history.replaceState(null, "", "#" + s.slug); } catch (e) {}
+    document.title = s.title + " · Rack Studies";
+    live.textContent = s.title + ", " + (cur + 1) + " of " + n;
+  }
+
+  function open(i) {
+    sheetOpen = true; tiles.forEach(sync);
+    sheet.classList.add("is-open");
+    document.body.style.overflow = "hidden";
+    $("rg-wall").inert = true;
+    P.cutIn(sheet, 0);
+    show(i);
+    $("rg-close").focus({ preventScroll: true });
+  }
+
+  function close() {
+    if (!sheetOpen) return;
+    const finish = () => {
+      unmount(openRec); openRec = null;
+      sheet.classList.remove("is-open");
+      document.body.style.overflow = "";
+      $("rg-wall").inert = false;
+      sheetOpen = false;
+      const back = tiles[cur].btn;
+      tiles.forEach(sync);
+      back.focus({ preventScroll: true });
+      back.scrollIntoView({ block: "nearest" });
+      try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {}
+      document.title = "Rack Studies";
+    };
+    if (!P.reduced() && sheet.animate) {
+      sheet.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 75, easing: "ease-out" }).onfinish = finish;
+    } else finish();
+  }
+
+  $("rg-close").addEventListener("click", close);
+  $("rg-prev").addEventListener("click", () => show(cur - 1));
+  $("rg-next").addEventListener("click", () => show(cur + 1));
+  sheet.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") { e.preventDefault(); close(); }
+    if (e.key === "ArrowLeft" && !e.target.closest("input,[role=slider],[role=grid],[role=radio]")) { e.preventDefault(); show(cur - 1); }
+    if (e.key === "ArrowRight" && !e.target.closest("input,[role=slider],[role=grid],[role=radio]")) { e.preventDefault(); show(cur + 1); }
+  });
+
+  /* Theme toggle: instant cut, zero transition (foundations.md: a theme switch is instant). */
+  const qTheme = new URLSearchParams(location.search).get("theme");
+  if (qTheme === "light" || qTheme === "dark") document.documentElement.dataset.theme = qTheme;
+  const lightBtn = $("rg-light"), darkBtn = $("rg-dark");
+  const isDark = () => document.documentElement.dataset.theme ? document.documentElement.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+  const paintTheme = () => {
+    const d = isDark();
+    lightBtn.setAttribute("aria-pressed", String(!d));
+    darkBtn.setAttribute("aria-pressed", String(d));
+  };
+  lightBtn.addEventListener("click", () => { document.documentElement.dataset.theme = "light"; paintTheme(); });
+  darkBtn.addEventListener("click", () => { document.documentElement.dataset.theme = "dark"; paintTheme(); });
+  paintTheme();
+
+  const start = set.findIndex((s) => s.slug === location.hash.slice(1));
+  if (start >= 0) open(start);
+  window.RackGallery = { open: (slug) => { const i = set.findIndex((s) => s.slug === slug); if (i >= 0) open(i); }, close };
+})();
+</script>
+</body>
+</html>
