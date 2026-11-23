@@ -6,515 +6,297 @@
 <title>Rack Studies</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-/* Rack Studies (litt.md): crisp architectural software instruments.
-   Square geometry (2px controls in 4px panels), sharp 1px outlines, zero shadows or glass,
-   electric sunlit yellow (#ffd014) strictly as a lit key fill inside a 1px outline,
-   high-chroma electric series fills on clean bright neutrals, and Rack's Emil-Kowalski motion:
-   0ms 1:1 under a hand, 100ms ease-out opacity cut-in with 36ms column stagger, 75ms cut-out, zero springs. */
+/* Rack (litt-md, taste/litt-principles.md "Rack, the module"; proposals/rack.md): after Ableton Live. A grey body, flat
+   panels a step lighter with no edge, every control a square box in a 1px outline, small exact values in tabular
+   figures, colour that belongs to what you make (clips, tracks), one yellow lit only inside an on key. Square: 2px
+   controls in 6px panels. Values are litt's tokens.css, Rack's block (clip pink added for these studies). */
 :root {
-  --canvas: #e6e8ee;
-  --panel: #f7f8fa;
-  --surface-2: #eef0f5;
-  --surface-3: #e3e6ee;
-  --cut: #ffffff;
-  --block: #ffffff;
-  --block-hover: #eef1f7;
-  --ink: #111318;
-  --on-ink: #ffffff;
-  --muted: #4b5262;
-  --disabled: #8f97a8;
-  --line: #d4d8e2;
-  --border: #8d95a5;
-  --border-strong: #111318;
-
-  /* Electric sunlit yellow: lit key fill inside a 1px outline. */
-  --accent: #ffd014;
-  --accent-hover: #ffdb47;
-  --on-accent: #111318;
-
-  /* Vivid electric series hues: strictly on status, tags, data, and active states. */
-  --blue: #1a6dff; --blue-text: #0d4ecc; --blue-tint: #dceaff;
-  --coral: #ff471a; --coral-text: #c22e08; --coral-tint: #ffe1d9;
-  --emerald: #00b377; --emerald-text: #00754d; --emerald-tint: #cef6e8;
-  --violet: #7a3cff; --violet-text: #5620c9; --violet-tint: #ebe0ff;
-  --pink: #e6268c; --pink-text: #a81263; --pink-tint: #ffd9ed;
-
-  --font: "Inter", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
-  --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
-  --r-panel: 4px;
-  --r-control: 2px;
-  --dur-in: 100ms;
-  --dur-out: 75ms;
+  --body: #c8c8c8; --panel: #e2e2e2; --panel-2: #d7d7d7; --panel-3: #cdcdcd; --line: #b5b5b5; --line-strong: #a2a2a2;
+  --control: #6c6c6c; --ink: #111111; --muted: #434343; --disabled: #8a8a8a;
+  --tray: #b9b9b9; --cut: #f3f3f3; --block: #ededed; --block-hover: #d7d7d7; --slot: #b0b0b0; --slot-fill: #5a5a5a; --cap: #f6f6f6;
+  --accent: #ffc933; --accent-hover: #ffd35c; --accent-fg: #111111; --accent-tint: #ebdcb9;
+  --success: #00601f; --warning: #824200; --danger: #a60e1d;
+  --clip-blue: #0072b0; --clip-blue-text: #005686; --clip-blue-tint: #82d5ff;
+  --clip-orange: #b94a00; --clip-orange-text: #913200; --clip-orange-tint: #ffb687;
+  --clip-cyan: #007c6d; --clip-cyan-text: #005d52; --clip-cyan-tint: #6de2d0;
+  --clip-purple: #8455c6; --clip-purple-text: #643c9b; --clip-purple-tint: #d5baff;
+  --clip-green: #227e00; --clip-green-text: #0d6100; --clip-green-tint: #a4dd98;
+  --clip-pink: #c0007e; --clip-pink-text: #90005d; --clip-pink-tint: #ffb3dd;
+  --edge: 0 0 0 1px rgb(0 0 0 / 0.38); --edge-press: 0 0 0 1px rgb(0 0 0 / 0.7);
+  --font: "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --r-control: 2px; --r-panel: 6px;
+  /* Motion: on the beat. A thing cuts in by opacity on the instant tier and stops quicker; nothing travels or bounces. */
+  --cut-in: 100ms; --cut-out: 75ms; --beat: 60ms; --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
-  --canvas: #0f1115;
-  --panel: #181b22;
-  --surface-2: #20242e;
-  --surface-3: #282e3b;
-  --cut: #111318;
-  --block: #232833;
-  --block-hover: #2d3342;
-  --ink: #f3f5f8;
-  --on-ink: #111318;
-  --muted: #9da6b8;
-  --disabled: #5d6678;
-  --line: #2a303d;
-  --border: #555f73;
-  --border-strong: #f3f5f8;
-
-  --accent: #ffd014;
-  --accent-hover: #ffdb47;
-  --on-accent: #111318;
-
-  --blue: #408cff; --blue-text: #85b8ff; --blue-tint: #10254a;
-  --coral: #ff6238; --coral-text: #ff9c80; --coral-tint: #45180d;
-  --emerald: #00d68f; --emerald-text: #6bf0c2; --emerald-tint: #093829;
-  --violet: #a070ff; --violet-text: #cbb0ff; --violet-tint: #28174d;
-  --pink: #ff4da6; --pink-text: #ff99cc; --pink-tint: #45102c;
-  color-scheme: dark;
-} }
+  --body: #161616; --panel: #262626; --panel-2: #2d2d2d; --panel-3: #353535; --line: #3a3a3a; --line-strong: #4a4a4a;
+  --control: #787878; --ink: #ececec; --muted: #bebebe; --disabled: #5c5c5c;
+  --tray: #101010; --cut: #1b1b1b; --block: #3b3b3b; --block-hover: #454545; --slot: #101010; --slot-fill: #9a9a9a; --cap: #cfcfcf;
+  --accent: #ffc933; --accent-hover: #ffd35c; --accent-fg: #111111; --accent-tint: #443d2e;
+  --success: #4dc882; --warning: #eba42b; --danger: #ff948d;
+  --clip-blue: #009ded; --clip-blue-text: #43c4ff; --clip-blue-tint: #013c5a;
+  --clip-orange: #e06d00; --clip-orange-text: #ff964b; --clip-orange-tint: #562b0d;
+  --clip-cyan: #00ab98; --clip-cyan-text: #00d6bf; --clip-cyan-tint: #00433b;
+  --clip-purple: #a376e9; --clip-purple-text: #c6a1ff; --clip-purple-tint: #3e2e59;
+  --clip-green: #51aa3c; --clip-green-text: #7cd06a; --clip-green-tint: #21411a;
+  --clip-pink: #e0379b; --clip-pink-text: #feb9db; --clip-pink-tint: #5a1a3e;
+  --edge: 0 0 0 1px rgb(0 0 0 / 0.6); --edge-press: 0 0 0 1px rgb(0 0 0 / 0.85); color-scheme: dark } }
 :root[data-theme="dark"] {
-  --canvas: #0f1115;
-  --panel: #181b22;
-  --surface-2: #20242e;
-  --surface-3: #282e3b;
-  --cut: #111318;
-  --block: #232833;
-  --block-hover: #2d3342;
-  --ink: #f3f5f8;
-  --on-ink: #111318;
-  --muted: #9da6b8;
-  --disabled: #5d6678;
-  --line: #2a303d;
-  --border: #555f73;
-  --border-strong: #f3f5f8;
+  --body: #161616; --panel: #262626; --panel-2: #2d2d2d; --panel-3: #353535; --line: #3a3a3a; --line-strong: #4a4a4a;
+  --control: #787878; --ink: #ececec; --muted: #bebebe; --disabled: #5c5c5c;
+  --tray: #101010; --cut: #1b1b1b; --block: #3b3b3b; --block-hover: #454545; --slot: #101010; --slot-fill: #9a9a9a; --cap: #cfcfcf;
+  --accent: #ffc933; --accent-hover: #ffd35c; --accent-fg: #111111; --accent-tint: #443d2e;
+  --success: #4dc882; --warning: #eba42b; --danger: #ff948d;
+  --clip-blue: #009ded; --clip-blue-text: #43c4ff; --clip-blue-tint: #013c5a;
+  --clip-orange: #e06d00; --clip-orange-text: #ff964b; --clip-orange-tint: #562b0d;
+  --clip-cyan: #00ab98; --clip-cyan-text: #00d6bf; --clip-cyan-tint: #00433b;
+  --clip-purple: #a376e9; --clip-purple-text: #c6a1ff; --clip-purple-tint: #3e2e59;
+  --clip-green: #51aa3c; --clip-green-text: #7cd06a; --clip-green-tint: #21411a;
+  --clip-pink: #e0379b; --clip-pink-text: #feb9db; --clip-pink-tint: #5a1a3e;
+  --edge: 0 0 0 1px rgb(0 0 0 / 0.6); --edge-press: 0 0 0 1px rgb(0 0 0 / 0.85); color-scheme: dark }
+@media (prefers-reduced-motion: reduce) { :root { --cut-in: 0ms; --cut-out: 0ms; --beat: 0ms } }
 
-  --accent: #ffd014;
-  --accent-hover: #ffdb47;
-  --on-accent: #111318;
+*, *::before, *::after { box-sizing: border-box }
+html, body { margin: 0 }
+body { background: var(--body); color: var(--ink); font: 400 13px/1.45 var(--font); letter-spacing: 0;
+  -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums;
+  padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(24px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)) }
+button { font: inherit; color: inherit }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 1px }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap }
 
-  --blue: #408cff; --blue-text: #85b8ff; --blue-tint: #10254a;
-  --coral: #ff6238; --coral-text: #ff9c80; --coral-tint: #45180d;
-  --emerald: #00d68f; --emerald-text: #6bf0c2; --emerald-tint: #093829;
-  --violet: #a070ff; --violet-text: #cbb0ff; --violet-tint: #28174d;
-  --pink: #ff4da6; --pink-text: #ff99cc; --pink-tint: #45102c;
-  color-scheme: dark;
-}
-@media (prefers-reduced-motion: reduce) {
-  :root { --dur-in: 0ms; --dur-out: 0ms; }
-}
+/* The gallery: Rack's session. The grey body; each study a panel cell, live at a small size, its name in the strip
+   under it; a cell opens the study large in a view that cuts in where it stands. */
+.fg { max-width: 1280px; margin: 0 auto; padding: 24px 4px 64px }
+.fg-head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px 24px; margin: 0 0 20px }
+.fg-head h1 { margin: 0; font: 600 20px/1.2 var(--font); letter-spacing: -0.01em }
+.fg-head p { margin: 4px 0 0; color: var(--muted); max-width: 60ch }
+.fg-pill { display: inline-flex; align-items: center; gap: 6px; height: 26px; padding: 0 10px; border: 0; border-radius: var(--r-control);
+  background: var(--block); box-shadow: var(--edge); color: var(--ink); font: 500 12px var(--font); cursor: pointer;
+  transition: background-color var(--cut-in) var(--ease-out) }
+.fg-pill:hover { background: var(--block-hover) }
+.fg-pill:active { box-shadow: var(--edge-press) }
+.fg-wall { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr)); gap: 8px }
+.fg-tile { display: grid; width: 100%; padding: 0; border: 0; background: var(--panel); border-radius: var(--r-panel); text-align: left; cursor: pointer; overflow: hidden }
+.fg-stage { position: relative; height: 270px; background: var(--panel); overflow: hidden; display: grid; place-items: center }
+.fg-tile:hover .fg-name { background: var(--panel-3) }
+.fg-stage > .fp-mount { width: 100%; height: 100%; display: grid; place-items: center; padding: 12px; container-type: inline-size; pointer-events: none }
+.fg-name { display: flex; align-items: baseline; gap: 8px; padding: 7px 10px; min-width: 0; background: var(--panel-2); transition: background-color var(--cut-in) var(--ease-out) }
+.fg-name b { font-weight: 600; font-size: 12px; white-space: nowrap; flex: none }
+.fg-name span { color: var(--muted); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0 }
 
-*, *::before, *::after { box-sizing: border-box; }
-html, body { margin: 0; }
-body {
-  background: var(--canvas);
-  color: var(--ink);
-  font: 400 14px/1.45 var(--font);
-  letter-spacing: -0.008em;
-  -webkit-font-smoothing: antialiased;
-  font-variant-numeric: tabular-nums;
-  padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(32px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
-}
-button, input { font: inherit; color: inherit; }
-:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
-.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-
-/* Shared Rack controls: crisp 1px outlines, 2px square corners, zero shadows, 0.98 press feedback. */
-.rk-seg {
-  display: inline-flex; border: 1px solid var(--border); border-radius: var(--r-control);
-  background: var(--surface-2); overflow: hidden;
-}
-.rk-seg button {
-  border: 0; border-right: 1px solid var(--border); background: var(--block); color: var(--ink);
-  height: 28px; padding: 0 11px; font-size: 12px; font-weight: 500; cursor: pointer; white-space: nowrap;
-}
-.rk-seg button:last-child { border-right: 0; }
-.rk-seg button:hover { background: var(--block-hover); }
-.rk-seg button:active { transform: scale(0.98); }
-.rk-seg button[aria-pressed="true"],
-.rk-seg button[aria-checked="true"] { background: var(--ink); color: var(--on-ink); }
-.rk-seg.is-yellow button[aria-pressed="true"],
-.rk-seg.is-yellow button[aria-checked="true"] { background: var(--accent); color: var(--on-accent); font-weight: 600; }
-
-.rk-btn {
-  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-  height: 28px; padding: 0 11px; border: 1px solid var(--border); border-radius: var(--r-control);
-  background: var(--block); color: var(--ink); font-size: 12px; font-weight: 500; cursor: pointer; white-space: nowrap;
-}
-.rk-btn:hover { background: var(--block-hover); border-color: var(--border-strong); }
-.rk-btn:active { transform: scale(0.98); }
-.rk-btn.is-accent { background: var(--accent); color: var(--on-accent); border-color: var(--border-strong); font-weight: 600; }
-.rk-btn.is-accent:hover { background: var(--accent-hover); }
-.rk-btn.is-ink { background: var(--ink); color: var(--on-ink); border-color: var(--ink); font-weight: 500; }
-.rk-mono { font-family: var(--mono); }
-
-/* Clean editorial gallery shell — calm like Flat Studies, architectural like Rack. */
-.rg { max-width: 1280px; margin: 0 auto; padding: 28px 8px 64px; }
-.rg-head {
-  display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between;
-  gap: 16px 24px; margin: 0 0 28px;
-}
-.rg-head h1 { margin: 0; font: 600 32px/1.1 var(--font); letter-spacing: -0.03em; }
-.rg-head p { margin: 6px 0 0; color: var(--muted); font-size: 14px; max-width: 58ch; }
-.rg-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-
-/* The Rack wall: crisp outlined stages, title & tagline cleanly below each component. */
-.rg-wall {
-  list-style: none; margin: 0; padding: 0;
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 370px), 1fr));
-  gap: 28px 20px;
-}
-.rg-wall li { display: grid; }
-.rg-wall li[hidden] { display: none; }
-.rg-tile {
-  display: grid; grid-template-rows: auto auto; gap: 9px; width: 100%; padding: 0;
-  border: 0; background: transparent; text-align: left; cursor: pointer;
-}
-.rg-stage {
-  position: relative; height: 248px; border-radius: var(--r-panel);
-  background: var(--panel); border: 1px solid var(--line);
-  overflow: hidden; display: grid; place-items: center;
-}
-.rg-tile:hover .rg-stage { border-color: var(--border-strong); }
-.rg-stage > .rp-mount {
-  width: 100%; height: 100%; display: grid; place-items: center;
-  padding: 14px; container-type: inline-size; pointer-events: none;
-}
-.rg-name { display: flex; align-items: baseline; gap: 8px; padding: 0 2px; min-width: 0; }
-.rg-name b { font-size: 14px; font-weight: 600; white-space: nowrap; flex: none; }
-.rg-name span { font-size: 13px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
-
-/* Open sheet: 100ms opacity cut-in, 36ms column stagger, 75ms cut-out. Zero scale/spring travel. */
-.rg-sheet {
-  position: fixed; inset: 0; z-index: 20; display: none;
-  background: var(--canvas); overflow: auto; overscroll-behavior: contain;
-}
-.rg-sheet.is-open { display: grid; grid-template-rows: auto 1fr auto; }
-.rg-sbar {
-  display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 8px;
-  padding: 12px 18px; background: var(--panel); border-bottom: 1px solid var(--line);
-}
-.rg-sbar .l { justify-self: start; } .rg-sbar .r { justify-self: end; }
-.rg-stitle { margin: 0; font: 600 14px/1.2 var(--font); text-align: center; }
-.rg-open { display: grid; place-items: center; min-height: 0; padding: 28px 16px; }
-.rg-open > .rp-mount {
-  width: min(100%, 880px); min-height: min(440px, 100%);
-  display: grid; place-items: center; container-type: inline-size;
-}
-.rg-about {
-  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 20px;
-  padding: 12px 18px; background: var(--panel); border-top: 1px solid var(--line);
-  font-size: 13px; color: var(--muted);
-}
-.rg-about b { color: var(--ink); font-weight: 600; margin-right: 8px; }
-.rg-foot {
-  margin-top: 40px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 16px;
-  font-size: 13px; color: var(--muted);
-}
-
-@media (max-width: 720px) {
-  .rg-head h1 { font-size: 26px; }
-  .rg-stage { height: 236px; }
-}
+/* The open study: a view on the body that cuts in. */
+.fg-sheet { position: fixed; inset: 0; z-index: 10; display: none; background: var(--body); overflow: auto; overscroll-behavior: contain }
+.fg-sheet.is-open { display: grid; grid-template-rows: auto 1fr auto }
+.fg-bar { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 8px; padding: 10px 12px; background: var(--panel-2) }
+.fg-bar h2 { margin: 0; font: 600 13px/1.2 var(--font); text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
+.fg-bar .fg-close { justify-self: start } .fg-bar .fg-steps { justify-self: end; display: flex; gap: 4px }
+.fg-circle { width: 28px; height: 26px; display: grid; place-items: center; border: 0; border-radius: var(--r-control); background: var(--block); box-shadow: var(--edge); color: var(--ink); cursor: pointer }
+.fg-circle:hover { background: var(--block-hover) } .fg-circle:active { box-shadow: var(--edge-press) }
+.fg-circle svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: square; stroke-linejoin: miter }
+.fg-open { display: grid; place-items: center; min-height: 0; padding: 20px 12px }
+.fg-open > .fp-mount { width: min(100%, 980px); min-height: min(560px, 100%); display: grid; place-items: center; container-type: inline-size }
+.fg-about { max-width: 640px; margin: 0 auto; padding: 0 16px 24px; text-align: center; color: var(--muted) }
+.fg-about b { display: block; color: var(--ink); font-weight: 500; font-size: 13px }
+.fg-foot { margin-top: 32px; color: var(--muted); font-size: 12px }
+@media (max-width: 720px) { .fg-stage { height: 250px } }
 </style>
 </head>
 <body>
-<main class="rg">
-  <header class="rg-head">
-    <div>
-      <h1>Rack studies</h1>
-      <p>Sixteen agentic &amp; interface-first studies in Rack — square outlines, high-chroma fills, electric yellow lit keys, 0ms direct manipulation, and 100ms cut-in motion.</p>
-    </div>
-    <div class="rg-tools">
-      <div class="rk-seg" id="rg-filter" role="radiogroup" aria-label="Filter studies">
-        <button type="button" role="radio" data-cat="all" aria-checked="true">All (16)</button>
-        <button type="button" role="radio" data-cat="agent" aria-checked="false">Agentic</button>
-        <button type="button" role="radio" data-cat="control" aria-checked="false">Controls</button>
-        <button type="button" role="radio" data-cat="data" aria-checked="false">Signals</button>
-      </div>
-      <div class="rk-seg" role="group" aria-label="Theme">
-        <button type="button" id="rg-light">Light</button>
-        <button type="button" id="rg-dark">Dark</button>
-      </div>
-    </div>
+<main class="fg">
+  <header class="fg-head">
+    <div><h1>Rack studies</h1><p>Small studies in motion, feedback and touch, after litterthanlit/components, redesigned in litt's Rack: a pro tool for agents, design and interfaces, after Live's grammar. Every value in reach, on the beat.</p></div>
+    <button class="fg-pill" type="button" id="fg-theme">Dark</button>
   </header>
-
-  <ul class="rg-wall" id="rg-wall"></ul>
-
-  <footer class="rg-foot">
-    <span>Each study runs live on the wall until you open and interact with it. Zero springs, zero shadows.</span>
-    <span class="rk-mono" style="font-size:12px" id="rg-count">16 / 16</span>
-  </footer>
+  <ul class="fg-wall" id="fg-wall"></ul>
+  <p class="fg-foot">Each study runs by itself until you touch it. Open one to use it.</p>
 </main>
-
-<div class="rg-sheet" id="rg-sheet" role="dialog" aria-modal="true" aria-labelledby="rg-sheet-title">
-  <div class="rg-sbar">
-    <div class="l"><button class="rk-btn" type="button" id="rg-close">Close [Esc]</button></div>
-    <h2 class="rg-stitle" id="rg-sheet-title"></h2>
-    <div class="r rk-seg">
-      <button type="button" id="rg-prev" aria-label="Previous study">← Prev</button>
-      <button type="button" id="rg-next" aria-label="Next study">Next →</button>
+<div class="fg-sheet" id="fg-sheet" role="dialog" aria-modal="true" aria-labelledby="fg-sheet-title">
+  <div class="fg-bar">
+    <button class="fg-circle fg-close" type="button" id="fg-close" aria-label="Close"><svg viewBox="0 0 14 14"><path d="M3.5 3.5l7 7M10.5 3.5l-7 7"/></svg></button>
+    <h2 id="fg-sheet-title"></h2>
+    <div class="fg-steps">
+      <button class="fg-circle" type="button" id="fg-prev" aria-label="Previous study"><svg viewBox="0 0 14 14"><path d="M9 3.5 5.5 7 9 10.5"/></svg></button>
+      <button class="fg-circle" type="button" id="fg-next" aria-label="Next study"><svg viewBox="0 0 14 14"><path d="M5 3.5 8.5 7 5 10.5"/></svg></button>
     </div>
   </div>
-  <div class="rg-open" id="rg-open"></div>
-  <div class="rg-about" id="rg-about"></div>
+  <div class="fg-open" id="fg-open"></div>
+  <p class="fg-about" id="fg-about"></p>
 </div>
-<p class="sr-only" id="rg-live" aria-live="polite"></p>
-
+<p class="sr-only" id="fg-live" aria-live="polite"></p>
 <script>
-/* RackPlayer: Rack's Emil-Kowalski motion & direct-manipulation runtime.
-   - 0ms under a hand (1:1 pointer-capture drag, toggles, scrubbing, filtering)
-   - 100ms ease-out opacity cut-in, 36ms column stagger on panel reveal
-   - 75ms ease-out opacity cut-out on dismiss
-   - Zero springs, zero overshoot, zero travel. */
-window.RackPlayer = (function () {
+/* The contract every study keeps (FlatPlayer.register), and the one spring they share. */
+window.FlatPlayer = (function () {
   const studies = [];
   const reduced = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-  function cutIn(el, delayMs) {
-    if (!el || reduced() || !el.animate) return;
-    el.animate([{ opacity: 0 }, { opacity: 1 }], {
-      duration: 100, delay: delayMs || 0, easing: "ease-out", fill: "backwards",
-    });
-  }
-
-  function staggerColumns(root, selector) {
-    if (!root || reduced()) return;
-    const els = [...root.querySelectorAll(selector || "[data-col]")];
-    if (!els.length) return;
-    const buckets = [];
-    for (const el of els) {
-      const left = Math.round(el.getBoundingClientRect().left / 16) * 16;
-      let b = buckets.find((x) => Math.abs(x.left - left) <= 16);
-      if (!b) { b = { left, els: [] }; buckets.push(b); }
-      b.els.push(el);
-    }
-    buckets.sort((a, b) => a.left - b.left);
-    buckets.forEach((b, i) => b.els.forEach((el) => cutIn(el, i * 36)));
-  }
-
-  function bindDrag(el, opts) {
-    const { min, max, step: inc, def, get, set, signal, rangePx = 110 } = opts;
-    const clamp = (v) => {
-      const snapped = Math.round((v - min) / inc) * inc + min;
-      return Math.max(min, Math.min(max, Number(snapped.toFixed(6))));
+  /* A damped spring, stepped at 1/240s. bounce 0 is critically damped; 0.28 is Flat's expressive arrival. */
+  function spring(initial, onUpdate, opts) {
+    const o = Object.assign({ duration: 0.35, bounce: 0 }, opts);
+    const w = (2 * Math.PI) / o.duration, k = w * w, c = 2 * (1 - o.bounce) * w;
+    let x = initial, v = 0, target = initial, raf = 0, last = 0;
+    const step = (now) => {
+      let dt = Math.min(0.064, (now - last) / 1000); last = now;
+      while (dt > 0) { const h = Math.min(dt, 1 / 240); v += (-k * (x - target) - c * v) * h; x += v * h; dt -= h; }
+      if (Math.abs(x - target) < 0.0005 && Math.abs(v) < 0.0005) { x = target; v = 0; raf = 0; onUpdate(x); return; }
+      onUpdate(x); raf = requestAnimationFrame(step);
     };
-    let startY = 0, startVal = 0, dragging = false;
-    el.addEventListener("pointerdown", (e) => {
-      if (e.button !== 0) return;
-      dragging = true; startY = e.clientY; startVal = get();
-      el.setPointerCapture(e.pointerId);
-      el.classList.add("is-drag");
-      e.preventDefault();
-    }, { signal });
-    el.addEventListener("pointermove", (e) => {
-      if (!dragging) return;
-      const dy = startY - e.clientY;
-      const next = clamp(startVal + (dy / rangePx) * (max - min) * (e.shiftKey ? 0.25 : 1));
-      if (next !== get()) set(next);
-    }, { signal });
-    const end = () => { if (dragging) { dragging = false; el.classList.remove("is-drag"); } };
-    el.addEventListener("pointerup", end, { signal });
-    el.addEventListener("pointercancel", end, { signal });
-    el.addEventListener("dblclick", () => set(def), { signal });
-    el.addEventListener("wheel", (e) => {
-      e.preventDefault();
-      set(clamp(get() + (e.deltaY < 0 ? 1 : -1) * inc * (e.shiftKey ? 5 : 1)));
-    }, { signal, passive: false });
-    el.addEventListener("keydown", (e) => {
-      const k = { ArrowUp: inc, ArrowRight: inc, ArrowDown: -inc, ArrowLeft: -inc, PageUp: inc * 5, PageDown: -inc * 5 }[e.key];
-      if (k !== undefined) { e.preventDefault(); set(clamp(get() + k)); }
-      else if (e.key === "Home") { e.preventDefault(); set(min); }
-      else if (e.key === "End") { e.preventDefault(); set(max); }
-      else if (e.key === "0" || e.key === "Backspace") { e.preventDefault(); set(def); }
-    }, { signal });
+    return {
+      set(t, velocity) { target = t; if (velocity !== undefined) v = velocity;
+        if (reduced()) { x = t; v = 0; onUpdate(x); return; }
+        if (!raf) { last = performance.now(); raf = requestAnimationFrame(step); } },
+      jump(t) { x = target = t; v = 0; if (raf) cancelAnimationFrame(raf); raf = 0; onUpdate(x); },
+      value: () => x, velocity: () => v, target: () => target,
+      stop() { if (raf) cancelAnimationFrame(raf); raf = 0; },
+    };
   }
-
-  return {
-    studies, reduced, cutIn, staggerColumns, bindDrag,
-    register(s) {
-      studies.push(s);
-      if (s.css) {
-        const st = document.createElement("style");
-        st.dataset.study = s.slug;
-        st.textContent = s.css;
-        document.head.appendChild(st);
-      }
-    },
-  };
+  return { studies, spring, reduced, register(s) {
+    studies.push(s);
+    if (s.css) { const st = document.createElement("style"); st.dataset.study = s.slug; st.textContent = s.css; document.head.appendChild(st); }
+  } };
 })();
 </script>
 <!--STUDY_JS-->
 <script>
 (function () {
-  const P = window.RackPlayer;
-  const ORDER = [
-    "agent-status", "agent-trace", "agent-indicators", "command-menu",
-    "value-controls", "segmented-switch", "permission-gate", "context-budget",
-    "diff-review", "hold-confirm", "eval-matrix", "toast-queue",
-    "copy-block", "facet-bar", "metric-strip", "rack-motion"
-  ];
+  const P = window.FlatPlayer;
+  const ORDER = ["gradient-keys", "agent-indicators", "agent-status", "command-menu", "fader", "switch", "one-time-code", "ticker",
+    "step-sequencer", "knob", "tape-reels", "vu-meter", "agent-shapes", "agent-run", "agent-loaders", "dither-card",
+    "spotlight-card", "toast-stack", "hold-to-confirm", "number-ticker", "segmented-control", "magnetic-button", "copy-button"];
   const set = ORDER.map((slug) => P.studies.find((s) => s.slug === slug)).filter(Boolean);
   const n = set.length;
   const $ = (id) => document.getElementById(id);
-  const wall = $("rg-wall"), sheet = $("rg-sheet"), openEl = $("rg-open"), live = $("rg-live");
+  const wall = $("fg-wall"), sheet = $("fg-sheet"), openEl = $("fg-open"), live = $("fg-live");
 
+  /* Mount a study into a container. Everything it starts is tied to the returned handle and torn down by unmount(). */
   function mountInto(box, s, tile) {
     box.textContent = "";
     const host = document.createElement("div");
-    host.className = "rp-mount rs-" + s.slug + (tile ? " is-tile" : "");
+    host.className = "fp-mount fs-" + s.slug + (tile ? " is-tile" : "");
     host.dataset.study = s.slug;
     box.appendChild(host);
     const ac = new AbortController();
-    const rec = { ac, timers: [], intervals: [], hands: [], api: null, host };
+    const rec = { ac, timers: [], intervals: [], rafs: [], hands: [], api: null, host };
+    let lastTouch = 0;
     const ctx = {
-      host, signal: ac.signal, reduced: P.reduced, tile: !!tile,
-      cutIn: P.cutIn, staggerColumns: P.staggerColumns, bindDrag: P.bindDrag,
+      host, signal: ac.signal, spring: P.spring, reduced: P.reduced, tile: !!tile,
       after(ms, fn) { const t = setTimeout(fn, ms); rec.timers.push(t); return t; },
       every(ms, fn) { const t = setInterval(fn, ms); rec.intervals.push(t); return t; },
+      loop(fn) { const r = { stop: false }; rec.rafs.push(r); let last = performance.now();
+        const f = (now) => { if (r.stop || ac.signal.aborted) return; const dt = Math.min(0.1, (now - last) / 1000); last = now; if (fn(dt, now) === false) { r.stop = true; return; } requestAnimationFrame(f); };
+        requestAnimationFrame(f); return r; },
       onHand(fn) { rec.hands.push(fn); },
+      touched: () => lastTouch,
     };
     let handed = false;
-    const hand = () => {
-      if (!handed) {
-        handed = true;
-        rec.hands.forEach((f) => { try { f(); } catch (e) { console.error(e); } });
-      }
-    };
-    if (!tile) {
-      for (const t of ["pointerdown", "keydown", "wheel"]) {
-        host.addEventListener(t, hand, { signal: ac.signal, capture: true, passive: t === "wheel" });
-      }
-    }
-    try { rec.api = s.mount(host, ctx) || null; }
-    catch (e) { console.error(s.slug, e); host.textContent = s.title; }
+    const hand = () => { lastTouch = performance.now(); if (!handed) { handed = true; rec.hands.forEach((f) => { try { f(); } catch (e) { console.error(e); } }); } };
+    if (!tile) for (const t of ["pointerdown", "keydown", "wheel"]) host.addEventListener(t, hand, { signal: ac.signal, capture: true, passive: t === "wheel" });
+    try { rec.api = s.mount(host, ctx) || null; } catch (e) { console.error(s.slug, e); host.textContent = s.title; }
     return rec;
   }
-
   function unmount(rec) {
     if (!rec) return;
     try { rec.api && rec.api.destroy && rec.api.destroy(); } catch (e) { console.error(e); }
-    rec.ac.abort();
-    rec.timers.forEach(clearTimeout);
-    rec.intervals.forEach(clearInterval);
+    rec.ac.abort(); rec.timers.forEach(clearTimeout); rec.intervals.forEach(clearInterval); rec.rafs.forEach((r) => (r.stop = true));
     rec.host.remove();
   }
 
+  /* The wall: a tile per study, mounted only while it is on screen and no sheet covers it. */
   const tiles = set.map((s, i) => {
     const li = document.createElement("li");
-    li.dataset.cat = s.category || "control";
-    li.innerHTML =
-      '<button class="rg-tile" type="button">' +
-        '<div class="rg-stage" inert></div>' +
-        '<span class="rg-name"><b></b><span></span></span>' +
-      '</button>';
-    const btn = li.firstChild, stage = btn.querySelector(".rg-stage");
+    li.innerHTML = '<button class="fg-tile" type="button"><div class="fg-stage" inert></div><span class="fg-name"><b></b><span></span></span></button>';
+    const btn = li.firstChild, stage = btn.querySelector(".fg-stage");
     btn.querySelector("b").textContent = s.title;
-    btn.querySelector(".rg-name span").textContent = s.tagline || "";
+    btn.querySelector(".fg-name span").textContent = s.tagline || "";
     btn.setAttribute("aria-label", "Open " + s.title);
-    btn.addEventListener("click", () => open(i));
+    btn.addEventListener("click", () => open(i, btn));
     wall.appendChild(li);
-    return { s, li, btn, stage, rec: null, visible: false };
+    return { s, btn, stage, rec: null, visible: false };
   });
-
   let sheetOpen = false;
   const sync = (t) => {
-    const want = t.visible && !sheetOpen && !t.li.hidden;
+    const want = t.visible && !sheetOpen;
     if (want && !t.rec) t.rec = mountInto(t.stage, t.s, true);
     if (!want && t.rec) { unmount(t.rec); t.rec = null; }
   };
   const io = new IntersectionObserver((entries) => {
-    for (const e of entries) {
-      const t = tiles.find((x) => x.stage === e.target);
-      if (t) { t.visible = e.isIntersecting; sync(t); }
-    }
-  }, { rootMargin: "200px 0px" });
+    for (const e of entries) { const t = tiles.find((x) => x.stage === e.target); t.visible = e.isIntersecting; sync(t); }
+  }, { rootMargin: "120px 0px" });
   tiles.forEach((t) => {
     io.observe(t.stage);
     const r = t.stage.getBoundingClientRect();
     if (r.top < window.innerHeight + 200 && r.bottom > -200) { t.visible = true; sync(t); }
   });
 
-  const filterBtns = [...$("rg-filter").querySelectorAll("button")];
-  filterBtns.forEach((b) => b.addEventListener("click", () => {
-    const cat = b.dataset.cat; let shown = 0;
-    tiles.forEach((t) => {
-      const hide = cat !== "all" && t.li.dataset.cat !== cat;
-      t.li.hidden = hide; if (!hide) shown++; sync(t);
-    });
-    filterBtns.forEach((x) => x.setAttribute("aria-checked", String(x.dataset.cat === cat)));
-    $("rg-count").textContent = shown + " / " + n;
-  }));
-
-  let cur = -1, openRec = null;
-  function show(i) {
+  /* The sheet grows out of the tile that opened it and gathers back into it. */
+  let cur = -1, openRec = null, opener = null;
+  /* Rack's motion: the view cuts in where it stands, by opacity on the instant tier; nothing grows or travels. */
+  const CUT = { duration: 100, easing: "cubic-bezier(0.23, 1, 0.32, 1)" };
+  function grow() {
+    if (P.reduced() || !sheet.animate) return;
+    sheet.animate([{ opacity: 0 }, { opacity: 1 }], CUT);
+  }
+  function show(i, dir) {
     cur = ((i % n) + n) % n;
     const s = set[cur];
     unmount(openRec);
     openRec = mountInto(openEl, s, false);
-    P.cutIn(openRec.host, 0);
-    requestAnimationFrame(() => P.staggerColumns(openRec.host, "[data-col]"));
-    $("rg-sheet-title").textContent = s.title + " · " + (cur + 1) + " / " + n;
-    $("rg-about").innerHTML = '<div><b></b><span></span></div><span class="rk-mono" style="font-size:11px">' + (s.motion || "0ms under hand · 100ms cut-in") + '</span>';
-    $("rg-about").querySelector("b").textContent = s.title;
-    $("rg-about").querySelector("div span").textContent = s.tagline || "";
+    if (dir && !P.reduced() && openRec.host.animate) openRec.host.animate([{ opacity: 0 }, { opacity: 1 }], CUT);
+    $("fg-sheet-title").textContent = s.title;
+    $("fg-about").innerHTML = "";
+    const b = document.createElement("b"); b.textContent = s.tagline || ""; $("fg-about").appendChild(b);
     try { history.replaceState(null, "", "#" + s.slug); } catch (e) {}
     document.title = s.title + " · Rack Studies";
     live.textContent = s.title + ", " + (cur + 1) + " of " + n;
   }
-
-  function open(i) {
+  function open(i, from) {
+    opener = from || tiles[i].btn;
     sheetOpen = true; tiles.forEach(sync);
     sheet.classList.add("is-open"); document.body.style.overflow = "hidden";
-    $("rg-wall").inert = true;
-    P.cutIn(sheet, 0);
-    show(i);
-    $("rg-close").focus({ preventScroll: true });
+    $("fg-wall").inert = true;
+    show(i, 0); grow(from);
+    $("fg-close").focus({ preventScroll: true });
   }
-
   function close() {
     if (!sheetOpen) return;
-    const finish = () => {
-      unmount(openRec); openRec = null;
-      sheet.classList.remove("is-open"); document.body.style.overflow = "";
-      $("rg-wall").inert = false; sheetOpen = false;
-      const back = tiles[cur].btn; tiles.forEach(sync);
-      back.focus({ preventScroll: true }); back.scrollIntoView({ block: "nearest" });
-      try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {}
-      document.title = "Rack Studies";
-    };
-    if (!P.reduced() && sheet.animate) sheet.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 75, easing: "ease-out" }).onfinish = finish;
-    else finish();
+    unmount(openRec); openRec = null;
+    sheet.classList.remove("is-open"); document.body.style.overflow = "";
+    $("fg-wall").inert = false;
+    sheetOpen = false;
+    const back = tiles[cur].btn;
+    tiles.forEach(sync);
+    back.focus({ preventScroll: true });
+    back.scrollIntoView({ block: "nearest" });
+    try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {}
+    document.title = "Rack Studies";
   }
-
-  $("rg-close").addEventListener("click", close);
-  $("rg-prev").addEventListener("click", () => show(cur - 1));
-  $("rg-next").addEventListener("click", () => show(cur + 1));
+  $("fg-close").addEventListener("click", close);
+  $("fg-prev").addEventListener("click", () => show(cur - 1, -1));
+  $("fg-next").addEventListener("click", () => show(cur + 1, 1));
   sheet.addEventListener("keydown", (e) => {
     if (e.key === "Escape") { e.preventDefault(); close(); }
-    if (e.key === "ArrowLeft" && !e.target.closest("input,[role=slider],[role=radio]")) { e.preventDefault(); show(cur - 1); }
-    if (e.key === "ArrowRight" && !e.target.closest("input,[role=slider],[role=radio]")) { e.preventDefault(); show(cur + 1); }
+    if (e.key === "Tab") { // keep focus in the sheet
+      const f = [...sheet.querySelectorAll('button, [href], input, [tabindex]:not([tabindex="-1"]), select, textarea')].filter((el) => !el.disabled && el.offsetParent !== null);
+      if (!f.length) return;
+      if (e.shiftKey && document.activeElement === f[0]) { e.preventDefault(); f[f.length - 1].focus(); }
+      else if (!e.shiftKey && document.activeElement === f[f.length - 1]) { e.preventDefault(); f[0].focus(); }
+    }
   });
 
   const qTheme = new URLSearchParams(location.search).get("theme");
   if (qTheme === "light" || qTheme === "dark") document.documentElement.dataset.theme = qTheme;
-  const lightBtn = $("rg-light"), darkBtn = $("rg-dark");
+  const themeBtn = $("fg-theme");
   const isDark = () => document.documentElement.dataset.theme ? document.documentElement.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
-  const paintTheme = () => {
-    const d = isDark();
-    lightBtn.setAttribute("aria-pressed", String(!d));
-    darkBtn.setAttribute("aria-pressed", String(d));
-  };
-  lightBtn.addEventListener("click", () => { document.documentElement.dataset.theme = "light"; paintTheme(); });
-  darkBtn.addEventListener("click", () => { document.documentElement.dataset.theme = "dark"; paintTheme(); });
+  const paintTheme = () => (themeBtn.textContent = isDark() ? "Light" : "Dark");
+  themeBtn.addEventListener("click", () => { document.documentElement.dataset.theme = isDark() ? "light" : "dark"; paintTheme(); });
   paintTheme();
 
   const start = set.findIndex((s) => s.slug === location.hash.slice(1));
-  if (start >= 0) open(start);
-  window.RackGallery = { open: (slug) => { const i = set.findIndex((s) => s.slug === slug); if (i >= 0) open(i); }, close };
+  if (start >= 0) open(start, tiles[start].btn);
+  window.FlatGallery = { open: (slug) => { const i = set.findIndex((s) => s.slug === slug); if (i >= 0) open(i, tiles[i].btn); }, close };
 })();
 </script>
 </body>
