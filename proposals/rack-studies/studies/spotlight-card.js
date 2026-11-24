@@ -1,5 +1,5 @@
 /* Spotlight Card, in Rack: the light that follows the pointer becomes a redline inspector. Over a frame of layers
-   (Header purple, Avatar green, Sidebar blue, Card pink, Button cyan), the pointer's position rides with it as a
+   (Header purple, Avatar blue, Sidebar green, Card pink, Button cyan), the pointer's position rides with it as a
    value box, and the layer under it is outlined in its own colour with redlines to its neighbours or its parent,
    each distance in a box. The pointer's position goes straight to CSS variables; the redlines cut in when the layer
    under the hand changes, and nothing trails. Arrow keys step through the layers. */
@@ -23,6 +23,7 @@ FlatPlayer.register({
 .fs-spotlight-card .rl-l[data-tone="blue"] { background: var(--clip-blue-tint); color: var(--clip-blue-text); --c: var(--clip-blue) }
 .fs-spotlight-card .rl-l[data-tone="pink"] { background: var(--clip-pink-tint); color: var(--clip-pink-text); --c: var(--clip-pink) }
 .fs-spotlight-card .rl-l[data-tone="cyan"] { background: var(--clip-cyan-tint); color: var(--clip-cyan-text); --c: var(--clip-cyan) }
+.fs-spotlight-card .rl-l { box-shadow: inset 0 0 0 1px var(--c) }
 .fs-spotlight-card .rl-l[aria-selected="true"] { box-shadow: 0 0 0 2px var(--c); z-index: 1 }
 .fs-spotlight-card .rl-lines { position: absolute; inset: 0; pointer-events: none; z-index: 2 }
 .fs-spotlight-card .rl-red { position: absolute; background: var(--danger); animation: fs-rl-in var(--cut-in) var(--ease-out) both }
@@ -51,8 +52,8 @@ FlatPlayer.register({
     const W = 480, H = 280;
     const L = [
       { id: "header", name: "Header", tone: "purple", x: 16, y: 16, w: 448, h: 40 },
-      { id: "avatar", name: "Avatar", tone: "green", x: 424, y: 24, w: 24, h: 24, parent: "header" },
-      { id: "sidebar", name: "Sidebar", tone: "blue", x: 16, y: 72, w: 120, h: 192 },
+      { id: "avatar", name: "Avatar", tone: "blue", x: 424, y: 24, w: 24, h: 24, parent: "header" },
+      { id: "sidebar", name: "Sidebar", tone: "green", x: 16, y: 72, w: 120, h: 192 },
       { id: "card", name: "Card", tone: "pink", x: 152, y: 72, w: 208, h: 144 },
       { id: "button", name: "Button", tone: "cyan", x: 168, y: 172, w: 96, h: 28, parent: "card" },
     ];

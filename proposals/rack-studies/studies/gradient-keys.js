@@ -146,11 +146,11 @@ void main() {
 .fs-gradient-keys .gk-canvas { display: block; width: 100%; height: 100% }
 .fs-gradient-keys .rk-clips { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; padding: 6px }
 .fs-gradient-keys .rk-clip { all: unset; box-sizing: border-box; position: relative; display: grid; grid-template-columns: auto 1fr; align-items: center; column-gap: 6px; row-gap: 2px;
-  padding: 6px 7px 8px; border-radius: var(--r-control); background: var(--c-tint); box-shadow: var(--edge); color: var(--c-text); cursor: pointer; overflow: hidden; min-width: 0;
+  padding: 6px 7px 8px; border-radius: var(--r-control); background: var(--c-tint); box-shadow: inset 0 0 0 1px var(--c); color: var(--c-text); cursor: pointer; overflow: hidden; min-width: 0;
   transition: box-shadow var(--cut-in) var(--ease-out) }
-.fs-gradient-keys .rk-clip:active { box-shadow: var(--edge-press) }
+.fs-gradient-keys .rk-clip:active, .fs-gradient-keys .rk-clip[aria-checked="true"] { box-shadow: inset 0 0 0 2px var(--c) }
 .fs-gradient-keys .rk-clip:focus-visible { outline: 2px solid var(--ink); outline-offset: 1px }
-.fs-gradient-keys .rk-clip svg { width: 9px; height: 9px; fill: currentColor; opacity: 0.55 }
+.fs-gradient-keys .rk-clip svg { width: 9px; height: 9px; fill: var(--c); opacity: 0.6 }
 .fs-gradient-keys .rk-clip[aria-checked="true"] svg { opacity: 1 }
 .fs-gradient-keys .rk-clip b { font-size: 12px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
 .fs-gradient-keys .rk-clip small { grid-column: 2; font: 500 10px/1.2 var(--mono); opacity: 0.85; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }

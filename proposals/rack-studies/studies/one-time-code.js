@@ -1,10 +1,8 @@
-/* One-Time Code, after litterthanlit/components, redesigned for Rack: approving an agent to deploy, as a
-   small device. Six value boxes (light cuts in the control line), one figure each in the
-   mono; the box the next figure goes into is outlined in the ink with a still caret. It is one real input
-   laid over them, so paste ("482-913" lands as 482913), autofill and native selection work. The code's window
-   runs on a clock (time moves things: a slot drains linearly, the seconds count down). A right code fills
-   the boxes with the agent's colour column by column, a tick apart; a wrong one turns
-   every line red, on the frame. Nothing shakes, blinks or travels. */
+/* One-Time Code, after litterthanlit/components, Rack 2.0: approving the Deploy agent to push to main. One surface:
+   the request (Deploy, orange: tint, 1px edge, name in its text tone) over six value boxes, one real input laid over
+   them, so paste ("482-913" lands as 482913), autofill and native selection work. The code's window counts down in
+   the strip's one value box (only time moves). A right code fills the boxes with Deploy's orange, a column at a
+   time, a tick apart; a wrong one turns every line red on the frame. Nothing shakes, blinks or travels. */
 (function () {
   const S = ".fs-one-time-code";
   const LENGTH = 6, WINDOW = 30;
@@ -16,19 +14,19 @@
   FlatPlayer.register({
     slug: "one-time-code",
     title: "One-Time Code",
-    tagline: "Approve an agent: six value boxes, one real input.",
+    tagline: "Let an agent deploy: six boxes, one real input.",
     css: `
-${S} .oc { width: min(100%, 420px); background: var(--body); padding: 3px; border-radius: 9px }
-${S} .oc-dev { background: var(--panel); border-radius: var(--r-panel); overflow: hidden }
-${S} .oc-strip { display: flex; align-items: center; gap: 8px; height: 30px; padding: 0 6px 0 10px; background: var(--panel-2) }
-${S} .oc-strip b { font-size: 12px; font-weight: 600; flex: 1 }
-${S} .oc-clip { height: 20px; display: inline-flex; align-items: center; padding: 0 7px; border-radius: var(--r-control); background: var(--clip-blue-tint);
-  color: var(--clip-blue-text); font-size: 11px; font-weight: 600; white-space: nowrap }
-${S} .oc-body { padding: 12px; display: grid; gap: 10px }
-${S} .oc-label { font-size: 12px; color: var(--muted); margin: 0 }
+${S} .oc { width: min(100%, 440px); background: var(--panel); border-radius: var(--r-panel); overflow: hidden; font-size: 12px }
+${S} .oc-strip { display: flex; align-items: center; gap: 6px; height: 30px; padding: 0 4px 0 12px; background: var(--panel-2) }
+${S} .oc-strip b { font-weight: 600; margin-right: auto }
+${S} .oc-box { height: 22px; min-width: 52px; padding: 0 8px; border-radius: var(--r-control); background: var(--cut); box-shadow: var(--edge); font: 600 11px/22px var(--mono); text-align: right }
+${S} .oc-surface { margin: 14px; padding: 12px; background: var(--panel-2); border-radius: var(--r-control); display: grid; gap: 12px }
+${S} .oc-req { justify-self: start; display: grid; gap: 2px; padding: 6px 10px 7px; border-radius: var(--r-control); background: var(--clip-orange-tint); box-shadow: inset 0 0 0 1px var(--clip-orange) }
+${S} .oc-req b { color: var(--clip-orange-text); font-size: 11px; font-weight: 600 }
+${S} .oc-req span { font-size: 11px; color: var(--ink) }
 ${S} .oc-field { position: relative }
 ${S} .oc-cells { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)) 10px repeat(3, minmax(0, 1fr)); gap: 4px }
-${S} .oc-gap { align-self: center; height: 2px; background: var(--line-strong) }
+${S} .oc-gap { align-self: center; height: 1px; background: var(--line-strong) }
 ${S} .oc-cell { position: relative; height: 44px; border-radius: var(--r-control); background: var(--cut); box-shadow: inset 0 0 0 1px var(--line-strong);
   display: grid; place-items: center; font: 600 20px/1 var(--mono); font-variant-numeric: tabular-nums; color: var(--ink) }
 ${S} .oc-cell.is-at { box-shadow: inset 0 0 0 2px var(--ink) }
@@ -37,53 +35,37 @@ ${S} .oc-caret { width: 1px; height: 20px; background: var(--ink) }
 ${S} .oc-cells[data-s="pending"] .oc-cell { color: var(--disabled) }
 ${S} .oc-cells[data-s="error"] .oc-cell { box-shadow: inset 0 0 0 1px var(--danger) }
 ${S} .oc-cells[data-s="error"] .oc-cell.is-at { box-shadow: inset 0 0 0 2px var(--danger) }
-${S} .oc-cell.is-lit { background: var(--clip-blue); color: var(--panel); box-shadow: none; transition: background-color var(--cut-in) var(--ease-out), color var(--cut-in) var(--ease-out) }
+${S} .oc-cell.is-lit { background: var(--clip-orange-tint); color: var(--clip-orange-text); box-shadow: inset 0 0 0 1px var(--clip-orange);
+  transition: background-color var(--cut-in) var(--ease-out), color var(--cut-in) var(--ease-out) }
 ${S} .oc-input { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; margin: 0; padding: 0; border: 0; cursor: text; border-radius: var(--r-control);
   background: transparent; color: transparent; caret-color: transparent; font-size: 16px; outline: none; -webkit-text-fill-color: transparent }
 ${S} .oc-input::selection { background: transparent; color: transparent }
 ${S} .oc-field:has(.oc-input:focus-visible) { outline: 2px solid var(--ink); outline-offset: 3px; border-radius: var(--r-control) }
-${S} .oc-foot { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 8px }
-${S} .oc-foot > span { font-size: 11px; color: var(--muted) }
-${S} .oc-slot { height: 4px; border-radius: 1px; background: var(--slot); overflow: hidden }
-${S} .oc-slot i { display: block; height: 100%; width: 100%; background: var(--slot-fill); transform-origin: left }
-${S} .oc-box { height: 22px; min-width: 52px; display: inline-flex; align-items: center; justify-content: flex-end; padding: 0 7px; border-radius: var(--r-control);
-  background: var(--cut); box-shadow: var(--edge); font: 500 11px var(--mono); font-variant-numeric: tabular-nums }
-${S} .oc-status { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 22px }
-${S} .oc-word { font-size: 12px; font-weight: 500; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+${S} .oc-word { margin: 0; font-size: 11px; color: var(--muted); min-height: 16px }
 ${S} .oc-word[data-s="error"] { color: var(--danger) }
 ${S} .oc-word[data-s="success"] { color: var(--success) }
-${S} .oc-key { height: 22px; padding: 0 10px; border: 0; border-radius: var(--r-control); background: var(--block); box-shadow: var(--edge); font-size: 11px; font-weight: 600; cursor: pointer; flex: none }
-${S} .oc-key:hover { background: var(--block-hover) }
-${S} .oc-key:active { box-shadow: var(--edge-press); transform: scale(0.98) }
-${S}.is-tile .oc-key { display: none }
-@container (max-width: 380px) {
-  ${S} .oc-body { padding: 10px; gap: 8px }
-  ${S} .oc-cell { height: 38px; font-size: 18px }
-}
+@container (max-width: 380px) { ${S} .oc-surface { margin: 10px; padding: 10px } ${S} .oc-cell { height: 38px; font-size: 18px } }
 @container (min-width: 600px) { ${S} .oc { width: 480px } ${S} .oc-cell { height: 52px; font-size: 24px } }
 `,
     mount(host, ctx) {
       const id = "oc" + ++uid;
       host.innerHTML = `
-<div class="oc">
-  <div class="oc-dev" role="group" aria-labelledby="${id}-t">
-    <div class="oc-strip"><b id="${id}-t">Authorize</b><span class="oc-clip">Deploy agent</span></div>
-    <div class="oc-body">
-      <p class="oc-label">Code from your authenticator app, to let it push to main</p>
-      <div class="oc-field">
-        <div class="oc-cells" aria-hidden="true"></div>
-        <input class="oc-input" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]*" maxlength="${LENGTH}"
-          spellcheck="false" autocorrect="off" autocapitalize="off" aria-label="Code" aria-describedby="${id}-s">
-      </div>
-      <div class="oc-foot" aria-hidden="true"><span>Window</span><span class="oc-slot"><i></i></span><span class="oc-box oc-left"></span></div>
-      <div class="oc-status"><span class="oc-word" id="${id}-s"></span><button class="oc-key" type="button">New code</button></div>
+<div class="oc" role="group" aria-labelledby="${id}-t">
+  <div class="oc-strip"><b id="${id}-t">Authorize</b><span class="oc-box oc-left" aria-label="Time left"></span></div>
+  <div class="oc-surface">
+    <div class="oc-req"><b>Deploy</b><span>wants to push to main</span></div>
+    <div class="oc-field">
+      <div class="oc-cells" aria-hidden="true"></div>
+      <input class="oc-input" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]*" maxlength="${LENGTH}"
+        spellcheck="false" autocorrect="off" autocapitalize="off" aria-label="Code from your authenticator app" aria-describedby="${id}-s">
     </div>
+    <p class="oc-word" id="${id}-s"></p>
   </div>
   <p class="sr-only" role="status"></p>
   <p class="sr-only" role="alert"></p>
 </div>`;
       const $ = (s) => host.querySelector(s);
-      const root = $(".oc"), cellsEl = $(".oc-cells"), input = $(".oc-input"), word = $(".oc-word"), slot = $(".oc-slot i"), left = $(".oc-left"), newKey = $(".oc-key");
+      const root = $(".oc"), cellsEl = $(".oc-cells"), input = $(".oc-input"), word = $(".oc-word"), left = $(".oc-left");
       const statusLive = $('[role="status"]'), alertLive = $('[role="alert"]');
       const on = (el, type, fn) => el.addEventListener(type, fn, { signal: ctx.signal });
       if (ctx.tile) input.tabIndex = -1;
@@ -116,7 +98,7 @@ ${S}.is-tile .oc-key { display: none }
         input.setAttribute("aria-invalid", String(status === "error"));
         input.setAttribute("aria-busy", String(status === "pending"));
         word.dataset.s = status;
-        word.textContent = status === "success" ? "Authorized" : status === "error" ? "Wrong code" : status === "pending" ? "Checking" : "Waiting for code";
+        word.textContent = status === "success" ? "Authorized" : status === "error" ? "Wrong code" : status === "pending" ? "Checking" : "Code from your authenticator app";
         statusLive.textContent = status === "success" ? "Authorized" : status === "pending" ? "Checking" : "";
         alertLive.textContent = status === "error" ? "Wrong code" : "";
         if (document.activeElement === input && (input.selectionStart !== start || input.selectionEnd !== end)) input.setSelectionRange(start, end);
@@ -207,7 +189,6 @@ ${S}.is-tile .oc-key { display: none }
         input.setSelectionRange(at, at < code.length ? at + 1 : at);
         selectionChanged();
       });
-      on(newKey, "click", () => { fresh(); statusLive.textContent = "New code window"; input.focus(); });
 
       /* The window: a clock, so it runs even under reduced motion; it steps once a second there. */
       let lastSec = -1;
@@ -215,8 +196,6 @@ ${S}.is-tile .oc-key { display: none }
         const el = (performance.now() - windowStart) / 1000;
         if (el >= WINDOW) { if (status !== "success") { ghostTimers.forEach(clearTimeout); fresh(); if (ghost) playRound(round, 400); } else windowStart = performance.now(); return; }
         const secs = Math.ceil(WINDOW - el);
-        const frac = ctx.reduced() ? secs / WINDOW : 1 - el / WINDOW;
-        slot.style.transform = "scaleX(" + frac.toFixed(4) + ")";
         if (secs !== lastSec) { lastSec = secs; left.textContent = "0:" + String(secs).padStart(2, "0"); }
       };
       tick();

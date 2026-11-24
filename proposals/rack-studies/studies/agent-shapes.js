@@ -1,8 +1,7 @@
-/* Agent Shapes, after litterthanlit/components, redesigned in Rack: the shapes become the screens of an agent chain.
-   Four agents sit side by side as devices, each in its own colour and each with two ways of working (the original's
-   eight shapes). A run passes along the chain on the tick: the device at work lights in its colour, its screen draws
-   the shape of what it is doing, its tokens count up, and its trace records when it worked under a shared playhead. A
-   device switched off is skipped. Time moves the clock, the traces and the shapes; everything else cuts. */
+/* Agent Shapes, after litterthanlit/components, in Rack 2.0: a run passing along four agents. Each agent is one object
+   in its own colour (tint, 1px edge in the hue, name in the hue's text) holding the shape of its way of working, from
+   the original's eight. The one at work gets a second edge and its shape runs; the rest hold still. The strip says
+   what is happening, with Run (the one yellow) and the clock. */
 (function () {
   const offset = (fraction, duration) => `${-(((fraction % 1) + 1) % 1) * duration}ms`;
 
@@ -90,27 +89,24 @@
     }).join(""), "as-build");
   }
 
-  /* The chain: four agents, each a device in its own colour, each with two ways of working. A run passes along it a
-     step at a time; a step is two ticks. */
   const AGENTS = [
-    { id: "plan", name: "Planner", hue: "purple", modes: [{ word: "think", line: "Thinking it through", draw: spark }, { word: "plan", line: "Planning the changes", draw: morph }] },
-    { id: "research", name: "Researcher", hue: "blue", modes: [{ word: "search", line: "Searching 12 sources", draw: graph }, { word: "organize", line: "Organizing the results", draw: cube }] },
-    { id: "code", name: "Coder", hue: "orange", modes: [{ word: "build", line: "Building the project", draw: stack }, { word: "run tools", line: "Running the tests", draw: fold }] },
-    { id: "review", name: "Reviewer", hue: "green", modes: [{ word: "reason", line: "Weighing 3 approaches", draw: orbit }, { word: "write", line: "Drafting the answer", draw: thread }] },
+    { name: "Planner", hue: "purple", modes: [{ line: "Thinking it through", draw: spark }, { line: "Planning the changes", draw: morph }] },
+    { name: "Researcher", hue: "blue", modes: [{ line: "Searching 12 sources", draw: graph }, { line: "Organizing the results", draw: cube }] },
+    { name: "Coder", hue: "orange", modes: [{ line: "Building the project", draw: stack }, { line: "Running the tests", draw: fold }] },
+    { name: "Reviewer", hue: "green", modes: [{ line: "Weighing 3 approaches", draw: orbit }, { line: "Drafting the answer", draw: thread }] },
   ];
-  const STEPS = AGENTS.flatMap((a, ai) => a.modes.map((m, mi) => ({ ai, mi })));
-  const TICK = 0.6, PER = 2, TICKS = STEPS.length * PER; // 16 ticks, 9.6 s a run
-  const RATE = [38, 22, 61, 30]; // tokens a second while each agent works
+  const STEPS = AGENTS.flatMap((a, ai) => a.modes.map((_, mi) => ({ ai, mi })));
+  const STEP = 1.2; // s a step; the chain cuts on it
   const EASE_IO = "cubic-bezier(0.77, 0, 0.175, 1)";
   const S = ".fs-agent-shapes";
-  const fmt = (s) => `${Math.floor(s / 60)}:${(s % 60).toFixed(1).padStart(4, "0")}`;
-  const tok = (n) => (n >= 1000 ? `${(n / 1000).toFixed(1)}k` : `${Math.round(n)}`) + " tok";
+  const fmt = (s) => { const v = Math.max(0, s); return `${Math.floor(v / 60)}:${(v % 60).toFixed(1).padStart(4, "0")}`; };
+  const ICON = { run: '<svg viewBox="0 0 8 8" aria-hidden="true"><path d="M1.5 1v6l5-3z"/></svg>', stop: '<svg viewBox="0 0 8 8" aria-hidden="true"><path d="M1.5 1.5h5v5h-5z"/></svg>' };
   let uid = 0;
 
   FlatPlayer.register({
     slug: "agent-shapes",
     title: "Agent Shapes",
-    tagline: "A chain of agent devices; the one at work lights and draws its shape, and each leaves a trace.",
+    tagline: "A run passing along four agents; the one at work draws the shape of what it is doing.",
     css: `
 @property --fs-as-build { syntax: "<number>"; inherits: true; initial-value: 1 }
 @keyframes fs-as-spin { to { transform: rotate(360deg) } }
@@ -122,56 +118,32 @@
 @keyframes fs-as-assemble { 0%, 25%, 100% { transform: translate(0, 0) scale(1); opacity: 1 } 55%, 65% { transform: translate(var(--fx, 0), var(--fy, 0)) scale(0.6); opacity: 0.35 } }
 @keyframes fs-as-twist { 0%, 12.5% { transform: rotateY(0deg) } 25%, 37.5% { transform: rotateY(90deg) } 50%, 62.5% { transform: rotateY(180deg) } 75%, 87.5% { transform: rotateY(270deg) } 100% { transform: rotateY(360deg) } }
 @keyframes fs-as-build { 0% { --fs-as-build: 0 } 55%, 82% { --fs-as-build: 1 } 100% { --fs-as-build: 0 } }
-${S} .ch { width: min(100%, 330px); padding: 3px; background: var(--body); border-radius: var(--r-panel); display: grid; gap: 3px; user-select: none; -webkit-user-select: none }
-${S} .ch-head { display: flex; align-items: center; gap: 6px; height: 28px; padding: 0 5px; background: var(--panel-2); border-radius: var(--r-panel) }
-${S} .ch-title { font-size: 12px; font-weight: 600 }
-${S} .ch-line { font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-right: auto; min-width: 0 }
-${S} .ch-clock { font: 600 13px/1 var(--mono); font-variant-numeric: tabular-nums }
-${S} .ch-key { all: unset; box-sizing: border-box; width: 22px; height: 20px; display: grid; place-items: center; border-radius: var(--r-control); background: var(--block); box-shadow: var(--edge);
-  color: var(--muted); cursor: pointer; flex: none; transition: background-color var(--cut-in) var(--ease-out), color var(--cut-in) var(--ease-out) }
+${S} .ch { width: min(100%, 330px); background: var(--panel); border-radius: var(--r-panel); overflow: hidden; font-size: 12px; user-select: none; -webkit-user-select: none }
+${S} .ch-strip { display: flex; align-items: center; gap: 6px; height: 30px; padding: 0 4px 0 6px; background: var(--panel-2) }
+${S} .ch-line { font-weight: 600; margin-right: auto; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0 }
+${S} .ch-key { all: unset; box-sizing: border-box; width: 22px; height: 22px; flex: none; display: grid; place-items: center; border-radius: var(--r-control); background: var(--block); box-shadow: var(--edge);
+  color: var(--ink); cursor: pointer; transition: background-color var(--cut-in) var(--ease-out) }
 ${S} .ch-key svg { width: 8px; height: 8px; fill: currentColor }
 ${S} .ch-key:hover { background: var(--block-hover) } ${S} .ch-key:active { box-shadow: var(--edge-press); scale: 0.98 }
-${S} .ch-key.is-run[aria-pressed="true"] { background: var(--accent); color: var(--accent-fg) }
-${S} .ch-key.is-power { width: 16px; height: 16px }
-${S} .ch-key.is-power svg { width: 9px; height: 9px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: square }
-${S} .ch-key.is-power[aria-checked="true"] { background: var(--ink); color: var(--panel) }
-${S} .ch-key:focus-visible { outline: 2px solid var(--ink); outline-offset: 1px }
-${S} .ch-chain { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 3px }
-${S} .ch-dev { background: var(--panel); border-radius: var(--r-panel); overflow: hidden; min-width: 0;
-  --as-bg: var(--panel-3); --as-hi: var(--control); --as-lo: color-mix(in oklab, var(--control) 60%, var(--panel-3)); --as-line: color-mix(in oklab, var(--control) 30%, var(--panel-3)) }
-${S} .ch-strip { display: flex; align-items: center; gap: 5px; height: 22px; padding: 0 4px; background: var(--panel-2); transition: background-color var(--cut-in) var(--ease-out), color var(--cut-in) var(--ease-out) }
-${S} .ch-name { font-size: 11px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-right: auto; min-width: 0 }
-${S} .ch-st { font-size: 10px; color: var(--muted); white-space: nowrap }
-${S} .ch-body { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px; padding: 4px }
-${S} .ch-screen { position: relative; width: 40px; height: 40px; border-radius: var(--r-control); background: var(--as-bg); display: grid; place-items: center; overflow: hidden;
-  transition: background-color var(--cut-in) var(--ease-out) }
-${S} .ch-screen > span { grid-area: 1 / 1; display: flex; transition: opacity var(--cut-in) var(--ease-out) }
-${S} .ch-screen > span:not(.is-on) { opacity: 0 }
-${S} .ch-vals { display: grid; gap: 3px; align-content: center; min-width: 0 }
-${S} .ch-box { height: 18px; display: flex; align-items: center; padding: 0 5px; border-radius: var(--r-control); background: var(--cut); box-shadow: var(--edge);
-  font: 500 10px/1 var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; color: var(--ink) }
-${S} .ch-box.is-tok { justify-content: flex-end; color: var(--muted) }
-${S} .ch-trace { grid-column: 1 / -1; position: relative; display: grid; grid-template-columns: repeat(${TICKS}, minmax(0, 1fr)); gap: 1px; height: 8px }
-${S} .ch-trace i { background: color-mix(in oklab, var(--ink) 14%, var(--panel)); border-radius: 1px }
-${S} .ch-trace i.is-on { background: var(--hue) }
-${S} .ch-trace b { position: absolute; top: -1px; bottom: -1px; width: 1px; background: var(--ink); left: calc(var(--x, 0) * 100%) }
-${S} .ch-dev.is-work { --as-bg: var(--tint); --as-hi: var(--hue); --as-lo: color-mix(in oklab, var(--hue) 55%, var(--tint)); --as-line: color-mix(in oklab, var(--hue) 25%, var(--tint)) }
-${S} .ch-dev.is-work .ch-strip { background: var(--hue); color: var(--panel) }
-${S} .ch-dev.is-work .ch-st { color: var(--panel) }
-${S} .ch-dev.is-work .ch-box.is-mode { background: var(--tint); color: var(--text) }
-${S} .ch-dev.is-off .ch-body { opacity: 0.45 }
-${S} .ch-dev:not(.is-work) .ch-screen * { animation: none !important }
-${S} .ch-dev:not(.is-work) .as-ray.is-odd { transform: scaleY(0.5) }
-@container (min-width: 600px) {
-  ${S} .ch { width: 720px; gap: 4px; padding: 4px }
-  ${S} .ch-chain { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px }
-  ${S} .ch-clock { font-size: 20px } ${S} .ch-head { height: 32px } ${S} .ch-line { font-size: 12px }
-  ${S} .ch-strip { height: 26px; padding: 0 6px } ${S} .ch-name { font-size: 12px }
-  ${S} .ch-body { grid-template-columns: 1fr; padding: 6px; gap: 5px }
-  ${S} .ch-screen { width: 100%; height: 84px }
-  ${S} .ch-box { height: 20px; font-size: 11px }
-  ${S} .ch-vals { grid-template-columns: 1fr 1fr }
-  ${S} .ch-trace { height: 10px }
+${S} .ch-key[aria-pressed="true"] { background: var(--accent); color: var(--accent-fg) }
+${S} .ch-clock { height: 22px; display: inline-flex; align-items: center; padding: 0 6px; border-radius: var(--r-control); background: var(--cut); box-shadow: var(--edge);
+  font: 600 11px/1 var(--mono); font-variant-numeric: tabular-nums }
+${S} .ch-surface { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; padding: 14px }
+${S} .ch-a { all: unset; box-sizing: border-box; position: relative; display: grid; grid-template-rows: auto 1fr; gap: 4px; padding: 6px; min-width: 0; aspect-ratio: 3 / 4;
+  border-radius: var(--r-control); cursor: pointer; background: var(--tint); box-shadow: inset 0 0 0 1px var(--hue); color: var(--text);
+  --as-bg: var(--tint); --as-hi: var(--hue); --as-lo: color-mix(in oklab, var(--hue) 55%, var(--tint)); --as-line: color-mix(in oklab, var(--hue) 28%, var(--tint));
+  transition: box-shadow var(--cut-in) var(--ease-out) }
+${S} .ch-a[aria-checked="true"] { box-shadow: inset 0 0 0 1px var(--hue), 0 0 0 2px var(--hue) }
+${S} .ch-a:focus-visible { outline: 2px solid var(--ink); outline-offset: 4px }
+${S} .ch-a:active { scale: 0.98 }
+${S} .ch-name { font: 600 10px/1 var(--font); white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+${S} .ch-shape { display: grid; place-items: center }
+${S} .ch-shape > span { grid-area: 1 / 1; display: flex; transition: opacity var(--cut-in) var(--ease-out) }
+${S} .ch-shape > span:not(.is-on) { opacity: 0 }
+${S} .ch-a:not([aria-checked="true"]) .ch-shape * { animation: none !important }
+${S} .ch-a:not([aria-checked="true"]) .as-ray.is-odd { transform: scaleY(0.5) }
+@container (min-width: 560px) {
+  ${S} .ch { width: 620px } ${S} .ch-surface { gap: 12px; padding: 16px } ${S} .ch-a { padding: 8px } ${S} .ch-name { font-size: 12px }
 }
 ${S} .as-frame { position: relative; display: inline-block; flex: none }
 ${S} .as-frame svg { width: 100%; height: 100%; overflow: visible; display: block }
@@ -204,137 +176,89 @@ ${S} .as-build { animation: fs-as-build 4.4s linear infinite }
 }
 `,
     mount(host, ctx) {
-      const id = "fs-ch-" + ++uid;
-      const big = host.clientWidth >= 600, size = big ? 60 : 30;
+      const id = "fs-ch3-" + ++uid;
+      const size = host.clientWidth >= 560 ? 72 : 40;
       const hueVars = (a) => `--hue: var(--clip-${a.hue}); --tint: var(--clip-${a.hue}-tint); --text: var(--clip-${a.hue}-text)`;
       host.innerHTML = `
-<div class="ch">
-  <div class="ch-head">
-    <button type="button" class="ch-key is-run" aria-pressed="false" aria-label="Run"></button>
-    <span class="ch-title" id="${id}">Chain</span>
-    <span class="ch-line" aria-hidden="true"></span>
+<section class="ch" aria-labelledby="${id}">
+  <div class="ch-strip">
+    <button type="button" class="ch-key" aria-pressed="false" aria-label="Run"></button>
+    <span class="ch-line" id="${id}"></span>
     <span class="ch-clock" aria-hidden="true">0:00.0</span>
   </div>
-  <div class="ch-chain" role="toolbar" aria-labelledby="${id}">
-    ${AGENTS.map((a, i) => `<section class="ch-dev" style="${hueVars(a)}" aria-label="${a.name}">
-      <div class="ch-strip">
-        <button type="button" class="ch-key is-power" role="switch" aria-checked="true" tabindex="${i ? -1 : 0}" aria-label="${a.name} enabled"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M5 1v4M2.6 2.8a3.2 3.2 0 1 0 4.8 0"/></svg></button>
-        <span class="ch-name">${a.name}</span><span class="ch-st" aria-hidden="true">Waiting</span>
-      </div>
-      <div class="ch-body" aria-hidden="true">
-        <span class="ch-screen">${a.modes.map((m) => `<span>${`<span class="as-frame" style="width:${size}px;height:${size}px">${m.draw(size)}</span>`}</span>`).join("")}</span>
-        <span class="ch-vals"><span class="ch-box is-mode">${a.modes[0].word}</span><span class="ch-box is-tok">0 tok</span></span>
-        <span class="ch-trace">${"<i></i>".repeat(TICKS)}<b></b></span>
-      </div>
-    </section>`).join("")}
+  <div class="ch-surface" role="radiogroup" aria-label="Agents">
+    ${AGENTS.map((a, i) => `<button type="button" class="ch-a" role="radio" aria-checked="false" tabindex="${i ? -1 : 0}" style="${hueVars(a)}" aria-label="${a.name}">
+      <span class="ch-name" aria-hidden="true">${a.name}</span>
+      <span class="ch-shape" aria-hidden="true">${a.modes.map((m) => `<span><span class="as-frame" style="width:${size}px;height:${size}px">${m.draw(size)}</span></span>`).join("")}</span></button>`).join("")}
   </div>
   <p class="sr-only" aria-live="polite"></p>
-</div>`;
-      const runKey = host.querySelector(".is-run"), line = host.querySelector(".ch-line"), clock = host.querySelector(".ch-clock"), live = host.querySelector("[aria-live]");
-      const devs = AGENTS.map((a, i) => {
-        const el = host.querySelectorAll(".ch-dev")[i];
-        return { a, el, power: el.querySelector(".is-power"), st: el.querySelector(".ch-st"), glyphs: [...el.querySelectorAll(".ch-screen > span")],
-          mode: el.querySelector(".is-mode"), tokEl: el.querySelector(".is-tok"), cells: [...el.querySelectorAll(".ch-trace i")], head: el.querySelector(".ch-trace b"), tokens: 0 };
-      });
+</section>`;
+      const runKey = host.querySelector(".ch-key"), line = host.querySelector(".ch-line"), clock = host.querySelector(".ch-clock"), live = host.querySelector("[aria-live]");
+      const objs = [...host.querySelectorAll(".ch-a")];
       const reduced = ctx.reduced();
       const sig = { signal: ctx.signal };
-      const ICON = { run: '<svg viewBox="0 0 8 8" aria-hidden="true"><path d="M1.5 1v6l5-3z"/></svg>', stop: '<svg viewBox="0 0 8 8" aria-hidden="true"><path d="M1.5 1.5h5v5h-5z"/></svg>' };
+      objs.forEach((o) => o.querySelector(".ch-shape > span").classList.add("is-on"));
 
-      let t = 0, running = false, step = -1, run = 1, rest = 0;
-      const on = (d) => d.power.getAttribute("aria-checked") === "true";
-      /* Which step is live at a tick: the run walks the steps in order, skipping a device that is off. */
-      const plan = () => STEPS.filter((s) => on(devs[s.ai]));
+      let t = 0, running = false, cur = null, rest = 0;
       function setRunning(x) {
         running = x;
         runKey.setAttribute("aria-pressed", x ? "true" : "false");
         runKey.setAttribute("aria-label", x ? "Stop" : "Run");
         runKey.innerHTML = x ? ICON.stop : ICON.run;
       }
-      function showStep(s) {
-        devs.forEach((d, i) => {
-          const working = s && s.ai === i;
-          d.el.classList.toggle("is-work", !!working);
-          d.el.classList.toggle("is-off", !on(d));
-          if (working) {
-            d.glyphs.forEach((g, j) => g.classList.toggle("is-on", j === s.mi));
-            d.mode.textContent = d.a.modes[s.mi].word;
-          } else if (!d.glyphs.some((g) => g.classList.contains("is-on"))) d.glyphs[0].classList.add("is-on");
+      /* The working agent: its edge doubles and its shape runs; the rest hold a still shape. All cut on the frame. */
+      function show(s, say) {
+        if (cur && s && cur.ai === s.ai && cur.mi === s.mi) return;
+        cur = s;
+        objs.forEach((o, i) => {
+          o.setAttribute("aria-checked", s && s.ai === i ? "true" : "false");
+          if (s && s.ai === i) o.querySelectorAll(".ch-shape > span").forEach((g, j) => g.classList.toggle("is-on", j === s.mi));
         });
-        const done = (i) => plan().filter((p) => p.ai === i).every((p) => STEPS.indexOf(p) < STEPS.indexOf(s || {}));
-        devs.forEach((d, i) => (d.st.textContent = !on(d) ? "Off" : s && s.ai === i ? "Working" : s && done(i) ? "Done" : "Waiting"));
-        line.textContent = s ? AGENTS[s.ai].modes[s.mi].line : "";
+        if (s) objs.forEach((o, i) => (o.tabIndex = i === s.ai ? 0 : -1));
+        const words = s ? AGENTS[s.ai].modes[s.mi].line : "";
+        line.textContent = words;
+        if (s && say !== false) live.textContent = `${AGENTS[s.ai].name}: ${words}`;
       }
-      function paint() {
-        const p = plan(), k = Math.floor(t / TICK), cur = p[Math.floor(k / PER)];
-        if (cur !== step) {
-          step = cur;
-          showStep(cur);
-          if (cur) live.textContent = `${AGENTS[cur.ai].name}: ${AGENTS[cur.ai].modes[cur.mi].line}`;
-        }
-        devs.forEach((d) => d.head.style.setProperty("--x", Math.min(1, t / (TICK * TICKS)).toFixed(4)));
-        clock.textContent = fmt(t);
-      }
-      function lightCell(k) {
-        const p = plan(), s = p[Math.floor(k / PER)];
-        if (!s) return;
-        devs[s.ai].cells[k].classList.add("is-on");
-      }
-      function newRun() {
-        t = 0; step = -1; rest = 0;
-        devs.forEach((d) => { d.tokens = 0; d.tokEl.textContent = tok(0); d.cells.forEach((c) => c.classList.remove("is-on")); });
-        setRunning(true);
-        lightCell(0); paint();
-      }
+      const span = STEPS.length * STEP;
+      function newRun() { t = 0; rest = 0; setRunning(true); show(STEPS[0]); }
 
-      /* Time moves things: the clock, the traces and the tokens run with the chain; the device at work cuts in on the
-         tick. When the plan is done the run ends, and a new one starts two ticks later until a hand comes. */
       let ghost = !reduced;
       ctx.onHand(() => (ghost = false));
-      const span = () => plan().length * PER * TICK;
-      if (reduced) {
-        setRunning(false);
-        t = TICK * 6.5;
-        for (let k = 0; k <= 6; k++) lightCell(k);
-        devs[0].tokens = 1520; devs[1].tokens = 610;
-        devs.forEach((d) => (d.tokEl.textContent = tok(d.tokens)));
-        paint();
-      } else {
+      if (reduced) { setRunning(false); t = STEP * 2.5; show(STEPS[2], false); clock.textContent = fmt(t); }
+      else {
         newRun();
         ctx.loop((dt) => {
           if (running) {
-            const before = Math.floor(t / TICK);
-            t += dt;
-            if (t >= span()) { t = span(); setRunning(false); showStep(null); devs.forEach((d) => (d.st.textContent = on(d) ? "Done" : "Off")); line.textContent = `Run ${run} done`; live.textContent = `Run ${run} done`; clock.textContent = fmt(t); return; }
-            const k = Math.floor(t / TICK);
-            if (k !== before) lightCell(k);
-            if (step) { const d = devs[step.ai]; d.tokens += dt * RATE[step.ai] * 40; d.tokEl.textContent = tok(d.tokens); }
-            paint();
-          } else if (ghost && t > 0 && (rest += dt) > TICK * 2) { run++; newRun(); }
+            t = Math.min(span, t + dt);
+            clock.textContent = fmt(t);
+            if (t >= span) { setRunning(false); show(null); line.textContent = "Run done"; live.textContent = "Run done"; return; }
+            show(STEPS[Math.floor(t / STEP)]);
+          } else if (ghost && t >= span && (rest += dt) > STEP) newRun();
         });
       }
 
       runKey.addEventListener("click", () => {
-        if (running) { setRunning(false); line.textContent = "Stopped"; live.textContent = "Stopped"; return; }
+        if (running) { setRunning(false); live.textContent = "Stopped"; return; }
         if (reduced) return;
-        if (t >= span() || t === 0) { run++; newRun(); } else setRunning(true);
+        if (t >= span) newRun();
+        else { t = cur ? STEPS.indexOf(STEPS.find((s) => s.ai === cur.ai && s.mi === cur.mi)) * STEP : t; setRunning(true); }
       }, sig);
-      devs.forEach((d, i) => d.power.addEventListener("click", () => {
-        const x = !on(d);
-        d.power.setAttribute("aria-checked", x ? "true" : "false");
-        step = undefined; paint();
-        if (!running) showStep(null);
-        devs.forEach((e) => e.el.classList.toggle("is-off", !on(e)));
-        live.textContent = `${d.a.name} ${x ? "on" : "off"}`;
-      }, sig));
-      const powers = devs.map((d) => d.power);
-      host.querySelector(".ch-chain").addEventListener("keydown", (e) => {
-        const at = powers.indexOf(document.activeElement);
-        const mv = { ArrowRight: 1, ArrowLeft: -1, ArrowDown: 1, ArrowUp: -1 }[e.key];
+      /* A hand on an agent stops the run there; a second press shows its other way of working. */
+      const pick = (i, focus) => {
+        if (running) setRunning(false);
+        const mi = cur && cur.ai === i ? 1 - cur.mi : 0;
+        show({ ai: i, mi });
+        if (focus) objs[i].focus();
+      };
+      objs.forEach((o, i) => o.addEventListener("click", () => pick(i), sig));
+      host.querySelector(".ch-surface").addEventListener("keydown", (e) => {
+        const at = objs.indexOf(document.activeElement);
+        const mv = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key];
         if (at < 0 || !mv) return;
         e.preventDefault();
-        const to = (at + mv + powers.length) % powers.length;
-        powers.forEach((p, j) => (p.tabIndex = j === to ? 0 : -1));
-        powers[to].focus();
+        const to = (at + mv + objs.length) % objs.length;
+        if (running) setRunning(false);
+        show({ ai: to, mi: 0 }); objs[to].focus();
       }, sig);
     },
   });

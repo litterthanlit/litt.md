@@ -1,170 +1,127 @@
-/* Knob, in Rack: a design tool's property device. The Card component's Radius, Padding and Border as three square dials,
-   each with an arc in its property's colour and its value in words under it, beside a Preview panel that draws the card
-   with those values. Drag up to turn (Shift for fine), arrows step, double-click returns to the default, and it stays where
-   the hand left it. Variations A and B jump every dial to its value on the tick, one column after another (60 ms): no
-   glide. The values keep their detents. The device's power key is its one lit key; off, the preview drops the props. */
+/* Knob, Rack 2.0: a design tool's props for one component. The canvas carries the Card (pink, as layers are across the
+   wall); beside it, three value boxes: Radius, Padding and Border. Drag a box up or down to set it 1:1 (Shift for fine),
+   arrows step, double-click returns to the default, and it stays where the hand left it. While a box is in hand the canvas
+   draws the measurement on the card in red. Variations A and B jump every prop on the tick, one after another (60 ms): no
+   glide. A ghost compares the two variations until a hand arrives. */
 (function () {
-  const SWEEP = 270, PX_PER_DETENT = 4;
-  const indexOf = (v, { min, max, detents, taper }) => {
-    const f = taper === "log" ? Math.log(v / min) / Math.log(max / min) : (v - min) / (max - min);
-    return Math.round(Math.min(1, Math.max(0, f)) * detents);
-  };
-  const valueAt = (i, { min, max, detents, taper }) => {
-    const v = taper === "log" ? min * Math.pow(max / min, i / detents) : min + ((max - min) * i) / detents;
-    return Math.round(v * 100) / 100;
-  };
-  const PARAMS = [
-    { key: "radius", label: "Radius", hue: "orange", min: 0, max: 24, detents: 24, home: 8, format: (v) => Math.round(v) + " px" },
-    { key: "pad", label: "Padding", hue: "cyan", min: 0, max: 32, detents: 16, home: 8, format: (v) => Math.round(v) + " px" },
-    { key: "border", label: "Border", hue: "purple", min: 0, max: 4, detents: 8, home: 2, format: (v) => v.toFixed(1) + " px" },
+  const PROPS = [
+    { key: "radius", label: "Radius", min: 0, max: 24, step: 1, home: 8, unit: "px" },
+    { key: "pad", label: "Padding", min: 0, max: 32, step: 2, home: 12, unit: "px" },
+    { key: "border", label: "Border", min: 0, max: 4, step: 0.5, home: 1, unit: "px" },
   ];
-  const VARS = { A: { radius: 12, pad: 10, border: 2 }, B: { radius: 2, pad: 4, border: 6 } };
-  const R = 15, C = 20;
-  const pt = (deg, r) => { const a = ((deg - 90) * Math.PI) / 180; return (C + r * Math.cos(a)).toFixed(2) + " " + (C + r * Math.sin(a)).toFixed(2); };
-  const arc = (a0, a1) => (Math.abs(a1 - a0) < 0.01 ? "" : "M" + pt(a0, R) + "A" + R + " " + R + " 0 " + (Math.abs(a1 - a0) > 180 ? 1 : 0) + " " + (a1 > a0 ? 1 : 0) + " " + pt(a1, R));
-  let n = 0;
+  const VARS = { A: { radius: 12, pad: 16, border: 1 }, B: { radius: 2, pad: 6, border: 3 } };
+  const fmt = (p, v) => (p.step < 1 ? v.toFixed(1) : String(v)) + " " + p.unit;
 
   FlatPlayer.register({
     slug: "knob",
     title: "Knob",
     tagline: "Component props that recall their variations on the tick.",
     css: `
-.fs-knob .kd { width: min(330px, 100%); font: 400 12px/1.35 var(--font); background: var(--body); padding: 3px; border-radius: 8px; display: grid; gap: 3px;
-  -webkit-user-select: none; user-select: none }
-.fs-knob .kd-pv { background: var(--panel); border-radius: var(--r-panel); overflow: hidden; display: grid; grid-template-rows: auto 1fr }
-.fs-knob .kd-pv-h { display: flex; align-items: center; justify-content: space-between; height: 24px; padding: 0 8px; background: var(--panel-2); font-weight: 600 }
-.fs-knob .kd-pv-h span { font: 500 11px var(--mono); color: var(--muted) }
-.fs-knob .kd-stage { display: grid; place-items: center; padding: 10px; min-height: 64px;
-  background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px); background-size: 8px 8px; background-position: -1px -1px }
-.fs-knob .kd-card { display: grid; gap: 4px; width: 132px; background: var(--clip-blue-tint); color: var(--clip-blue-text); box-shadow: inset 0 0 0 var(--bw, 0) var(--clip-blue);
-  border-radius: var(--rad, 0); padding: var(--pd, 0) }
-.fs-knob .kd-card b { font-weight: 600; font-size: 12px }
-.fs-knob .kd-card i { display: block; height: 6px; border-radius: 1px; background: var(--clip-blue); opacity: 0.45 }
-.fs-knob .kd-card i + i { width: 60% }
-.fs-knob .kd-off ~ .kd-pv .kd-card, .fs-knob .kd-pv.is-off .kd-card { --rad: 0 !important; --pd: 0 !important; --bw: 0 !important }
-.fs-knob .kd-dev { background: var(--panel); border-radius: var(--r-panel); overflow: hidden }
-.fs-knob .kd-head { display: flex; align-items: center; gap: 6px; height: 28px; padding: 0 4px; background: var(--panel-2) }
-.fs-knob .kd-head b { font-weight: 600; margin-right: auto; white-space: nowrap }
-.fs-knob .kd-key { height: 20px; min-width: 22px; padding: 0 6px; border: 0; border-radius: var(--r-control); background: var(--block); box-shadow: var(--edge); color: var(--ink);
-  font: 600 11px var(--mono); cursor: pointer; transition: background-color var(--cut-in) var(--ease-out), color var(--cut-in) var(--ease-out) }
-.fs-knob .kd-key:hover { background: var(--block-hover) }
-.fs-knob .kd-key:active { box-shadow: var(--edge-press); transform: scale(0.98) }
-.fs-knob .kd-key[aria-checked="true"] { background: var(--slot-fill); color: var(--cut) }
-.fs-knob .kd-power[aria-pressed="true"] { background: var(--accent); color: var(--accent-fg) }
-.fs-knob .kd-power svg { width: 10px; height: 10px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: square; display: block }
-.fs-knob .kd-vars { display: flex; gap: 3px }
-.fs-knob .kd-dials { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; padding: 10px 8px 8px }
-.fs-knob .kd-col { display: grid; justify-items: center; gap: 4px; min-width: 0 }
-.fs-knob .kd-label { color: var(--muted); font-size: 11.5px }
-.fs-knob .kd-dial { width: 100%; max-width: 76px; aspect-ratio: 1; border-radius: var(--r-control); cursor: ns-resize; touch-action: none; display: grid; place-items: center }
-.fs-knob .kd-dial svg { width: 100%; height: 100%; display: block }
-.fs-knob .kd-track { fill: none; stroke: var(--slot); stroke-width: 3.5 }
-.fs-knob .kd-arc { fill: none; stroke: var(--hue); stroke-width: 3.5 }
-.fs-knob .kd-ptr { stroke: var(--ink); stroke-width: 2.2 }
-.fs-knob .kd-val { width: 100%; max-width: 76px; height: 20px; display: grid; place-items: center; border-radius: var(--r-control); background: var(--cut); box-shadow: var(--edge);
-  font: 600 11px var(--mono); white-space: nowrap; overflow: hidden }
-.fs-knob .kd-foot { display: flex; justify-content: space-between; gap: 6px; padding: 0 8px 7px; color: var(--muted); font-size: 11.5px }
-.fs-knob .kd-off .kd-arc { stroke: var(--line-strong) }
-.fs-knob .kd-off .kd-dials, .fs-knob .kd-off .kd-foot { opacity: 0.55 }
-.fs-knob.is-tile .kd-stage { min-height: 0; padding: 6px } .fs-knob.is-tile .kd-dials { padding: 6px 8px 6px } .fs-knob.is-tile .kd-foot { display: none }
-.fs-knob.is-tile .kd { grid-template-columns: 1fr 112px } .fs-knob.is-tile .kd-card { width: 92px } .fs-knob.is-tile .kd-dial { max-width: 54px }
-@container (min-width: 520px) { .fs-knob .kd { width: 560px; grid-template-columns: 1fr 200px; font-size: 13px } .fs-knob .kd-dial, .fs-knob .kd-val { max-width: 96px } }
+.fs-knob .kp { width: min(100%, 620px); display: grid; grid-template-columns: 1fr 150px; gap: 3px; font-size: 12px; -webkit-user-select: none; user-select: none }
+.fs-knob .kp-dev { background: var(--panel); border-radius: var(--r-panel); overflow: hidden; min-width: 0 }
+.fs-knob .kp-strip { display: flex; align-items: center; gap: 4px; height: 30px; padding: 0 4px 0 10px; background: var(--panel-2); white-space: nowrap }
+.fs-knob .kp-strip b { font-weight: 600; margin-right: auto }
+.fs-knob .kp-key { height: 22px; min-width: 26px; padding: 0 8px; border: 0; border-radius: var(--r-control); background: var(--block); box-shadow: var(--edge); color: var(--ink);
+  font: 600 11px var(--font); cursor: pointer; transition: background-color var(--cut-in) var(--ease-out), color var(--cut-in) var(--ease-out) }
+.fs-knob .kp-key:hover { background: var(--block-hover) }
+.fs-knob .kp-key:active { box-shadow: var(--edge-press); transform: scale(0.98) }
+.fs-knob .kp-key[aria-checked="true"] { background: var(--accent); color: var(--accent-fg) }
+.fs-knob .kp-wrap { padding: 12px }
+.fs-knob .kp-canvas { position: relative; display: grid; place-items: center; min-height: 168px; background-color: var(--cut); border-radius: var(--r-control); box-shadow: var(--edge);
+  background-image: linear-gradient(color-mix(in oklab, var(--line) 55%, transparent) 1px, transparent 1px), linear-gradient(90deg, color-mix(in oklab, var(--line) 55%, transparent) 1px, transparent 1px); background-size: 12px 12px; background-position: -1px -1px }
+.fs-knob .kp-card { position: relative; width: 156px; display: grid; gap: 5px; background: var(--clip-pink-tint); color: var(--clip-pink-text);
+  box-shadow: inset 0 0 0 max(1px, var(--bw, 1px)) var(--clip-pink); border-radius: var(--rad, 0); padding: var(--pd, 0) }
+.fs-knob .kp-card b { font-weight: 600; font-size: 11px; line-height: 14px }
+.fs-knob .kp-card i { display: block; height: 6px; border-radius: 1px; background: var(--clip-pink); opacity: 0.4 }
+.fs-knob .kp-card i + i { width: 62% }
+.fs-knob .kp-guide { position: absolute; inset: var(--pd, 0); box-shadow: inset 0 0 0 1px var(--danger); border-radius: 0; pointer-events: none; display: none }
+.fs-knob .kp-tag { position: absolute; right: -6px; top: -9px; padding: 1px 3px; background: var(--danger); color: var(--cut); border-radius: var(--r-control);
+  font: 600 9px/11px var(--mono); white-space: nowrap; display: none }
+.fs-knob .kp[data-show] .kp-tag { display: block }
+.fs-knob .kp[data-show="pad"] .kp-guide { display: block }
+.fs-knob .kp-props { display: grid; gap: 8px; padding: 12px 10px; align-content: start }
+.fs-knob .kp-prop { display: grid; gap: 3px }
+.fs-knob .kp-prop span { color: var(--muted); font-size: 11px }
+.fs-knob .kp-box { height: 24px; padding: 0 8px; display: flex; align-items: center; border-radius: var(--r-control); background: var(--cut); box-shadow: var(--edge);
+  font: 600 11px var(--mono); cursor: ns-resize; touch-action: none; white-space: nowrap }
+.fs-knob .kp-box:active { box-shadow: var(--edge-press) }
+.fs-knob.is-tile .kp { grid-template-columns: 1fr }
+.fs-knob.is-tile .kp-side { display: none }
+@container (max-width: 440px) { .fs-knob:not(.is-tile) .kp { grid-template-columns: 1fr } .fs-knob .kp-props { grid-template-columns: repeat(3, 1fr) } }
 `,
     mount(host, ctx) {
-      const id = "kd" + ++n;
       host.innerHTML = `
-<div class="kd"><div class="kd-dev">
-  <div class="kd-head">
-    <button class="kd-key kd-power" type="button" aria-pressed="true" aria-label="Device on"><svg viewBox="0 0 10 10"><path d="M5 1v4M2.6 2.8a3.4 3.4 0 1 0 4.8 0"/></svg></button>
-    <b>Card</b>
-    <div class="kd-vars" role="radiogroup" aria-label="Variation">
-      <button class="kd-key" type="button" role="radio" data-v="A" aria-label="Variation A">A</button><button class="kd-key" type="button" role="radio" data-v="B" aria-label="Variation B">B</button>
+<div class="kp">
+  <div class="kp-dev">
+    <div class="kp-strip"><b>Card</b>
+      <span role="radiogroup" aria-label="Variation" style="display:flex;gap:3px"><button class="kp-key" type="button" role="radio" data-v="A" aria-label="Variation A">A</button><button class="kp-key" type="button" role="radio" data-v="B" aria-label="Variation B">B</button></span>
     </div>
+    <div class="kp-wrap"><div class="kp-canvas" aria-hidden="true"><div class="kp-card"><b>Card</b><i></i><i></i><span class="kp-guide"></span><span class="kp-tag"></span></div></div></div>
   </div>
-  <div class="kd-dials"></div>
-  <div class="kd-foot" aria-hidden="true"><span class="kd-state"></span><span>Shift-drag for fine</span></div>
-</div>
-<div class="kd-pv" aria-hidden="true"><div class="kd-pv-h">Preview<span>Card</span></div><div class="kd-stage"><div class="kd-card"><b>Card title</b><i></i><i></i></div></div></div>
-<p class="sr-only" aria-live="polite"></p></div>`;
+  <div class="kp-dev kp-side"><div class="kp-strip"><b>Props</b></div><div class="kp-props"></div></div>
+  <p class="sr-only" aria-live="polite"></p>
+</div>`;
       const sig = { signal: ctx.signal };
-      const dev = host.querySelector(".kd-dev"), dials = host.querySelector(".kd-dials"), stateEl = host.querySelector(".kd-state"), live = host.querySelector("[aria-live]");
-      const power = host.querySelector(".kd-power"), vars = [...host.querySelectorAll("[data-v]")];
+      const root = host.querySelector(".kp"), card = host.querySelector(".kp-card"), tag = host.querySelector(".kp-tag"), props = host.querySelector(".kp-props");
+      const vars = [...host.querySelectorAll("[data-v]")], live = host.querySelector("[aria-live]");
+      const values = {}, boxes = {};
       let variation = "A", edited = false, timers = [];
+      const css = { radius: "--rad", pad: "--pd", border: "--bw" };
 
-      function drawHead() {
-        vars.forEach((b) => { const on = b.dataset.v === variation && !edited; b.setAttribute("aria-checked", String(on)); b.tabIndex = b.dataset.v === variation ? 0 : -1; });
-        stateEl.textContent = edited ? "Variation " + variation + ", edited" : "Variation " + variation;
+      function show(key) {
+        if (!key) { root.removeAttribute("data-show"); return; }
+        root.dataset.show = key;
+        const p = PROPS.find((x) => x.key === key);
+        tag.textContent = fmt(p, values[key]);
       }
-
-      function Dial(p) {
-        const col = document.createElement("div");
-        col.className = "kd-col";
-        col.style.setProperty("--hue", "var(--clip-" + p.hue + ")");
-        col.innerHTML = '<span class="kd-label" aria-hidden="true"></span><div class="kd-dial" role="slider" tabindex="0" aria-orientation="vertical"><svg viewBox="0 0 40 40" aria-hidden="true">' +
-          '<path class="kd-track" d="' + arc(-SWEEP / 2, SWEEP / 2) + '"/><path class="kd-arc"/><line class="kd-ptr" x1="20" y1="20"/></svg></div><span class="kd-val" aria-hidden="true"></span>';
-        dials.appendChild(col);
-        const el = col.querySelector(".kd-dial"), arcEl = col.querySelector(".kd-arc"), ptr = col.querySelector(".kd-ptr"), val = col.querySelector(".kd-val");
-        col.querySelector(".kd-label").textContent = p.label;
-        el.setAttribute("aria-label", p.label); el.setAttribute("aria-valuemin", p.min); el.setAttribute("aria-valuemax", p.max);
-        let index = 0, drag = null;
-        const css = { radius: "--rad", pad: "--pd", border: "--bw" }[p.key];
-        function draw() {
-          const f = index / p.detents, a = -SWEEP / 2 + f * SWEEP;
-          arcEl.setAttribute("d", p.bipolar ? arc(Math.min(0, a), Math.max(0, a)) : arc(-SWEEP / 2, a));
-          const [x, y] = pt(a, 11).split(" "), [x0, y0] = pt(a, 0).split(" ");
-          ptr.setAttribute("x1", x0); ptr.setAttribute("y1", y0); ptr.setAttribute("x2", x); ptr.setAttribute("y2", y);
-          const v = valueAt(index, p);
-          val.textContent = p.format(v);
-          host.querySelector(".kd-card").style.setProperty(css, (p.key === "border" ? v : Math.round(v)) + "px");
-          el.setAttribute("aria-valuenow", String(v)); el.setAttribute("aria-valuetext", p.format(v));
-        }
-        function set(i, byHand) {
-          const next = Math.min(p.detents, Math.max(0, i));
-          if (next === index) return;
-          index = next; draw();
-          if (byHand && !edited) { edited = true; drawHead(); live.textContent = "Variation " + variation + " edited"; }
-        }
-        el.addEventListener("pointerdown", (e) => { if (e.button !== 0) return; el.setPointerCapture(e.pointerId); drag = { id: e.pointerId, y: e.clientY, from: index }; }, sig);
-        el.addEventListener("pointermove", (e) => {
-          if (!drag || drag.id !== e.pointerId) return;
-          set(drag.from + Math.round((drag.y - e.clientY) / (PX_PER_DETENT * (e.shiftKey ? 4 : 1))), true);
-        }, sig);
-        const end = (e) => { if (drag && drag.id === e.pointerId) drag = null; };
-        el.addEventListener("pointerup", end, sig); el.addEventListener("pointercancel", end, sig);
-        el.addEventListener("dblclick", () => set(p.home, true), sig);
-        el.addEventListener("keydown", (e) => {
-          const page = Math.max(1, Math.round(p.detents / 10));
-          const d = { ArrowUp: 1, ArrowRight: 1, ArrowDown: -1, ArrowLeft: -1, PageUp: page, PageDown: -page }[e.key];
-          if (d) set(index + d, true); else if (e.key === "Home") set(0, true); else if (e.key === "End") set(p.detents, true); else return;
+      function set(p, v, byHand) {
+        v = Math.min(p.max, Math.max(p.min, Math.round(v / p.step) * p.step));
+        values[p.key] = v;
+        card.style.setProperty(css[p.key], v + "px");
+        const b = boxes[p.key];
+        b.textContent = fmt(p, v); b.setAttribute("aria-valuenow", String(v)); b.setAttribute("aria-valuetext", fmt(p, v));
+        if (root.dataset.show === p.key) tag.textContent = fmt(p, v);
+        if (byHand && !edited) { edited = true; drawVars(); live.textContent = "Variation " + variation + " edited"; }
+      }
+      PROPS.forEach((p) => {
+        const wrap = document.createElement("label");
+        wrap.className = "kp-prop";
+        wrap.innerHTML = '<span></span><span class="kp-box" role="slider" tabindex="0" aria-orientation="vertical"></span>';
+        wrap.querySelector("span").textContent = p.label;
+        const b = wrap.querySelector(".kp-box");
+        b.setAttribute("aria-label", p.label); b.setAttribute("aria-valuemin", p.min); b.setAttribute("aria-valuemax", p.max);
+        boxes[p.key] = b; props.appendChild(wrap);
+        let drag = null;
+        b.addEventListener("pointerdown", (e) => { if (e.button !== 0) return; b.setPointerCapture(e.pointerId); drag = { id: e.pointerId, y: e.clientY, from: values[p.key] }; show(p.key); }, sig);
+        b.addEventListener("pointermove", (e) => { if (drag && drag.id === e.pointerId) set(p, drag.from + ((drag.y - e.clientY) / (e.shiftKey ? 16 : 4)) * p.step, true); }, sig);
+        const end = (e) => { if (drag && drag.id === e.pointerId) { drag = null; if (document.activeElement !== b) show(null); } };
+        b.addEventListener("pointerup", end, sig); b.addEventListener("pointercancel", end, sig);
+        b.addEventListener("dblclick", () => set(p, p.home, true), sig);
+        b.addEventListener("focus", () => show(p.key), sig);
+        b.addEventListener("blur", () => show(null), sig);
+        b.addEventListener("keydown", (e) => {
+          const d = { ArrowUp: 1, ArrowRight: 1, ArrowDown: -1, ArrowLeft: -1, PageUp: 4, PageDown: -4 }[e.key];
+          if (d) set(p, values[p.key] + d * p.step, true); else if (e.key === "Home") set(p, p.min, true); else if (e.key === "End") set(p, p.max, true); else return;
           e.preventDefault();
         }, sig);
-        draw();
-        return { set };
-      }
-      const dialsBy = Object.fromEntries(PARAMS.map((p) => [p.key, Dial(p)]));
-      PARAMS.forEach((p) => dialsBy[p.key].set(p.home, false));
+        set(p, p.home, false);
+      });
 
-      /* A variation lands on the beat, a column at a time. */
+      function drawVars() { vars.forEach((b) => { b.setAttribute("aria-checked", String(b.dataset.v === variation && !edited)); b.tabIndex = b.dataset.v === variation ? 0 : -1; }); }
       function recall(v) {
         timers.forEach(clearTimeout);
-        variation = v; edited = false; drawHead();
+        variation = v; edited = false; drawVars();
         const beat = ctx.reduced() ? 0 : 60;
-        timers = PARAMS.map((p, i) => ctx.after(i * beat, () => dialsBy[p.key].set(VARS[v][p.key], false)));
-        live.textContent = "Variation " + v + " recalled";
+        timers = PROPS.map((p, i) => ctx.after(i * beat, () => set(p, VARS[v][p.key], false)));
+        live.textContent = "Variation " + v;
       }
       vars.forEach((b) => b.addEventListener("click", () => recall(b.dataset.v), sig));
-      host.querySelector(".kd-vars").addEventListener("keydown", (e) => {
+      vars[0].parentElement.addEventListener("keydown", (e) => {
         if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(e.key)) return;
         e.preventDefault(); const v = variation === "A" ? "B" : "A"; recall(v); vars.find((b) => b.dataset.v === v).focus();
       }, sig);
-      power.addEventListener("click", () => {
-        const on = power.getAttribute("aria-pressed") !== "true";
-        power.setAttribute("aria-pressed", String(on)); power.setAttribute("aria-label", on ? "Device on" : "Device off");
-        dev.classList.toggle("kd-off", !on); host.querySelector(".kd-pv").classList.toggle("is-off", !on); live.textContent = on ? "Card props on" : "Card props off";
-      }, sig);
-      drawHead();
+      drawVars();
 
-      /* A ghost compares the two variations until a hand arrives. */
       let handed = false;
       ctx.onHand(() => { handed = true; });
       ctx.after(300, () => recall("A"));

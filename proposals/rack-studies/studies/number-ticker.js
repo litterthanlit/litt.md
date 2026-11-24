@@ -2,7 +2,7 @@
    The count is the study's one readout; when it changes, its digits cut to their new figures from the right,
    a tick (60ms) apart, each by opacity alone: nothing rolls or travels. Intl.NumberFormat does the grouping
    and the currency, so the Locale box (a value you step) regroups the same count and cost for en-US, de-DE,
-   fr-FR or en-IN. Tokens per day are a clip in the agent's orange, and today's bar grows as requests come in.
+   fr-FR or en-IN. Tokens per day are the Coder agent's object, in its orange, and today's bar grows as requests come in.
    Live is the lit key: on, requests arrive by themselves; a hand ends that. */
 (function () {
   const S = ".fs-number-ticker";
@@ -17,56 +17,42 @@
     title: "Number Ticker",
     tagline: "Tokens and cost that cut in digit by digit, in any locale.",
     css: `
-${S} .nt { width: min(100%, 420px); background: var(--body); padding: 3px; border-radius: 9px }
-${S} .nt-dev { background: var(--panel); border-radius: var(--r-panel); overflow: hidden }
-${S} .nt-strip { display: flex; align-items: center; gap: 8px; height: 30px; padding: 0 6px 0 10px; background: var(--panel-2) }
-${S} .nt-strip b { font-size: 12px; font-weight: 600 }
-${S} .nt-track { height: 20px; display: inline-flex; align-items: center; padding: 0 7px; border-radius: var(--r-control); background: var(--clip-orange-tint);
-  color: var(--clip-orange-text); font-size: 11px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; margin-right: auto }
-${S} .nt-key { height: 20px; min-width: 44px; padding: 0 8px; border: 0; border-radius: var(--r-control); background: var(--block); box-shadow: var(--edge);
-  font-size: 11px; font-weight: 600; cursor: pointer; flex: none }
+${S} .nt { width: min(100%, 440px); background: var(--panel); border-radius: var(--r-panel); overflow: hidden; font-size: 12px }
+${S} .nt-strip { display: flex; align-items: center; gap: 6px; height: 30px; padding: 0 4px 0 12px; background: var(--panel-2) }
+${S} .nt-strip b { font-weight: 600; margin-right: auto }
+${S} .nt-key { height: 22px; padding: 0 8px; border: 0; border-radius: var(--r-control); background: var(--block); box-shadow: var(--edge); font: 600 11px/22px var(--font); cursor: pointer }
 ${S} .nt-key:hover { background: var(--block-hover) }
 ${S} .nt-key:active { box-shadow: var(--edge-press); transform: scale(0.98) }
 ${S} .nt-key[aria-pressed="true"] { background: var(--accent); color: var(--accent-fg) }
-${S} .nt-body { padding: 12px; display: grid; gap: 10px }
+${S} .nt-box { height: 22px; min-width: 56px; padding: 0 8px; border-radius: var(--r-control); background: var(--cut); box-shadow: var(--edge); font: 600 11px/22px var(--mono);
+  text-align: right; cursor: ns-resize; user-select: none; touch-action: none }
+${S} .nt-box:active { box-shadow: var(--edge-press) }
+${S} .nt-surface { margin: 14px; padding: 12px; background: var(--panel-2); border-radius: var(--r-control); display: grid; gap: 12px }
 ${S} .nt-read { display: flex; align-items: baseline; gap: 8px; min-width: 0 }
 ${S} .nt-num { margin: 0; font: 600 24px/1 var(--mono); letter-spacing: -0.02em; font-variant-numeric: tabular-nums; white-space: pre }
 ${S} .nt-num span { display: inline-block }
-${S} .nt-unit { font-size: 12px; color: var(--muted) }
-${S} .nt-delta { margin-left: auto; font: 500 11px var(--mono); color: var(--success); white-space: nowrap }
-${S} .nt-clip { position: relative; height: 44px; border-radius: var(--r-control); background: var(--clip-orange-tint); padding: 4px 4px 0; display: grid; grid-template-columns: repeat(${DAYS}, 1fr); gap: 2px; align-items: end }
-${S} .nt-clip i { display: block; background: var(--clip-orange); border-radius: 1px 1px 0 0; min-height: 1px }
-${S} .nt-clip i:last-child { background: var(--clip-orange-text) }
-${S} .nt-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap }
-${S} .nt-row > span { font-size: 11px; color: var(--muted) }
-${S} .nt-box { height: 22px; min-width: 60px; display: inline-flex; align-items: center; justify-content: flex-end; padding: 0 7px; border-radius: var(--r-control);
-  background: var(--cut); box-shadow: var(--edge); font: 500 11px var(--mono); font-variant-numeric: tabular-nums; cursor: ns-resize; user-select: none; touch-action: none }
-${S} .nt-box:active { box-shadow: var(--edge-press) }
-${S} .nt-box.is-static { cursor: default }
-${S} .nt-gap { flex: 1 }
-@container (max-width: 380px) { ${S} .nt-body { padding: 10px; gap: 8px } ${S} .nt-num { font-size: 22px } ${S} .nt-clip { height: 36px } }
-@container (min-width: 600px) { ${S} .nt { width: 480px } ${S} .nt-clip { height: 60px } }
+${S} .nt-unit { color: var(--muted) }
+${S} .nt-today { margin-left: auto; font: 500 11px var(--mono); color: var(--muted); white-space: nowrap }
+${S} .nt-obj { display: grid; gap: 6px; padding: 6px 8px 0; border-radius: var(--r-control); background: var(--clip-orange-tint); box-shadow: inset 0 0 0 1px var(--clip-orange) }
+${S} .nt-obj b { color: var(--clip-orange-text); font-size: 11px; font-weight: 600 }
+${S} .nt-clip { height: 56px; display: grid; grid-template-columns: repeat(${DAYS}, 1fr); gap: 3px; align-items: end }
+${S} .nt-clip i { display: block; background: var(--clip-orange); min-height: 1px }
+@container (max-width: 380px) { ${S} .nt-surface { margin: 10px; padding: 10px } ${S} .nt-num { font-size: 22px } ${S} .nt-clip { height: 44px } ${S} .nt-unit { display: none } }
+@container (min-width: 600px) { ${S} .nt { width: 480px } ${S} .nt-clip { height: 72px } }
 `,
     mount(host, ctx) {
       const id = "nt" + ++uid;
       host.innerHTML = `
-<div class="nt">
-  <div class="nt-dev" role="group" aria-labelledby="${id}-t">
-    <div class="nt-strip"><b id="${id}-t">Usage</b><span class="nt-track">Coder agent</span><button class="nt-key" type="button" aria-pressed="true">Live</button></div>
-    <div class="nt-body">
-      <div class="nt-read"><p class="nt-num" aria-hidden="true"></p><span class="nt-unit">tokens this month</span><span class="nt-delta"></span></div>
-      <div class="nt-clip" aria-hidden="true"></div>
-      <div class="nt-row">
-        <span id="${id}-l">Locale</span><span class="nt-box" role="spinbutton" aria-labelledby="${id}-l" tabindex="0"></span>
-        <span class="nt-gap"></span>
-        <span>Cost</span><span class="nt-box is-static nt-today" aria-hidden="true"></span>
-      </div>
-      <p class="sr-only nt-said" role="status"></p>
-    </div>
+<div class="nt" role="group" aria-labelledby="${id}-t">
+  <div class="nt-strip"><b id="${id}-t">Usage</b><span class="nt-box" role="spinbutton" aria-label="Locale" tabindex="0"></span><button class="nt-key" type="button" aria-pressed="true">Live</button></div>
+  <div class="nt-surface">
+    <div class="nt-read"><p class="nt-num" aria-hidden="true"></p><span class="nt-unit">tokens</span><span class="nt-today" aria-hidden="true"></span></div>
+    <div class="nt-obj" aria-hidden="true"><b>Coder</b><div class="nt-clip"></div></div>
   </div>
+  <p class="sr-only nt-said" role="status"></p>
 </div>`;
       const $ = (s) => host.querySelector(s);
-      const num = $(".nt-num"), deltaEl = $(".nt-delta"), clip = $(".nt-clip"), localeBox = $('[role="spinbutton"]'), todayBox = $(".nt-today"), said = $(".nt-said"), liveKey = $(".nt-key");
+      const num = $(".nt-num"), clip = $(".nt-clip"), localeBox = $('[role="spinbutton"]'), todayBox = $(".nt-today"), said = $(".nt-said"), liveKey = $(".nt-key");
       if (ctx.tile) { localeBox.tabIndex = -1; liveKey.tabIndex = -1; }
 
       // Tokens per day, in hundreds: a seeded clip, today last.
@@ -102,7 +88,6 @@ ${S} .nt-gap { flex: 1 }
         localeBox.setAttribute("aria-valuetext", LOCALES[locale] + ", " + text);
         localeBox.setAttribute("aria-valuenow", String(locale + 1));
         todayBox.textContent = money.format(count * PRICE);
-        deltaEl.textContent = "+" + fmt.format(Math.round(days[DAYS - 1] * 100)) + " today";
         paintClip();
       }
       localeBox.setAttribute("aria-valuemin", "1"); localeBox.setAttribute("aria-valuemax", String(LOCALES.length));

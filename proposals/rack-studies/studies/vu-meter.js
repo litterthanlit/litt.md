@@ -1,15 +1,15 @@
-/* VU Meter, in Rack: level meters for an agent team, no needles. Each agent (Planner purple, Researcher blue, Coder
-   orange, Reviewer green) streams tokens, and its bar shows tokens a second in its own colour: it rises on the frame and
-   falls at a steady rate, like a meter, with a peak line that holds 900 ms and then falls. The part over the rate limit is
-   red; the limit is a value box you drag. Each agent's peak sits in a box you click to clear, and the run's cost counts
-   up in another. A ghost runs the team until a hand arrives; Run starts it again. Time moves the bars; nothing else moves. */
+/* VU Meter, Rack 2.0: level meters for an agent team. One surface holds the four agents (Planner purple, Researcher blue,
+   Coder orange, Reviewer green), each an object with its tokens a second in figures and its level as a bar of its own
+   colour that rises on the frame and falls at a steady rate, with a peak mark that holds 900 ms and then falls. The rate
+   limit is one red line across them all, a value you drag in the strip; an agent over it reads red. A ghost runs the team
+   until a hand arrives; Run starts it again. Time moves the bars; nothing else moves. */
 (function () {
   const MAX = 200, FALL = 260, PEAK_FALL = 80, HOLD = 900;
   const AGENTS = [
-    { name: "Planner", hue: "purple", rate: 60, burst: 0.25 },
-    { name: "Researcher", hue: "blue", rate: 110, burst: 0.5 },
-    { name: "Coder", hue: "orange", rate: 120, burst: 0.6 },
-    { name: "Reviewer", hue: "green", rate: 80, burst: 0.35 },
+    { name: "Planner", hue: "purple", rate: 60 },
+    { name: "Researcher", hue: "blue", rate: 110 },
+    { name: "Coder", hue: "orange", rate: 120 },
+    { name: "Reviewer", hue: "green", rate: 80 },
   ];
   const pos = (r) => Math.min(1, Math.max(0, r / MAX));
   let n = 0;
@@ -19,62 +19,53 @@
     title: "VU Meter",
     tagline: "Token-rate meters with peak hold.",
     css: `
-.fs-vu-meter .mx { width: min(340px, 100%); font: 400 12px/1.35 var(--font); background: var(--body); padding: 3px; border-radius: 8px; display: grid; gap: 3px;
-  -webkit-user-select: none; user-select: none }
-.fs-vu-meter .mx-bar { display: flex; align-items: center; gap: 4px; height: 30px; padding: 0 4px; background: var(--panel); border-radius: var(--r-panel) }
-.fs-vu-meter .mx-key { height: 22px; padding: 0 8px; border: 0; border-radius: var(--r-control); background: var(--block); box-shadow: var(--edge); color: var(--ink);
-  font: 500 12px var(--font); cursor: pointer; display: inline-flex; align-items: center; gap: 5px; transition: background-color var(--cut-in) var(--ease-out), color var(--cut-in) var(--ease-out) }
-.fs-vu-meter .mx-key:hover { background: var(--block-hover) }
-.fs-vu-meter .mx-key:active { box-shadow: var(--edge-press); transform: scale(0.98) }
-.fs-vu-meter .mx-key[aria-pressed="true"] { background: var(--accent); color: var(--accent-fg) }
-.fs-vu-meter .mx-key svg { width: 9px; height: 9px; fill: currentColor }
-.fs-vu-meter .mx-clock { font: 600 18px/1 var(--mono); letter-spacing: -0.02em; margin: 0 auto 0 4px }
-.fs-vu-meter .mx-box { height: 20px; padding: 0 6px; display: inline-grid; place-items: center; border-radius: var(--r-control); background: var(--cut); box-shadow: var(--edge);
-  font: 600 11px var(--mono); white-space: nowrap; color: var(--ink); border: 0 }
-.fs-vu-meter .mx-limit { cursor: ns-resize; touch-action: none }
-.fs-vu-meter .mx-strips { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)) 26px; gap: 3px }
-.fs-vu-meter .mx-strip { background: var(--panel); border-radius: var(--r-panel); padding: 4px; display: grid; gap: 4px; justify-items: center; min-width: 0 }
-.fs-vu-meter .mx-name { width: 100%; height: 20px; display: grid; place-items: center; padding: 0 3px; border-radius: var(--r-control); background: var(--tint); color: var(--txt);
-  font-weight: 600; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
-.fs-vu-meter .mx-ch { position: relative; width: 14px; height: 128px; border-radius: 1px; background: var(--slot); overflow: hidden }
-.fs-vu-meter .mx-fill { position: absolute; left: 0; right: 0; bottom: 0; height: calc(var(--l, 0) * 100%); background: var(--hue) }
-.fs-vu-meter .mx-over { position: absolute; left: 0; right: 0; bottom: calc(var(--lim) * 100%); height: calc(max(0, var(--l, 0) - var(--lim)) * 100%); background: var(--danger) }
-.fs-vu-meter .mx-peak { position: absolute; left: 0; right: 0; height: 2px; bottom: calc(var(--k, 0) * 100% - 1px); background: var(--ink); opacity: var(--ko, 0) }
-.fs-vu-meter .mx-lim { position: absolute; left: 0; right: 0; height: 1px; bottom: calc(var(--lim) * 100%); background: var(--danger) }
-.fs-vu-meter .mx-box.is-over { background: var(--danger); color: var(--panel) }
-.fs-vu-meter .mx-scale { position: relative; height: 128px; margin-top: 28px; font: 500 9.5px var(--mono); color: var(--muted) }
-.fs-vu-meter .mx-scale span { position: absolute; left: 0; transform: translateY(50%) }
-.fs-vu-meter.is-tile .mx-ch, .fs-vu-meter.is-tile .mx-scale { height: 112px }
-@container (min-width: 520px) { .fs-vu-meter .mx { width: 460px } .fs-vu-meter .mx-ch, .fs-vu-meter .mx-scale { height: 180px } .fs-vu-meter .mx-ch { width: 18px } }
+.fs-vu-meter .tm { width: min(100%, 480px); font-size: 12px; background: var(--panel); border-radius: var(--r-panel); overflow: hidden; -webkit-user-select: none; user-select: none }
+.fs-vu-meter .tm-strip { display: flex; align-items: center; gap: 6px; height: 30px; padding: 0 4px 0 10px; background: var(--panel-2); white-space: nowrap }
+.fs-vu-meter .tm-strip b { font-weight: 600; margin-right: auto }
+.fs-vu-meter .tm-box { height: 22px; padding: 0 8px; display: inline-grid; place-items: center; border-radius: var(--r-control); background: var(--cut); box-shadow: var(--edge);
+  font: 600 11px var(--mono); cursor: ns-resize; touch-action: none }
+.fs-vu-meter .tm-box:active { box-shadow: var(--edge-press) }
+.fs-vu-meter .tm-key { height: 22px; min-width: 52px; padding: 0 8px; border: 0; border-radius: var(--r-control); background: var(--block); box-shadow: var(--edge); color: var(--ink);
+  font: 600 11px var(--font); cursor: pointer; transition: background-color var(--cut-in) var(--ease-out), color var(--cut-in) var(--ease-out) }
+.fs-vu-meter .tm-key:hover { background: var(--block-hover) }
+.fs-vu-meter .tm-key:active { box-shadow: var(--edge-press); transform: scale(0.98) }
+.fs-vu-meter .tm-key[aria-pressed="true"] { background: var(--accent); color: var(--accent-fg) }
+.fs-vu-meter .tm-wrap { padding: 12px }
+.fs-vu-meter .tm-surface { position: relative; display: grid; gap: 6px; padding: 10px; background: var(--cut); border-radius: var(--r-control); box-shadow: var(--edge) }
+.fs-vu-meter .tm-a { position: relative; height: 38px; padding: 5px 7px; border-radius: var(--r-control); display: flex; justify-content: space-between; font-weight: 600; font-size: 11px; overflow: hidden }
+.fs-vu-meter .tm-a[data-tone="purple"] { --hue: var(--clip-purple); background: var(--clip-purple-tint); box-shadow: inset 0 0 0 1px var(--clip-purple); color: var(--clip-purple-text) }
+.fs-vu-meter .tm-a[data-tone="blue"] { --hue: var(--clip-blue); background: var(--clip-blue-tint); box-shadow: inset 0 0 0 1px var(--clip-blue); color: var(--clip-blue-text) }
+.fs-vu-meter .tm-a[data-tone="orange"] { --hue: var(--clip-orange); background: var(--clip-orange-tint); box-shadow: inset 0 0 0 1px var(--clip-orange); color: var(--clip-orange-text) }
+.fs-vu-meter .tm-a[data-tone="green"] { --hue: var(--clip-green); background: var(--clip-green-tint); box-shadow: inset 0 0 0 1px var(--clip-green); color: var(--clip-green-text) }
+.fs-vu-meter .tm-a i { font: 600 11px var(--mono); font-style: normal }
+.fs-vu-meter .tm-a.is-over i { color: var(--danger) }
+.fs-vu-meter .tm-lv { position: absolute; left: 1px; bottom: 1px; height: 7px; width: calc(var(--l, 0) * (100% - 2px)); background: var(--hue) }
+.fs-vu-meter .tm-pk { position: absolute; bottom: 1px; height: 11px; width: 2px; margin-left: -1px; left: calc(1px + var(--k, 0) * (100% - 2px)); background: var(--ink); opacity: var(--ko, 0) }
+.fs-vu-meter .tm-lim { position: absolute; top: 4px; bottom: 4px; width: 1px; left: calc(10px + var(--lim) * (100% - 20px)); background: var(--danger); pointer-events: none }
+.fs-vu-meter.is-tile .tm-a { height: 32px }
 `,
     mount(host, ctx) {
-      const id = "mx" + ++n;
-      const strips = AGENTS.map((a, i) => '<div class="mx-strip" style="--hue: var(--clip-' + a.hue + "); --tint: var(--clip-" + a.hue + "-tint); --txt: var(--clip-" + a.hue + '-text)">' +
-        '<span class="mx-name">' + a.name + '</span><span class="mx-ch" aria-hidden="true"><span class="mx-fill"></span><span class="mx-over"></span><span class="mx-lim"></span><span class="mx-peak"></span></span>' +
-        '<button class="mx-box" type="button" data-i="' + i + '" aria-label="' + a.name + ' peak, click to clear">0</button></div>').join("");
-      const scale = [200, 150, 100, 50, 0].map((r) => '<span style="bottom:' + pos(r) * 100 + '%">' + r + "</span>").join("");
+      const id = "tm" + ++n;
+      const rows = AGENTS.map((a) => '<div class="tm-a" data-tone="' + a.hue + '"><span>' + a.name + '</span><i>0</i><span class="tm-lv"></span><span class="tm-pk"></span></div>').join("");
       host.innerHTML = `
-<div class="mx">
-  <div class="mx-bar">
-    <button class="mx-key" type="button" data-k="run" aria-pressed="false"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M1.5 0.5 9.5 5l-8 4.5z"/></svg><span>Run</span></button>
-    <span class="mx-clock" aria-hidden="true">0:00.0</span>
-    <span class="mx-box mx-cost" aria-hidden="true">$0.000</span>
-    <span class="mx-box mx-limit" role="slider" tabindex="0" aria-label="Rate limit, tokens per second" aria-describedby="${id}-hint" aria-orientation="vertical" aria-valuemin="40" aria-valuemax="200"></span>
+<div class="tm">
+  <div class="tm-strip"><b>Tokens a second</b>
+    <span class="tm-box" role="slider" tabindex="0" aria-label="Rate limit, tokens a second" aria-describedby="${id}-hint" aria-orientation="vertical" aria-valuemin="40" aria-valuemax="200"></span>
+    <button class="tm-key" type="button" aria-pressed="false">Run</button>
   </div>
-  <div class="mx-strips">${strips}<div class="mx-scale" aria-hidden="true">${scale}</div></div>
+  <div class="tm-wrap"><div class="tm-surface" aria-hidden="true">${rows}<span class="tm-lim"></span></div></div>
   <p id="${id}-hint" class="sr-only">Drag up or down, or use the arrow keys, to set the limit. Double-click for 160.</p>
   <p class="sr-only" aria-live="polite"></p>
 </div>`;
       const sig = { signal: ctx.signal };
-      const root = host.querySelector(".mx"), chans = [...host.querySelectorAll(".mx-ch")], boxes = [...host.querySelectorAll(".mx-strip > .mx-box")];
-      const run = host.querySelector('[data-k="run"]'), clockEl = host.querySelector(".mx-clock"), costEl = host.querySelector(".mx-cost"), limitEl = host.querySelector(".mx-limit");
-      const live = host.querySelector("[aria-live]");
-      let limit = 160, running = false, t = 0, cost = 0;
+      const root = host.querySelector(".tm"), objs = [...host.querySelectorAll(".tm-a")], nums = objs.map((o) => o.querySelector("i"));
+      const run = host.querySelector(".tm-key"), limitEl = host.querySelector(".tm-box"), live = host.querySelector("[aria-live]");
+      let limit = 160, running = false, t = 0;
 
       function drawLimit() {
         root.style.setProperty("--lim", pos(limit).toFixed(4));
-        limitEl.textContent = "Limit " + limit + " tok/s";
-        limitEl.setAttribute("aria-valuenow", String(limit)); limitEl.setAttribute("aria-valuetext", limit + " tokens per second");
+        limitEl.textContent = "Limit " + limit;
+        limitEl.setAttribute("aria-valuenow", String(limit)); limitEl.setAttribute("aria-valuetext", limit + " tokens a second");
       }
       drawLimit();
 
@@ -85,40 +76,30 @@
         if (t >= s.until) {
           s.on = !s.on || Math.random() < 0.2;
           s.until = t + (s.on ? 0.5 + Math.random() * 1.6 : 0.3 + Math.random() * 0.9);
-          s.amp = a.rate * (0.7 + Math.random() * 0.5) * (Math.random() < a.burst * 0.3 ? 1.3 : 1);
+          s.amp = a.rate * (0.7 + Math.random() * 0.5) * (Math.random() < 0.12 ? 1.3 : 1);
         }
         return s.on ? s.amp * (0.85 + Math.random() * 0.3) : Math.random() * 6;
       }
-
-      const shown = AGENTS.map(() => 0), peak = AGENTS.map(() => 0), peakAt = AGENTS.map(() => 0), held = AGENTS.map(() => 0);
+      const shown = AGENTS.map(() => 0), peak = AGENTS.map(() => 0), peakAt = AGENTS.map(() => 0);
       let lastText = 0;
       ctx.loop((dt, now) => {
         if (running) t += dt;
         for (let i = 0; i < AGENTS.length; i++) {
           const r = running ? rate(i) : 0;
-          if (running) cost += (r * dt * 3) / 1e6;
-          /* A meter: up on the frame, down at a steady rate. */
           shown[i] = r > shown[i] ? r : Math.max(r, shown[i] - FALL * dt);
           if (shown[i] >= peak[i]) { peak[i] = shown[i]; peakAt[i] = now; } else if (now - peakAt[i] > HOLD) peak[i] = Math.max(shown[i], peak[i] - PEAK_FALL * dt);
-          if (shown[i] > held[i]) held[i] = shown[i];
-          chans[i].style.setProperty("--l", pos(shown[i]).toFixed(4));
-          chans[i].style.setProperty("--k", pos(peak[i]).toFixed(4));
-          chans[i].style.setProperty("--ko", peak[i] > 2 ? "1" : "0");
+          objs[i].style.setProperty("--l", pos(shown[i]).toFixed(4));
+          objs[i].style.setProperty("--k", pos(peak[i]).toFixed(4));
+          objs[i].style.setProperty("--ko", peak[i] > 2 ? "1" : "0");
         }
-        if (now - lastText > 100) {
+        if (now - lastText > 120) {
           lastText = now;
-          boxes.forEach((b, i) => { b.textContent = Math.round(held[i]); b.classList.toggle("is-over", held[i] > limit); });
-          clockEl.textContent = Math.floor(t / 60) + ":" + (t % 60).toFixed(1).padStart(4, "0");
-          costEl.textContent = "$" + cost.toFixed(3);
+          nums.forEach((el, i) => { el.textContent = Math.round(shown[i]); objs[i].classList.toggle("is-over", peak[i] > limit); });
         }
       });
 
-      function setRun(on) {
-        running = on; run.setAttribute("aria-pressed", String(on)); run.querySelector("span").textContent = on ? "Stop" : "Run";
-        run.querySelector("svg").innerHTML = on ? '<path d="M1 1h8v8H1z"/>' : '<path d="M1.5 0.5 9.5 5l-8 4.5z"/>';
-      }
+      function setRun(on) { running = on; run.setAttribute("aria-pressed", String(on)); run.textContent = on ? "Stop" : "Run"; }
       run.addEventListener("click", () => { setRun(!running); live.textContent = running ? "Team running" : "Team stopped"; }, sig);
-      boxes.forEach((b, i) => b.addEventListener("click", () => { held[i] = 0; b.textContent = "0"; b.classList.remove("is-over"); }, sig));
       const setLimit = (v) => { limit = Math.min(200, Math.max(40, Math.round(v / 5) * 5)); drawLimit(); };
       limitEl.addEventListener("keydown", (e) => {
         const d = { ArrowUp: 5, ArrowRight: 5, ArrowDown: -5, ArrowLeft: -5, PageUp: 20, PageDown: -20 }[e.key];

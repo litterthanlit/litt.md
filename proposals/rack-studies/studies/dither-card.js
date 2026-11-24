@@ -1,7 +1,6 @@
-/* Dither Card, after litterthanlit/components, redesigned in Rack: a project browser. The projects are a list, each
-   with its dithered art as the thumbnail in the project's own colour; the chosen one fills the Preview device beside
-   it, where the art plays (the work, so the one thing that moves) with its size, length and frames in value boxes.
-   One colour means one project everywhere it shows. The shader is the original's. */
+/* Dither Card, after litterthanlit/components, in Rack 2.0: three projects on one surface, each an object in its own
+   colour (tint, 1px edge in the hue, name in the hue's text) holding its dithered art in the hue. The picked one gets a
+   second edge and plays; the strip holds Play (the one yellow), its size and Open. The shader is the original's. */
 (function () {
   const S = ".fs-dither-card";
   const VERTEX = "attribute vec2 aPos; void main() { gl_Position = vec4(aPos, 0.0, 1.0); }";
@@ -128,116 +127,73 @@ void main() {
     return f;
   }
 
+
   const PLAY = '<svg viewBox="0 0 8 8" aria-hidden="true"><path d="M1.5 1v6l5-3z"/></svg>';
   const PAUSE = '<svg viewBox="0 0 8 8" aria-hidden="true"><path d="M1.5 1h2v6h-2zM4.5 1h2v6h-2z"/></svg>';
-  const hueVars = (p) => `--hue: var(--clip-${p.hue}); --tint: var(--clip-${p.hue}-tint); --text: var(--clip-${p.hue}-text)`;
   let uid = 0;
 
   FlatPlayer.register({
     slug: "dither-card",
     title: "Dither Card",
-    tagline: "A project browser with a dithered preview of each piece, and a Preview device that plays it.",
+    tagline: "Projects with a dithered preview each; the one you pick plays.",
     css: `
-${S} .pb { width: min(100%, 330px); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: 3px; padding: 3px; background: var(--body); border-radius: var(--r-panel);
-  user-select: none; -webkit-user-select: none }
-${S} .pb-dev { background: var(--panel); border-radius: var(--r-panel); overflow: hidden; min-width: 0; display: grid; grid-template-rows: auto 1fr }
-${S} .pb-strip { display: flex; align-items: center; gap: 6px; height: 28px; padding: 0 5px 0 7px; background: var(--panel-2); min-width: 0 }
-${S} .pb-title { font-size: 12px; font-weight: 600; white-space: nowrap; margin-right: auto }
-${S} .pb-count { font: 500 11px/1 var(--mono); color: var(--muted) }
-${S} .pb-list { display: grid; align-content: start; gap: 2px; padding: 4px }
-${S} .pb-row { all: unset; box-sizing: border-box; display: grid; grid-template-columns: 36px minmax(0, 1fr); align-items: center; gap: 7px; padding: 3px; border-radius: var(--r-control);
-  cursor: pointer; min-width: 0; transition: background-color var(--cut-in) var(--ease-out) }
-${S} .pb-row:hover { background: var(--panel-3) }
-${S} .pb-row[aria-selected="true"] { background: var(--tint) }
-${S} .pb-row[aria-selected="true"] .pb-name { color: var(--text) }
-${S} .pb-row[aria-selected="true"] .pb-meta { color: var(--text) }
-${S} .pb-list:focus-visible { outline: 2px solid var(--ink); outline-offset: -2px }
-${S} .pb-thumb { position: relative; width: 36px; height: 36px; border-radius: var(--r-control); background: var(--tint); color: var(--hue); overflow: hidden; box-shadow: var(--edge) }
-${S} .pb-thumb canvas, ${S} .pb-art canvas { position: absolute; inset: 0; width: 100%; height: 100%; image-rendering: pixelated }
-${S} .pb-name { font-size: 12px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block }
-${S} .pb-meta { font: 500 10px/1.3 var(--mono); color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block }
-${S} .pb-key { all: unset; box-sizing: border-box; width: 22px; height: 20px; display: grid; place-items: center; border-radius: var(--r-control); background: var(--block); box-shadow: var(--edge);
-  color: var(--muted); cursor: pointer; flex: none; transition: background-color var(--cut-in) var(--ease-out) }
-${S} .pb-key svg { width: 8px; height: 8px; fill: currentColor }
-${S} .pb-key:hover { background: var(--block-hover) } ${S} .pb-key:active { box-shadow: var(--edge-press); scale: 0.98 }
+${S} .pb { width: min(100%, 330px); background: var(--panel); border-radius: var(--r-panel); overflow: hidden; font-size: 12px; user-select: none; -webkit-user-select: none }
+${S} .pb-strip { display: flex; align-items: center; gap: 6px; height: 30px; padding: 0 4px 0 6px; background: var(--panel-2) }
+${S} .pb-strip b { font-weight: 600; margin-right: auto }
+${S} .pb-key, ${S} .pb-open { all: unset; box-sizing: border-box; height: 22px; display: inline-flex; align-items: center; justify-content: center; border-radius: var(--r-control);
+  background: var(--block); box-shadow: var(--edge); color: var(--ink); font: 600 11px/1 var(--font); cursor: pointer; transition: background-color var(--cut-in) var(--ease-out) }
+${S} .pb-key { width: 22px } ${S} .pb-key svg { width: 8px; height: 8px; fill: currentColor }
+${S} .pb-open { padding: 0 8px; text-decoration: none }
+${S} .pb-key:hover, ${S} .pb-open:hover { background: var(--block-hover) }
+${S} .pb-key:active, ${S} .pb-open:active { box-shadow: var(--edge-press); scale: 0.98 }
 ${S} .pb-key[aria-pressed="true"] { background: var(--accent); color: var(--accent-fg) }
-${S} .pb-open { height: 20px; display: inline-flex; align-items: center; padding: 0 7px; border-radius: var(--r-control); background: var(--block); box-shadow: var(--edge);
-  color: var(--ink); font-size: 11px; font-weight: 600; text-decoration: none; flex: none }
-${S} .pb-open:hover { background: var(--block-hover) } ${S} .pb-open:active { box-shadow: var(--edge-press) }
-${S} .pb-key:focus-visible, ${S} .pb-open:focus-visible { outline: 2px solid var(--ink); outline-offset: 1px }
-${S} .pb-view { display: grid; align-content: start; gap: 5px; padding: 5px }
-${S} .pb-art { position: relative; aspect-ratio: 4 / 3; border-radius: var(--r-control); background: var(--tint); color: var(--hue); overflow: hidden }
-${S} .pb-art canvas { transition: opacity var(--cut-in) var(--ease-out) }
-${S} .pb-fields { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 3px 6px; align-items: center }
-${S} .pb-fields dt { font-size: 11px; color: var(--muted) }
-${S} .pb-fields dd { margin: 0; height: 20px; display: flex; align-items: center; justify-content: flex-end; padding: 0 6px; border-radius: var(--r-control); background: var(--cut);
-  box-shadow: var(--edge); font: 500 11px/1 var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden }
-${S} .pb-fields > div { display: contents } ${S} .pb-fields .is-more { display: none }
-${S} .pb-line { margin: 0; font-size: 12px; color: var(--muted); display: none }
-@container (min-width: 600px) {
-  ${S} .pb { width: 640px; grid-template-columns: 240px minmax(0, 1fr) }
-  ${S} .pb-row { grid-template-columns: 48px minmax(0, 1fr); padding: 4px } ${S} .pb-thumb { width: 48px; height: 48px }
-  ${S} .pb-name { font-size: 13px } ${S} .pb-meta { font-size: 11px }
-  ${S} .pb-view { grid-template-columns: minmax(0, 1fr) 170px; gap: 6px }
-  ${S} .pb-art { grid-row: span 2; aspect-ratio: 1 }
-  ${S} .pb-fields .is-more { display: contents }
-  ${S} .pb-line { display: block; align-self: end }
+${S} .pb-size { height: 22px; display: inline-flex; align-items: center; padding: 0 6px; border-radius: var(--r-control); background: var(--cut); box-shadow: var(--edge);
+  font: 600 11px/1 var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap }
+${S} .pb-key:focus-visible, ${S} .pb-open:focus-visible, ${S} .pb-p:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px }
+${S} .pb-surface { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; padding: 14px }
+${S} .pb-p { all: unset; box-sizing: border-box; display: grid; grid-template-rows: auto 1fr; gap: 4px; padding: 6px; min-width: 0; border-radius: var(--r-control); cursor: pointer;
+  background: var(--tint); box-shadow: inset 0 0 0 1px var(--hue); color: var(--text); transition: box-shadow var(--cut-in) var(--ease-out) }
+${S} .pb-p[aria-checked="true"] { box-shadow: inset 0 0 0 1px var(--hue), 0 0 0 2px var(--hue) }
+${S} .pb-p:active { scale: 0.98 }
+${S} .pb-name { font: 600 11px/1 var(--font); white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+${S} .pb-art { position: relative; aspect-ratio: 1; color: var(--hue) }
+${S} .pb-art canvas { position: absolute; inset: 0; width: 100%; height: 100%; image-rendering: pixelated }
+@container (min-width: 560px) {
+  ${S} .pb { width: 600px } ${S} .pb-surface { gap: 14px; padding: 16px } ${S} .pb-p { padding: 8px; gap: 6px } ${S} .pb-name { font-size: 12px }
 }
 `,
     mount(host, ctx) {
-      const id = "fs-pb-" + ++uid;
+      const id = "fs-pb3-" + ++uid;
+      const hueVars = (p) => `--hue: var(--clip-${p.hue}); --tint: var(--clip-${p.hue}-tint); --text: var(--clip-${p.hue}-text)`;
       host.innerHTML = `
-<div class="pb">
-  <section class="pb-dev" aria-labelledby="${id}-l">
-    <div class="pb-strip"><span class="pb-title" id="${id}-l">Projects</span><span class="pb-count" aria-hidden="true">${PROJECTS.length}</span></div>
-    <div class="pb-list" role="listbox" tabindex="0" aria-labelledby="${id}-l">
-      ${PROJECTS.map((p, i) => `<div class="pb-row" role="option" id="${id}-o${i}" aria-selected="false" style="${hueVars(p)}">
-        <span class="pb-thumb" aria-hidden="true"></span><span><span class="pb-name">${p.title}</span><span class="pb-meta">${p.updated}</span></span></div>`).join("")}
-    </div>
-  </section>
-  <section class="pb-dev" aria-labelledby="${id}-p">
-    <div class="pb-strip">
-      <button type="button" class="pb-key" aria-pressed="false" aria-label="Play preview">${PLAY}</button>
-      <span class="pb-title" id="${id}-p">Preview</span>
-      <a class="pb-open" href="https://litt.design" target="_blank" rel="noreferrer">Open<span class="sr-only"> project (opens in a new tab)</span></a>
-    </div>
-    <div class="pb-view">
-      <div class="pb-art" aria-hidden="true"></div>
-      <dl class="pb-fields">
-        <div class="pb-pair"><dt>Size</dt><dd data-f="size"></dd></div>
-        <div class="is-more"><dt>Length</dt><dd data-f="length"></dd></div><div class="is-more"><dt>Frames</dt><dd data-f="frames"></dd></div>
-      </dl>
-      <p class="pb-line"></p>
-    </div>
-  </section>
+<section class="pb" aria-labelledby="${id}">
+  <div class="pb-strip">
+    <button type="button" class="pb-key" aria-pressed="false" aria-label="Play preview">${PLAY}</button>
+    <b id="${id}">Projects</b>
+    <span class="pb-size" aria-hidden="true"></span>
+    <a class="pb-open" href="https://litt.design" target="_blank" rel="noreferrer">Open<span class="sr-only"> project (opens in a new tab)</span></a>
+  </div>
+  <div class="pb-surface" role="radiogroup" aria-labelledby="${id}">
+    ${PROJECTS.map((p, i) => `<button type="button" class="pb-p" role="radio" aria-checked="false" tabindex="-1" style="${hueVars(p)}" aria-label="${p.title}, ${p.size}" aria-describedby="${id}-d${i}">
+      <span class="pb-name" aria-hidden="true">${p.title}</span><span class="pb-art" aria-hidden="true"></span><span id="${id}-d${i}" hidden>${p.line}</span></button>`).join("")}
+  </div>
   <p class="sr-only" aria-live="polite"></p>
-</div>`;
-      const list = host.querySelector(".pb-list"), rows = [...host.querySelectorAll(".pb-row")];
-      const view = host.querySelector(".pb-view"), art = host.querySelector(".pb-art"), playKey = host.querySelector(".pb-key");
-      const line = host.querySelector(".pb-line"), live = host.querySelector("[aria-live]");
-      const fieldEls = Object.fromEntries([...host.querySelectorAll("[data-f]")].map((d) => [d.dataset.f, d]));
+</section>`;
+      const items = [...host.querySelectorAll(".pb-p")], size = host.querySelector(".pb-size"), playKey = host.querySelector(".pb-key");
+      const live = host.querySelector("[aria-live]");
       const reduced = ctx.reduced();
-      const thumbs = rows.map((r, i) => makeField(r.querySelector(".pb-thumb"), PROJECTS[i].pattern));
-      const preview = makeField(art, PROJECTS[0].pattern);
+      const fields = items.map((el, i) => makeField(el.querySelector(".pb-art"), PROJECTS[i].pattern));
       const sig = { signal: ctx.signal };
 
-      /* The chosen project fills the Preview: its colour, its art, its numbers, cut in on the frame. */
+      /* One project is picked: its edge doubles on the frame, its size shows in the strip, and only it plays. */
       let at = -1, playing = false;
       function choose(i, user) {
         if (i === at) return;
         at = i;
-        const p = PROJECTS[i];
-        rows.forEach((r, j) => r.setAttribute("aria-selected", j === i ? "true" : "false"));
-        list.setAttribute("aria-activedescendant", rows[i].id);
-        view.setAttribute("style", hueVars(p));
-        for (const k of ["size", "length", "frames"]) fieldEls[k].textContent = p[k];
-        line.textContent = p.line;
-        preview.pattern(p.pattern); preview.ink();
-        if (!reduced) preview.state.ripple = [...preview.centre(), 0];
-        preview.draw();
-        const c = art.querySelector("canvas");
-        if (!reduced && c && c.animate) c.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 100, easing: "cubic-bezier(0.23, 1, 0.32, 1)" });
-        if (user) live.textContent = `${p.title}, ${p.size}, ${p.length}`;
+        items.forEach((el, j) => { el.setAttribute("aria-checked", j === i ? "true" : "false"); el.tabIndex = j === i ? 0 : -1; });
+        size.textContent = PROJECTS[i].size;
+        if (!reduced) fields[i].state.ripple = [...fields[i].centre(), 0];
+        if (user) live.textContent = `${PROJECTS[i].title}, ${PROJECTS[i].size}`;
       }
       function setPlaying(on) {
         playing = on && !reduced;
@@ -245,55 +201,49 @@ ${S} .pb-line { margin: 0; font-size: 12px; color: var(--muted); display: none }
         playKey.setAttribute("aria-label", playing ? "Pause preview" : "Play preview");
         playKey.innerHTML = playing ? PAUSE : PLAY;
       }
-      choose(0);
-      setPlaying(true);
+      choose(0); setPlaying(true);
 
-      rows.forEach((r, i) => {
-        const f = thumbs[i];
-        r.addEventListener("click", () => { choose(i, true); list.focus({ preventScroll: true }); }, sig);
-        r.addEventListener("pointermove", (e) => { f.state.mouse = f.toLocal(e); f.state.hoverTarget = 1; }, sig);
-        r.addEventListener("pointerleave", () => (f.state.hoverTarget = 0), sig);
+      items.forEach((el, i) => {
+        const f = fields[i], art = el.querySelector(".pb-art");
+        el.addEventListener("click", () => choose(i, true), sig);
+        art.addEventListener("pointermove", (e) => { f.state.mouse = f.toLocal(e); f.state.hoverTarget = 1; }, sig);
+        art.addEventListener("pointerleave", () => (f.state.hoverTarget = 0), sig);
       });
-      art.addEventListener("pointermove", (e) => { preview.state.mouse = preview.toLocal(e); preview.state.hoverTarget = 1; }, sig);
-      art.addEventListener("pointerleave", () => (preview.state.hoverTarget = 0), sig);
-      art.addEventListener("pointerdown", (e) => { if (!reduced) preview.state.ripple = [...preview.toLocal(e), 0]; }, sig);
-      list.addEventListener("keydown", (e) => {
+      host.querySelector(".pb-surface").addEventListener("keydown", (e) => {
         const n = PROJECTS.length;
-        const to = { ArrowDown: at + 1, ArrowUp: at - 1, Home: 0, End: n - 1 }[e.key];
+        const to = { ArrowRight: at + 1, ArrowDown: at + 1, ArrowLeft: at - 1, ArrowUp: at - 1, Home: 0, End: n - 1 }[e.key];
         if (to === undefined) return;
-        e.preventDefault(); choose((to + n) % n, true);
+        e.preventDefault(); choose((to + n) % n, true); items[at].focus();
       }, sig);
       playKey.addEventListener("click", () => setPlaying(!playing), sig);
 
-      /* The ghost walks the list; each pick lands on the next tick. A hand ends it for good. */
+      /* The ghost walks the projects; each pick lands on the next tick. A hand ends it for good. */
       let ghost = !reduced, wait = 0;
       ctx.onHand(() => { ghost = false; clearTimeout(wait); });
       if (!reduced) ctx.every(GHOST, () => {
         if (!ghost) return;
         const next = (at + 1) % PROJECTS.length;
-        const delay = TICK - (performance.now() % TICK);
-        wait = ctx.after(delay, () => { if (ghost) choose(next); });
+        wait = ctx.after(TICK - (performance.now() % TICK), () => { if (ghost) choose(next); });
       });
 
-      const all = [...thumbs, preview];
-      if (reduced) all.forEach((f) => f.draw());
+      if (reduced) fields.forEach((f) => f.draw());
       else ctx.loop((dt) => {
-        for (const f of all) {
+        fields.forEach((f, i) => {
           const s = f.state;
           s.hover += (s.hoverTarget - s.hover) * (1 - Math.exp(-dt * 20));
-          if (f === preview && playing) s.time += dt * 1.2;
+          if (i === at && playing) s.time += dt * 1.2;
           if (s.ripple[2] >= 0) { s.ripple[2] += dt; if (s.ripple[2] > 1.6) s.ripple[2] = -1; }
           f.draw();
-        }
+        });
       });
 
-      const reink = () => all.forEach((f) => { f.ink(); f.draw(); });
+      const reink = () => fields.forEach((f) => { f.ink(); f.draw(); });
       const mo = new MutationObserver(reink);
       mo.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
       matchMedia("(prefers-color-scheme: dark)").addEventListener("change", reink, sig);
-      const ro = new ResizeObserver(() => all.forEach((f) => { f.resize(); f.draw(); }));
-      host.querySelectorAll(".pb-thumb, .pb-art").forEach((el) => ro.observe(el));
-      return { destroy() { mo.disconnect(); ro.disconnect(); all.forEach((f) => f.dispose()); } };
+      const ro = new ResizeObserver(() => fields.forEach((f) => { f.resize(); f.draw(); }));
+      host.querySelectorAll(".pb-art").forEach((el) => ro.observe(el));
+      return { destroy() { mo.disconnect(); ro.disconnect(); fields.forEach((f) => f.dispose()); } };
     },
   });
 })();

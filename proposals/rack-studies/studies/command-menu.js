@@ -1,24 +1,21 @@
-/* Command Menu, in Rack: the command palette of an agent console and design tool, docked as a panel: a title strip
-   with the count, a value box you type in, and dense results under quiet group names (Commands, Agents,
-   Components, Runs). What the person made wears its colour as a strip down the row's left edge, the same everywhere:
-   the Planner is purple, the Researcher blue, the Coder orange, the Reviewer green; components are cyan, pink and
-   blue by kind. A run that failed says so in red. The chosen row is a box in its outline, set on the frame (nothing
-   glides). Enter runs it and the strip says what happened.
+/* Command Menu, Rack 2.0: an agent console's command palette, as one strip and one surface. The strip holds the name,
+   the search box and the count. The surface is the results: commands in plain words, and the agents and their runs,
+   each agent one clear colour (a tint, a 1px edge in its hue, its name in the hue's text): Planner purple, Researcher
+   blue, Coder orange, Reviewer green. The chosen row is a box in its outline, set on the frame; Enter lights it for a
+   moment and the count box says what opened. A run that failed says so in red.
    The matching is the original's: each word of the query has to appear in order in a label, and a dynamic program
-   scores the best way it fits; 2,422 items rank in well under a millisecond, and only the rows in view are drawn. */
+   scores the best way it fits; 2,414 items rank in well under a millisecond, and only the rows in view are drawn. */
 FlatPlayer.register({
   slug: "command-menu",
   title: "Command Menu",
-  tagline: "One box for every command, agent, component and run.",
+  tagline: "One box for every command, agent and run.",
   css: `
-.fs-command-menu .cm { --rows: 9; --row: 24px; width: min(100%, 460px); background: var(--panel); border-radius: var(--r-panel); overflow: hidden; font-size: 12px;
+.fs-command-menu .cm { --rows: 9; --row: 28px; width: min(100%, 480px); background: var(--panel); border-radius: var(--r-panel); overflow: hidden; font-size: 12px;
   -webkit-user-select: none; user-select: none }
 .fs-command-menu.is-tile .cm { --rows: 5; width: 100% }
-.fs-command-menu .cm-strip { display: flex; align-items: center; gap: 8px; height: 28px; padding: 0 10px; background: var(--panel-2) }
-.fs-command-menu .cm-strip b { font-weight: 600 }
-.fs-command-menu .cm-count { margin-left: auto; font: 500 11px/1 var(--mono); color: var(--muted); white-space: nowrap }
-.fs-command-menu .cm-top { padding: 8px 8px 6px }
-.fs-command-menu .cm-field { display: flex; align-items: center; gap: 6px; height: 26px; padding: 0 6px 0 7px; background: var(--cut); box-shadow: var(--edge);
+.fs-command-menu .cm-strip { display: flex; align-items: center; gap: 10px; height: 40px; padding: 0 12px; background: var(--panel-2) }
+.fs-command-menu .cm-strip > b { font-weight: 600 }
+.fs-command-menu .cm-field { flex: 1; min-width: 0; display: flex; align-items: center; gap: 6px; height: 26px; padding: 0 7px; background: var(--cut); box-shadow: var(--edge);
   border-radius: var(--r-control); cursor: text; color: var(--muted) }
 .fs-command-menu .cm-field:focus-within { box-shadow: var(--edge-press) }
 .fs-command-menu .cm-field:has(input:focus-visible) { outline: 2px solid var(--ink); outline-offset: 1px }
@@ -30,44 +27,42 @@ FlatPlayer.register({
 .fs-command-menu .cm.is-ghost input:not(:focus) + .cm-ghost { display: flex }
 .fs-command-menu .cm-ghost span { visibility: hidden; white-space: pre }
 .fs-command-menu .cm-ghost i { width: 1px; height: 14px; background: var(--ink) }
-.fs-command-menu .cm-k { flex: none; height: 18px; padding: 0 5px; border-radius: var(--r-control); box-shadow: var(--edge); background: var(--block);
-  font: 500 10px/18px var(--mono); color: var(--muted) }
-.fs-command-menu .cm-field:focus-within .cm-k { display: none }
-.fs-command-menu .cm-list { position: relative; height: calc(var(--rows) * var(--row)); overflow-y: auto; overscroll-behavior: contain; outline: none;
-  scrollbar-width: thin; scrollbar-color: var(--control) transparent; margin: 0 8px }
+.fs-command-menu .cm-count { flex: none; height: 26px; min-width: 64px; max-width: 46%; padding: 0 7px; background: var(--cut); box-shadow: var(--edge); border-radius: var(--r-control);
+  font: 600 11px/26px var(--mono); white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+.fs-command-menu .cm-count[data-fresh] { animation: fs-cm-in var(--cut-in) var(--ease-out) both }
+@keyframes fs-cm-in { from { opacity: 0 } }
+.fs-command-menu .cm-wrap { padding: 12px }
+.fs-command-menu .cm-list { position: relative; height: calc(var(--rows) * var(--row) + 8px); overflow-y: auto; overscroll-behavior: contain; outline: none; padding: 4px;
+  background: var(--cut); box-shadow: var(--edge); border-radius: var(--r-control); scrollbar-width: thin; scrollbar-color: var(--control) transparent }
 .fs-command-menu .cm-body { position: relative }
-.fs-command-menu .cm-row, .fs-command-menu .cm-head { position: absolute; left: 0; right: 0; height: var(--row); display: flex; align-items: center; gap: 8px; padding: 0 8px 0 10px }
+.fs-command-menu .cm-row, .fs-command-menu .cm-head { position: absolute; left: 0; right: 0; height: var(--row); display: flex; align-items: center; gap: 8px; padding: 0 8px }
 .fs-command-menu .cm-row { cursor: default; border-radius: var(--r-control) }
-.fs-command-menu .cm-row::before { content: ""; position: absolute; left: 0; top: 3px; bottom: 3px; width: 3px; background: var(--tone, transparent) }
-.fs-command-menu .cm-row[aria-selected="true"] { background: var(--cut); box-shadow: var(--edge) }
+.fs-command-menu .cm-row[aria-selected="true"] { background: var(--panel); box-shadow: var(--edge) }
 .fs-command-menu .cm-row.is-run { background: var(--accent); color: var(--accent-fg) }
-.fs-command-menu .cm-head { align-items: flex-end; padding-bottom: 4px; color: var(--muted); font-size: 11px; font-weight: 600 }
-.fs-command-menu .cm-head b { margin-left: auto; font: 500 10px/11px var(--mono) }
+.fs-command-menu .cm-head { align-items: flex-end; padding-bottom: 5px; color: var(--muted); font-size: 11px; font-weight: 600 }
 .fs-command-menu .cm-label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted) }
 .fs-command-menu .cm-label em { font-style: normal; color: var(--ink); font-weight: 600 }
 .fs-command-menu .cm-label.is-plain { color: var(--ink) }
 .fs-command-menu .cm-row.is-run .cm-label, .fs-command-menu .cm-row.is-run .cm-label em, .fs-command-menu .cm-row.is-run .cm-meta { color: var(--accent-fg) }
-.fs-command-menu .cm-kind { flex: none; color: var(--muted); font-size: 11px }
-.fs-command-menu .cm-meta { flex: none; font: 500 11px/1 var(--mono); color: var(--muted); text-align: right; min-width: 52px }
+.fs-command-menu .cm-chip { flex: none; min-width: 78px; height: 20px; padding: 0 6px; border-radius: var(--r-control); font: 600 11px/20px var(--font); white-space: nowrap }
+.fs-command-menu .cm-chip[data-tone="purple"] { background: var(--clip-purple-tint); box-shadow: inset 0 0 0 1px var(--clip-purple); color: var(--clip-purple-text) }
+.fs-command-menu .cm-chip[data-tone="blue"] { background: var(--clip-blue-tint); box-shadow: inset 0 0 0 1px var(--clip-blue); color: var(--clip-blue-text) }
+.fs-command-menu .cm-chip[data-tone="orange"] { background: var(--clip-orange-tint); box-shadow: inset 0 0 0 1px var(--clip-orange); color: var(--clip-orange-text) }
+.fs-command-menu .cm-chip[data-tone="green"] { background: var(--clip-green-tint); box-shadow: inset 0 0 0 1px var(--clip-green); color: var(--clip-green-text) }
+.fs-command-menu .cm-chip em { font-style: normal; text-decoration: underline; text-underline-offset: 2px }
+.fs-command-menu .cm-meta { flex: none; font: 500 11px/1 var(--mono); color: var(--muted); text-align: right; min-width: 44px }
+.fs-command-menu .cm-meta.is-bad { color: var(--danger) }
 .fs-command-menu .cm-none { position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted) }
-.fs-command-menu .cm-foot { display: flex; align-items: center; gap: 8px; height: 26px; margin-top: 4px; padding: 0 10px; background: var(--panel-2); font-size: 11px;
-  color: var(--muted); white-space: nowrap; overflow: hidden }
-.fs-command-menu .cm-said { min-width: 0; overflow: hidden; text-overflow: ellipsis }
-.fs-command-menu .cm-said b { color: var(--ink); font-weight: 600 }
-.fs-command-menu .cm-said[data-fresh] { animation: fs-cm-in var(--cut-in) var(--ease-out) both }
-@keyframes fs-cm-in { from { opacity: 0 } }
-.fs-command-menu .cm-hint { margin-left: auto; font-family: var(--mono) }
-.fs-command-menu.is-tile .cm-hint { display: none }
+.fs-command-menu.is-tile .cm-strip > b { display: none }
+.fs-command-menu.is-tile .cm-wrap { padding: 10px }
+@container (max-width: 380px) { .fs-command-menu .cm-strip > b { display: none } }
 `,
   mount(host, ctx) {
-    /* --- Data: an agent console's commands, agents, components and 2,400 runs ---------------------------- */
+    /* --- Data: an agent console's commands, its four agents and 2,400 runs ---------------------------------- */
     const AGENTS = [["Planner", "purple"], ["Researcher", "blue"], ["Coder", "orange"], ["Reviewer", "green"]];
-    const COMMANDS = [["Run agent", "⌘ ↵", "Started", "a run"], ["Approve all", "⇧ ⌘ A", "Approved", "3 tool calls"], ["Deploy preview", "⌘ D", "Deploying", "preview 0:00.0"],
-      ["Export frame", "⇧ ⌘ E", "Exported", "Card.svg"], ["Create component", "⌘ K", "Created", "Untitled"], ["Open trace", "T", "Opened", "the last trace"],
-      ["Compare branches", "", "Comparing", "main and ui-tokens"], ["Rerun failed steps", "⇧ R", "Queued", "2 steps"], ["Pause queue", "P", "Paused", "the queue"],
-      ["Set budget", "", "Budget", "$4.00 a run"]];
-    const COMPONENTS = [["Button", "cyan", "6 variants"], ["Card", "pink", "4 variants"], ["Header", "blue", "3 variants"], ["Toast", "cyan", "4 variants"],
-      ["Select", "cyan", "5 variants"], ["Avatar", "pink", "3 variants"], ["Tabs", "blue", "2 variants"], ["Dialog", "pink", "3 variants"]];
+    const COMMANDS = [["Run agent", "Started a run"], ["Approve all", "Approved 3 tool calls"], ["Deploy preview", "Deploying preview"], ["Export frame", "Exported Card.svg"],
+      ["Open trace", "Opened the last trace"], ["Compare branches", "Comparing branches"], ["Rerun failed steps", "Queued 2 steps"], ["Pause queue", "Paused the queue"],
+      ["Set budget", "Budget $4.00 a run"], ["New component", "Created Untitled"]];
     const TASKS = ["Fix login redirect", "Draft release notes", "Audit tokens", "Write tests for cart", "Rename props", "Summarize issues", "Resize hero frame", "Check contrast"];
     function hash(n, salt) {
       let x = Math.imul(n ^ Math.imul(salt, 0x9e3779b1), 0x85ebca6b) >>> 0;
@@ -76,15 +71,14 @@ FlatPlayer.register({
     }
     const RUNS = 2400;
     const ITEMS = [
-      ...COMMANDS.map(([label, keys, a, b]) => ({ id: "c-" + label, label, group: "Commands", meta: keys, done: [a, b] })),
-      ...AGENTS.map(([label, c]) => ({ id: "a-" + label, label, group: "Agents", tone: c, meta: "Agent", done: ["Opened", label] })),
-      ...COMPONENTS.map(([label, c, v]) => ({ id: "k-" + label, label, group: "Components", tone: c, meta: v, done: ["Inserted", label] })),
+      ...COMMANDS.map(([label, done]) => ({ id: "c-" + label, label, group: "Commands", done })),
+      ...AGENTS.map(([name, c]) => ({ id: "a-" + name, label: name, group: "Agents", agent: name, tone: c, cut: name.length, meta: "Agent", done: "Opened " + name })),
       ...Array.from({ length: RUNS }, (_, i) => {
         const n = RUNS - i, [agent, c] = AGENTS[n % 4], task = TASKS[Math.floor(n / 4) % 8];
         const failed = hash(n, 7) < 0.06, secs = 4 + hash(n, 1) * 170;
-        const label = `${agent}: ${task.toLowerCase()} #${n}`;
-        return { id: "r-" + n, label, group: "Runs", tone: c, bad: failed, meta: failed ? "Failed" : `${Math.floor(secs / 60)}:${(secs % 60).toFixed(1).padStart(4, "0")}`,
-          done: ["Opened run", "#" + n] };
+        /* The agent's name is searchable but drawn as its chip; the label shows the task. */
+        return { id: "r-" + n, label: `${agent} ${task} #${n}`, cut: agent.length + 1, agent, tone: c, group: "Runs", bad: failed,
+          meta: failed ? "Failed" : `${Math.floor(secs / 60)}:${(secs % 60).toFixed(1).padStart(4, "0")}`, done: "Opened run #" + n };
       }),
     ];
 
@@ -192,45 +186,46 @@ FlatPlayer.register({
 
     /* --- DOM ------------------------------------------------------------------------------------------------ */
     const uid = "cm" + Math.random().toString(36).slice(2, 7);
-    const mac = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent);
     host.innerHTML = `<div class="cm">
-      <div class="cm-strip"><b>Command</b><span class="cm-count"></span></div>
-      <div class="cm-top"><label class="cm-field"><svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="5" cy="5" r="3.5"/><path d="m8 8 3 3"/></svg>
-        <span class="cm-in"><input type="text" role="combobox" aria-label="Search commands" aria-controls="${uid}-list" aria-autocomplete="list" aria-expanded="true"
-          autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="go" placeholder="Run a command or find anything">
-          <span class="cm-ghost" aria-hidden="true"><span></span><i></i></span></span>
-        <span class="cm-k" aria-hidden="true">${mac ? "⌘ K" : "Ctrl K"}</span></label></div>
-      <div class="cm-list" id="${uid}-list" role="listbox" aria-label="Results" tabindex="-1"><div class="cm-body"></div></div>
-      <div class="cm-foot" aria-hidden="true"><span class="cm-said"></span><span class="cm-hint">↑ ↓ ↵</span></div>
+      <div class="cm-strip"><b>Command</b>
+        <label class="cm-field"><svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="5" cy="5" r="3.5"/><path d="m8 8 3 3"/></svg>
+          <span class="cm-in"><input type="text" role="combobox" aria-label="Search commands, agents and runs" aria-controls="${uid}-list" aria-autocomplete="list" aria-expanded="true"
+            autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="go" placeholder="Search">
+            <span class="cm-ghost" aria-hidden="true"><span></span><i></i></span></span></label>
+        <span class="cm-count" aria-hidden="true"></span></div>
+      <div class="cm-wrap"><div class="cm-list" id="${uid}-list" role="listbox" aria-label="Results" tabindex="-1"><div class="cm-body"></div></div></div>
       <p class="sr-only" role="status" aria-live="polite" aria-atomic="true"></p>
     </div>`;
     const root = host.querySelector(".cm"), input = host.querySelector("input"), list = host.querySelector(".cm-list"), body = host.querySelector(".cm-body");
-    const countEl = host.querySelector(".cm-count"), said = host.querySelector(".cm-said"), say = host.querySelector('[role="status"]');
-    const ghostText = host.querySelector(".cm-ghost span");
+    const countEl = host.querySelector(".cm-count"), say = host.querySelector('[role="status"]'), ghostText = host.querySelector(".cm-ghost span");
 
-    const OVERSCAN = 3, CHUNK = 4, SETTLE = 450, ROW = 24;
-    let query = "", results = search(""), active = 0, follow = false, announceTimer = 0, runTimer = 0;
+    const OVERSCAN = 3, CHUNK = 4, SETTLE = 450, ROW = 28;
+    let query = "", results = search(""), active = 0, follow = false, announceTimer = 0, runTimer = 0, saidUntil = 0;
     let view = { start: 0, rows: 9, span: 9 + 2 * OVERSCAN + CHUNK };
 
     const total = () => results.order.length;
     const current = () => Math.min(active, total() - 1);
-    const countText = () => !results.words.length ? `${thousands(ITEMS.length)} items` : total() ? `${thousands(total())} of ${thousands(ITEMS.length)}` : "0 found";
+    const countText = () => !results.words.length ? `${thousands(ITEMS.length)}` : `${thousands(total())} found`;
+    const marked = (text, matches, from) => {
+      let s = "", k = 0;
+      const m = matches.filter((p) => p >= from && p < from + text.length).map((p) => p - from);
+      if (!m.length) return esc(text);
+      for (let i = 0; i < text.length; ) {
+        const on = m[k] === i; let j = i;
+        while (j < text.length && (m[k] === j) === on) { if (on) k++; j++; }
+        s += on ? `<em>${esc(text.slice(i, j))}</em>` : esc(text.slice(i, j));
+        i = j;
+      }
+      return s;
+    };
 
     function rowHTML(item, matches, row, option) {
-      let label;
-      if (!matches.length) label = `<span class="cm-label is-plain">${esc(item.label)}</span>`;
-      else {
-        let s = "", k = 0;
-        for (let i = 0; i < item.label.length; ) {
-          const on = matches[k] === i; let j = i;
-          while (j < item.label.length && (matches[k] === j) === on) { if (on) k++; j++; }
-          s += on ? `<em>${esc(item.label.slice(i, j))}</em>` : esc(item.label.slice(i, j));
-          i = j;
-        }
-        label = `<span class="cm-label">${s}</span>`;
-      }
-      const tone = item.tone ? ` style="top:${row * ROW}px;--tone:var(--clip-${item.tone})"` : ` style="top:${row * ROW}px"`;
-      return `<div class="cm-row" id="${uid}-${item.id.replace(/\W/g, "_")}" role="option" aria-selected="${option === current()}" data-opt="${option}"${tone}>${label}<span class="cm-meta"${item.bad ? ' style="color:var(--danger)"' : ""}>${esc(item.meta || "")}</span></div>`;
+      const cut = item.cut || 0, text = item.label.slice(cut);
+      const chip = item.agent ? `<span class="cm-chip" data-tone="${item.tone}">${marked(item.agent, matches, 0)}</span>` : "";
+      const label = item.group === "Agents" ? "" : `<span class="cm-label${matches.length ? "" : " is-plain"}">${marked(text, matches, cut)}</span>`;
+      const meta = item.meta ? `<span class="cm-meta${item.bad ? " is-bad" : ""}">${esc(item.meta)}</span>` : "";
+      const fill = item.group === "Agents" ? `<span class="cm-label"></span>` : "";
+      return `<div class="cm-row" id="${uid}-${item.id.replace(/\W/g, "_")}" role="option" aria-label="${esc(item.agent && item.group === "Runs" ? item.agent + ": " + text : item.label)}" aria-selected="${option === current()}" data-opt="${option}" style="top:${row * ROW}px">${chip}${label}${fill}${meta}</div>`;
     }
 
     function draw() {
@@ -245,7 +240,7 @@ FlatPlayer.register({
       groups.forEach((g, gi) => {
         const members = shown.filter((s) => s.group === gi);
         if (!members.length) return;
-        html += `<div role="group" aria-labelledby="${uid}-g${gi}"><div class="cm-head" id="${uid}-g${gi}" style="top:${(g.first + gi) * ROW}px">${esc(g.name)}<b aria-hidden="true">${thousands(g.size)}</b></div>`;
+        html += `<div role="group" aria-labelledby="${uid}-g${gi}"><div class="cm-head" id="${uid}-g${gi}" style="top:${(g.first + gi) * ROW}px">${esc(g.name)}</div>`;
         html += members.map((m) => rowHTML(m.item, m.matches, m.row, m.option)).join("") + "</div>";
       });
       if (!t) html += `<p class="cm-none">Nothing matches “${esc(query.trim())}”</p>`;
@@ -253,11 +248,9 @@ FlatPlayer.register({
       body.innerHTML = html;
       input.setAttribute("aria-expanded", String(t > 0));
       if (cur >= 0) input.setAttribute("aria-activedescendant", `${uid}-${ITEMS[order[cur]].id.replace(/\W/g, "_")}`); else input.removeAttribute("aria-activedescendant");
-      countEl.textContent = countText();
+      if (performance.now() > saidUntil) countEl.textContent = countText();
       return activeRow;
     }
-
-    /* The chosen row is set on the frame; keys keep a row of context above and below it, and the list jumps there. */
     function update() {
       const activeRow = draw();
       if (activeRow < 0 || !follow) return;
@@ -268,12 +261,11 @@ FlatPlayer.register({
       else if (bottom > next + list.clientHeight) next = bottom - list.clientHeight;
       if (next !== list.scrollTop) list.scrollTop = next;
     }
-
     function setQuery(q) {
       query = q;
       if (input.value !== q) input.value = q;
       ghostText.textContent = q;
-      results = search(q); active = 0;
+      results = search(q); active = 0; saidUntil = 0;
       list.scrollTop = 0; view.start = 0;
       update();
       clearTimeout(announceTimer);
@@ -285,6 +277,7 @@ FlatPlayer.register({
       if (to === current()) return;
       follow = by === "key"; active = to; update();
     }
+    /* Running lights the row for 160ms; the count box says what opened until the query changes or 2s pass. */
     function run(i) {
       if (i < 0 || i >= total()) return;
       const item = ITEMS[results.order[i]];
@@ -292,9 +285,11 @@ FlatPlayer.register({
       if (row) row.classList.add("is-run");
       clearTimeout(runTimer);
       runTimer = setTimeout(() => { const r = body.querySelector(".is-run"); if (r) r.classList.remove("is-run"); }, 160);
-      said.innerHTML = `<b>${esc(item.done[0])}</b> ${esc(item.done[1])}`;
-      said.removeAttribute("data-fresh"); void said.offsetWidth; said.setAttribute("data-fresh", "");
-      say.textContent = item.done.join(" ");
+      saidUntil = performance.now() + 2000;
+      countEl.textContent = item.done;
+      countEl.removeAttribute("data-fresh"); void countEl.offsetWidth; countEl.setAttribute("data-fresh", "");
+      ctx.after(2000, () => { if (performance.now() >= saidUntil) countEl.textContent = countText(); });
+      say.textContent = item.done;
     }
     function press(key) {
       const page = Math.max(1, view.rows - 1), cur = current();
@@ -355,14 +350,13 @@ FlatPlayer.register({
     });
     ro.observe(list);
     setQuery("");
-    said.textContent = "Type to search";
 
     /* --- The self-run: someone types, steps down, runs it; a beat later, again. A hand ends it for good. ------ */
     const ROUNDS = [
       { query: "fix", keys: ["down", "down", "enter"] },
       { query: "dep", keys: ["enter"] },
-      { query: "card", keys: ["enter"] },
       { query: "rev audit", keys: ["down", "enter"] },
+      { query: "plan", keys: ["enter"] },
     ];
     let live = false, timer = 0, ghostWords = false;
     function takeOver() {
@@ -377,7 +371,7 @@ FlatPlayer.register({
         const out = [[round === 1 ? 300 : 200, () => setQuery("")]];
         for (let i = 1; i <= q.length; i++) out.push([i === 1 ? 400 : 110 + Math.random() * 80, () => setQuery(q.slice(0, i))]);
         keys.forEach((k, i) => out.push([i === 0 ? 600 : 360, () => press(k)]));
-        out.push([1400, () => {}]);
+        out.push([1500, () => {}]);
         return out;
       };
       const next = () => {

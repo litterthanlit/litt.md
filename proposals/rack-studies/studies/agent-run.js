@@ -41,7 +41,7 @@
 .fs-agent-run .ar-ruler span { position: absolute; top: 0 }
 .fs-agent-run .ar-row { position: relative; height: 24px; border-radius: var(--r-control); background: var(--panel-3) }
 .fs-agent-run .ar-clip { position: absolute; top: 0; bottom: 0; padding: 0 4px; display: flex; align-items: center; border-radius: var(--r-control); background: var(--tint);
-  color: var(--txt); box-shadow: inset 2px 0 0 var(--hue); font: 600 10.5px var(--font); white-space: nowrap; overflow: hidden; animation: ar-in var(--cut-in) var(--ease-out) both }
+  color: var(--txt); box-shadow: inset 0 0 0 1px var(--hue); font: 600 10.5px var(--font); white-space: nowrap; overflow: hidden; animation: ar-in var(--cut-in) var(--ease-out) both }
 @keyframes ar-in { from { opacity: 0 } }
 .fs-agent-run .ar-fold { width: 100%; justify-content: flex-start; height: 24px; border-radius: 0; box-shadow: none; background: transparent; color: var(--muted); padding: 0 8px }
 .fs-agent-run .ar-fold:hover { background: var(--panel-3) }
@@ -51,7 +51,7 @@
 .fs-agent-run .ar-steps { list-style: none; margin: 0; padding: 0 6px 6px; display: grid; gap: 2px }
 .fs-agent-run .ar-steps[hidden] { display: none }
 .fs-agent-run .ar-step { display: grid; grid-template-columns: 52px minmax(0, 1fr) auto; align-items: center; gap: 6px; height: 22px; animation: ar-in var(--cut-in) var(--ease-out) both }
-.fs-agent-run .ar-tag { height: 18px; display: grid; place-items: center; border-radius: var(--r-control); background: var(--tint); color: var(--txt); font-weight: 600; font-size: 11px }
+.fs-agent-run .ar-tag { height: 18px; display: grid; place-items: center; border-radius: var(--r-control); background: var(--tint); box-shadow: inset 0 0 0 1px var(--hue); color: var(--txt); font-weight: 600; font-size: 11px }
 .fs-agent-run .ar-tgt { font: 500 11px var(--mono); overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
 .fs-agent-run .ar-det { font: 500 11px var(--mono); color: var(--muted); white-space: nowrap }
 .fs-agent-run .ar-add { color: var(--clip-green-text) } .fs-agent-run .ar-del { color: var(--danger) }

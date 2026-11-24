@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Rack Studies</title>
+<title>Rack 2.0 Studies</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -11,19 +11,20 @@
 /* Rack (litt-md, taste/litt-principles.md "Rack, the module"; proposals/rack.md): after Ableton Live. A grey body, flat
    panels a step lighter with no edge, every control a square box in a 1px outline, small exact values in tabular
    figures, colour that belongs to what you make (clips, tracks), one yellow lit only inside an on key. Square: 2px
-   controls in 6px panels. Values are litt's tokens.css, Rack's block (clip pink added for these studies). */
+   controls in 6px panels. Rack 2.0: the clip colours retuned as one family of layer colours (a soft tint, a crisp edge in the hue, its name in the
+   hue's text tone; every name 4.5:1 on its tint and every edge 3:1, both themes). */
 :root {
   --body: #c8c8c8; --panel: #e2e2e2; --panel-2: #d7d7d7; --panel-3: #cdcdcd; --line: #b5b5b5; --line-strong: #a2a2a2;
   --control: #6c6c6c; --ink: #111111; --muted: #434343; --disabled: #8a8a8a;
   --tray: #b9b9b9; --cut: #f3f3f3; --block: #ededed; --block-hover: #d7d7d7; --slot: #b0b0b0; --slot-fill: #5a5a5a; --cap: #f6f6f6;
   --accent: #ffc933; --accent-hover: #ffd35c; --accent-fg: #111111; --accent-tint: #ebdcb9;
   --success: #00601f; --warning: #824200; --danger: #a60e1d;
-  --clip-blue: #0072b0; --clip-blue-text: #005686; --clip-blue-tint: #82d5ff;
-  --clip-orange: #b94a00; --clip-orange-text: #913200; --clip-orange-tint: #ffb687;
-  --clip-cyan: #007c6d; --clip-cyan-text: #005d52; --clip-cyan-tint: #6de2d0;
-  --clip-purple: #8455c6; --clip-purple-text: #643c9b; --clip-purple-tint: #d5baff;
-  --clip-green: #227e00; --clip-green-text: #0d6100; --clip-green-tint: #a4dd98;
-  --clip-pink: #c0007e; --clip-pink-text: #90005d; --clip-pink-tint: #ffb3dd;
+  --clip-blue: #2f7bf5; --clip-blue-text: #1a4fb3; --clip-blue-tint: #d9e8ff;
+  --clip-orange: #cc610a; --clip-orange-text: #9a4300; --clip-orange-tint: #ffe5cc;
+  --clip-cyan: #0e8a82; --clip-cyan-text: #0b6660; --clip-cyan-tint: #d0f2ee;
+  --clip-purple: #7c5cf0; --clip-purple-text: #4a2fb8; --clip-purple-tint: #e6defd;
+  --clip-green: #2f8a3c; --clip-green-text: #1f6a2b; --clip-green-tint: #daf1d6;
+  --clip-pink: #e0438f; --clip-pink-text: #9c1e5e; --clip-pink-tint: #fddbeb;
   --edge: 0 0 0 1px rgb(0 0 0 / 0.38); --edge-press: 0 0 0 1px rgb(0 0 0 / 0.7);
   --font: "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
   --mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
@@ -38,12 +39,12 @@
   --tray: #101010; --cut: #1b1b1b; --block: #3b3b3b; --block-hover: #454545; --slot: #101010; --slot-fill: #9a9a9a; --cap: #cfcfcf;
   --accent: #ffc933; --accent-hover: #ffd35c; --accent-fg: #111111; --accent-tint: #443d2e;
   --success: #4dc882; --warning: #eba42b; --danger: #ff948d;
-  --clip-blue: #009ded; --clip-blue-text: #43c4ff; --clip-blue-tint: #013c5a;
-  --clip-orange: #e06d00; --clip-orange-text: #ff964b; --clip-orange-tint: #562b0d;
-  --clip-cyan: #00ab98; --clip-cyan-text: #00d6bf; --clip-cyan-tint: #00433b;
-  --clip-purple: #a376e9; --clip-purple-text: #c6a1ff; --clip-purple-tint: #3e2e59;
-  --clip-green: #51aa3c; --clip-green-text: #7cd06a; --clip-green-tint: #21411a;
-  --clip-pink: #e0379b; --clip-pink-text: #feb9db; --clip-pink-tint: #5a1a3e;
+  --clip-blue: #5a9bff; --clip-blue-text: #b3d0ff; --clip-blue-tint: #16294a;
+  --clip-orange: #f59a4a; --clip-orange-text: #ffd0a6; --clip-orange-tint: #3e2711;
+  --clip-cyan: #34c2b8; --clip-cyan-text: #98e6df; --clip-cyan-tint: #0f3432;
+  --clip-purple: #a08cff; --clip-purple-text: #d1c7ff; --clip-purple-tint: #2b2452;
+  --clip-green: #62bb6e; --clip-green-text: #b0e3b4; --clip-green-tint: #17331b;
+  --clip-pink: #f070b0; --clip-pink-text: #ffbadb; --clip-pink-tint: #3e1830;
   --edge: 0 0 0 1px rgb(0 0 0 / 0.6); --edge-press: 0 0 0 1px rgb(0 0 0 / 0.85); color-scheme: dark } }
 :root[data-theme="dark"] {
   --body: #161616; --panel: #262626; --panel-2: #2d2d2d; --panel-3: #353535; --line: #3a3a3a; --line-strong: #4a4a4a;
@@ -51,12 +52,12 @@
   --tray: #101010; --cut: #1b1b1b; --block: #3b3b3b; --block-hover: #454545; --slot: #101010; --slot-fill: #9a9a9a; --cap: #cfcfcf;
   --accent: #ffc933; --accent-hover: #ffd35c; --accent-fg: #111111; --accent-tint: #443d2e;
   --success: #4dc882; --warning: #eba42b; --danger: #ff948d;
-  --clip-blue: #009ded; --clip-blue-text: #43c4ff; --clip-blue-tint: #013c5a;
-  --clip-orange: #e06d00; --clip-orange-text: #ff964b; --clip-orange-tint: #562b0d;
-  --clip-cyan: #00ab98; --clip-cyan-text: #00d6bf; --clip-cyan-tint: #00433b;
-  --clip-purple: #a376e9; --clip-purple-text: #c6a1ff; --clip-purple-tint: #3e2e59;
-  --clip-green: #51aa3c; --clip-green-text: #7cd06a; --clip-green-tint: #21411a;
-  --clip-pink: #e0379b; --clip-pink-text: #feb9db; --clip-pink-tint: #5a1a3e;
+  --clip-blue: #5a9bff; --clip-blue-text: #b3d0ff; --clip-blue-tint: #16294a;
+  --clip-orange: #f59a4a; --clip-orange-text: #ffd0a6; --clip-orange-tint: #3e2711;
+  --clip-cyan: #34c2b8; --clip-cyan-text: #98e6df; --clip-cyan-tint: #0f3432;
+  --clip-purple: #a08cff; --clip-purple-text: #d1c7ff; --clip-purple-tint: #2b2452;
+  --clip-green: #62bb6e; --clip-green-text: #b0e3b4; --clip-green-tint: #17331b;
+  --clip-pink: #f070b0; --clip-pink-text: #ffbadb; --clip-pink-tint: #3e1830;
   --edge: 0 0 0 1px rgb(0 0 0 / 0.6); --edge-press: 0 0 0 1px rgb(0 0 0 / 0.85); color-scheme: dark }
 @media (prefers-reduced-motion: reduce) { :root { --cut-in: 0ms; --cut-out: 0ms; --beat: 0ms } }
 
@@ -109,7 +110,7 @@ button { font: inherit; color: inherit }
 <body>
 <main class="fg">
   <header class="fg-head">
-    <div><h1>Rack studies</h1><p>Small studies in motion, feedback and touch, after litterthanlit/components, redesigned in litt's Rack: a pro tool for agents, design and interfaces, after Live's grammar. Every value in reach, on the beat.</p></div>
+    <div><h1>Rack 2.0</h1><p>Small studies in motion, feedback and touch, after litterthanlit/components, redesigned in litt's Rack: a pro tool for agents, design and interfaces, after Live's grammar. Every value in reach, on the beat.</p></div>
     <button class="fg-pill" type="button" id="fg-theme">Dark</button>
   </header>
   <ul class="fg-wall" id="fg-wall"></ul>
@@ -186,7 +187,7 @@ window.FlatPlayer = (function () {
       after(ms, fn) { const t = setTimeout(fn, ms); rec.timers.push(t); return t; },
       every(ms, fn) { const t = setInterval(fn, ms); rec.intervals.push(t); return t; },
       loop(fn) { const r = { stop: false }; rec.rafs.push(r); let last = performance.now();
-        const f = (now) => { if (r.stop || ac.signal.aborted) return; const dt = Math.min(0.1, (now - last) / 1000); last = now; if (fn(dt, now) === false) { r.stop = true; return; } requestAnimationFrame(f); };
+        const f = (now) => { if (r.stop || ac.signal.aborted) return; const dt = Math.max(0, Math.min(0.1, (now - last) / 1000)); last = now; if (fn(dt, now) === false) { r.stop = true; return; } requestAnimationFrame(f); };
         requestAnimationFrame(f); return r; },
       onHand(fn) { rec.hands.push(fn); },
       touched: () => lastTouch,
@@ -249,7 +250,7 @@ window.FlatPlayer = (function () {
     $("fg-about").innerHTML = "";
     const b = document.createElement("b"); b.textContent = s.tagline || ""; $("fg-about").appendChild(b);
     try { history.replaceState(null, "", "#" + s.slug); } catch (e) {}
-    document.title = s.title + " · Rack Studies";
+    document.title = s.title + " · Rack 2.0";
     live.textContent = s.title + ", " + (cur + 1) + " of " + n;
   }
   function open(i, from) {
@@ -271,7 +272,7 @@ window.FlatPlayer = (function () {
     back.focus({ preventScroll: true });
     back.scrollIntoView({ block: "nearest" });
     try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {}
-    document.title = "Rack Studies";
+    document.title = "Rack 2.0";
   }
   $("fg-close").addEventListener("click", close);
   $("fg-prev").addEventListener("click", () => show(cur - 1, -1));
