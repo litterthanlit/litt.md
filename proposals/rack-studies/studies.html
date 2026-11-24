@@ -1,0 +1,1410 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Rack Studies</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Rack Studies — built with litt-design-craft:
+   Simple, energetic, uplifting, emotionally inspiring, easy to use and read, calm, zero unnecessary info.
+   Rack 2.0 grammar: one strip, one surface, 6-hue layer-colour family (soft tint + 1px hue edge + 4.5:1 text),
+   square 2px controls in 6px panels, sunlit yellow (#ffc933) lit key, 0ms under a hand, 100ms cut-in, 75ms out. */
+:root {
+  --body: #c8c8c8; --panel: #e2e2e2; --panel-2: #d7d7d7; --panel-3: #cdcdcd;
+  --line: #b5b5b5; --line-strong: #a2a2a2; --control: #6c6c6c;
+  --ink: #111111; --muted: #434343; --disabled: #8a8a8a;
+  --tray: #b9b9b9; --cut: #f3f3f3; --block: #ededed; --block-hover: #d7d7d7;
+  --slot: #b0b0b0; --cap: #f6f6f6;
+  --accent: #ffc933; --accent-hover: #ffd35c; --accent-fg: #111111; --accent-tint: #ebdcb9;
+  --success: #00601f; --warning: #824200; --danger: #a60e1d;
+
+  /* Rack 2.0 6-hue layer-colour family (verified 4.5:1 text on tint, 3:1 edge) */
+  --clip-blue: #2f7bf5;   --clip-blue-text: #1a4fb3;   --clip-blue-tint: #d9e8ff;
+  --clip-orange: #cc610a; --clip-orange-text: #9a4300; --clip-orange-tint: #ffe5cc;
+  --clip-cyan: #0e8a82;   --clip-cyan-text: #0b6660;   --clip-cyan-tint: #d0f2ee;
+  --clip-purple: #7c5cf0; --clip-purple-text: #4a2fb8; --clip-purple-tint: #e6defd;
+  --clip-green: #2f8a3c;  --clip-green-text: #1f6a2b;  --clip-green-tint: #daf1d6;
+  --clip-pink: #e0438f;   --clip-pink-text: #9c1e5e;   --clip-pink-tint: #fddbeb;
+
+  --edge: 0 0 0 1px rgb(0 0 0 / 0.36);
+  --edge-press: 0 0 0 1px rgb(0 0 0 / 0.72);
+  --font: "Inter", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+  --mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --r-control: 2px; --r-panel: 6px;
+  --cut-in: 100ms; --cut-out: 75ms; --beat: 60ms;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --body: #161616; --panel: #262626; --panel-2: #2d2d2d; --panel-3: #353535;
+  --line: #3a3a3a; --line-strong: #4a4a4a; --control: #787878;
+  --ink: #ececec; --muted: #bebebe; --disabled: #5c5c5c;
+  --tray: #101010; --cut: #1b1b1b; --block: #3b3b3b; --block-hover: #454545;
+  --slot: #101010; --cap: #cfcfcf;
+  --accent: #ffc933; --accent-hover: #ffd35c; --accent-fg: #111111; --accent-tint: #443d2e;
+  --success: #4dc882; --warning: #eba42b; --danger: #ff948d;
+
+  --clip-blue: #5a9bff;   --clip-blue-text: #b3d0ff;   --clip-blue-tint: #16294a;
+  --clip-orange: #f59a4a; --clip-orange-text: #ffd0a6; --clip-orange-tint: #3e2711;
+  --clip-cyan: #34c2b8;   --clip-cyan-text: #98e6df;   --clip-cyan-tint: #0f3432;
+  --clip-purple: #a08cff; --clip-purple-text: #d1c7ff; --clip-purple-tint: #2b2452;
+  --clip-green: #62bb6e;  --clip-green-text: #b0e3b4;  --clip-green-tint: #17331b;
+  --clip-pink: #f070b0;   --clip-pink-text: #ffbadb;   --clip-pink-tint: #3e1830;
+
+  --edge: 0 0 0 1px rgb(0 0 0 / 0.6);
+  --edge-press: 0 0 0 1px rgb(0 0 0 / 0.88);
+  color-scheme: dark;
+} }
+:root[data-theme="dark"] {
+  --body: #161616; --panel: #262626; --panel-2: #2d2d2d; --panel-3: #353535;
+  --line: #3a3a3a; --line-strong: #4a4a4a; --control: #787878;
+  --ink: #ececec; --muted: #bebebe; --disabled: #5c5c5c;
+  --tray: #101010; --cut: #1b1b1b; --block: #3b3b3b; --block-hover: #454545;
+  --slot: #101010; --cap: #cfcfcf;
+  --accent: #ffc933; --accent-hover: #ffd35c; --accent-fg: #111111; --accent-tint: #443d2e;
+  --success: #4dc882; --warning: #eba42b; --danger: #ff948d;
+
+  --clip-blue: #5a9bff;   --clip-blue-text: #b3d0ff;   --clip-blue-tint: #16294a;
+  --clip-orange: #f59a4a; --clip-orange-text: #ffd0a6; --clip-orange-tint: #3e2711;
+  --clip-cyan: #34c2b8;   --clip-cyan-text: #98e6df;   --clip-cyan-tint: #0f3432;
+  --clip-purple: #a08cff; --clip-purple-text: #d1c7ff; --clip-purple-tint: #2b2452;
+  --clip-green: #62bb6e;  --clip-green-text: #b0e3b4;  --clip-green-tint: #17331b;
+  --clip-pink: #f070b0;   --clip-pink-text: #ffbadb;   --clip-pink-tint: #3e1830;
+
+  --edge: 0 0 0 1px rgb(0 0 0 / 0.6);
+  --edge-press: 0 0 0 1px rgb(0 0 0 / 0.88);
+  color-scheme: dark;
+}
+@media (prefers-reduced-motion: reduce) {
+  :root { --cut-in: 0ms; --cut-out: 0ms; --beat: 0ms; }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--body); color: var(--ink);
+  font: 400 13px/1.45 var(--font); -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums;
+  padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(28px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+}
+button, input { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 1px; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* Shared Rack 2.0 primitives: one strip + one surface + 6-hue layer objects */
+.rk {
+  width: min(100%, 440px); background: var(--panel); border-radius: var(--r-panel);
+  overflow: hidden; box-shadow: var(--edge);
+}
+.rk-strip {
+  display: flex; align-items: center; gap: 6px; height: 32px; padding: 0 8px 0 12px;
+  background: var(--panel-2);
+}
+.rk-strip b { font-size: 12px; font-weight: 600; white-space: nowrap; }
+.rk-surf {
+  margin: 10px; padding: 10px; border-radius: var(--r-control);
+  background: var(--cut); box-shadow: var(--edge);
+}
+.rk-key {
+  height: 22px; padding: 0 9px; border: 0; border-radius: var(--r-control);
+  background: var(--block); box-shadow: var(--edge); color: var(--ink);
+  font: 600 11px/1 var(--font); cursor: pointer; white-space: nowrap;
+  display: inline-flex; align-items: center; justify-content: center; gap: 5px;
+  transition: none;
+}
+.rk-key:hover { background: var(--block-hover); }
+.rk-key:active { box-shadow: var(--edge-press); transform: scale(0.98); }
+.rk-key.is-on { background: var(--accent); color: var(--accent-fg); }
+.rk-key.is-ink { background: var(--ink); color: var(--panel); }
+.rk-box {
+  height: 22px; padding: 0 7px; border-radius: var(--r-control);
+  background: var(--cut); box-shadow: var(--edge);
+  font: 500 11px/1 var(--mono); display: inline-flex; align-items: center; white-space: nowrap;
+}
+.rk-seg { display: inline-flex; }
+.rk-seg button {
+  height: 22px; padding: 0 8px; border: 0; border-radius: 0; margin-left: 1px;
+  background: var(--block); box-shadow: var(--edge); color: var(--ink);
+  font: 600 11px/1 var(--mono); cursor: pointer; transition: none;
+}
+.rk-seg button:first-child { margin-left: 0; border-radius: var(--r-control) 0 0 var(--r-control); }
+.rk-seg button:last-child { border-radius: 0 var(--r-control) var(--r-control) 0; }
+.rk-seg button:hover { background: var(--block-hover); }
+.rk-seg button[aria-checked="true"] { background: var(--ink); color: var(--panel); }
+.rk-seg.is-yellow button[aria-checked="true"] { background: var(--accent); color: var(--accent-fg); }
+
+.ly { border-radius: var(--r-control); font-weight: 600; }
+.ly[data-h="purple"] { background: var(--clip-purple-tint); box-shadow: inset 0 0 0 1px var(--clip-purple); color: var(--clip-purple-text); }
+.ly[data-h="blue"]   { background: var(--clip-blue-tint);   box-shadow: inset 0 0 0 1px var(--clip-blue);   color: var(--clip-blue-text); }
+.ly[data-h="orange"] { background: var(--clip-orange-tint); box-shadow: inset 0 0 0 1px var(--clip-orange); color: var(--clip-orange-text); }
+.ly[data-h="green"]  { background: var(--clip-green-tint);  box-shadow: inset 0 0 0 1px var(--clip-green);  color: var(--clip-green-text); }
+.ly[data-h="pink"]   { background: var(--clip-pink-tint);   box-shadow: inset 0 0 0 1px var(--clip-pink);   color: var(--clip-pink-text); }
+.ly[data-h="cyan"]   { background: var(--clip-cyan-tint);   box-shadow: inset 0 0 0 1px var(--clip-cyan);   color: var(--clip-cyan-text); }
+.ly.is-sel[data-h="purple"] { box-shadow: inset 0 0 0 2px var(--clip-purple); }
+.ly.is-sel[data-h="blue"]   { box-shadow: inset 0 0 0 2px var(--clip-blue); }
+.ly.is-sel[data-h="orange"] { box-shadow: inset 0 0 0 2px var(--clip-orange); }
+.ly.is-sel[data-h="green"]  { box-shadow: inset 0 0 0 2px var(--clip-green); }
+.ly.is-sel[data-h="pink"]   { box-shadow: inset 0 0 0 2px var(--clip-pink); }
+.ly.is-sel[data-h="cyan"]   { box-shadow: inset 0 0 0 2px var(--clip-cyan); }
+
+/* Gallery shell: calm, breathable, zero visual clutter */
+.fg { max-width: 1260px; margin: 0 auto; padding: 24px 6px 56px; }
+.fg-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px 24px; margin: 0 0 22px; }
+.fg-head h1 { margin: 0; font: 600 22px/1.15 var(--font); letter-spacing: -0.02em; }
+.fg-head p { margin: 5px 0 0; color: var(--muted); font-size: 13px; max-width: 58ch; }
+.fg-wall {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 360px), 1fr));
+  gap: 10px;
+}
+.fg-tile {
+  display: grid; width: 100%; padding: 0; border: 0; background: var(--panel);
+  border-radius: var(--r-panel); text-align: left; cursor: pointer; overflow: hidden;
+}
+.fg-stage {
+  position: relative; height: 264px; background: var(--panel); overflow: hidden;
+  display: grid; place-items: center;
+}
+.fg-tile:hover .fg-name { background: var(--panel-3); }
+.fg-stage > .rp-mount {
+  width: 100%; height: 100%; display: grid; place-items: center;
+  padding: 14px; container-type: inline-size; pointer-events: none;
+}
+.fg-name {
+  display: flex; align-items: baseline; gap: 8px; padding: 8px 12px; min-width: 0;
+  background: var(--panel-2);
+}
+.fg-name b { font-weight: 600; font-size: 12px; white-space: nowrap; flex: none; }
+.fg-name span { color: var(--muted); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+
+/* Open sheet: cuts in where it stands (100ms), exits quicker (75ms) */
+.fg-sheet { position: fixed; inset: 0; z-index: 20; display: none; background: var(--body); overflow: auto; overscroll-behavior: contain; }
+.fg-sheet.is-open { display: grid; grid-template-rows: auto 1fr auto; }
+.fg-bar { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 8px; padding: 10px 14px; background: var(--panel-2); }
+.fg-bar h2 { margin: 0; font: 600 13px/1.2 var(--font); text-align: center; }
+.fg-bar .l { justify-self: start; } .fg-bar .r { justify-self: end; display: flex; gap: 4px; }
+.fg-open { display: grid; place-items: center; min-height: 0; padding: 24px 14px; }
+.fg-open > .rp-mount { width: min(100%, 760px); min-height: min(440px, 100%); display: grid; place-items: center; container-type: inline-size; }
+.fg-about { max-width: 560px; margin: 0 auto; padding: 0 16px 24px; text-align: center; color: var(--muted); font-size: 13px; }
+.fg-about b { display: block; color: var(--ink); font-weight: 500; }
+.fg-foot { margin-top: 28px; color: var(--muted); font-size: 12px; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+@media (max-width: 720px) { .fg-stage { height: 248px; } }
+</style>
+</head>
+<body>
+<main class="fg">
+  <header class="fg-head">
+    <div>
+      <h1>Rack</h1>
+      <p>Twelve simple, uplifting studies in Rack — one strip, one surface, luminous layer colours, zero clutter. Open any study to play with it directly.</p>
+    </div>
+    <button class="rk-key" style="height:26px;padding:0 11px;font-size:12px" type="button" id="fg-theme">Dark</button>
+  </header>
+  <ul class="fg-wall" id="fg-wall"></ul>
+  <footer class="fg-foot">
+    <span>Each study moves quietly until your hand arrives. Zero springs, zero shadows, zero unnecessary chrome.</span>
+    <span style="font-family:var(--mono)">12 STUDIES</span>
+  </footer>
+</main>
+
+<div class="fg-sheet" id="fg-sheet" role="dialog" aria-modal="true" aria-labelledby="fg-sheet-title">
+  <div class="fg-bar">
+    <div class="l"><button class="rk-key" style="height:26px" type="button" id="fg-close">Close</button></div>
+    <h2 id="fg-sheet-title"></h2>
+    <div class="r">
+      <button class="rk-key" style="height:26px" type="button" id="fg-prev" aria-label="Previous study">←</button>
+      <button class="rk-key" style="height:26px" type="button" id="fg-next" aria-label="Next study">→</button>
+    </div>
+  </div>
+  <div class="fg-open" id="fg-open"></div>
+  <p class="fg-about" id="fg-about"></p>
+</div>
+<p class="sr-only" id="fg-live" aria-live="polite"></p>
+
+<script>
+window.RackPlayer = (function () {
+  const studies = [];
+  const reduced = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const CUT_IN = { duration: 100, easing: "cubic-bezier(0.23, 1, 0.32, 1)" };
+  const CUT_OUT = { duration: 75, easing: "cubic-bezier(0.23, 1, 0.32, 1)" };
+
+  function bindDrag(el, opts) {
+    const { min, max, step = 1, def, get, set, signal, rangePx = 110 } = opts;
+    const clamp = (v) => Math.max(min, Math.min(max, Number((Math.round((v - min) / step) * step + min).toFixed(6))));
+    let sy = 0, sv = 0, drag = false;
+    el.addEventListener("pointerdown", (e) => {
+      if (e.button !== 0) return;
+      drag = true; sy = e.clientY; sv = get();
+      el.setPointerCapture(e.pointerId); el.classList.add("is-drag"); e.preventDefault();
+    }, { signal });
+    el.addEventListener("pointermove", (e) => {
+      if (!drag) return;
+      const next = clamp(sv + ((sy - e.clientY) / rangePx) * (max - min) * (e.shiftKey ? 0.25 : 1));
+      if (next !== get()) set(next);
+    }, { signal });
+    const end = () => { if (drag) { drag = false; el.classList.remove("is-drag"); } };
+    el.addEventListener("pointerup", end, { signal });
+    el.addEventListener("pointercancel", end, { signal });
+    el.addEventListener("dblclick", () => set(def), { signal });
+    el.addEventListener("wheel", (e) => { e.preventDefault(); set(clamp(get() + (e.deltaY < 0 ? 1 : -1) * step)); }, { signal, passive: false });
+    el.addEventListener("keydown", (e) => {
+      const d = { ArrowUp: step, ArrowRight: step, ArrowDown: -step, ArrowLeft: -step }[e.key];
+      if (d !== undefined) { e.preventDefault(); set(clamp(get() + d)); }
+      else if (e.key === "0" || e.key === "Backspace") { e.preventDefault(); set(def); }
+    }, { signal });
+  }
+
+  return {
+    studies, reduced, CUT_IN, CUT_OUT, bindDrag,
+    register(s) {
+      studies.push(s);
+      if (s.css) { const st = document.createElement("style"); st.dataset.study = s.slug; st.textContent = s.css; document.head.appendChild(st); }
+    },
+  };
+})();
+</script>
+<script>
+/* 01-light-studies.js */
+/* 01-light-studies.js — Light Studies:
+   Animated long-exposure light horizons on a crisp 2D canvas, switched on the beat with four layer keys. */
+(function () {
+  const S = ".rs-light-studies";
+  const LOOKS = [
+    { name: "Dawn", hue: "orange", stops: ["#2d140a", "#c85214", "#ffb066", "#fff0d6"] },
+    { name: "Lagoon", hue: "cyan", stops: ["#072429", "#0b7a78", "#5ad9cb", "#dcfbf6"] },
+    { name: "Bloom", hue: "pink", stops: ["#380e24", "#bd2d76", "#ff8fc4", "#ffe4f2"] },
+    { name: "Dusk", hue: "purple", stops: ["#171038", "#5c3ec9", "#a992ff", "#ece6ff"] },
+  ];
+
+  RackPlayer.register({
+    slug: "light-studies",
+    title: "Light Studies",
+    tagline: "Long-exposure horizons that breathe softly until you pick a new mood.",
+    css: `
+${S} .ls-wrap { padding: 10px; display: grid; gap: 8px; }
+${S} .ls-can {
+  width: 100%; height: 124px; display: block; border-radius: var(--r-control);
+  box-shadow: var(--edge);
+}
+${S} .ls-keys { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }
+${S} .ls-k {
+  height: 26px; border: 0; padding: 0 6px; font-size: 11px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+${S}.is-tile .ls-can { height: 114px; }
+`,
+    mount(host, ctx) {
+      let cur = 0, live = !ctx.reduced(), phase = 1.2;
+
+      host.innerHTML =
+        '<div class="rk">' +
+          '<div class="rk-strip"><b>Light</b><button type="button" class="rk-key is-on" style="margin-left:auto" id="ls-live">Live</button></div>' +
+          '<div class="ls-wrap">' +
+            '<canvas class="ls-can" width="420" height="140" aria-hidden="true"></canvas>' +
+            '<div class="ls-keys" role="radiogroup" aria-label="Light mood">' +
+              LOOKS.map((l, i) => '<button type="button" role="radio" class="ly ls-k" data-i="' + i + '" data-h="' + l.hue + '">' + l.name + '</button>').join("") +
+            '</div>' +
+          '</div>' +
+        '</div>';
+
+      const can = host.querySelector("canvas");
+      const g = can.getContext("2d");
+      const btns = [...host.querySelectorAll(".ls-k")];
+      const liveBtn = host.querySelector("#ls-live");
+
+      function paint() {
+        const w = can.width, h = can.height, s = LOOKS[cur].stops;
+        const grad = g.createLinearGradient(0, h, w, 0);
+        const shift = Math.sin(phase * 0.55) * 0.08;
+        grad.addColorStop(0, s[0]);
+        grad.addColorStop(Math.max(0.15, Math.min(0.45, 0.34 + shift)), s[1]);
+        grad.addColorStop(Math.max(0.52, Math.min(0.82, 0.68 - shift)), s[2]);
+        grad.addColorStop(1, s[3]);
+        g.fillStyle = grad;
+        g.fillRect(0, 0, w, h);
+
+        for (let i = 0; i < 6; i++) {
+          const y = h * (0.16 + i * 0.14) + Math.sin(phase * 0.7 + i * 1.1) * 10;
+          const rg = g.createLinearGradient(0, y - 16, w, y + 16);
+          rg.addColorStop(0, "transparent");
+          rg.addColorStop(0.45, s[3] + "44");
+          rg.addColorStop(0.8, s[2] + "33");
+          rg.addColorStop(1, "transparent");
+          g.fillStyle = rg;
+          g.fillRect(0, y - 14, w, 28);
+        }
+      }
+
+      function drawUI() {
+        btns.forEach((b, i) => {
+          b.classList.toggle("is-sel", i === cur);
+          b.setAttribute("aria-checked", String(i === cur));
+        });
+        liveBtn.classList.toggle("is-on", live);
+        liveBtn.textContent = live ? "Live" : "Still";
+        paint();
+      }
+
+      btns.forEach((b) => b.addEventListener("click", () => { cur = +b.dataset.i; drawUI(); }, { signal: ctx.signal }));
+      liveBtn.addEventListener("click", () => { live = !live; drawUI(); }, { signal: ctx.signal });
+      drawUI();
+
+      ctx.loop((dt) => {
+        if (!live) return;
+        phase += dt;
+        paint();
+      });
+
+      let ghost = !ctx.reduced();
+      ctx.onHand(() => { ghost = false; });
+      if (ghost) ctx.every(3200, () => { if (!ghost || !live) return; cur = (cur + 1) % LOOKS.length; drawUI(); });
+    },
+  });
+})();
+
+</script>
+<script>
+/* 02-team-motion.js */
+/* 02-team-motion.js — Team in Motion:
+   Four luminous agent cards on one surface; the active one fills gently from below with one plain line. */
+(function () {
+  const S = ".rs-team-motion";
+  const AGENTS = [
+    { name: "Plan", hue: "purple", line: "Sketching the layout" },
+    { name: "Explore", hue: "blue", line: "Found 3 clean patterns" },
+    { name: "Build", hue: "orange", line: "Writing the component" },
+    { name: "Polish", hue: "green", line: "Everything passes" },
+  ];
+
+  RackPlayer.register({
+    slug: "team-motion",
+    title: "Team in Motion",
+    tagline: "Four teammates on one quiet lane — click any card to hand them the baton.",
+    css: `
+${S} .tm-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+${S} .tm-card {
+  position: relative; height: 118px; padding: 8px; border: 0; text-align: left; cursor: pointer;
+  display: flex; flex-direction: column; justify-content: space-between; overflow: hidden;
+}
+${S} .tm-fill { position: absolute; left: 0; right: 0; bottom: 0; opacity: 0.24; pointer-events: none; }
+${S} .tm-bar { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; pointer-events: none; }
+${S} .tm-name { position: relative; font-size: 11px; font-weight: 600; }
+${S} .tm-line { position: relative; font-size: 10px; font-weight: 400; line-height: 1.3; opacity: 0.9; }
+${S}.is-tile .tm-card { height: 104px; padding: 7px; }
+`,
+    mount(host, ctx) {
+      let cur = 0, progress = 0.52, running = !ctx.reduced();
+
+      host.innerHTML =
+        '<div class="rk">' +
+          '<div class="rk-strip"><b>Team</b><button type="button" class="rk-key is-on" style="margin-left:auto" id="tm-run">Running</button></div>' +
+          '<div class="rk-surf"><div class="tm-grid">' +
+            AGENTS.map((a, i) =>
+              '<button type="button" class="ly tm-card" data-i="' + i + '" data-h="' + a.hue + '">' +
+                '<i class="tm-fill" style="background:var(--clip-' + a.hue + ')"></i>' +
+                '<i class="tm-bar" style="background:var(--clip-' + a.hue + ')"></i>' +
+                '<span class="tm-name">' + a.name + '</span>' +
+                '<span class="tm-line"></span>' +
+              '</button>'
+            ).join("") +
+          '</div></div>' +
+        '</div>';
+
+      const cards = [...host.querySelectorAll(".tm-card")];
+      const runBtn = host.querySelector("#tm-run");
+
+      function draw() {
+        runBtn.classList.toggle("is-on", running);
+        runBtn.textContent = running ? "Running" : "Paused";
+        cards.forEach((c, i) => {
+          const on = i === cur;
+          c.classList.toggle("is-sel", on);
+          c.querySelector(".tm-line").textContent = on ? AGENTS[i].line : "";
+          c.querySelector(".tm-fill").style.height = on ? Math.round(progress * 100) + "%" : "0%";
+          c.querySelector(".tm-bar").style.opacity = on ? "1" : "0.18";
+        });
+      }
+
+      cards.forEach((c) => c.addEventListener("click", () => { cur = +c.dataset.i; progress = 0.25; draw(); }, { signal: ctx.signal }));
+      runBtn.addEventListener("click", () => { running = !running; draw(); }, { signal: ctx.signal });
+      draw();
+
+      ctx.loop((dt) => {
+        if (!running) return;
+        progress += dt * 0.28;
+        if (progress >= 1) { progress = 0; cur = (cur + 1) % AGENTS.length; }
+        draw();
+      });
+    },
+  });
+})();
+
+</script>
+<script>
+/* 03-effort-balance.js */
+/* 03-effort-balance.js — Effort Balance:
+   Three tall coloured layer blocks you drag 1:1 vertically (Shift fine, double-click home) — zero fake sliders. */
+(function () {
+  const S = ".rs-effort-balance";
+  const LANES = [
+    { name: "Depth", hue: "purple", def: 68, v: 68 },
+    { name: "Speed", hue: "orange", def: 44, v: 44 },
+    { name: "Care", hue: "green", def: 82, v: 82 },
+  ];
+
+  RackPlayer.register({
+    slug: "effort-balance",
+    title: "Effort Balance",
+    tagline: "Drag straight up or down on any block — Shift for fine, double-click to reset.",
+    css: `
+${S} .eb-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+${S} .eb-lane {
+  position: relative; height: 126px; padding: 9px; cursor: ns-resize; user-select: none; touch-action: none;
+  display: flex; flex-direction: column; justify-content: space-between; overflow: hidden;
+}
+${S} .eb-fill { position: absolute; left: 0; right: 0; bottom: 0; opacity: 0.28; pointer-events: none; }
+${S} .eb-line { position: absolute; left: 0; right: 0; height: 2px; pointer-events: none; }
+${S} .eb-name { position: relative; font-size: 11px; font-weight: 600; }
+${S} .eb-val { position: relative; font: 600 18px/1 var(--mono); letter-spacing: -0.02em; }
+${S} .eb-lane.is-drag { outline: 2px solid var(--ink); outline-offset: -2px; }
+${S}.is-tile .eb-lane { height: 112px; padding: 8px; }
+${S}.is-tile .eb-val { font-size: 16px; }
+`,
+    mount(host, ctx) {
+      const state = LANES.map((l) => ({ ...l }));
+
+      host.innerHTML =
+        '<div class="rk">' +
+          '<div class="rk-strip"><b>Effort</b><button type="button" class="rk-key" style="margin-left:auto" id="eb-rst">Reset</button></div>' +
+          '<div class="rk-surf"><div class="eb-grid">' +
+            state.map((l, i) =>
+              '<div class="ly eb-lane" tabindex="0" role="slider" aria-label="' + l.name + '" aria-valuemin="0" aria-valuemax="100" data-i="' + i + '" data-h="' + l.hue + '">' +
+                '<i class="eb-fill" style="background:var(--clip-' + l.hue + ')"></i>' +
+                '<i class="eb-line" style="background:var(--clip-' + l.hue + ')"></i>' +
+                '<span class="eb-name">' + l.name + '</span>' +
+                '<span class="eb-val"></span>' +
+              '</div>'
+            ).join("") +
+          '</div></div>' +
+        '</div>';
+
+      const els = [...host.querySelectorAll(".eb-lane")];
+      function draw() {
+        state.forEach((l, i) => {
+          const h = (l.v * 0.74).toFixed(1) + "%";
+          els[i].querySelector(".eb-fill").style.height = h;
+          els[i].querySelector(".eb-line").style.bottom = h;
+          els[i].querySelector(".eb-val").textContent = l.v + "%";
+          els[i].setAttribute("aria-valuenow", String(l.v));
+        });
+      }
+
+      els.forEach((el, i) => ctx.bindDrag(el, {
+        min: 5, max: 95, step: 1, def: state[i].def,
+        get: () => state[i].v, set: (v) => { state[i].v = v; draw(); }, signal: ctx.signal,
+      }));
+      host.querySelector("#eb-rst").addEventListener("click", () => { state.forEach((l) => { l.v = l.def; }); draw(); }, { signal: ctx.signal });
+      draw();
+
+      let ghost = !ctx.reduced(), t = 0;
+      ctx.onHand(() => { ghost = false; });
+      ctx.loop((dt) => {
+        if (!ghost) return;
+        t += dt;
+        state[0].v = Math.round(62 + Math.sin(t * 0.9) * 16);
+        state[1].v = Math.round(44 + Math.cos(t * 0.7) * 18);
+        state[2].v = Math.round(76 + Math.sin(t * 0.6 + 1.4) * 12);
+        draw();
+      });
+    },
+  });
+})();
+
+</script>
+<script>
+/* 04-focus-mode.js */
+/* 04-focus-mode.js — Focus Mode:
+   One calm status bar over four crisp toggle keys that snap on the frame (0ms) — zero sliding clutter. */
+(function () {
+  const S = ".rs-focus-mode";
+  const ITEMS = [
+    { name: "Quiet notifications", on: true },
+    { name: "Auto-save drafts", on: true },
+    { name: "Live preview", on: true },
+    { name: "Smart suggestions", on: false },
+  ];
+
+  RackPlayer.register({
+    slug: "focus-mode",
+    title: "Focus Mode",
+    tagline: "Four quiet switches that flip on the frame under one calm status summary.",
+    css: `
+${S} .fm-bar {
+  position: relative; height: 42px; padding: 0 10px; margin-bottom: 8px;
+  display: flex; align-items: center; justify-content: space-between; overflow: hidden; font-size: 12px;
+}
+${S} .fm-prog { position: absolute; left: 0; top: 0; bottom: 0; opacity: 0.22; pointer-events: none; }
+${S} .fm-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
+${S} .fm-k {
+  height: 32px; border: 0; border-radius: var(--r-control); padding: 0 10px;
+  background: var(--block); box-shadow: var(--edge); color: var(--ink);
+  font: 500 11px/1 var(--font); cursor: pointer; transition: none;
+}
+${S} .fm-k:hover { background: var(--block-hover); }
+${S} .fm-k:active { box-shadow: var(--edge-press); transform: scale(0.98); }
+${S} .fm-k[aria-pressed="true"] { background: var(--ink); color: var(--panel); font-weight: 600; }
+${S}.is-tile .fm-bar { height: 36px; }
+${S}.is-tile .fm-k { height: 28px; font-size: 10.5px; }
+`,
+    mount(host, ctx) {
+      const state = ITEMS.map((x) => ({ ...x }));
+      let focusOn = true;
+
+      host.innerHTML =
+        '<div class="rk">' +
+          '<div class="rk-strip"><b>Studio</b><button type="button" class="rk-key is-on" style="margin-left:auto" id="fm-all">Focus</button></div>' +
+          '<div class="rk-surf">' +
+            '<div class="ly fm-bar" id="fm-bar" data-h="green"><i class="fm-prog" id="fm-prog" style="background:var(--clip-green)"></i><span style="position:relative" id="fm-msg"></span><span style="position:relative;font-family:var(--mono);font-size:11px" id="fm-cnt"></span></div>' +
+            '<div class="fm-grid">' +
+              state.map((x, i) => '<button type="button" class="fm-k" data-i="' + i + '">' + x.name + '</button>').join("") +
+            '</div>' +
+          '</div>' +
+        '</div>';
+
+      const bar = host.querySelector("#fm-bar");
+      const prog = host.querySelector("#fm-prog");
+      const msg = host.querySelector("#fm-msg");
+      const cnt = host.querySelector("#fm-cnt");
+      const allBtn = host.querySelector("#fm-all");
+      const ks = [...host.querySelectorAll(".fm-k")];
+
+      function draw() {
+        const n = state.filter((x) => x.on).length;
+        const hue = focusOn && n > 0 ? "green" : "orange";
+        bar.dataset.h = hue;
+        prog.style.background = "var(--clip-" + hue + ")";
+        prog.style.width = ((n / state.length) * 100) + "%";
+        msg.textContent = !focusOn ? "Open mode" : n === 4 ? "Deep focus" : "Calm focus";
+        cnt.textContent = n + " / " + state.length;
+        allBtn.classList.toggle("is-on", focusOn);
+        allBtn.textContent = focusOn ? "Focus" : "Open";
+        ks.forEach((k, i) => k.setAttribute("aria-pressed", String(state[i].on)));
+      }
+
+      ks.forEach((k) => k.addEventListener("click", () => { const i = +k.dataset.i; state[i].on = !state[i].on; draw(); }, { signal: ctx.signal }));
+      allBtn.addEventListener("click", () => {
+        focusOn = !focusOn;
+        state.forEach((x, i) => { x.on = focusOn ? i < 3 : false; });
+        draw();
+      }, { signal: ctx.signal });
+      draw();
+    },
+  });
+})();
+
+</script>
+<script>
+/* 05-release-flow.js */
+/* 05-release-flow.js — Release Flow:
+   Clean three-stage staircase (Create -> Check -> Launch) crossed by a scrubbable playhead line. */
+(function () {
+  const S = ".rs-release-flow";
+  const STAGES = [
+    { name: "Create", hue: "blue", start: 0.0, end: 0.42 },
+    { name: "Check", hue: "green", start: 0.40, end: 0.72 },
+    { name: "Launch", hue: "orange", start: 0.70, end: 1.0 },
+  ];
+
+  RackPlayer.register({
+    slug: "release-flow",
+    title: "Release Flow",
+    tagline: "Watch a release cross its three stages, or scrub the playhead anywhere.",
+    css: `
+${S} .rf-surf { position: relative; height: 126px; display: grid; gap: 8px; align-content: center; cursor: ew-resize; user-select: none; touch-action: none; }
+${S} .rf-row { position: relative; height: 28px; }
+${S} .rf-st { position: absolute; top: 0; bottom: 0; padding: 0 9px; display: flex; align-items: center; font-size: 11px; }
+${S} .rf-st.is-wait { opacity: 0.42; }
+${S} .rf-head { position: absolute; top: 6px; bottom: 6px; width: 1.5px; background: var(--ink); pointer-events: none; }
+${S}.is-tile .rf-surf { height: 112px; }
+`,
+    mount(host, ctx) {
+      let pos = 0.56, playing = !ctx.reduced(), dragging = false;
+
+      host.innerHTML =
+        '<div class="rk">' +
+          '<div class="rk-strip"><b>Release</b><span class="rk-box" style="margin-left:auto" id="rf-pct">56%</span><button type="button" class="rk-key is-on" id="rf-btn">Pause</button></div>' +
+          '<div class="rk-surf rf-surf" id="rf-surf">' +
+            STAGES.map((st, i) =>
+              '<div class="rf-row"><div class="ly rf-st" data-i="' + i + '" data-h="' + st.hue + '" style="left:' + (st.start * 100) + '%;width:' + ((st.end - st.start) * 100) + '%">' + st.name + '</div></div>'
+            ).join("") +
+            '<i class="rf-head" id="rf-head"></i>' +
+          '</div>' +
+        '</div>';
+
+      const surf = host.querySelector("#rf-surf");
+      const head = host.querySelector("#rf-head");
+      const pctEl = host.querySelector("#rf-pct");
+      const btn = host.querySelector("#rf-btn");
+      const els = [...host.querySelectorAll(".rf-st")];
+
+      function draw() {
+        const p = Math.max(0, Math.min(1, pos));
+        head.style.left = "calc(10px + (100% - 20px) * " + p.toFixed(4) + ")";
+        pctEl.textContent = p >= 0.99 ? "Live" : Math.round(p * 100) + "%";
+        btn.classList.toggle("is-on", playing);
+        btn.textContent = playing ? "Pause" : p >= 0.99 ? "Replay" : "Run";
+        STAGES.forEach((st, i) => {
+          els[i].classList.toggle("is-wait", p < st.start);
+          els[i].classList.toggle("is-sel", p >= st.start && p <= st.end);
+        });
+      }
+
+      const scrub = (e) => {
+        const r = surf.getBoundingClientRect();
+        pos = Math.max(0, Math.min(1, (e.clientX - r.left - 10) / Math.max(1, r.width - 20)));
+        draw();
+      };
+      surf.addEventListener("pointerdown", (e) => { playing = false; dragging = true; surf.setPointerCapture(e.pointerId); scrub(e); }, { signal: ctx.signal });
+      surf.addEventListener("pointermove", (e) => { if (dragging) scrub(e); }, { signal: ctx.signal });
+      surf.addEventListener("pointerup", () => { dragging = false; }, { signal: ctx.signal });
+      btn.addEventListener("click", () => { if (pos >= 0.99) pos = 0; playing = !playing; draw(); }, { signal: ctx.signal });
+      draw();
+
+      ctx.loop((dt) => {
+        if (!playing) return;
+        pos = (pos + dt * 0.14) % 1.05;
+        if (pos > 1) pos = 0;
+        draw();
+      });
+    },
+  });
+})();
+
+</script>
+<script>
+/* 06-frame-designer.js */
+/* 06-frame-designer.js — Frame Designer:
+   A pink Card directly on an 8px design grid with three draggable value chips (Radius, Space, Border) + A / B recall. */
+(function () {
+  const S = ".rs-frame-designer";
+  const LOOKS = [
+    { radius: 4, space: 12, border: 1 },
+    { radius: 14, space: 18, border: 2 },
+  ];
+
+  RackPlayer.register({
+    slug: "frame-designer",
+    title: "Frame Designer",
+    tagline: "Drag Radius, Space, or Border 1:1 on the canvas, or jump between looks A and B.",
+    css: `
+${S} .fd-wrap { padding: 10px; display: grid; gap: 8px; }
+${S} .fd-grid {
+  position: relative; height: 98px; border-radius: var(--r-control);
+  background: var(--cut); box-shadow: var(--edge);
+  background-image: linear-gradient(to right, var(--line) 1px, transparent 1px), linear-gradient(to bottom, var(--line) 1px, transparent 1px);
+  background-size: 12px 12px; display: grid; place-items: center;
+}
+${S} .fd-card { min-width: 148px; display: grid; gap: 6px; font-size: 11px; }
+${S} .fd-bar { height: 4px; border-radius: 1px; background: var(--clip-pink); opacity: 0.45; }
+${S} .fd-props { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+${S} .fd-p {
+  height: 26px; padding: 0 8px; border-radius: var(--r-control);
+  background: var(--cut); box-shadow: var(--edge);
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 10px; cursor: ns-resize; user-select: none; touch-action: none;
+}
+${S} .fd-p b { font-family: var(--mono); font-weight: 600; }
+${S} .fd-p.is-drag { background: var(--accent); color: var(--accent-fg); }
+${S}.is-tile .fd-grid { height: 86px; }
+`,
+    mount(host, ctx) {
+      let ab = 0;
+      const v = { ...LOOKS[0] };
+
+      host.innerHTML =
+        '<div class="rk">' +
+          '<div class="rk-strip"><b>Card</b><div class="rk-seg is-yellow" style="margin-left:auto" role="radiogroup" aria-label="Variation"><button type="button" role="radio" data-ab="0">A</button><button type="button" role="radio" data-ab="1">B</button></div></div>' +
+          '<div class="fd-wrap">' +
+            '<div class="fd-grid"><div class="ly fd-card" id="fd-card" data-h="pink"><span>Card</span><i class="fd-bar"></i></div></div>' +
+            '<div class="fd-props">' +
+              '<div class="fd-p" tabindex="0" role="slider" aria-label="Radius" data-k="radius"><span>Radius</span><b id="fd-r"></b></div>' +
+              '<div class="fd-p" tabindex="0" role="slider" aria-label="Space" data-k="space"><span>Space</span><b id="fd-s"></b></div>' +
+              '<div class="fd-p" tabindex="0" role="slider" aria-label="Border" data-k="border"><span>Border</span><b id="fd-b"></b></div>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+
+      const card = host.querySelector("#fd-card");
+      const abBtns = [...host.querySelectorAll("[data-ab]")];
+      const rEl = host.querySelector("#fd-r"), sEl = host.querySelector("#fd-s"), bEl = host.querySelector("#fd-b");
+
+      function draw() {
+        card.style.borderRadius = v.radius + "px";
+        card.style.padding = v.space + "px";
+        card.classList.toggle("is-sel", v.border >= 2);
+        rEl.textContent = v.radius + "px";
+        sEl.textContent = v.space + "px";
+        bEl.textContent = v.border + "px";
+        abBtns.forEach((b, i) => b.setAttribute("aria-checked", String(i === ab)));
+      }
+
+      abBtns.forEach((b) => b.addEventListener("click", () => { ab = +b.dataset.ab; Object.assign(v, LOOKS[ab]); draw(); }, { signal: ctx.signal }));
+      const specs = { radius: [0, 20, 1, 4], space: [6, 24, 1, 12], border: [1, 2, 1, 1] };
+      host.querySelectorAll(".fd-p").forEach((el) => {
+        const k = el.dataset.k, [min, max, step, def] = specs[k];
+        ctx.bindDrag(el, { min, max, step, def, get: () => v[k], set: (n) => { v[k] = n; draw(); }, signal: ctx.signal, rangePx: 90 });
+      });
+      draw();
+
+      let ghost = !ctx.reduced();
+      ctx.onHand(() => { ghost = false; });
+      if (ghost) ctx.every(2600, () => { if (!ghost) return; ab = ab ? 0 : 1; Object.assign(v, LOOKS[ab]); draw(); });
+    },
+  });
+})();
+
+</script>
+<script>
+/* 07-redline-inspector.js */
+/* 07-redline-inspector.js — Redline Inspector:
+   Hover or click any coloured layer in a clean frame to outline it and read crisp red pixel distances. */
+(function () {
+  const S = ".rs-redline-inspector";
+  const LAYERS = {
+    header: { label: "Header", dims: "464 × 24", top: "8", right: "8", bottom: "8", left: "8" },
+    nav: { label: "Nav", dims: "104 × 88", top: "8", right: "12", bottom: "8", left: "8" },
+    hero: { label: "Hero", dims: "212 × 88", top: "8", right: "48", bottom: "8", left: "12" },
+    cta: { label: "Action", dims: "76 × 22", top: "54", right: "122", bottom: "12", left: "14" },
+  };
+
+  RackPlayer.register({
+    slug: "redline-inspector",
+    title: "Redline Inspector",
+    tagline: "Point at any layer to read its exact spacing — nothing trails or flickers.",
+    css: `
+${S} .ri-can {
+  position: relative; margin: 10px; height: 132px; border-radius: var(--r-control);
+  background: var(--cut); box-shadow: var(--edge); overflow: hidden;
+}
+${S} .ri-ly {
+  position: absolute; padding: 4px 7px; font-size: 10px; border: 0; text-align: left; cursor: pointer;
+}
+${S} .ri-tag {
+  position: absolute; background: var(--danger); color: #fff;
+  font: 600 9px/1 var(--mono); padding: 2px 4px; border-radius: 1px; pointer-events: none;
+}
+${S}.is-tile .ri-can { height: 120px; }
+`,
+    mount(host, ctx) {
+      let sel = "hero";
+
+      host.innerHTML =
+        '<div class="rk">' +
+          '<div class="rk-strip"><b>Frame</b><span class="rk-box" style="margin-left:auto" id="ri-dim">212 × 88</span></div>' +
+          '<div class="ri-can">' +
+            '<button type="button" class="ly ri-ly" data-id="header" data-h="purple" style="left:8px;right:8px;top:8px;height:24px">Header</button>' +
+            '<button type="button" class="ly ri-ly" data-id="nav" data-h="green" style="left:8px;top:40px;bottom:8px;width:24%">Nav</button>' +
+            '<button type="button" class="ly ri-ly" data-id="hero" data-h="pink" style="left:32%;top:40px;bottom:8px;width:52%">Hero</button>' +
+            '<button type="button" class="ly ri-ly" data-id="cta" data-h="cyan" style="left:36%;bottom:16px;width:22%;height:22px">Action</button>' +
+            '<span class="ri-tag" id="ri-t" style="left:55%;top:31px">8</span>' +
+            '<span class="ri-tag" id="ri-l" style="left:27%;top:74px">12</span>' +
+            '<span class="ri-tag" id="ri-r" style="right:14px;top:74px">48</span>' +
+          '</div>' +
+        '</div>';
+
+      const els = [...host.querySelectorAll(".ri-ly")];
+      const dim = host.querySelector("#ri-dim");
+      const tEl = host.querySelector("#ri-t"), lEl = host.querySelector("#ri-l"), rEl = host.querySelector("#ri-r");
+
+      function draw() {
+        const info = LAYERS[sel];
+        dim.textContent = info.label + " · " + info.dims;
+        tEl.textContent = info.top; lEl.textContent = info.left; rEl.textContent = info.right;
+        els.forEach((el) => el.classList.toggle("is-sel", el.dataset.id === sel));
+      }
+
+      els.forEach((el) => {
+        el.addEventListener("pointerenter", () => { sel = el.dataset.id; draw(); }, { signal: ctx.signal });
+        el.addEventListener("click", () => { sel = el.dataset.id; draw(); }, { signal: ctx.signal });
+      });
+      draw();
+
+      const seq = ["hero", "cta", "nav", "header"];
+      let ghost = !ctx.reduced(), idx = 0;
+      ctx.onHand(() => { ghost = false; });
+      if (ghost) ctx.every(2200, () => { if (!ghost) return; sel = seq[++idx % seq.length]; draw(); });
+    },
+  });
+})();
+
+</script>
+<script>
+/* 08-responsive-preview.js */
+/* 08-responsive-preview.js — Responsive Preview:
+   Four breakpoint keys (lit yellow on the chosen width) over one clean grid surface that rearranges on the beat. */
+(function () {
+  const S = ".rs-responsive-preview";
+  const BPS = [
+    { w: 390, name: "Phone", cols: 1, cards: 2 },
+    { w: 768, name: "Tablet", cols: 2, cards: 2 },
+    { w: 1280, name: "Laptop", cols: 3, cards: 3 },
+    { w: 1440, name: "Desktop", cols: 4, cards: 4 },
+  ];
+
+  RackPlayer.register({
+    slug: "responsive-preview",
+    title: "Responsive Preview",
+    tagline: "Pick a breakpoint and watch the layout frame snap cleanly into place.",
+    css: `
+${S} .rp-grid {
+  margin: 10px; height: 132px; padding: 10px; border-radius: var(--r-control);
+  background: var(--cut); box-shadow: var(--edge);
+  background-image: linear-gradient(to right, var(--line) 1px, transparent 1px), linear-gradient(to bottom, var(--line) 1px, transparent 1px);
+  background-size: 12px 12px; display: grid; gap: 6px; align-content: start;
+}
+${S} .rp-meta { font: 500 10px/1 var(--mono); color: var(--muted); }
+${S} .rp-hd { padding: 4px 7px; font-size: 10px; display: flex; justify-content: space-between; align-items: center; }
+${S} .rp-cards { display: grid; gap: 6px; }
+${S} .rp-card { height: 54px; padding: 6px 7px; font-size: 10px; display: flex; flex-direction: column; justify-content: space-between; }
+${S}.is-tile .rp-grid { height: 120px; padding: 8px; }
+${S}.is-tile .rp-card { height: 46px; }
+`,
+    mount(host, ctx) {
+      let cur = 1;
+
+      host.innerHTML =
+        '<div class="rk">' +
+          '<div class="rk-strip"><b>Layout</b><div class="rk-seg is-yellow" style="margin-left:auto" role="radiogroup" aria-label="Breakpoint">' +
+            BPS.map((b, i) => '<button type="button" role="radio" data-i="' + i + '">' + b.w + '</button>').join("") +
+          '</div></div>' +
+          '<div class="rp-grid" id="rp-g"></div>' +
+        '</div>';
+
+      const btns = [...host.querySelectorAll("[role=radio]")];
+      const grid = host.querySelector("#rp-g");
+
+      function draw() {
+        const b = BPS[cur];
+        btns.forEach((x, i) => x.setAttribute("aria-checked", String(i === cur)));
+        grid.innerHTML =
+          '<span class="rp-meta">' + b.name + ' · ' + b.w + 'px · ' + b.cols + ' col</span>' +
+          '<div class="ly rp-hd" data-h="purple"><span>Header</span><span class="ly" data-h="cyan" style="padding:1px 5px;font-size:9px">Action</span></div>' +
+          '<div class="rp-cards" style="grid-template-columns:repeat(' + b.cols + ',1fr)">' +
+            Array.from({ length: b.cards }, (_, i) => '<div class="ly rp-card" data-h="pink"><span>Card ' + (i + 1) + '</span></div>').join("") +
+          '</div>';
+      }
+
+      btns.forEach((b) => b.addEventListener("click", () => { cur = +b.dataset.i; draw(); }, { signal: ctx.signal }));
+      draw();
+
+      let ghost = !ctx.reduced();
+      ctx.onHand(() => { ghost = false; });
+      if (ghost) ctx.every(2400, () => { if (!ghost) return; cur = (cur + 1) % BPS.length; draw(); });
+    },
+  });
+})();
+
+</script>
+<script>
+/* 09-quick-jump.js */
+/* 09-quick-jump.js — Quick Jump:
+   Spacious 0ms command jump box with four clean layer-tagged actions and crisp keyboard caps. */
+(function () {
+  const S = ".rs-quick-jump";
+  const ACTIONS = [
+    { name: "Start a fresh canvas", tag: "Design", hue: "pink", key: "⌘N" },
+    { name: "Switch to dark studio", tag: "Theme", hue: "purple", key: "⌘D" },
+    { name: "Share live preview", tag: "Share", hue: "blue", key: "⌘S" },
+    { name: "Run quality check", tag: "Check", hue: "green", key: "⌘K" },
+  ];
+
+  RackPlayer.register({
+    slug: "quick-jump",
+    title: "Quick Jump",
+    tagline: "Type to filter and jump anywhere on the frame — zero animation lag.",
+    css: `
+${S} .qj-in {
+  flex: 1; min-width: 0; height: 22px; padding: 0 7px; border: 0; border-radius: var(--r-control);
+  background: var(--cut); box-shadow: var(--edge); outline: none; font-size: 11px;
+}
+${S} .qj-list { display: grid; gap: 4px; }
+${S} .qj-row {
+  display: grid; grid-template-columns: 56px 1fr auto; align-items: center; gap: 8px;
+  padding: 6px 7px; border: 0; border-radius: var(--r-control); background: transparent;
+  text-align: left; cursor: pointer; font-size: 12px; transition: none;
+}
+${S} .qj-row.is-sel { background: var(--ink); color: var(--panel); }
+${S} .qj-tag { padding: 3px 0; text-align: center; font-size: 10px; }
+${S} .qj-cap {
+  font: 600 10px/1 var(--mono); padding: 3px 5px; border-radius: var(--r-control);
+  background: var(--block); box-shadow: var(--edge); color: var(--ink);
+}
+${S} .qj-row.is-sel .qj-cap { background: var(--accent); color: var(--accent-fg); box-shadow: none; }
+${S}.is-tile .qj-row { padding: 5px 6px; font-size: 11px; }
+`,
+    mount(host, ctx) {
+      let query = "", sel = 0;
+
+      host.innerHTML =
+        '<div class="rk">' +
+          '<div class="rk-strip"><input class="qj-in" id="qj-in" type="text" placeholder="Jump to action..." autocomplete="off" aria-label="Jump to action"><span class="rk-box" id="qj-st">Ready</span></div>' +
+          '<div class="rk-surf"><div class="qj-list" id="qj-list"></div></div>' +
+        '</div>';
+
+      const inp = host.querySelector("#qj-in");
+      const list = host.querySelector("#qj-list");
+      const st = host.querySelector("#qj-st");
+
+      const items = () => {
+        const q = query.trim().toLowerCase();
+        return q ? ACTIONS.filter((a) => (a.name + " " + a.tag).toLowerCase().includes(q)) : ACTIONS;
+      };
+
+      function draw() {
+        const rows = items();
+        if (sel >= rows.length) sel = Math.max(0, rows.length - 1);
+        list.innerHTML = rows.map((a, i) =>
+          '<button type="button" class="qj-row' + (i === sel ? ' is-sel' : '') + '" data-i="' + i + '">' +
+            '<span class="ly qj-tag" data-h="' + a.hue + '">' + a.tag + '</span>' +
+            '<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + a.name + '</span>' +
+            '<kbd class="qj-cap">' + a.key + '</kbd>' +
+          '</button>'
+        ).join("") || '<div style="padding:12px;font-size:11px;color:var(--muted)">No matching action</div>';
+        list.querySelectorAll(".qj-row").forEach((b) => {
+          b.addEventListener("pointerenter", () => { sel = +b.dataset.i; draw(); });
+          b.addEventListener("click", () => { st.textContent = rows[+b.dataset.i].tag + " ✓"; });
+        });
+      }
+
+      inp.addEventListener("input", () => { query = inp.value; sel = 0; draw(); }, { signal: ctx.signal });
+      inp.addEventListener("keydown", (e) => {
+        const rows = items();
+        if (e.key === "ArrowDown") { e.preventDefault(); sel = (sel + 1) % Math.max(1, rows.length); draw(); }
+        else if (e.key === "ArrowUp") { e.preventDefault(); sel = (sel - 1 + rows.length) % Math.max(1, rows.length); draw(); }
+        else if (e.key === "Enter" && rows[sel]) { e.preventDefault(); st.textContent = rows[sel].tag + " ✓"; }
+      }, { signal: ctx.signal });
+      draw();
+
+      let ghost = !ctx.reduced();
+      ctx.onHand(() => { ghost = false; });
+      if (ghost) ctx.every(1600, () => { if (!ghost) return; sel = (sel + 1) % ACTIONS.length; draw(); });
+    },
+  });
+})();
+
+</script>
+<script>
+/* 10-hold-to-ship.js */
+/* 10-hold-to-ship.js — Hold to Ship:
+   Four luminous milestone strips + one tactile Hold to ship key that fills linearly to sunlit yellow. */
+(function () {
+  const S = ".rs-hold-to-ship";
+  const CHECKS = [
+    { name: "Palette tuned", hue: "purple" },
+    { name: "Motion tested", hue: "blue" },
+    { name: "Copy trimmed", hue: "orange" },
+    { name: "Ready to ship", hue: "green" },
+  ];
+
+  RackPlayer.register({
+    slug: "hold-to-ship",
+    title: "Hold to Ship",
+    tagline: "Press and hold to fill the bar and ship — let go early and it steps right back.",
+    css: `
+${S} .hs-list { display: grid; gap: 5px; margin-bottom: 8px; }
+${S} .hs-row { padding: 5px 8px; font-size: 11px; display: flex; justify-content: space-between; align-items: center; }
+${S} .hs-btn {
+  position: relative; width: 100%; height: 32px; border: 0; border-radius: var(--r-control);
+  background: var(--block); box-shadow: var(--edge); color: var(--ink);
+  font: 600 11px/1 var(--font); cursor: pointer; overflow: hidden; user-select: none; touch-action: none;
+  display: flex; align-items: center; justify-content: space-between; padding: 0 10px;
+}
+${S} .hs-fill { position: absolute; inset: 0 auto 0 0; width: 0%; background: var(--accent); pointer-events: none; }
+${S} .hs-btn.is-done .hs-fill { width: 100%; background: var(--accent); }
+${S} .hs-lbl { position: relative; z-index: 1; }
+${S} .hs-btn.is-lit .hs-lbl, ${S} .hs-btn.is-done .hs-lbl { color: var(--accent-fg); }
+${S} .hs-pct {
+  position: relative; z-index: 1; font: 600 10px/1 var(--mono);
+  padding: 2px 5px; border-radius: var(--r-control); background: var(--cut); box-shadow: var(--edge); color: var(--ink);
+}
+${S}.is-tile .hs-row { padding: 4px 7px; font-size: 10px; }
+${S}.is-tile .hs-btn { height: 28px; }
+`,
+    mount(host, ctx) {
+      let pct = 52, holding = false, done = false;
+
+      host.innerHTML =
+        '<div class="rk">' +
+          '<div class="rk-strip"><b>Launch</b><span class="rk-box" style="margin-left:auto" id="hs-st">4 / 4 ready</span></div>' +
+          '<div class="rk-surf">' +
+            '<div class="hs-list">' +
+              CHECKS.map((c) => '<div class="ly hs-row" data-h="' + c.hue + '"><span>' + c.name + '</span><span>✓</span></div>').join("") +
+            '</div>' +
+            '<button type="button" class="hs-btn" id="hs-btn">' +
+              '<i class="hs-fill" id="hs-fill"></i>' +
+              '<span class="hs-lbl" id="hs-lbl">Hold to ship</span>' +
+              '<span class="hs-pct" id="hs-pct">52%</span>' +
+            '</button>' +
+          '</div>' +
+        '</div>';
+
+      const btn = host.querySelector("#hs-btn");
+      const fill = host.querySelector("#hs-fill");
+      const lbl = host.querySelector("#hs-lbl");
+      const pctEl = host.querySelector("#hs-pct");
+      const stEl = host.querySelector("#hs-st");
+
+      function draw() {
+        const p = Math.max(0, Math.min(100, pct));
+        fill.style.width = p.toFixed(1) + "%";
+        btn.classList.toggle("is-lit", p > 30);
+        btn.classList.toggle("is-done", done);
+        lbl.textContent = done ? "Shipped · click to reset" : holding ? "Keep holding..." : "Hold to ship";
+        pctEl.textContent = done ? "LIVE" : Math.round(p) + "%";
+        stEl.textContent = done ? "Shipped ✓" : "4 / 4 ready";
+      }
+
+      let ghost = !ctx.reduced();
+      ctx.onHand(() => { ghost = false; if (!holding && !done) { pct = 0; draw(); } });
+
+      btn.addEventListener("pointerdown", (e) => {
+        ghost = false;
+        if (done) { done = false; pct = 0; draw(); return; }
+        holding = true; btn.setPointerCapture(e.pointerId); draw();
+      }, { signal: ctx.signal });
+      const release = () => { if (holding) { holding = false; if (!done) pct = 0; draw(); } };
+      btn.addEventListener("pointerup", release, { signal: ctx.signal });
+      btn.addEventListener("pointercancel", release, { signal: ctx.signal });
+      draw();
+
+      ctx.loop((dt) => {
+        if (holding) {
+          pct += dt * 115;
+          if (pct >= 100) { pct = 100; holding = false; done = true; }
+          draw();
+        } else if (ghost) {
+          pct += dt * 42;
+          if (pct >= 108) { pct = 0; done = false; }
+          else done = pct >= 98;
+          draw();
+        }
+      });
+    },
+  });
+})();
+
+</script>
+<script>
+/* 11-daily-rhythm.js */
+/* 11-daily-rhythm.js — Daily Rhythm:
+   Crisp tabular count cutting cleanly digit-by-digit (0.35 -> 1, zero blank holes) over an orange 14-day layer bar chart. */
+(function () {
+  const S = ".rs-daily-rhythm";
+  const LOCALES = ["en-US", "de-DE", "fr-FR", "en-IN"];
+  const DAYS = [48, 56, 68, 76, 84, 72, 64, 70, 82, 90, 86, 78, 88, 94];
+
+  RackPlayer.register({
+    slug: "daily-rhythm",
+    title: "Daily Rhythm",
+    tagline: "Live counts that cut in cleanly digit by digit — click any day or switch locale.",
+    css: `
+${S} .dr-wrap { padding: 12px; display: grid; gap: 10px; }
+${S} .dr-read { display: flex; align-items: baseline; gap: 8px; }
+${S} .dr-num { margin: 0; font: 600 24px/1 var(--mono); letter-spacing: -0.02em; white-space: pre; }
+${S} .dr-num span { display: inline-block; }
+${S} .dr-unit { font-size: 12px; color: var(--muted); }
+${S} .dr-delta { margin-left: auto; font: 500 11px/1 var(--mono); color: var(--success); }
+${S} .dr-clip {
+  height: 62px; padding: 8px 6px 0; display: grid; grid-template-columns: repeat(14, 1fr);
+  gap: 3px; align-items: end;
+}
+${S} .dr-bar {
+  border: 0; padding: 0; border-radius: 1px 1px 0 0; cursor: pointer;
+  background: var(--clip-orange); opacity: 0.85;
+}
+${S} .dr-bar.is-sel { background: var(--clip-orange-text); opacity: 1; }
+${S}.is-tile .dr-num { font-size: 21px; }
+${S}.is-tile .dr-clip { height: 52px; }
+`,
+    mount(host, ctx) {
+      let loc = 0, count = 14820, selDay = 13, live = !ctx.reduced();
+      let prevChars = [];
+
+      host.innerHTML =
+        '<div class="rk">' +
+          '<div class="rk-strip"><b>Rhythm</b><button type="button" class="rk-key" style="margin-left:auto" id="dr-loc">en-US</button><button type="button" class="rk-key is-on" id="dr-live">Live</button></div>' +
+          '<div class="dr-wrap">' +
+            '<div class="dr-read"><p class="dr-num" id="dr-num"></p><span class="dr-unit">moments</span><span class="dr-delta" id="dr-d">+1,240 today</span></div>' +
+            '<div class="ly dr-clip" data-h="orange">' +
+              DAYS.map((h, i) => '<button type="button" class="dr-bar" data-i="' + i + '" style="height:' + h + '%" aria-label="Day ' + (i + 1) + '"></button>').join("") +
+            '</div>' +
+          '</div>' +
+        '</div>';
+
+      const numEl = host.querySelector("#dr-num");
+      const locBtn = host.querySelector("#dr-loc");
+      const liveBtn = host.querySelector("#dr-live");
+      const dEl = host.querySelector("#dr-d");
+      const bars = [...host.querySelectorAll(".dr-bar")];
+
+      function draw(animate) {
+        const fmt = new Intl.NumberFormat(LOCALES[loc]);
+        const chars = [...fmt.format(count)];
+        const reshape = chars.length !== prevChars.length;
+        if (reshape) {
+          numEl.replaceChildren(...chars.map((c) => { const sp = document.createElement("span"); sp.textContent = c; return sp; }));
+        }
+        const spans = [...numEl.children];
+        let ord = 0;
+        for (let i = chars.length - 1; i >= 0; i--) {
+          if (!reshape && spans[i].textContent === chars[i]) continue;
+          spans[i].textContent = chars[i];
+          if (animate && !ctx.reduced() && spans[i].animate) {
+            spans[i].animate([{ opacity: 0.35 }, { opacity: 1 }], { duration: 100, delay: ord++ * 60, easing: "cubic-bezier(0.23, 1, 0.32, 1)" });
+          }
+        }
+        prevChars = chars;
+        locBtn.textContent = LOCALES[loc];
+        liveBtn.classList.toggle("is-on", live);
+        liveBtn.textContent = live ? "Live" : "Paused";
+        bars.forEach((b, i) => b.classList.toggle("is-sel", i === selDay));
+        dEl.textContent = "Day " + (selDay + 1) + " · +" + fmt.format(DAYS[selDay] * 14);
+      }
+
+      locBtn.addEventListener("click", () => { loc = (loc + 1) % LOCALES.length; prevChars = []; draw(true); }, { signal: ctx.signal });
+      liveBtn.addEventListener("click", () => { live = !live; draw(false); }, { signal: ctx.signal });
+      bars.forEach((b) => b.addEventListener("click", () => { selDay = +b.dataset.i; draw(false); }, { signal: ctx.signal }));
+      draw(false);
+
+      ctx.onHand(() => { live = false; draw(false); });
+      ctx.every(1800, () => { if (!live) return; count += 12 + Math.floor(Math.random() * 48); draw(true); });
+    },
+  });
+})();
+
+</script>
+<script>
+/* 12-share-install.js */
+/* 12-share-install.js — Share & Install:
+   One strip (0ms crisp package-manager snap) + one spacious mono cut with a cyan component chip and Copy key. */
+(function () {
+  const S = ".rs-share-install";
+  const MANAGERS = [
+    { id: "npm", run: "npx shadcn add" },
+    { id: "pnpm", run: "pnpm dlx shadcn add" },
+    { id: "yarn", run: "yarn dlx shadcn add" },
+    { id: "bun", run: "bunx shadcn add" },
+  ];
+
+  RackPlayer.register({
+    slug: "share-install",
+    title: "Share & Install",
+    tagline: "Pick your manager and copy the command — snaps on the frame with zero lag.",
+    css: `
+${S} .si-surf {
+  margin: 14px; min-height: 62px; padding: 0 10px 0 14px; border-radius: var(--r-control);
+  background: var(--cut); box-shadow: var(--edge);
+  display: flex; align-items: center; gap: 8px;
+}
+${S} .si-code {
+  flex: 1; min-width: 0; display: flex; align-items: center; gap: 6px;
+  font: 500 13px/1 var(--mono); white-space: nowrap; overflow: hidden;
+}
+${S} .si-run { color: var(--muted); overflow: hidden; text-overflow: ellipsis; }
+${S} .si-chip { flex: none; padding: 5px 8px; font-size: 12px; }
+${S} .si-copy { flex: none; height: 28px; padding: 0 11px; }
+${S}.is-tile .si-surf { margin: 10px; min-height: 54px; padding: 0 8px 0 10px; }
+${S}.is-tile .si-code { font-size: 11.5px; }
+`,
+    mount(host, ctx) {
+      let pm = 1, copied = false, timer = 0;
+
+      host.innerHTML =
+        '<div class="rk">' +
+          '<div class="rk-strip"><b>Install</b><div class="rk-seg" style="margin-left:auto" role="radiogroup" aria-label="Package manager">' +
+            MANAGERS.map((m, i) => '<button type="button" role="radio" data-i="' + i + '">' + m.id + '</button>').join("") +
+          '</div></div>' +
+          '<div class="si-surf">' +
+            '<code class="si-code"><span class="si-run" id="si-run"></span><span class="ly si-chip" data-h="cyan" id="si-chip">litt-ui</span></code>' +
+            '<button type="button" class="rk-key si-copy" id="si-copy">Copy</button>' +
+          '</div>' +
+        '</div>';
+
+      const btns = [...host.querySelectorAll("[role=radio]")];
+      const runEl = host.querySelector("#si-run");
+      const chip = host.querySelector("#si-chip");
+      const copyBtn = host.querySelector("#si-copy");
+
+      function draw() {
+        btns.forEach((b, i) => b.setAttribute("aria-checked", String(i === pm)));
+        runEl.textContent = MANAGERS[pm].run;
+        chip.classList.toggle("is-sel", copied);
+        copyBtn.classList.toggle("is-on", copied);
+        copyBtn.textContent = copied ? "Copied ✓" : "Copy";
+      }
+
+      btns.forEach((b) => b.addEventListener("click", () => { pm = +b.dataset.i; copied = false; draw(); }, { signal: ctx.signal }));
+      copyBtn.addEventListener("click", () => {
+        copied = true; draw();
+        try { navigator.clipboard && navigator.clipboard.writeText(MANAGERS[pm].run + " litt-ui"); } catch (e) {}
+        clearTimeout(timer);
+        timer = ctx.after(1600, () => { copied = false; draw(); });
+      }, { signal: ctx.signal });
+      draw();
+
+      let ghost = !ctx.reduced();
+      ctx.onHand(() => { ghost = false; });
+      if (ghost) ctx.every(2600, () => {
+        if (!ghost) return;
+        if (!copied) { copied = true; }
+        else { copied = false; pm = (pm + 1) % MANAGERS.length; }
+        draw();
+      });
+    },
+  });
+})();
+
+</script>
+<script>
+(function () {
+  const P = window.RackPlayer;
+  const ORDER = [
+    "light-studies", "team-motion", "effort-balance", "focus-mode",
+    "release-flow", "frame-designer", "redline-inspector", "responsive-preview",
+    "quick-jump", "hold-to-ship", "daily-rhythm", "share-install"
+  ];
+  const set = ORDER.map((slug) => P.studies.find((s) => s.slug === slug)).filter(Boolean);
+  const n = set.length;
+  const $ = (id) => document.getElementById(id);
+  const wall = $("fg-wall"), sheet = $("fg-sheet"), openEl = $("fg-open"), live = $("fg-live");
+
+  function mountInto(box, s, tile) {
+    box.textContent = "";
+    const host = document.createElement("div");
+    host.className = "rp-mount rs-" + s.slug + (tile ? " is-tile" : "");
+    host.dataset.study = s.slug;
+    box.appendChild(host);
+    const ac = new AbortController();
+    const rec = { ac, timers: [], intervals: [], rafs: [], hands: [], api: null, host };
+    const ctx = {
+      host, signal: ac.signal, reduced: P.reduced, tile: !!tile, bindDrag: P.bindDrag,
+      after(ms, fn) { const t = setTimeout(fn, ms); rec.timers.push(t); return t; },
+      every(ms, fn) { const t = setInterval(fn, ms); rec.intervals.push(t); return t; },
+      loop(fn) {
+        const r = { stop: false }; rec.rafs.push(r); let last = performance.now();
+        const f = (now) => {
+          if (r.stop || ac.signal.aborted) return;
+          const dt = Math.max(0, Math.min(0.1, (now - last) / 1000));
+          last = now;
+          if (fn(dt, now) === false) { r.stop = true; return; }
+          requestAnimationFrame(f);
+        };
+        requestAnimationFrame(f);
+        return r;
+      },
+      onHand(fn) { rec.hands.push(fn); },
+    };
+    let handed = false;
+    const hand = () => {
+      if (!handed) { handed = true; rec.hands.forEach((f) => { try { f(); } catch (e) {} }); }
+    };
+    if (!tile) for (const t of ["pointerdown", "keydown", "wheel"]) host.addEventListener(t, hand, { signal: ac.signal, capture: true, passive: t === "wheel" });
+    try { rec.api = s.mount(host, ctx) || null; } catch (e) { console.error(s.slug, e); host.textContent = s.title; }
+    return rec;
+  }
+
+  function unmount(rec) {
+    if (!rec) return;
+    try { rec.api && rec.api.destroy && rec.api.destroy(); } catch (e) {}
+    rec.ac.abort(); rec.timers.forEach(clearTimeout); rec.intervals.forEach(clearInterval);
+    rec.rafs.forEach((r) => (r.stop = true)); rec.host.remove();
+  }
+
+  const tiles = set.map((s, i) => {
+    const li = document.createElement("li");
+    li.innerHTML = '<button class="fg-tile" type="button"><div class="fg-stage" inert></div><span class="fg-name"><b></b><span></span></span></button>';
+    const btn = li.firstChild, stage = btn.querySelector(".fg-stage");
+    btn.querySelector("b").textContent = s.title;
+    btn.querySelector(".fg-name span").textContent = s.tagline || "";
+    btn.setAttribute("aria-label", "Open " + s.title);
+    btn.addEventListener("click", () => open(i));
+    wall.appendChild(li);
+    return { s, btn, stage, rec: null, visible: false };
+  });
+
+  let sheetOpen = false;
+  const sync = (t) => {
+    const want = t.visible && !sheetOpen;
+    if (want && !t.rec) t.rec = mountInto(t.stage, t.s, true);
+    if (!want && t.rec) { unmount(t.rec); t.rec = null; }
+  };
+  const io = new IntersectionObserver((entries) => {
+    for (const e of entries) { const t = tiles.find((x) => x.stage === e.target); if (t) { t.visible = e.isIntersecting; sync(t); } }
+  }, { rootMargin: "200px 0px" });
+  tiles.forEach((t) => {
+    io.observe(t.stage);
+    const r = t.stage.getBoundingClientRect();
+    if (r.top < window.innerHeight + 200 && r.bottom > -200) { t.visible = true; sync(t); }
+  });
+
+  let cur = -1, openRec = null;
+  function show(i) {
+    cur = ((i % n) + n) % n;
+    const s = set[cur];
+    unmount(openRec);
+    openRec = mountInto(openEl, s, false);
+    if (!P.reduced() && openRec.host.animate) openRec.host.animate([{ opacity: 0 }, { opacity: 1 }], P.CUT_IN);
+    $("fg-sheet-title").textContent = s.title;
+    $("fg-about").innerHTML = "<b></b>";
+    $("fg-about").firstChild.textContent = s.tagline || "";
+    try { history.replaceState(null, "", "#" + s.slug); } catch (e) {}
+    document.title = s.title + " · Rack";
+    live.textContent = s.title + ", " + (cur + 1) + " of " + n;
+  }
+  function open(i) {
+    sheetOpen = true; tiles.forEach(sync);
+    sheet.classList.add("is-open"); document.body.style.overflow = "hidden";
+    $("fg-wall").inert = true;
+    if (!P.reduced() && sheet.animate) sheet.animate([{ opacity: 0 }, { opacity: 1 }], P.CUT_IN);
+    show(i);
+    $("fg-close").focus({ preventScroll: true });
+  }
+  function close() {
+    if (!sheetOpen) return;
+    const done = () => {
+      unmount(openRec); openRec = null;
+      sheet.classList.remove("is-open"); document.body.style.overflow = "";
+      $("fg-wall").inert = false; sheetOpen = false;
+      const back = tiles[cur].btn; tiles.forEach(sync);
+      back.focus({ preventScroll: true }); back.scrollIntoView({ block: "nearest" });
+      try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {}
+      document.title = "Rack Studies";
+    };
+    if (!P.reduced() && sheet.animate) sheet.animate([{ opacity: 1 }, { opacity: 0 }], P.CUT_OUT).onfinish = done;
+    else done();
+  }
+  $("fg-close").addEventListener("click", close);
+  $("fg-prev").addEventListener("click", () => show(cur - 1));
+  $("fg-next").addEventListener("click", () => show(cur + 1));
+  sheet.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") { e.preventDefault(); close(); }
+    if (e.key === "ArrowLeft" && !e.target.closest("input,[role=slider],[role=radio]")) { e.preventDefault(); show(cur - 1); }
+    if (e.key === "ArrowRight" && !e.target.closest("input,[role=slider],[role=radio]")) { e.preventDefault(); show(cur + 1); }
+  });
+
+  const qTheme = new URLSearchParams(location.search).get("theme");
+  if (qTheme === "light" || qTheme === "dark") document.documentElement.dataset.theme = qTheme;
+  const themeBtn = $("fg-theme");
+  const isDark = () => document.documentElement.dataset.theme ? document.documentElement.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+  const paintTheme = () => { themeBtn.textContent = isDark() ? "Light" : "Dark"; };
+  themeBtn.addEventListener("click", () => { document.documentElement.dataset.theme = isDark() ? "light" : "dark"; paintTheme(); });
+  paintTheme();
+
+  const start = set.findIndex((s) => s.slug === location.hash.slice(1));
+  if (start >= 0) open(start);
+})();
+</script>
+</body>
+</html>
