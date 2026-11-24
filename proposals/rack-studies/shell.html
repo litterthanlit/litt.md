@@ -3,209 +3,324 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Rack 2.0 Studies</title>
+<title>Rack Studies</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-/* Rack (litt-md, taste/litt-principles.md "Rack, the module"; proposals/rack.md): after Ableton Live. A grey body, flat
-   panels a step lighter with no edge, every control a square box in a 1px outline, small exact values in tabular
-   figures, colour that belongs to what you make (clips, tracks), one yellow lit only inside an on key. Square: 2px
-   controls in 6px panels. Rack 2.0: the clip colours retuned as one family of layer colours (a soft tint, a crisp edge in the hue, its name in the
-   hue's text tone; every name 4.5:1 on its tint and every edge 3:1, both themes). */
+/* Rack Studies — built with litt-design-craft:
+   Simple, energetic, uplifting, emotionally inspiring, easy to use and read, calm, zero unnecessary info.
+   Rack 2.0 grammar: one strip, one surface, 6-hue layer-colour family (soft tint + 1px hue edge + 4.5:1 text),
+   square 2px controls in 6px panels, sunlit yellow (#ffc933) lit key, 0ms under a hand, 100ms cut-in, 75ms out. */
 :root {
-  --body: #c8c8c8; --panel: #e2e2e2; --panel-2: #d7d7d7; --panel-3: #cdcdcd; --line: #b5b5b5; --line-strong: #a2a2a2;
-  --control: #6c6c6c; --ink: #111111; --muted: #434343; --disabled: #8a8a8a;
-  --tray: #b9b9b9; --cut: #f3f3f3; --block: #ededed; --block-hover: #d7d7d7; --slot: #b0b0b0; --slot-fill: #5a5a5a; --cap: #f6f6f6;
+  --body: #c8c8c8; --panel: #e2e2e2; --panel-2: #d7d7d7; --panel-3: #cdcdcd;
+  --line: #b5b5b5; --line-strong: #a2a2a2; --control: #6c6c6c;
+  --ink: #111111; --muted: #434343; --disabled: #8a8a8a;
+  --tray: #b9b9b9; --cut: #f3f3f3; --block: #ededed; --block-hover: #d7d7d7;
+  --slot: #b0b0b0; --cap: #f6f6f6;
   --accent: #ffc933; --accent-hover: #ffd35c; --accent-fg: #111111; --accent-tint: #ebdcb9;
   --success: #00601f; --warning: #824200; --danger: #a60e1d;
-  --clip-blue: #2f7bf5; --clip-blue-text: #1a4fb3; --clip-blue-tint: #d9e8ff;
+
+  /* Rack 2.0 6-hue layer-colour family (verified 4.5:1 text on tint, 3:1 edge) */
+  --clip-blue: #2f7bf5;   --clip-blue-text: #1a4fb3;   --clip-blue-tint: #d9e8ff;
   --clip-orange: #cc610a; --clip-orange-text: #9a4300; --clip-orange-tint: #ffe5cc;
-  --clip-cyan: #0e8a82; --clip-cyan-text: #0b6660; --clip-cyan-tint: #d0f2ee;
+  --clip-cyan: #0e8a82;   --clip-cyan-text: #0b6660;   --clip-cyan-tint: #d0f2ee;
   --clip-purple: #7c5cf0; --clip-purple-text: #4a2fb8; --clip-purple-tint: #e6defd;
-  --clip-green: #2f8a3c; --clip-green-text: #1f6a2b; --clip-green-tint: #daf1d6;
-  --clip-pink: #e0438f; --clip-pink-text: #9c1e5e; --clip-pink-tint: #fddbeb;
-  --edge: 0 0 0 1px rgb(0 0 0 / 0.38); --edge-press: 0 0 0 1px rgb(0 0 0 / 0.7);
-  --font: "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --clip-green: #2f8a3c;  --clip-green-text: #1f6a2b;  --clip-green-tint: #daf1d6;
+  --clip-pink: #e0438f;   --clip-pink-text: #9c1e5e;   --clip-pink-tint: #fddbeb;
+
+  --edge: 0 0 0 1px rgb(0 0 0 / 0.36);
+  --edge-press: 0 0 0 1px rgb(0 0 0 / 0.72);
+  --font: "Inter", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
   --mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
   --r-control: 2px; --r-panel: 6px;
-  /* Motion: on the beat. A thing cuts in by opacity on the instant tier and stops quicker; nothing travels or bounces. */
-  --cut-in: 100ms; --cut-out: 75ms; --beat: 60ms; --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --cut-in: 100ms; --cut-out: 75ms; --beat: 60ms;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
-  --body: #161616; --panel: #262626; --panel-2: #2d2d2d; --panel-3: #353535; --line: #3a3a3a; --line-strong: #4a4a4a;
-  --control: #787878; --ink: #ececec; --muted: #bebebe; --disabled: #5c5c5c;
-  --tray: #101010; --cut: #1b1b1b; --block: #3b3b3b; --block-hover: #454545; --slot: #101010; --slot-fill: #9a9a9a; --cap: #cfcfcf;
+  --body: #161616; --panel: #262626; --panel-2: #2d2d2d; --panel-3: #353535;
+  --line: #3a3a3a; --line-strong: #4a4a4a; --control: #787878;
+  --ink: #ececec; --muted: #bebebe; --disabled: #5c5c5c;
+  --tray: #101010; --cut: #1b1b1b; --block: #3b3b3b; --block-hover: #454545;
+  --slot: #101010; --cap: #cfcfcf;
   --accent: #ffc933; --accent-hover: #ffd35c; --accent-fg: #111111; --accent-tint: #443d2e;
   --success: #4dc882; --warning: #eba42b; --danger: #ff948d;
-  --clip-blue: #5a9bff; --clip-blue-text: #b3d0ff; --clip-blue-tint: #16294a;
+
+  --clip-blue: #5a9bff;   --clip-blue-text: #b3d0ff;   --clip-blue-tint: #16294a;
   --clip-orange: #f59a4a; --clip-orange-text: #ffd0a6; --clip-orange-tint: #3e2711;
-  --clip-cyan: #34c2b8; --clip-cyan-text: #98e6df; --clip-cyan-tint: #0f3432;
+  --clip-cyan: #34c2b8;   --clip-cyan-text: #98e6df;   --clip-cyan-tint: #0f3432;
   --clip-purple: #a08cff; --clip-purple-text: #d1c7ff; --clip-purple-tint: #2b2452;
-  --clip-green: #62bb6e; --clip-green-text: #b0e3b4; --clip-green-tint: #17331b;
-  --clip-pink: #f070b0; --clip-pink-text: #ffbadb; --clip-pink-tint: #3e1830;
-  --edge: 0 0 0 1px rgb(0 0 0 / 0.6); --edge-press: 0 0 0 1px rgb(0 0 0 / 0.85); color-scheme: dark } }
+  --clip-green: #62bb6e;  --clip-green-text: #b0e3b4;  --clip-green-tint: #17331b;
+  --clip-pink: #f070b0;   --clip-pink-text: #ffbadb;   --clip-pink-tint: #3e1830;
+
+  --edge: 0 0 0 1px rgb(0 0 0 / 0.6);
+  --edge-press: 0 0 0 1px rgb(0 0 0 / 0.88);
+  color-scheme: dark;
+} }
 :root[data-theme="dark"] {
-  --body: #161616; --panel: #262626; --panel-2: #2d2d2d; --panel-3: #353535; --line: #3a3a3a; --line-strong: #4a4a4a;
-  --control: #787878; --ink: #ececec; --muted: #bebebe; --disabled: #5c5c5c;
-  --tray: #101010; --cut: #1b1b1b; --block: #3b3b3b; --block-hover: #454545; --slot: #101010; --slot-fill: #9a9a9a; --cap: #cfcfcf;
+  --body: #161616; --panel: #262626; --panel-2: #2d2d2d; --panel-3: #353535;
+  --line: #3a3a3a; --line-strong: #4a4a4a; --control: #787878;
+  --ink: #ececec; --muted: #bebebe; --disabled: #5c5c5c;
+  --tray: #101010; --cut: #1b1b1b; --block: #3b3b3b; --block-hover: #454545;
+  --slot: #101010; --cap: #cfcfcf;
   --accent: #ffc933; --accent-hover: #ffd35c; --accent-fg: #111111; --accent-tint: #443d2e;
   --success: #4dc882; --warning: #eba42b; --danger: #ff948d;
-  --clip-blue: #5a9bff; --clip-blue-text: #b3d0ff; --clip-blue-tint: #16294a;
+
+  --clip-blue: #5a9bff;   --clip-blue-text: #b3d0ff;   --clip-blue-tint: #16294a;
   --clip-orange: #f59a4a; --clip-orange-text: #ffd0a6; --clip-orange-tint: #3e2711;
-  --clip-cyan: #34c2b8; --clip-cyan-text: #98e6df; --clip-cyan-tint: #0f3432;
+  --clip-cyan: #34c2b8;   --clip-cyan-text: #98e6df;   --clip-cyan-tint: #0f3432;
   --clip-purple: #a08cff; --clip-purple-text: #d1c7ff; --clip-purple-tint: #2b2452;
-  --clip-green: #62bb6e; --clip-green-text: #b0e3b4; --clip-green-tint: #17331b;
-  --clip-pink: #f070b0; --clip-pink-text: #ffbadb; --clip-pink-tint: #3e1830;
-  --edge: 0 0 0 1px rgb(0 0 0 / 0.6); --edge-press: 0 0 0 1px rgb(0 0 0 / 0.85); color-scheme: dark }
-@media (prefers-reduced-motion: reduce) { :root { --cut-in: 0ms; --cut-out: 0ms; --beat: 0ms } }
+  --clip-green: #62bb6e;  --clip-green-text: #b0e3b4;  --clip-green-tint: #17331b;
+  --clip-pink: #f070b0;   --clip-pink-text: #ffbadb;   --clip-pink-tint: #3e1830;
 
-*, *::before, *::after { box-sizing: border-box }
-html, body { margin: 0 }
-body { background: var(--body); color: var(--ink); font: 400 13px/1.45 var(--font); letter-spacing: 0;
-  -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums;
-  padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(24px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)) }
-button { font: inherit; color: inherit }
-:focus-visible { outline: 2px solid var(--ink); outline-offset: 1px }
-.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap }
+  --edge: 0 0 0 1px rgb(0 0 0 / 0.6);
+  --edge-press: 0 0 0 1px rgb(0 0 0 / 0.88);
+  color-scheme: dark;
+}
+@media (prefers-reduced-motion: reduce) {
+  :root { --cut-in: 0ms; --cut-out: 0ms; --beat: 0ms; }
+}
 
-/* The gallery: Rack's session. The grey body; each study a panel cell, live at a small size, its name in the strip
-   under it; a cell opens the study large in a view that cuts in where it stands. */
-.fg { max-width: 1280px; margin: 0 auto; padding: 24px 4px 64px }
-.fg-head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px 24px; margin: 0 0 20px }
-.fg-head h1 { margin: 0; font: 600 20px/1.2 var(--font); letter-spacing: -0.01em }
-.fg-head p { margin: 4px 0 0; color: var(--muted); max-width: 60ch }
-.fg-pill { display: inline-flex; align-items: center; gap: 6px; height: 26px; padding: 0 10px; border: 0; border-radius: var(--r-control);
-  background: var(--block); box-shadow: var(--edge); color: var(--ink); font: 500 12px var(--font); cursor: pointer;
-  transition: background-color var(--cut-in) var(--ease-out) }
-.fg-pill:hover { background: var(--block-hover) }
-.fg-pill:active { box-shadow: var(--edge-press) }
-.fg-wall { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr)); gap: 8px }
-.fg-tile { display: grid; width: 100%; padding: 0; border: 0; background: var(--panel); border-radius: var(--r-panel); text-align: left; cursor: pointer; overflow: hidden }
-.fg-stage { position: relative; height: 270px; background: var(--panel); overflow: hidden; display: grid; place-items: center }
-.fg-tile:hover .fg-name { background: var(--panel-3) }
-.fg-stage > .fp-mount { width: 100%; height: 100%; display: grid; place-items: center; padding: 12px; container-type: inline-size; pointer-events: none }
-.fg-name { display: flex; align-items: baseline; gap: 8px; padding: 7px 10px; min-width: 0; background: var(--panel-2); transition: background-color var(--cut-in) var(--ease-out) }
-.fg-name b { font-weight: 600; font-size: 12px; white-space: nowrap; flex: none }
-.fg-name span { color: var(--muted); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0 }
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--body); color: var(--ink);
+  font: 400 13px/1.45 var(--font); -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums;
+  padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(28px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+}
+button, input { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 1px; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
-/* The open study: a view on the body that cuts in. */
-.fg-sheet { position: fixed; inset: 0; z-index: 10; display: none; background: var(--body); overflow: auto; overscroll-behavior: contain }
-.fg-sheet.is-open { display: grid; grid-template-rows: auto 1fr auto }
-.fg-bar { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 8px; padding: 10px 12px; background: var(--panel-2) }
-.fg-bar h2 { margin: 0; font: 600 13px/1.2 var(--font); text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
-.fg-bar .fg-close { justify-self: start } .fg-bar .fg-steps { justify-self: end; display: flex; gap: 4px }
-.fg-circle { width: 28px; height: 26px; display: grid; place-items: center; border: 0; border-radius: var(--r-control); background: var(--block); box-shadow: var(--edge); color: var(--ink); cursor: pointer }
-.fg-circle:hover { background: var(--block-hover) } .fg-circle:active { box-shadow: var(--edge-press) }
-.fg-circle svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: square; stroke-linejoin: miter }
-.fg-open { display: grid; place-items: center; min-height: 0; padding: 20px 12px }
-.fg-open > .fp-mount { width: min(100%, 980px); min-height: min(560px, 100%); display: grid; place-items: center; container-type: inline-size }
-.fg-about { max-width: 640px; margin: 0 auto; padding: 0 16px 24px; text-align: center; color: var(--muted) }
-.fg-about b { display: block; color: var(--ink); font-weight: 500; font-size: 13px }
-.fg-foot { margin-top: 32px; color: var(--muted); font-size: 12px }
-@media (max-width: 720px) { .fg-stage { height: 250px } }
+/* Shared Rack 2.0 primitives: one strip + one surface + 6-hue layer objects */
+.rk {
+  width: min(100%, 440px); background: var(--panel); border-radius: var(--r-panel);
+  overflow: hidden; box-shadow: var(--edge);
+}
+.rk-strip {
+  display: flex; align-items: center; gap: 6px; height: 32px; padding: 0 8px 0 12px;
+  background: var(--panel-2);
+}
+.rk-strip b { font-size: 12px; font-weight: 600; white-space: nowrap; }
+.rk-surf {
+  margin: 10px; padding: 10px; border-radius: var(--r-control);
+  background: var(--cut); box-shadow: var(--edge);
+}
+.rk-key {
+  height: 22px; padding: 0 9px; border: 0; border-radius: var(--r-control);
+  background: var(--block); box-shadow: var(--edge); color: var(--ink);
+  font: 600 11px/1 var(--font); cursor: pointer; white-space: nowrap;
+  display: inline-flex; align-items: center; justify-content: center; gap: 5px;
+  transition: none;
+}
+.rk-key:hover { background: var(--block-hover); }
+.rk-key:active { box-shadow: var(--edge-press); transform: scale(0.98); }
+.rk-key.is-on { background: var(--accent); color: var(--accent-fg); }
+.rk-key.is-ink { background: var(--ink); color: var(--panel); }
+.rk-box {
+  height: 22px; padding: 0 7px; border-radius: var(--r-control);
+  background: var(--cut); box-shadow: var(--edge);
+  font: 500 11px/1 var(--mono); display: inline-flex; align-items: center; white-space: nowrap;
+}
+.rk-seg { display: inline-flex; }
+.rk-seg button {
+  height: 22px; padding: 0 8px; border: 0; border-radius: 0; margin-left: 1px;
+  background: var(--block); box-shadow: var(--edge); color: var(--ink);
+  font: 600 11px/1 var(--mono); cursor: pointer; transition: none;
+}
+.rk-seg button:first-child { margin-left: 0; border-radius: var(--r-control) 0 0 var(--r-control); }
+.rk-seg button:last-child { border-radius: 0 var(--r-control) var(--r-control) 0; }
+.rk-seg button:hover { background: var(--block-hover); }
+.rk-seg button[aria-checked="true"] { background: var(--ink); color: var(--panel); }
+.rk-seg.is-yellow button[aria-checked="true"] { background: var(--accent); color: var(--accent-fg); }
+
+.ly { border-radius: var(--r-control); font-weight: 600; }
+.ly[data-h="purple"] { background: var(--clip-purple-tint); box-shadow: inset 0 0 0 1px var(--clip-purple); color: var(--clip-purple-text); }
+.ly[data-h="blue"]   { background: var(--clip-blue-tint);   box-shadow: inset 0 0 0 1px var(--clip-blue);   color: var(--clip-blue-text); }
+.ly[data-h="orange"] { background: var(--clip-orange-tint); box-shadow: inset 0 0 0 1px var(--clip-orange); color: var(--clip-orange-text); }
+.ly[data-h="green"]  { background: var(--clip-green-tint);  box-shadow: inset 0 0 0 1px var(--clip-green);  color: var(--clip-green-text); }
+.ly[data-h="pink"]   { background: var(--clip-pink-tint);   box-shadow: inset 0 0 0 1px var(--clip-pink);   color: var(--clip-pink-text); }
+.ly[data-h="cyan"]   { background: var(--clip-cyan-tint);   box-shadow: inset 0 0 0 1px var(--clip-cyan);   color: var(--clip-cyan-text); }
+.ly.is-sel[data-h="purple"] { box-shadow: inset 0 0 0 2px var(--clip-purple); }
+.ly.is-sel[data-h="blue"]   { box-shadow: inset 0 0 0 2px var(--clip-blue); }
+.ly.is-sel[data-h="orange"] { box-shadow: inset 0 0 0 2px var(--clip-orange); }
+.ly.is-sel[data-h="green"]  { box-shadow: inset 0 0 0 2px var(--clip-green); }
+.ly.is-sel[data-h="pink"]   { box-shadow: inset 0 0 0 2px var(--clip-pink); }
+.ly.is-sel[data-h="cyan"]   { box-shadow: inset 0 0 0 2px var(--clip-cyan); }
+
+/* Gallery shell: calm, breathable, zero visual clutter */
+.fg { max-width: 1260px; margin: 0 auto; padding: 24px 6px 56px; }
+.fg-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px 24px; margin: 0 0 22px; }
+.fg-head h1 { margin: 0; font: 600 22px/1.15 var(--font); letter-spacing: -0.02em; }
+.fg-head p { margin: 5px 0 0; color: var(--muted); font-size: 13px; max-width: 58ch; }
+.fg-wall {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 360px), 1fr));
+  gap: 10px;
+}
+.fg-tile {
+  display: grid; width: 100%; padding: 0; border: 0; background: var(--panel);
+  border-radius: var(--r-panel); text-align: left; cursor: pointer; overflow: hidden;
+}
+.fg-stage {
+  position: relative; height: 264px; background: var(--panel); overflow: hidden;
+  display: grid; place-items: center;
+}
+.fg-tile:hover .fg-name { background: var(--panel-3); }
+.fg-stage > .rp-mount {
+  width: 100%; height: 100%; display: grid; place-items: center;
+  padding: 14px; container-type: inline-size; pointer-events: none;
+}
+.fg-name {
+  display: flex; align-items: baseline; gap: 8px; padding: 8px 12px; min-width: 0;
+  background: var(--panel-2);
+}
+.fg-name b { font-weight: 600; font-size: 12px; white-space: nowrap; flex: none; }
+.fg-name span { color: var(--muted); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+
+/* Open sheet: cuts in where it stands (100ms), exits quicker (75ms) */
+.fg-sheet { position: fixed; inset: 0; z-index: 20; display: none; background: var(--body); overflow: auto; overscroll-behavior: contain; }
+.fg-sheet.is-open { display: grid; grid-template-rows: auto 1fr auto; }
+.fg-bar { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 8px; padding: 10px 14px; background: var(--panel-2); }
+.fg-bar h2 { margin: 0; font: 600 13px/1.2 var(--font); text-align: center; }
+.fg-bar .l { justify-self: start; } .fg-bar .r { justify-self: end; display: flex; gap: 4px; }
+.fg-open { display: grid; place-items: center; min-height: 0; padding: 24px 14px; }
+.fg-open > .rp-mount { width: min(100%, 760px); min-height: min(440px, 100%); display: grid; place-items: center; container-type: inline-size; }
+.fg-about { max-width: 560px; margin: 0 auto; padding: 0 16px 24px; text-align: center; color: var(--muted); font-size: 13px; }
+.fg-about b { display: block; color: var(--ink); font-weight: 500; }
+.fg-foot { margin-top: 28px; color: var(--muted); font-size: 12px; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+@media (max-width: 720px) { .fg-stage { height: 248px; } }
 </style>
 </head>
 <body>
 <main class="fg">
   <header class="fg-head">
-    <div><h1>Rack 2.0</h1><p>Small studies in motion, feedback and touch, after litterthanlit/components, redesigned in litt's Rack: a pro tool for agents, design and interfaces, after Live's grammar. Every value in reach, on the beat.</p></div>
-    <button class="fg-pill" type="button" id="fg-theme">Dark</button>
+    <div>
+      <h1>Rack</h1>
+      <p>Twelve simple, uplifting studies in Rack — one strip, one surface, luminous layer colours, zero clutter. Open any study to play with it directly.</p>
+    </div>
+    <button class="rk-key" style="height:26px;padding:0 11px;font-size:12px" type="button" id="fg-theme">Dark</button>
   </header>
   <ul class="fg-wall" id="fg-wall"></ul>
-  <p class="fg-foot">Each study runs by itself until you touch it. Open one to use it.</p>
+  <footer class="fg-foot">
+    <span>Each study moves quietly until your hand arrives. Zero springs, zero shadows, zero unnecessary chrome.</span>
+    <span style="font-family:var(--mono)">12 STUDIES</span>
+  </footer>
 </main>
+
 <div class="fg-sheet" id="fg-sheet" role="dialog" aria-modal="true" aria-labelledby="fg-sheet-title">
   <div class="fg-bar">
-    <button class="fg-circle fg-close" type="button" id="fg-close" aria-label="Close"><svg viewBox="0 0 14 14"><path d="M3.5 3.5l7 7M10.5 3.5l-7 7"/></svg></button>
+    <div class="l"><button class="rk-key" style="height:26px" type="button" id="fg-close">Close</button></div>
     <h2 id="fg-sheet-title"></h2>
-    <div class="fg-steps">
-      <button class="fg-circle" type="button" id="fg-prev" aria-label="Previous study"><svg viewBox="0 0 14 14"><path d="M9 3.5 5.5 7 9 10.5"/></svg></button>
-      <button class="fg-circle" type="button" id="fg-next" aria-label="Next study"><svg viewBox="0 0 14 14"><path d="M5 3.5 8.5 7 5 10.5"/></svg></button>
+    <div class="r">
+      <button class="rk-key" style="height:26px" type="button" id="fg-prev" aria-label="Previous study">←</button>
+      <button class="rk-key" style="height:26px" type="button" id="fg-next" aria-label="Next study">→</button>
     </div>
   </div>
   <div class="fg-open" id="fg-open"></div>
   <p class="fg-about" id="fg-about"></p>
 </div>
 <p class="sr-only" id="fg-live" aria-live="polite"></p>
+
 <script>
-/* The contract every study keeps (FlatPlayer.register), and the one spring they share. */
-window.FlatPlayer = (function () {
+window.RackPlayer = (function () {
   const studies = [];
-  const reduced = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  /* A damped spring, stepped at 1/240s. bounce 0 is critically damped; 0.28 is Flat's expressive arrival. */
-  function spring(initial, onUpdate, opts) {
-    const o = Object.assign({ duration: 0.35, bounce: 0 }, opts);
-    const w = (2 * Math.PI) / o.duration, k = w * w, c = 2 * (1 - o.bounce) * w;
-    let x = initial, v = 0, target = initial, raf = 0, last = 0;
-    const step = (now) => {
-      let dt = Math.min(0.064, (now - last) / 1000); last = now;
-      while (dt > 0) { const h = Math.min(dt, 1 / 240); v += (-k * (x - target) - c * v) * h; x += v * h; dt -= h; }
-      if (Math.abs(x - target) < 0.0005 && Math.abs(v) < 0.0005) { x = target; v = 0; raf = 0; onUpdate(x); return; }
-      onUpdate(x); raf = requestAnimationFrame(step);
-    };
-    return {
-      set(t, velocity) { target = t; if (velocity !== undefined) v = velocity;
-        if (reduced()) { x = t; v = 0; onUpdate(x); return; }
-        if (!raf) { last = performance.now(); raf = requestAnimationFrame(step); } },
-      jump(t) { x = target = t; v = 0; if (raf) cancelAnimationFrame(raf); raf = 0; onUpdate(x); },
-      value: () => x, velocity: () => v, target: () => target,
-      stop() { if (raf) cancelAnimationFrame(raf); raf = 0; },
-    };
+  const reduced = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const CUT_IN = { duration: 100, easing: "cubic-bezier(0.23, 1, 0.32, 1)" };
+  const CUT_OUT = { duration: 75, easing: "cubic-bezier(0.23, 1, 0.32, 1)" };
+
+  function bindDrag(el, opts) {
+    const { min, max, step = 1, def, get, set, signal, rangePx = 110 } = opts;
+    const clamp = (v) => Math.max(min, Math.min(max, Number((Math.round((v - min) / step) * step + min).toFixed(6))));
+    let sy = 0, sv = 0, drag = false;
+    el.addEventListener("pointerdown", (e) => {
+      if (e.button !== 0) return;
+      drag = true; sy = e.clientY; sv = get();
+      el.setPointerCapture(e.pointerId); el.classList.add("is-drag"); e.preventDefault();
+    }, { signal });
+    el.addEventListener("pointermove", (e) => {
+      if (!drag) return;
+      const next = clamp(sv + ((sy - e.clientY) / rangePx) * (max - min) * (e.shiftKey ? 0.25 : 1));
+      if (next !== get()) set(next);
+    }, { signal });
+    const end = () => { if (drag) { drag = false; el.classList.remove("is-drag"); } };
+    el.addEventListener("pointerup", end, { signal });
+    el.addEventListener("pointercancel", end, { signal });
+    el.addEventListener("dblclick", () => set(def), { signal });
+    el.addEventListener("wheel", (e) => { e.preventDefault(); set(clamp(get() + (e.deltaY < 0 ? 1 : -1) * step)); }, { signal, passive: false });
+    el.addEventListener("keydown", (e) => {
+      const d = { ArrowUp: step, ArrowRight: step, ArrowDown: -step, ArrowLeft: -step }[e.key];
+      if (d !== undefined) { e.preventDefault(); set(clamp(get() + d)); }
+      else if (e.key === "0" || e.key === "Backspace") { e.preventDefault(); set(def); }
+    }, { signal });
   }
-  return { studies, spring, reduced, register(s) {
-    studies.push(s);
-    if (s.css) { const st = document.createElement("style"); st.dataset.study = s.slug; st.textContent = s.css; document.head.appendChild(st); }
-  } };
+
+  return {
+    studies, reduced, CUT_IN, CUT_OUT, bindDrag,
+    register(s) {
+      studies.push(s);
+      if (s.css) { const st = document.createElement("style"); st.dataset.study = s.slug; st.textContent = s.css; document.head.appendChild(st); }
+    },
+  };
 })();
 </script>
 <!--STUDY_JS-->
 <script>
 (function () {
-  const P = window.FlatPlayer;
-  const ORDER = ["gradient-keys", "agent-indicators", "agent-status", "command-menu", "fader", "switch", "one-time-code", "ticker",
-    "step-sequencer", "knob", "tape-reels", "vu-meter", "agent-shapes", "agent-run", "agent-loaders", "dither-card",
-    "spotlight-card", "toast-stack", "hold-to-confirm", "number-ticker", "segmented-control", "magnetic-button", "copy-button"];
+  const P = window.RackPlayer;
+  const ORDER = [
+    "light-studies", "team-motion", "effort-balance", "focus-mode",
+    "release-flow", "frame-designer", "redline-inspector", "responsive-preview",
+    "quick-jump", "hold-to-ship", "daily-rhythm", "share-install"
+  ];
   const set = ORDER.map((slug) => P.studies.find((s) => s.slug === slug)).filter(Boolean);
   const n = set.length;
   const $ = (id) => document.getElementById(id);
   const wall = $("fg-wall"), sheet = $("fg-sheet"), openEl = $("fg-open"), live = $("fg-live");
 
-  /* Mount a study into a container. Everything it starts is tied to the returned handle and torn down by unmount(). */
   function mountInto(box, s, tile) {
     box.textContent = "";
     const host = document.createElement("div");
-    host.className = "fp-mount fs-" + s.slug + (tile ? " is-tile" : "");
+    host.className = "rp-mount rs-" + s.slug + (tile ? " is-tile" : "");
     host.dataset.study = s.slug;
     box.appendChild(host);
     const ac = new AbortController();
     const rec = { ac, timers: [], intervals: [], rafs: [], hands: [], api: null, host };
-    let lastTouch = 0;
     const ctx = {
-      host, signal: ac.signal, spring: P.spring, reduced: P.reduced, tile: !!tile,
+      host, signal: ac.signal, reduced: P.reduced, tile: !!tile, bindDrag: P.bindDrag,
       after(ms, fn) { const t = setTimeout(fn, ms); rec.timers.push(t); return t; },
       every(ms, fn) { const t = setInterval(fn, ms); rec.intervals.push(t); return t; },
-      loop(fn) { const r = { stop: false }; rec.rafs.push(r); let last = performance.now();
-        const f = (now) => { if (r.stop || ac.signal.aborted) return; const dt = Math.max(0, Math.min(0.1, (now - last) / 1000)); last = now; if (fn(dt, now) === false) { r.stop = true; return; } requestAnimationFrame(f); };
-        requestAnimationFrame(f); return r; },
+      loop(fn) {
+        const r = { stop: false }; rec.rafs.push(r); let last = performance.now();
+        const f = (now) => {
+          if (r.stop || ac.signal.aborted) return;
+          const dt = Math.max(0, Math.min(0.1, (now - last) / 1000));
+          last = now;
+          if (fn(dt, now) === false) { r.stop = true; return; }
+          requestAnimationFrame(f);
+        };
+        requestAnimationFrame(f);
+        return r;
+      },
       onHand(fn) { rec.hands.push(fn); },
-      touched: () => lastTouch,
     };
     let handed = false;
-    const hand = () => { lastTouch = performance.now(); if (!handed) { handed = true; rec.hands.forEach((f) => { try { f(); } catch (e) { console.error(e); } }); } };
+    const hand = () => {
+      if (!handed) { handed = true; rec.hands.forEach((f) => { try { f(); } catch (e) {} }); }
+    };
     if (!tile) for (const t of ["pointerdown", "keydown", "wheel"]) host.addEventListener(t, hand, { signal: ac.signal, capture: true, passive: t === "wheel" });
     try { rec.api = s.mount(host, ctx) || null; } catch (e) { console.error(s.slug, e); host.textContent = s.title; }
     return rec;
   }
+
   function unmount(rec) {
     if (!rec) return;
-    try { rec.api && rec.api.destroy && rec.api.destroy(); } catch (e) { console.error(e); }
-    rec.ac.abort(); rec.timers.forEach(clearTimeout); rec.intervals.forEach(clearInterval); rec.rafs.forEach((r) => (r.stop = true));
-    rec.host.remove();
+    try { rec.api && rec.api.destroy && rec.api.destroy(); } catch (e) {}
+    rec.ac.abort(); rec.timers.forEach(clearTimeout); rec.intervals.forEach(clearInterval);
+    rec.rafs.forEach((r) => (r.stop = true)); rec.host.remove();
   }
 
-  /* The wall: a tile per study, mounted only while it is on screen and no sheet covers it. */
   const tiles = set.map((s, i) => {
     const li = document.createElement("li");
     li.innerHTML = '<button class="fg-tile" type="button"><div class="fg-stage" inert></div><span class="fg-name"><b></b><span></span></span></button>';
@@ -213,10 +328,11 @@ window.FlatPlayer = (function () {
     btn.querySelector("b").textContent = s.title;
     btn.querySelector(".fg-name span").textContent = s.tagline || "";
     btn.setAttribute("aria-label", "Open " + s.title);
-    btn.addEventListener("click", () => open(i, btn));
+    btn.addEventListener("click", () => open(i));
     wall.appendChild(li);
     return { s, btn, stage, rec: null, visible: false };
   });
+
   let sheetOpen = false;
   const sync = (t) => {
     const want = t.visible && !sheetOpen;
@@ -224,80 +340,69 @@ window.FlatPlayer = (function () {
     if (!want && t.rec) { unmount(t.rec); t.rec = null; }
   };
   const io = new IntersectionObserver((entries) => {
-    for (const e of entries) { const t = tiles.find((x) => x.stage === e.target); t.visible = e.isIntersecting; sync(t); }
-  }, { rootMargin: "120px 0px" });
+    for (const e of entries) { const t = tiles.find((x) => x.stage === e.target); if (t) { t.visible = e.isIntersecting; sync(t); } }
+  }, { rootMargin: "200px 0px" });
   tiles.forEach((t) => {
     io.observe(t.stage);
     const r = t.stage.getBoundingClientRect();
     if (r.top < window.innerHeight + 200 && r.bottom > -200) { t.visible = true; sync(t); }
   });
 
-  /* The sheet grows out of the tile that opened it and gathers back into it. */
-  let cur = -1, openRec = null, opener = null;
-  /* Rack's motion: the view cuts in where it stands, by opacity on the instant tier; nothing grows or travels. */
-  const CUT = { duration: 100, easing: "cubic-bezier(0.23, 1, 0.32, 1)" };
-  function grow() {
-    if (P.reduced() || !sheet.animate) return;
-    sheet.animate([{ opacity: 0 }, { opacity: 1 }], CUT);
-  }
-  function show(i, dir) {
+  let cur = -1, openRec = null;
+  function show(i) {
     cur = ((i % n) + n) % n;
     const s = set[cur];
     unmount(openRec);
     openRec = mountInto(openEl, s, false);
-    if (dir && !P.reduced() && openRec.host.animate) openRec.host.animate([{ opacity: 0 }, { opacity: 1 }], CUT);
+    if (!P.reduced() && openRec.host.animate) openRec.host.animate([{ opacity: 0 }, { opacity: 1 }], P.CUT_IN);
     $("fg-sheet-title").textContent = s.title;
-    $("fg-about").innerHTML = "";
-    const b = document.createElement("b"); b.textContent = s.tagline || ""; $("fg-about").appendChild(b);
+    $("fg-about").innerHTML = "<b></b>";
+    $("fg-about").firstChild.textContent = s.tagline || "";
     try { history.replaceState(null, "", "#" + s.slug); } catch (e) {}
-    document.title = s.title + " · Rack 2.0";
+    document.title = s.title + " · Rack";
     live.textContent = s.title + ", " + (cur + 1) + " of " + n;
   }
-  function open(i, from) {
-    opener = from || tiles[i].btn;
+  function open(i) {
     sheetOpen = true; tiles.forEach(sync);
     sheet.classList.add("is-open"); document.body.style.overflow = "hidden";
     $("fg-wall").inert = true;
-    show(i, 0); grow(from);
+    if (!P.reduced() && sheet.animate) sheet.animate([{ opacity: 0 }, { opacity: 1 }], P.CUT_IN);
+    show(i);
     $("fg-close").focus({ preventScroll: true });
   }
   function close() {
     if (!sheetOpen) return;
-    unmount(openRec); openRec = null;
-    sheet.classList.remove("is-open"); document.body.style.overflow = "";
-    $("fg-wall").inert = false;
-    sheetOpen = false;
-    const back = tiles[cur].btn;
-    tiles.forEach(sync);
-    back.focus({ preventScroll: true });
-    back.scrollIntoView({ block: "nearest" });
-    try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {}
-    document.title = "Rack 2.0";
+    const done = () => {
+      unmount(openRec); openRec = null;
+      sheet.classList.remove("is-open"); document.body.style.overflow = "";
+      $("fg-wall").inert = false; sheetOpen = false;
+      const back = tiles[cur].btn; tiles.forEach(sync);
+      back.focus({ preventScroll: true }); back.scrollIntoView({ block: "nearest" });
+      try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {}
+      document.title = "Rack Studies";
+    };
+    if (!P.reduced() && sheet.animate) sheet.animate([{ opacity: 1 }, { opacity: 0 }], P.CUT_OUT).onfinish = done;
+    else done();
   }
   $("fg-close").addEventListener("click", close);
-  $("fg-prev").addEventListener("click", () => show(cur - 1, -1));
-  $("fg-next").addEventListener("click", () => show(cur + 1, 1));
+  $("fg-prev").addEventListener("click", () => show(cur - 1));
+  $("fg-next").addEventListener("click", () => show(cur + 1));
   sheet.addEventListener("keydown", (e) => {
     if (e.key === "Escape") { e.preventDefault(); close(); }
-    if (e.key === "Tab") { // keep focus in the sheet
-      const f = [...sheet.querySelectorAll('button, [href], input, [tabindex]:not([tabindex="-1"]), select, textarea')].filter((el) => !el.disabled && el.offsetParent !== null);
-      if (!f.length) return;
-      if (e.shiftKey && document.activeElement === f[0]) { e.preventDefault(); f[f.length - 1].focus(); }
-      else if (!e.shiftKey && document.activeElement === f[f.length - 1]) { e.preventDefault(); f[0].focus(); }
-    }
+    if (e.key === "ArrowLeft" && !e.target.closest("input,[role=slider],[role=radio]")) { e.preventDefault(); show(cur - 1); }
+    if (e.key === "ArrowRight" && !e.target.closest("input,[role=slider],[role=radio]")) { e.preventDefault(); show(cur + 1); }
   });
 
   const qTheme = new URLSearchParams(location.search).get("theme");
   if (qTheme === "light" || qTheme === "dark") document.documentElement.dataset.theme = qTheme;
   const themeBtn = $("fg-theme");
   const isDark = () => document.documentElement.dataset.theme ? document.documentElement.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
-  const paintTheme = () => (themeBtn.textContent = isDark() ? "Light" : "Dark");
+  const paintTheme = () => { themeBtn.textContent = isDark() ? "Light" : "Dark"; };
   themeBtn.addEventListener("click", () => { document.documentElement.dataset.theme = isDark() ? "light" : "dark"; paintTheme(); });
   paintTheme();
 
   const start = set.findIndex((s) => s.slug === location.hash.slice(1));
-  if (start >= 0) open(start, tiles[start].btn);
-  window.FlatGallery = { open: (slug) => { const i = set.findIndex((s) => s.slug === slug); if (i >= 0) open(i, tiles[i].btn); }, close };
+  if (start >= 0) open(start);
 })();
 </script>
 </body>

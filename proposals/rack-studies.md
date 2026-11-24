@@ -1,24 +1,32 @@
-# Proposal: Rack 2.0 Studies
+# Proposal: Rack Studies (Craft Remake)
 
-All twenty-three canonical studies from `proposals/flat-studies/`, redesigned in **Rack 2.0** (`proposals/rack.md`) — a pro tool for **agents, design, and interfaces** built around **one strip, one surface, and one family of 6 layer colours**.
+Twelve original, calm, uplifting studies built from scratch in **Rack 2.0** using **`litt-design-craft`** — one strip, one surface, Rack 2.0's luminous 6-hue layer-colour family, plain human copy, direct 1:1 manipulation, and zero unnecessary chrome.
 
 - Live standalone bundle: [`proposals/rack-studies/studies.html`](rack-studies/studies.html)
 - Wall previews: [`wall-light.jpg`](rack-studies/wall-light.jpg) · [`wall-dark.jpg`](rack-studies/wall-dark.jpg)
 
-## What defines Rack 2.0
+## Design principles (`litt-design-craft`)
 
-- **One strip and one surface:** every study has a single control strip (title, value boxes, at most one `#ffc933` yellow lit key) and a single work surface — zero nested chrome cards, zero fake DAW hardware, zero decorative subtitles.
-- **One family of 6 layer colours:** every coloured object (agent, layer, stage, branch, component) wears a soft tint (`--clip-*-tint`), a crisp `1px` inset edge (`--clip-*`, `2px` when selected/firing), and its label in the hue's text tone (`--clip-*-text`) — every label at 4.5:1 on its tint and every edge at 3:1 in both Light and Dark themes:
-  - **Agents:** Planner (purple), Researcher (blue), Coder / Deploy (orange), Reviewer (green)
-  - **Design layers:** Header (purple), Avatar / Build (blue), Sidebar / Test (green), Card (pink), Button / component (cyan)
-- **On the beat, time moves it:** `0ms` 1:1 direct manipulation under a hand (`Shift` fine, arrows step, double-click home), `100ms` ease-out opacity cut-in, `75ms` cut-out, `60ms` beat stagger, zero springs or bounce.
+- **Simple:** one clear job per study, one strip + one surface, zero nested cards or cluttered toolbars.
+- **Energetic & uplifting:** Rack 2.0's luminous 6-hue layer-colour family (`soft tint` + `1px` inset edge in the hue + `4.5:1` text tone in both Light & Dark) paired with sunlit yellow (`#ffc933`) strictly as the one lit key.
+- **Inspiring emotion:** living long-exposure horizons (`Light Studies`), direct canvas reshaping (`Frame Designer`), architectural spacing guides (`Redline Inspector`), tactile `Hold to Ship`.
+- **Easy to use and read:** plain words, zero clipped text, tabular figures, native ARIA roles, and 1:1 drag/scrub/click.
+- **Not overwhelming & no unnecessary info:** ruthless subtraction pass on every study — zero decorative eyebrows, redundant counters, or filler chrome.
 
-## Engineering & QA fixes applied on top of Rack 2.0
+## The 12 studies
 
-1. **`shell.html` (`ctx.loop`) + `fader.js` + `agent-shapes.js`:** clamped `dt >= 0` on first `requestAnimationFrame` frames and `Math.max(0, t)` in clock formatters so elapsed timers never render `-1:-0.1`.
-2. **`copy-button.js`:** set `transition: none` on `.cb-seg button` so the active package-manager tab snaps on the frame (`0ms`) with crisp contrast in both themes.
-3. **`number-ticker.js`:** pre-populated reshaped digit spans and cut opacity `0.35 → 1` so updating figures never drop blank holes mid-tick.
-4. **`shell.html`:** eagerly mounted visible viewport tiles on load alongside `IntersectionObserver`, and added `?theme=light|dark` support.
+1. **Light Studies** (`light-studies`) — Animated long-exposure light horizons (`Dawn`, `Lagoon`, `Bloom`, `Dusk`) on a crisp canvas.
+2. **Team in Motion** (`team-motion`) — Four coloured agent cards (`Plan`, `Explore`, `Build`, `Polish`) on one quiet lane.
+3. **Effort Balance** (`effort-balance`) — Three tall coloured layer blocks (`Depth`, `Speed`, `Care`) dragged 1:1 vertically.
+4. **Focus Mode** (`focus-mode`) — One calm status summary bar over four 0ms frame-snapping toggle keys.
+5. **Release Flow** (`release-flow`) — Three-stage staircase (`Create → Check → Launch`) with a scrubbable playhead.
+6. **Frame Designer** (`frame-designer`) — A pink `Card` directly on an 8px grid with draggable `Radius`, `Space`, and `Border` chips + `A / B` recall.
+7. **Redline Inspector** (`redline-inspector`) — Hover or click any coloured layer to read crisp red pixel distances.
+8. **Responsive Preview** (`responsive-preview`) — Breakpoint picker (`390 | 768 | 1280 | 1440`) with a live rearranging layout wireframe.
+9. **Quick Jump** (`quick-jump`) — Zero-animation command box with coloured category tags and shortcut caps.
+10. **Hold to Ship** (`hold-to-ship`) — Four coloured milestone strips + linear press-and-hold key filling to sunlit yellow.
+11. **Daily Rhythm** (`daily-rhythm`) — Tabular live count cutting cleanly digit-by-digit (`0.35 → 1`, zero blank holes) over an orange 14-day histogram.
+12. **Share & Install** (`share-install`) — Instant 0ms package-manager chooser + spacious mono cut with a cyan `litt-ui` chip and `Copy` key.
 
 ## Rebuilding locally
 
