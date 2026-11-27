@@ -30,7 +30,7 @@ const SET: Record<Material, string[]> = {
   press: ["autonomy-gate", "deploy-status", "env-switch", "release-rail", "stat", "button", "switch", "segmented", "slider", "input", "select", "menu"],
   /* Flat's is the Flat studies, in the studies page's order, each as it lands (Nick, 2026-11-27: "everything from this
      study on the home page"), so it runs past twelve, to 23 when all are built. */
-  flat: ["assistant-status", "agent-status", "command-menu", "switch", "code-input", "step-sequencer", "agent-shapes", "agent-run", "working-loader", "spotlight-card", "toast-stack", "hold-confirm", "stat", "segmented", "magnetic-button", "copy-button"],
+  flat: ["assistant-status", "agent-status", "command-menu", "switch", "code-input", "ticker", "step-sequencer", "agent-shapes", "agent-run", "working-loader", "spotlight-card", "toast-stack", "hold-confirm", "stat", "segmented", "magnetic-button", "copy-button"],
   device: ["agent-dispatch", "composer", "agent-indicator", "tool-call", "message", "seven-segment", "tape-progress", "switch", "slider", "gauge", "copy-button", "command-menu"],
   plain: ["agent-transcript", "form", "input", "select", "checkbox", "button", "table", "details", "callout", "breadcrumb", "tabs", "dialog"],
   rack: ["agent-chain", "clip-launcher", "device-rack", "step-sequencer", "slider", "curve-editor", "pad", "time-scrubber", "inspector", "number-field", "segmented", "switch"],

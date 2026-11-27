@@ -754,6 +754,10 @@
       "version": "2026.11.16",
       "hash": "ccb00afcbf2dec4b"
     },
+    "flat-ticker": {
+      "version": "2026.11.27",
+      "hash": "666a007a8551d2e2"
+    },
     "flat-toast": {
       "version": "2026.11.16",
       "hash": "b30bfa89cc3a2976"
@@ -2657,6 +2661,10 @@
     "thinking": {
       "version": "2026.11.18",
       "hash": "9519bceec5f6a586"
+    },
+    "ticker": {
+      "version": "2026.11.27",
+      "hash": "666a007a8551d2e2"
     },
     "time-scrubber": {
       "version": "2026.11.21",
