@@ -213,7 +213,11 @@ jobs:
             sudo chown -R "$USER" ~/playwright-debs
           fi
           echo "$(ls ~/playwright-debs/*.deb 2> /dev/null | wc -l) cached .debs"
-          if ls ~/playwright-debs/*.deb > /dev/null 2>&1; then sudo dpkg -i ~/playwright-debs/*.deb; fi
+          # --auto-deconfigure: a cached .deb newer than the image's (libasound2-data over libasound2t64) may replace it in
+          # the same run. If dpkg still fails, what it left unconfigured counts as missing below and comes from the mirror.
+          if ls ~/playwright-debs/*.deb > /dev/null 2>&1; then
+            sudo dpkg -i --auto-deconfigure ~/playwright-debs/*.deb || echo "::warning::dpkg could not install every cached .deb"
+          fi
           MISSING=$(missing)
           if [ -n "$MISSING" ]; then echo "::warning::not in the cache, from the mirror: $(echo $MISSING)"; "$PW" install-deps chromium; fi
           "$PW" install chromium
