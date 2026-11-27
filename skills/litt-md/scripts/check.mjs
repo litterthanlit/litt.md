@@ -594,9 +594,7 @@ const motionFails = [];
 const ms = (v) => (/ms$/.test(v) ? parseFloat(v) : /s$/.test(v) ? parseFloat(v) * 1000 : NaN);
 const tokenCss = strip(css);
 const reducedBlock = (tokenCss.match(/@media \(prefers-reduced-motion: reduce\)\s*\{([\s\S]*?)\n\}/) || [])[1] || "";
-/* Plain's block zeroes the tiers like reduced motion (check 14 holds it), so the locked tiers are read without it. */
-const stillBlock = (tokenCss.match(/:root\[data-material="plain"\],\s*\[data-material="plain"\]\s*\{(?=\s*--canvas)[^}]*\}/) || [])[0] || "";
-const rootCss = tokenCss.replace(reducedBlock, "").replace(stillBlock, "");
+const rootCss = tokenCss.replace(reducedBlock, "");
 const tok = (n) => (rootCss.match(new RegExp(`(?<![\\w-])${n}\\s*:\\s*([^;]+);`)) || [])[1]?.trim();
 const isZero = (n) => new RegExp(`(?<![\\w-])${n}\\s*:\\s*0(?:ms|px|s)?\\s*;`).test(reducedBlock);
 
@@ -606,18 +604,19 @@ for (const n of ["--dur-instant", "--dur-responsive", "--dur-expressive", "--dur
   if (!tok(n)) motionFails.push(`tokens.css: ${n} is missing`);
 const durTokens = new Map();
 for (const m of rootCss.matchAll(/(?<![\w-])(--dur-[\w-]+)\s*:\s*([^;]+);/g)) {
-  if (durTokens.has(m[1])) continue; // the :root value; a world's own (Flat's settle) is read with its spring below
+  if (durTokens.has(m[1])) continue; // the :root value; a world's own (Flat's or Plain's settle) is read with its spring below
   const v = ms(m[2].trim());
   if (Number.isNaN(v)) motionFails.push(`tokens.css: ${m[1]} must be a plain duration, not "${m[2].trim()}"`);
   else durTokens.set(m[1], v);
 }
 const exit = Number(tok("--exit"));
 if (!(exit > 0 && exit < 1)) motionFails.push("tokens.css: --exit must be between 0 and 1 (exits are quicker than enters)");
-/* R4: the expressive bounce cap is per world. Flat bounces more (plans/023, Nick 2026-11-16: "0.28 at 350ms"); every
-   other world stays at 0.12. Responsive is bounce 0 in every world. gallery/src/motion/rules.ts mirrors this table
-   (EXPRESSIVE_BOUNCE): change both together. EASE_CEIL is how far each cap's linear() may peak (0.28 peaks at 1.0326). */
-const BOUNCE_CAP = { flat: 0.28 }, BOUNCE_DEFAULT = 0.12;
-const EASE_CEIL = { flat: 1.04 }, EASE_DEFAULT = 1.02;
+/* R4: the expressive bounce cap is per world. Flat bounces more (plans/023, Nick 2026-11-16: "0.28 at 350ms"); Plain
+   is Subtraction with zero bounce everywhere (taste v1.23, plans/027: 0); every other world stays at 0.12. Responsive
+   is bounce 0 in every world. gallery/src/motion/rules.ts mirrors this table (EXPRESSIVE_BOUNCE): change both together.
+   EASE_CEIL is how far each cap's linear() may peak (0.28 peaks at 1.0326, Plain's 0 never passes 1). */
+const BOUNCE_CAP = { flat: 0.28, plain: 0 }, BOUNCE_DEFAULT = 0.12;
+const EASE_CEIL = { flat: 1.04, plain: 1 }, EASE_DEFAULT = 1.02;
 const springTime = {};
 /* One tier in one scope: :root (every world without its own) or a world's block. `get` reads a token in that scope. */
 const checkSpring = (tier, where, get, world) => {
@@ -642,8 +641,8 @@ const checkSpring = (tier, where, get, world) => {
 };
 for (const tier of ["responsive", "expressive"]) springTime[tier] = checkSpring(tier, "", tok);
 /* Each world's own block (:root[data-material="x"], [data-material="x"] { … }). A world that sets a tier's spring,
-   settle or linear() sets all three, keeps the :root visual time (so the exits stay right), and is named in the
-   reduced-motion block, or its settle would beat the zeros on <html>. */
+   settle or linear() sets all three, keeps :root's visual time or restates --dur-exit-<tier> to round(time x --exit),
+   and is named in the reduced-motion block, or its settle would beat the zeros on <html>. */
 const worldSprings = [];
 for (const w of rootCss.matchAll(/:root\[data-material="(\w+)"\],\s*\[data-material="\1"\]\s*\{([^}]*)\}/g)) {
   const [, world, body] = w;
@@ -654,7 +653,10 @@ for (const w of rootCss.matchAll(/:root\[data-material="(\w+)"\],\s*\[data-mater
     const where = `${world}'s `;
     if (set.length < 3) { motionFails.push(`tokens.css: ${where}block sets ${set.join(", ")} but not all of --spring-${tier}, --dur-${tier} and --ease-${tier}`); continue; }
     const time = checkSpring(tier, where, own, world);
-    if (time !== undefined && time !== springTime[tier]) motionFails.push(`tokens.css: ${where}--spring-${tier} visual time ${time}ms is not :root's ${springTime[tier]}ms, so --dur-exit-${tier} would be wrong`);
+    const ownExit = own(`--dur-exit-${tier}`);
+    const wantExit = Math.round((time ?? NaN) * exit);
+    if (time !== undefined && time !== springTime[tier] && !(ownExit && Math.abs(ms(ownExit) - wantExit) <= 1))
+      motionFails.push(`tokens.css: ${where}--spring-${tier} visual time ${time}ms is not :root's ${springTime[tier]}ms, and --dur-exit-${tier} is not restated as ${wantExit}ms`);
     const named = new RegExp(`(?:^|,)\\s*\\[data-material="${world}"\\]\\s*(?:,|\\{)`, "m").test(reducedBlock) && reducedBlock.includes(`:root[data-material="${world}"]`);
     if (!named) motionFails.push(`tokens.css: ${where}block sets --dur-${tier}, but the reduced-motion block does not name :root[data-material="${world}"], [data-material="${world}"]`);
     worldSprings.push(`${world} ${own(`--spring-${tier}`)}`);
@@ -959,10 +961,9 @@ console.log('Plain (data-material="plain")');
     if (!/var\(--focus\)/.test(ring) || /#|rgb/.test(ring)) plainFails.push(`plain: --focus-ring must restate the ring with var(--focus) (is "${ring}")`);
     for (const h of ["blue", "amber", "teal", "violet", "rose"])
       if (!/var\(--surface-1\)/.test(pl.get(`--data-${h}-tint`) || "")) plainFails.push(`plain: --data-${h}-tint is not restated over var(--surface-1)`);
+    if (pl.get("--spring-expressive") !== "280ms 0") plainFails.push(`plain: --spring-expressive is ${pl.get("--spring-expressive") ?? "unset"}, must be 280ms 0 (Subtraction: zero bounce)`);
+    if (pl.get("--dur-exit-expressive") !== "210ms") plainFails.push(`plain: --dur-exit-expressive is ${pl.get("--dur-exit-expressive") ?? "unset"}, must be 210ms`);
   }
-  const still = decls(stillBlock.replace(/^[^{]*\{/, "{"));
-  for (const n of ["--dur-instant", "--dur-responsive", "--dur-expressive", "--dur-exit-responsive", "--dur-exit-expressive", "--stagger", "--travel"])
-    if (!/^0(ms|px)$/.test(still.get(n) || "")) plainFails.push(`the plain block sets ${n} to ${still.get(n) ?? "nothing"}, not 0`);
   for (const accent of ["blue", "pink", "mono"]) {
     const re = new RegExp(`:root\\[data-material="plain"\\]\\[data-accent="${accent}"\\],\\s*\\[data-material="plain"\\]\\[data-accent="${accent}"\\]\\s*\\{`);
     const at = css.search(re);
@@ -970,7 +971,7 @@ console.log('Plain (data-material="plain")');
     const restated = decls(block(re)), own = decls(block(new RegExp(`:root\\[data-accent="${accent}"\\],\\s*\\[data-accent="${accent}"\\]\\s*\\{`)));
     for (const [k, v] of own) if (!["--light", "--glow"].includes(k) && restated.get(k) !== v) plainFails.push(`plain ${accent}: ${k} is ${restated.get(k) ?? "missing"}, not ${v} as ${accent}'s own block`);
   }
-  plainFails.length ? plainFails.forEach(fail) : ok(`plain: ${PLAIN_MAPPED.length} tokens mapped in both themes, after Device, square, lines only, still, Blue 4, pink and mono restated`);
+  plainFails.length ? plainFails.forEach(fail) : ok(`plain: ${PLAIN_MAPPED.length} tokens mapped in both themes, after Device, square, lines only, Subtraction (280ms 0), Blue 4, pink and mono restated`);
 }
 
 // 13. Worlds ----------------------------------------------------------------
@@ -981,7 +982,7 @@ console.log("Worlds (each world's own accent and face)");
   const FACES = [
     ["Press", ":root, [data-theme]", 'var(--font-choice, "Helvetica Neue", Helvetica, Arial, sans-serif)'],
     ["Flat", ':root[data-material="flat"], [data-material="flat"]', 'var(--font-choice, "Geist", "Geist Sans", "Helvetica Neue", Helvetica, Arial, sans-serif)'],
-    ["Plain", ':root[data-material="plain"], [data-material="plain"]', 'var(--font-choice, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif)'],
+    ["Plain", ':root[data-material="plain"], [data-material="plain"]', 'var(--font-choice, "Helvetica Neue", Helvetica, Arial, sans-serif)'],
     ["Rack", ':root[data-material="rack"], [data-material="rack"]', 'var(--font-choice, "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif)'],
     ["Heat", ':root[data-material="heat"], [data-material="heat"]', 'var(--font-choice, "Saira", "Helvetica Neue", Helvetica, Arial, sans-serif)'],
   ];
@@ -1005,7 +1006,7 @@ console.log("Worlds (each world's own accent and face)");
     for (const [k, v] of own) if (restated.get(k) !== v) worldFails.push(`flat ${accent}: ${k} is ${restated.get(k) ?? "missing"}, not ${v} as ${accent}'s own block`);
   }
   for (const [theme, map] of [["light", rawLight], ["dark", rawDark]])
-    for (const n of ["--accent", "--accent-hover", "--accent-fg", "--accent-text", "--accent-tint"]) {
+    for (const n of ["--accent", "--accent-hover", "--accent-fg", "--accent-tint", "--accent-text"]) {
       const want = `var(${n.replace("--accent", "--accent-blue")})`;
       if (map.get(n) !== want) worldFails.push(`${theme}: ${n} is ${map.get(n)}, must be ${want} (Press's own accent is Blue 4)`);
     }
@@ -1014,7 +1015,7 @@ console.log("Worlds (each world's own accent and face)");
     worldFails.push("tailwind.css: [data-theme], [data-material] must set font-family: var(--font-sans), so a nested world takes its face");
   for (const n of ["accent", "accent-hover", "accent-fg"])
     if (rawLight.get(`--device-${n}`) !== rawLight.get(`--device-screen-${n}`)) worldFails.push(`device light: --device-${n} is ${rawLight.get(`--device-${n}`)}, not the screens' ${rawLight.get(`--device-screen-${n}`)} (one orange, v1.13)`);
-  worldFails.length ? worldFails.forEach(fail) : ok("Press is Blue 4 in Helvetica Neue, Flat the ink in Geist, Device orange in the mono, Rack yellow in Inter, Heat amber in Saira; Blue 4 and pink restated after Flat, a chosen face wins");
+  worldFails.length ? worldFails.forEach(fail) : ok("Press is Blue 4 in Helvetica Neue, Flat the ink in Geist, Device orange in the mono, Plain link blue in Helvetica Neue, Rack yellow in Inter, Heat amber in Saira; Blue 4 and pink restated after Flat, a chosen face wins");
 }
 
 // 15. Rack ----------------------------------------------------------------

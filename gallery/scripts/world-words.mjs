@@ -90,7 +90,7 @@ const others = (self) => ({
  *   no hardware: no readout, LCD, reel, needle or scramble (the studies, taste v1.22).
  * - Rack follows Live: values in boxes, nothing travels, eases or sinks (rack.md, 2).
  * - Device is plates, wells, keys and glass, so those are its own; Press's tray, cast and pill are not (device.md, 3).
- * - Plain has no UI and nothing moves (plain.md, 2).
+ * - Plain has no UI: bare paper, ink and 1px hairlines, nothing cast or raised (taste v1.23).
  * - Press is its own; its pages must not go on to describe another world's body (press.md, 8).
  */
 const WORDS = {
@@ -98,13 +98,8 @@ const WORDS = {
   flat: { ...pick("glass", "cast", "raised", "sinks", "plate", "tray", "bezel", "glow", "stone", "readout", "LCD", "reel", "needle", "scramble"), ...others("flat") },
   device: { ...pick("cast", "raised", "tray", "thrown", "glides", "leans", "half a pixel", "pill", "stone"), ...others("device") },
   plain: {
-    ...pick("glass", "cast", "raised", "sinks", "cap", "plate", "tray", "glides"),
+    ...pick("glass", "cast", "raised", "sinks", "cap", "plate", "tray"),
     ...others("plain"),
-    slides: /\bslid(?:es|ing)\b/i,
-    fades: /\bfad(?:es|ing)\b/i,
-    rises: /\b(?:rises|rising)\b/i,
-    settles: /\bsettl(?:es|ing)\b/i,
-    expressive: /\bexpressive\b/i,
   },
   rack: { ...pick("glass", "cast", "raised", "sinks", "cap", "plate", "tray", "glides", "springs", "thrown", "floats", "leans", "pill"), ...others("rack") },
   heat: { ...pick("glass", "cast", "glow", "raised", "sinks", "pill"), ...others("heat") },
@@ -136,46 +131,12 @@ const KNOWN = [
   ...["device", "rack", "heat"].map((w) => k(`${w}/tune`, ["pill"], TUNE)),
   /* Flat's hardware words (taste v1.22): these parts are being redrawn after the studies, and their words with them. */
   k("flat/time-scrubber", ["needle"], "every world draws the scrubber's fixed needle (it has no Flat body), so the shared Accessibility line names it; it waits on a Flat body"),
-  /* Plain's words are Nick's (litt-principles.md, Plain: nothing changes without asking): each page below waits on its
-     row in the draft, plans/audits/plain-words.md, and names only the words that row replaces, so a new word on a Plain
-     page, or another world named on one the draft does not cover, fails. When a row lands, its entry goes. */
+  /* Plain's shared material words waiting on world-specific copy in plans/audits/plain-words.md. */
   ...Object.entries({
-    plain: ["expressive"],
-    "plain/about": ["slides", "cast"],
-    "plain/accordion": ["fades"],
-    "plain/action-bar": ["rises"],
-    "plain/app-shell": ["rises", "expressive"],
-    "plain/button": ["cast", "sinks", "fades", "another world"],
-    "plain/carousel": ["slides"],
-    "plain/case-study": ["expressive"],
-    "plain/code-input": ["fades"],
-    "plain/date-picker": ["slides"],
-    "plain/dialog": ["fades", "expressive", "rises", "settles"],
-    "plain/file-changes": ["settles", "fades"],
-    "plain/form": ["expressive"],
-    "plain/inspector": ["settles"],
-    "plain/lightbox": ["rises", "settles", "expressive"],
-    "plain/list": ["expressive"],
-    "plain/media": ["fades"],
-    "plain/message": ["fades", "rises"],
-    "plain/pad": ["fades"],
-    "plain/plan": ["fades"],
-    "plain/range-chart": ["rises"],
-    "plain/rolling-number": ["fades", "rises"],
-    "plain/rule-builder": ["settles"],
-    "plain/settings": ["expressive"],
-    "plain/shopify": ["settles"],
-    "plain/slide-confirm": ["slides"],
-    "plain/slider": ["plate", "cap", "cast", "raised", "sinks", "glides", "another world"],
-    "plain/spring-editor": ["settles", "expressive"],
+    "plain/button": ["cast", "sinks", "another world"],
+    "plain/slider": ["plate", "cap", "cast", "raised", "sinks", "another world"],
     "plain/switch": ["tray", "cast", "sinks", "another world"],
-    "plain/table": ["expressive"],
-    "plain/tabs": ["slides"],
-    "plain/thinking": ["fades"],
-    "plain/time-scrubber": ["settles"],
-    "plain/tune": ["settles"],
   }).map(([page, words]) => k(page, words, "Plain's lines are Nick's: this page's row in plans/audits/plain-words.md, not landed")),
-  k("plain/inspector", ["fades"], "the shared About says a group fades open; plans/audits/plain-words.md has no line for it yet, so it waits with the draft"),
 ];
 const inEntry = (k, id) => k.page === id || (k.page.endsWith("/*") && id.split("/")[0] === k.page.slice(0, -2));
 const knownFor = (f) => KNOWN.find((k) => inEntry(k, f.id) && k.words.includes(f.word));

@@ -8,8 +8,8 @@ export const meta: PageMeta = {
   order: 0.4,
   group: "Worlds",
   world: "plain",
-  summary: "Docs, forms, admin and internal tools. Lines on paper, links that look like links, and nothing moves: a page changes in place, at once.",
-  tiers: [],
+  summary: "Docs, forms, admin, internal tools and agentic workspaces. Bare 1px lines on paper in Helvetica Neue, links that look like links, bare-paper data, and Subtraction motion with zero bounce.",
+  tiers: ["instant", "responsive", "expressive"],
 };
 
 export default function PlainPage() {

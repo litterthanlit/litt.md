@@ -161,11 +161,13 @@ A product pattern keeps its subject (a run, a deploy, a code) and speaks the rec
 
 ### Plain, the document
 
-For docs, forms, admin and internal tools: anything that should just work. Nick, 2026-11-16: "plain is my favorite one right now. I really like the way it is right now." Change nothing in Plain without asking.
+For docs, forms, admin, internal tools and agentic workspaces: anything that should read and work like an exact document (`proposals/plain-studies.md`, `plans/027-plain-is-the-plain-studies.md`). Nick, 2026-11-26 and 2026-11-27: "I love this, do it's own motion language please, theme is subtraction, also components should be agentic", "should we do helvetica?", "some boxes are not needed also. maybe also maybe decrease opacity for not selected somponents", and "Really good. Open a pr then keep going".
 
-- **No UI.** A control is its words. A link looks like a link. Nothing has to be learned.
-- **Still.** Nothing moves, so a state changes the moment you ask.
-- **The reader's own page.** The system's face and nothing to load, so it is theirs from the first paint.
+- **No UI, no unneeded boxes.** A control is its words: grey when idle, the one primary action or current choice in full ink inside four crisp corner marks (`[ ]`), with at most one resting bracketed item per group. A 4-sided box is kept only for something that floats over the page; fields, commands, logs, metrics and rows sit on open paper parted by single 1px hairlines. A link looks like a link, underlined in link blue.
+- **Helvetica Neue.** Swiss document clarity in the three role weights, tabular figures on every count, and `--font-mono` reserved strictly for code, commands and paths.
+- **Subtraction.** Plain's motion removes noise instead of adding ornament, with **zero bounce everywhere** (`BOUNCE_CAP.plain` is 0, `--spring-expressive` is `280ms 0`): four corner marks glide cleanly from choice to choice on the `200ms` zero-bounce spring and tighten inward on press, uninvolved marks step down in opacity when inspecting a datum, and superseded scaffolding pares away fast (`150ms`) so the committed line folds cleanly up.
+- **Data bare on white paper.** Charts, diagrams and tables sit directly on `--canvas` with zero card boxes, zero sunken trays and zero rounded corners: `1px` baselines, `1.5px` white-paper scale cuts through square ink bars, square `5px` line vertices, frameless Helvetica nodes on orthogonal `1px` hairlines, and right-aligned tabular columns.
+- **Agentic.** Plain's native parts steer, approve, redact, trace and audit agents directly inline on the document.
 
 ### Rack, the module
 

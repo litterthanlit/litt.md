@@ -97,7 +97,8 @@ const bounces = (w, bounce, tier = "expressive") => R.springRules({ time: 0.35, 
 check(bounces("flat", 0.28), "springRules lets Flat bounce 0.28");
 check(!bounces("flat", 0.3), "springRules turns down Flat at 0.3");
 check(!bounces("press", 0.2), "springRules turns down Press at 0.2");
-for (const w of worlds.filter((w) => w !== "flat")) check(bounces(w, 0.12) && !bounces(w, 0.13), `springRules holds ${w} at 0.12`);
+check(bounces("plain", 0) && !bounces("plain", 0.01), "springRules holds plain at 0");
+for (const w of worlds.filter((w) => w !== "flat" && w !== "plain")) check(bounces(w, 0.12) && !bounces(w, 0.13), `springRules holds ${w} at 0.12`);
 for (const w of worlds) check(!bounces(w, 0.08, "responsive"), `springRules turns down a responsive bounce in ${w}`);
 check(R.springRules({ time: 0.35, bounce: 0.3 }, "expressive", "flat").at(-1).text === "Bounce at most 0.28: 0.3", `springRules says Flat's cap in words: "${R.springRules({ time: 0.35, bounce: 0.3 }, "expressive", "flat").at(-1).text}"`);
 

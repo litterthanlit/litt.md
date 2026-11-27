@@ -36,6 +36,7 @@ import { byWorld, useMaterial } from "@/motion";
 import { TagDeviceBody } from "@/worlds/device/tag";
 import { TagFlatBody } from "@/worlds/flat/tag";
 import { TagHeatBody } from "@/worlds/heat/tag";
+import { TagPlainBody } from "@/worlds/plain/tag";
 import { TagRackBody } from "@/worlds/rack/tag";
 
 export type TagStatus = "success" | "warning" | "danger" | "neutral";
@@ -112,7 +113,7 @@ function PressBody({ status, hue, raised, label, rest, className }: TagBodyProps
 
 /** A 24px label at the control radius, in the sans at the label weight. Add `status` to color its text, `hue` to file it under a category, or `raised` for a value in a field. */
 export function Tag({ status, hue, raised = false, children, className = "", ...rest }: TagProps) {
-  const Body = byWorld(useMaterial(), { press: PressBody, flat: TagFlatBody, device: TagDeviceBody, rack: TagRackBody, heat: TagHeatBody });
+  const Body = byWorld(useMaterial(), { press: PressBody, flat: TagFlatBody, device: TagDeviceBody, plain: TagPlainBody, rack: TagRackBody, heat: TagHeatBody });
   const label = typeof children === "string" || typeof children === "number" ? <span className="min-w-0 truncate">{children}</span> : children;
   return <Body status={status} hue={hue} raised={raised} label={label} rest={rest} className={className} />;
 }

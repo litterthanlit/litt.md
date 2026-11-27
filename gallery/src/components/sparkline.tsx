@@ -43,6 +43,7 @@ import { motion } from "motion/react";
 import { byWorld, useFun, useMaterial } from "@/motion";
 import { SparklineFlatBody } from "@/worlds/flat/sparkline";
 import { SparklineDeviceBody } from "@/worlds/device/sparkline";
+import { SparklinePlainBody } from "@/worlds/plain/sparkline";
 import { SparklineRackBody } from "@/worlds/rack/sparkline";
 import { SparklineHeatBody } from "@/worlds/heat/sparkline";
 
@@ -269,7 +270,7 @@ export function Sparkline({
         : `${label}: from ${fmt(data[0]!)} to ${fmt(data[n - 1]!)}, low ${fmt(Math.min(...data))}, high ${fmt(Math.max(...data))}` +
           (goal === undefined ? "" : `, baseline ${fmt(goal)}`));
 
-  const Body = byWorld(useMaterial(), { press: PressBody, flat: SparklineFlatBody, device: SparklineDeviceBody, rack: SparklineRackBody, heat: SparklineHeatBody });
+  const Body = byWorld(useMaterial(), { press: PressBody, flat: SparklineFlatBody, device: SparklineDeviceBody, plain: SparklinePlainBody, rack: SparklineRackBody, heat: SparklineHeatBody });
 
   return (
     <Body

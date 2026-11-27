@@ -260,15 +260,12 @@ function useStandaloneDial(enabled: boolean): Ctx | null {
 }
 
 /**
- * The dial the hooks read. Without a provider it is the locked tokens, so the components work in any app. Under Plain
- * (proposals/plain.md) it is held still, as reduced motion holds it: a plain page changes in place, at once.
+ * The dial the hooks read. Without a provider it is the locked tokens, so the components work in any app.
  */
 export function useMotionDial(): Ctx {
   const ctx = useContext(DialContext);
   const standalone = useStandaloneDial(ctx === null);
-  const base = ctx ?? standalone!;
-  const plain = useMaterial() === "plain";
-  return useMemo(() => (plain && !base.reduced ? { ...base, reduced: true } : base), [base, plain]);
+  return ctx ?? standalone!;
 }
 
 /* What tokens.css's reduced-motion block sets, for CSS transitions inside StillMotion. */

@@ -1,6 +1,6 @@
 /**
  * Plain's scenes (scene.ts): the page that just works. A help centre and the tools behind it: a form, a doc, a search,
- * a list of records and a few preferences. Lines on paper, words that are links look like links, and nothing moves.
+ * a list of records and a few preferences. Bare 1px lines on paper in Helvetica Neue, underlined links, and Subtraction motion.
  */
 import { useState } from "react";
 import { Button } from "@/components/button";

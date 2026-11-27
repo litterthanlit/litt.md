@@ -65,6 +65,7 @@ import { byWorld, countText, useExit, useFun, useFunValue, useMaterial, useTrans
 import { ChartDeviceBody } from "@/worlds/device/chart";
 import { ChartFlatBody } from "@/worlds/flat/chart";
 import { ChartHeatBody } from "@/worlds/heat/chart";
+import { ChartPlainBody } from "@/worlds/plain/chart";
 import { ChartRackBody } from "@/worlds/rack/chart";
 
 /* ----------------------------------------------------------------- types */
@@ -122,13 +123,14 @@ const AXIS = 28; // room under the plot for the category labels
 const LABEL_GAP = 6; // between a value label and the plot
 const FIGURE = 7.2; // advance of a 12px tabular figure in Geist (letters run narrower)
 const MAX_BAR = 32;
-type World = "press" | "flat" | "device" | "rack" | "heat";
+type World = "press" | "flat" | "device" | "plain" | "rack" | "heat";
 /** The room a body keeps around the plot: a value axis on the left or none, and the space above the plot. */
 type Frame = { axis: boolean; top: number };
 const FRAME: Record<World, Frame> = {
   press: { axis: true, top: TOP },
   flat: { axis: true, top: TOP }, // today's chart
   device: { axis: false, top: 44 }, // the readout sits on the bezel above the screen
+  plain: { axis: true, top: TOP },
   rack: { axis: true, top: TOP },
   heat: { axis: true, top: TOP },
 };
@@ -298,8 +300,7 @@ function Chart({
   /* How many hues `hues` hands out: five, and Flat's eight (v1.18). */
   const slots = byWorld(material, { press: 5, flat: 8 });
   const paint = useMemo(() => paints(series, hues || stacked, slots), [series, hues, stacked, slots]);
-  /* A world without a chart body of its own (Plain) draws Press's (byWorld). */
-  const body: World = byWorld<World>(material, { press: "press", flat: "flat", device: "device", rack: "rack", heat: "heat" });
+  const body: World = byWorld<World>(material, { press: "press", flat: "flat", device: "device", plain: "plain", rack: "rack", heat: "heat" });
   const [boxRef, width] = useWidth();
   const g = useMemo(
     () => layout(width, height, labels, series, fmt, stacked, FRAME[body]),
@@ -385,7 +386,7 @@ function Chart({
   const enter = useTransition("responsive");
   const empty = n === 0 || series.length === 0;
   const bars = kind === "bar" ? barMarks(g, series, paint, n, emphasis, fmt) : null;
-  const Body = byWorld(body, { press: PressBody, flat: ChartFlatBody, device: ChartDeviceBody, rack: ChartRackBody, heat: ChartHeatBody });
+  const Body = byWorld(body, { press: PressBody, flat: ChartFlatBody, device: ChartDeviceBody, plain: ChartPlainBody, rack: ChartRackBody, heat: ChartHeatBody });
   const marks = bars ? (
     <BarRects bars={bars.bars} ring={ring !== null ? bars.ringOf(ring) : null} entrance={entrance} enter={enter} />
   ) : kind === "stack" ? (

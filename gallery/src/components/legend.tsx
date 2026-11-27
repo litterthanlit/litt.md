@@ -44,6 +44,7 @@ import { useId, useState, type CSSProperties, type KeyboardEvent, type MouseEven
 import { byWorld, useMaterial } from "@/motion";
 import { LegendFlatBody } from "@/worlds/flat/legend";
 import { LegendDeviceBody } from "@/worlds/device/legend";
+import { LegendPlainBody } from "@/worlds/plain/legend";
 import { LegendRackBody } from "@/worlds/rack/legend";
 import { LegendHeatBody } from "@/worlds/heat/legend";
 
@@ -255,7 +256,7 @@ export function Legend({ label, items, hidden: hiddenProp, defaultHidden = [], o
     commit([...others, ...items.map((item) => item.name).filter((n) => n !== name)]);
   };
 
-  const Body = byWorld(material, { press: PressBody, flat: LegendFlatBody, device: LegendDeviceBody, rack: LegendRackBody, heat: LegendHeatBody });
+  const Body = byWorld(material, { press: PressBody, flat: LegendFlatBody, device: LegendDeviceBody, plain: LegendPlainBody, rack: LegendRackBody, heat: LegendHeatBody });
 
   return (
     <Body
