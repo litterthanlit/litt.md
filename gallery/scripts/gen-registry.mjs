@@ -794,8 +794,8 @@ const COPY = {
   },
   "copy-button": {
     title: "Copy button",
-    description: "A key that copies a command shown on LCD glass: the key sinks its 2px, the check draws in, and the command's glyphs decode back in a wave. A Device part.",
-    docs: "Needs data-material=\"device\" on <html>. Pass the text to copy; it says Copied for a moment and goes back. Under reduced motion the glyphs swap at once.",
+    description: "A key that copies a command, beside the line that shows it. Under Device the line is LCD glass whose glyphs decode back in a wave; under Flat it is a white pill whose line swaps to Copied to clipboard. A Device and Flat part.",
+    docs: "Needs data-material=\"device\" or \"flat\" on <html>. Pass the text to copy; it says Copied for a moment and goes back. Under reduced motion the line changes at once.",
   },
   "tape-progress": {
     title: "Tape progress",
@@ -867,8 +867,8 @@ const COPY = {
   },
   "step-sequencer": {
     title: "Step sequencer",
-    description: "A colorful 8-step drum and bass pattern grid with four color-coded instrument lanes, pattern presets, and a Play / Stop playhead. A Rack part.",
-    docs: "Needs data-material=\"rack\" on <html>. Starts stopped; click any step to toggle a hit on the frame, cycle patterns, or press Play to step across all 8 beats.",
+    description: "A step sequencer: lanes of steps to toggle and a Play / Stop playhead. Under Rack a colorful 8-step drum and bass grid with pattern presets; under Flat a monochrome grid of soft squares on white paper with the tempo as its figure. A Rack and Flat part.",
+    docs: "Needs data-material=\"rack\" or \"flat\" on <html>. Starts stopped; click any step to toggle it, or press Play to step the playhead across the pattern.",
   },
   /* Press's own parts (plans/024, Press; taste/litt-principles.md, Press): tactile warm-stone product/deploy controls. */
   "deploy-status": {

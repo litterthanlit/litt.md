@@ -1,6 +1,7 @@
 /**
- * StepSequencer, a Rack part (proposals/rack.md; taste/litt-principles.md, Rack): an Ableton-style colorful 8-step
- * drum and bass pattern grid.
+ * StepSequencer, a Rack and Flat part (proposals/rack.md; taste/litt-principles.md, Rack; the Flat studies, Step
+ * sequencer). Under Rack, below, an Ableton-style colorful 8-step drum and bass pattern grid; under Flat
+ * (worlds/flat/step-sequencer.tsx), a monochrome grid of soft squares on white paper with the tempo as its figure.
  *
  * - Four color-coded instrument lanes (`Kick` amber/orange, `Snare` rose/green, `Hat` teal/cyan, `Bass` blue) across
  *   8 quantized steps grouped into two 4-step beats (`1`–`4`, `5`–`8`).
@@ -18,6 +19,8 @@
  */
 import { useEffect, useId, useRef, useState, type CSSProperties, type KeyboardEvent, type ReactNode } from "react";
 import { Button } from "@/components/button";
+import { byWorld, useMaterial } from "@/motion";
+import { StepSequencerFlatBody } from "@/worlds/flat/step-sequencer";
 
 export type StepHue = "amber" | "blue" | "teal" | "violet" | "rose";
 
@@ -87,8 +90,14 @@ export const DEFAULT_LANES: StepLane[] = [
 
 const STEPS = 8;
 
+/** One contract, two bodies: Rack's, below, is the default; worlds/flat/step-sequencer.tsx is Flat's. Each keeps its own pattern. */
+export function StepSequencer(props: StepSequencerProps) {
+  const Body = byWorld(useMaterial(), { press: RackBody, flat: StepSequencerFlatBody });
+  return <Body {...props} />;
+}
+
 /** Rack's Ableton-style colorful 8-step drum & bass pattern sequencer. */
-export function StepSequencer({
+function RackBody({
   title = "Drum rack · Pattern A",
   bpm = 124,
   lanes: initialLanes = DEFAULT_LANES,

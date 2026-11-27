@@ -163,8 +163,8 @@
       "hash": "c1a658e43874c0f3"
     },
     "copy-button": {
-      "version": "2026.11.08",
-      "hash": "c15f59e2c204cc14"
+      "version": "2026.11.27",
+      "hash": "2b29fcf3820f129f"
     },
     "curve-editor": {
       "version": "2026.11.18",
@@ -291,8 +291,8 @@
       "hash": "c1a658e43874c0f3"
     },
     "device-copy-button": {
-      "version": "2026.11.16",
-      "hash": "c15f59e2c204cc14"
+      "version": "2026.11.27",
+      "hash": "dcf7ee367ac0964c"
     },
     "device-curve-editor": {
       "version": "2026.11.18",
@@ -654,6 +654,10 @@
       "version": "2026.11.23",
       "hash": "f30961de58ed75c3"
     },
+    "flat-copy-button": {
+      "version": "2026.11.27",
+      "hash": "6a655e4f03f8bff7"
+    },
     "flat-dialog": {
       "version": "2026.11.16",
       "hash": "8615d3ab119d5ef0"
@@ -733,6 +737,10 @@
     "flat-stat": {
       "version": "2026.11.23",
       "hash": "3f89b9d02dd4837a"
+    },
+    "flat-step-sequencer": {
+      "version": "2026.11.27",
+      "hash": "624591d2920f446c"
     },
     "flat-streak": {
       "version": "2026.11.23",
@@ -2439,8 +2447,8 @@
       "hash": "e936fa049ab202dd"
     },
     "rack-step-sequencer": {
-      "version": "2026.11.21",
-      "hash": "3e8814059a39b3f4"
+      "version": "2026.11.27",
+      "hash": "910ea65ca00a9459"
     },
     "rack-steps": {
       "version": "2026.11.16",
@@ -2607,8 +2615,8 @@
       "hash": "e936fa049ab202dd"
     },
     "step-sequencer": {
-      "version": "2026.11.21",
-      "hash": "3e8814059a39b3f4"
+      "version": "2026.11.27",
+      "hash": "8f1b9e7fdb93c4bb"
     },
     "steps": {
       "version": "2026.11.06",
