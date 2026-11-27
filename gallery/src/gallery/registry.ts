@@ -34,7 +34,7 @@ export const worlds: (MaterialInfo & { page: PageEntry })[] = MATERIALS.flatMap(
 /** Whether a page belongs in a world: every page does unless its meta.worlds leaves that world out. */
 export const inWorld = (page: Pick<PageMeta, "worlds">, material: Material): boolean => !page.worlds || page.worlds.includes(material);
 /** The parts that exist in one world alone, in sidebar order, for its Only here section. */
-export const onlyIn = (material: Material): PageEntry[] => pages.filter((p) => p.worlds && p.worlds.length < MATERIALS.length && p.worlds.includes(material));
+export const onlyIn = (material: Material): PageEntry[] => pages.filter((p) => p.worlds?.length === 1 && p.worlds[0] === material);
 
 /** The pages whose component moves differently in fun mode (meta.fun), in sidebar order. */
 export const funPages = pages.filter((p) => p.fun);
