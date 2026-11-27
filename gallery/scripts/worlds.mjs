@@ -24,8 +24,8 @@
  * - the phone's menu does not list Worlds with a row per world before the first component group,
  * - a world page scrolls sideways at 390 or at 320,
  * - a world page has no Only here section (section#only-here[data-only-here]), or its abilities are not the world's
- *   abilities from look.ts, in order, or its parts are not exactly the pages whose meta.worlds is this world and fewer
- *   than all of them (read from src/gallery/pages, so no list is written here): a part missing, or a part of another world,
+ *   abilities from look.ts, in order, or its parts are not exactly the pages whose meta.worlds names this world alone
+ *   (read from src/gallery/pages, so no list is written here): a part missing, or a part of another world,
  * - the Systems page (#systems) is not a card per world linking #press, #flat, #device, #plain, #rack and #heat in order, each named by the
  *   system and its line from look.ts, beside its cover scene, inert and hidden, the link the card's one stop, or it
  *   scrolls sideways,
@@ -85,14 +85,14 @@ async function loadLook() {
   }
 }
 const WORLDS = (await loadLook()).MATERIALS;
-/** The pages that belong to fewer than every world, from each page's `export const meta` (as wall.mjs reads it). */
+/** The pages that belong to one world alone, from each page's `export const meta` (as wall.mjs reads it). */
 const PAGES_DIR = path.join(here, "..", "src", "gallery", "pages");
 const WORLD_ONLY = fs.readdirSync(PAGES_DIR).filter((f) => f.endsWith(".tsx")).flatMap((f) => {
   const meta = /export\s+const\s+meta\b[\s\S]*?\n\};?/.exec(fs.readFileSync(path.join(PAGES_DIR, f), "utf8"))?.[0] ?? "";
   const id = /\bid:\s*"([^"]+)"/.exec(meta)?.[1];
   const worlds = /\bworlds:\s*\[([^\]]*)\]/.exec(meta)?.[1];
   const list = worlds ? [...worlds.matchAll(/"([^"]+)"/g)].map((m) => m[1]) : [];
-  return id && list.length > 0 && list.length < WORLDS.length ? [{ id, worlds: list }] : [];
+  return id && list.length === 1 ? [{ id, worlds: list }] : [];
 });
 const ownParts = (world) => WORLD_ONLY.filter((p) => p.worlds.includes(world.id)).map((p) => p.id);
 /**
