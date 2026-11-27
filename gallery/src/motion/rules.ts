@@ -63,13 +63,14 @@ export const LIMITS = {
 
 /**
  * The expressive bounce cap, per world (R4, check.mjs's BOUNCE_CAP). Flat bounces more (plans/023, Nick 2026-11-16:
- * "0.28 at 350ms, no bounce on small moves looks good"); every other world keeps 0.12. Responsive is exactly 0 in all.
+ * "0.28 at 350ms, no bounce on small moves looks good"); Plain is Subtraction with zero bounce everywhere (taste v1.23,
+ * plans/027: 0); every other world keeps 0.12. Responsive is exactly 0 in all.
  */
 export const EXPRESSIVE_BOUNCE: Record<Material, number> = {
   press: LIMITS.bounce,
   flat: 0.28,
   device: LIMITS.bounce,
-  plain: LIMITS.bounce,
+  plain: 0,
   rack: LIMITS.bounce,
   heat: LIMITS.bounce,
 };

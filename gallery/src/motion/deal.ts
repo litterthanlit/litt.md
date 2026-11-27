@@ -30,8 +30,9 @@
  *           expressive spring, and an overlay rises and settles from --press-scale, as litt always has. Nothing flies.
  *   Device  things are mechanisms: a set switches on in place in three short steps on the instant tier, one after
  *           another like segments lighting, and an overlay switches on and off with no growth and no slide.
- *   Plain   nothing moves: a set and an overlay are there at once, as reduced motion has it (useMotionDial is held
- *           still under Plain, so `reduced` is true).
+ *   Plain   subtraction (taste v1.23, plans/027): zero bounce everywhere. A set settles cleanly over a short quarter-travel
+ *           rise on the responsive zero-bounce spring, and pares away all at once on the fast stop tween; an overlay fades
+ *           in and out where it stands with no growth and no slide.
  *   Rack    things cut in on the beat: a set appears in place column by column, left to right, each column at once
  *           and a --stagger apart, like a scene launching across tracks, on the instant tier's ease-out; it stops all
  *           at once, quicker than it came. An overlay cuts in where it stands with no growth and no slide, and a value
@@ -262,6 +263,19 @@ export function deal(pieces: HTMLElement[], from: DealSource, motion: DealMotion
     });
     return { order, finished: moving(pieces, anims) };
   }
+  if (motion.material === "plain") {
+    /* Subtraction: each piece settles into place over a short quarter-travel rise on the zero-bounce responsive spring. */
+    index.forEach((i, k) => {
+      const piece = pieces[i]!;
+      const delay = k * motion.stagger;
+      for (const a of ours(piece)) a.cancel();
+      anims.push(
+        piece.animate([{ transform: `translateY(${motion.travel / 4}px)` }, { transform: "none" }], { ...motion.settle, delay, fill: "backwards", id: ID }),
+        piece.animate([{ opacity: 0 }, { opacity: 1 }], { ...motion.appear, delay, fill: "backwards", id: ID }),
+      );
+    });
+    return { order, finished: moving(pieces, anims) };
+  }
   if (motion.material !== "flat") {
     index.forEach((i, k) => {
       const piece = pieces[i]!;
@@ -318,6 +332,19 @@ export function gather(
       const opacity = getComputedStyle(piece).opacity;
       for (const a of ours(piece)) a.cancel();
       anims.push(piece.animate([{ opacity }, { opacity: 0 }], { ...motion.stop, fill: "both", id: ID }));
+    }
+    return moving(order, anims);
+  }
+  if (motion.material === "plain") {
+    /* Pare away: every piece subtracts at once on the fast stop tween with a slight upward pare, zero bounce. */
+    for (const piece of order) {
+      const opacity = getComputedStyle(piece).opacity;
+      const drawn = getComputedStyle(piece).transform;
+      for (const a of ours(piece)) a.cancel();
+      anims.push(
+        piece.animate([{ transform: drawn === "none" ? "none" : drawn }, { transform: `translateY(${-motion.travel / 4}px)` }], { ...motion.stop, fill: "both", id: ID }),
+        piece.animate([{ opacity }, { opacity: 0 }], { ...motion.stop, fill: "both", id: ID }),
+      );
     }
     return moving(order, anims);
   }

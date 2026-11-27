@@ -2298,12 +2298,12 @@
 }
 
 /* --------------------------------------------------------------------------
-   Plain (R3, proposals/plain.md): data-material="plain" on <html> draws the
-   page the way HTML does. White paper and black words in the system's own
-   face, link blue as its own accent, links underlined, a 1px line around
-   everything a hand can use and no fill inside it, no frame around a group, square
-   corners, no glass, no light, no cast and no motion: a state changes in place,
-   at once. Last in the file, after Device; the two never share an element.
+   Plain (R3, R4, taste v1.23, proposals/plain-studies.md): data-material="plain"
+   on <html> draws the page as an exact document. White paper and black words in
+   Helvetica Neue, link blue as its own accent, links underlined, bare 1px rules
+   with four corner marks on the one main action or current choice, square
+   corners, no glass, no light, no cast, and Subtraction motion (zero bounce
+   everywhere). Last in the file, after Device; the two never share an element.
    -------------------------------------------------------------------------- */
 :root[data-material="plain"],
 [data-material="plain"] {
@@ -2329,8 +2329,8 @@
   --focus: var(--plain-focus);
   --light: none;
   --glow: 0 0 0 0 transparent;
-  /* The system's own face, the one a page with no stylesheet asks for. */
-  --font-sans: var(--font-choice, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif);
+  /* Helvetica Neue (taste v1.23, Plain studies): Swiss document clarity, overridden by --font-choice when picked. */
+  --font-sans: var(--font-choice, "Helvetica Neue", Helvetica, Arial, sans-serif);
 
   /* Square, as a page is: the Customize shapes still override it. */
   --radius-control: 0px;
@@ -2375,15 +2375,17 @@
   --block-wall: 0px;
   --block-hover: color-mix(in oklab, var(--block), var(--fg) 5%);
 
-  /* Still: a page changes in place, at once, as reduced motion has it everywhere. The motion check reads the locked
-     tiers without this block and holds it to zeroing every one (check 14). */
-  --dur-instant: 0ms;
-  --dur-responsive: 0ms;
-  --dur-expressive: 0ms;
-  --dur-exit-responsive: 0ms;
-  --dur-exit-expressive: 0ms;
-  --stagger: 0ms;
-  --travel: 0px;
+  /* Subtraction (R4, taste v1.23): zero bounce everywhere. Instant (100ms), responsive (200ms 0) and responsive
+     exit (150ms) inherit :root; the expressive spring runs at 280ms 0 so it settles critically damped in 558ms
+     with a 210ms expressive exit. The reduced-motion block below names Plain, so every tier still zeroes there. */
+  --spring-expressive: 280ms 0;
+  --dur-expressive: 558ms;
+  --ease-expressive: linear(0, 0.0326, 0.1228, 0.2063, 0.2934, 0.4059, 0.4838, 0.5546, 0.6372, 0.6906,
+                       0.751, 0.7892, 0.8219, 0.8583, 0.8808, 0.8998, 0.9207, 0.9336, 0.9444, 0.9561,
+                       0.9633, 0.9693, 0.9759, 0.9799, 0.9832, 0.9868, 0.989, 0.9908, 0.9928, 0.994,
+                       0.9953, 0.9961, 0.9967, 0.9974, 0.9979, 0.9982, 0.9986, 0.9988, 0.999, 0.9992,
+                       1);
+  --dur-exit-expressive: 210ms;
 
   --focus-ring: 0 0 0 2px var(--canvas), 0 0 0 4px var(--focus);
   --data-blue-tint: color-mix(in oklab, var(--data-blue) var(--tint-strength), var(--surface-1));
@@ -2831,13 +2833,15 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  /* A world block that sets a --dur-* token (Flat's expressive settle) or a press token (Device's) is named here, at
-     its own specificity, or its value would beat these zeros on <html>. */
+  /* A world block that sets a --dur-* token (Flat's and Plain's expressive settle) or a press token (Device's) is named
+     here, at its own specificity, or its value would beat these zeros on <html>. */
   :root,
   :root[data-material="flat"],
   [data-material="flat"],
   :root[data-material="device"],
-  [data-material="device"] {
+  [data-material="device"],
+  :root[data-material="plain"],
+  [data-material="plain"] {
     --dur-instant: 0ms;
     --dur-responsive: 0ms;
     --dur-expressive: 0ms;

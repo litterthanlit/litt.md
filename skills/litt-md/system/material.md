@@ -105,23 +105,23 @@ The same depth ladder said in hardware, after the components studies (journal, 2
 - **The recorder** (the Playground's object, plans/018; Nick, 2026-11-16). Device's object takes values no part takes: a dial in the body's opposite finish (`--dial`, `--dial-ink`, `--dial-lift`, `--dial-press`, `--dial-recess`: black on the light body, silver on the dark), a red that only signals (`--signal`: the playhead, a light that fires; never a fill, never a word), the object's deep cast (`--object-cast`, the one cast past R3's 3px, straight down), its soft corners (`--object-radius`, the one radius past R9's scale, with what sits inside it concentric) and how strongly its plate's grain shows (`--object-grain`). Every other world's object is a surface like any other, so outside Device these name the surface, the cap and the danger hue.
 - **Never:** ambient motion (no flicker, scanline or blinking caret: R4 holds), texture images, or the accent on chrome.
 
-### 9. Plain: `[data-material="plain"]` (R3)
-The page the way HTML draws one, with almost no UI of its own (`proposals/plain.md`): docs, forms, admin and tools that should just work. White paper and black words in the system's face, link blue as its own accent with links underlined, square corners, and nothing moves.
+### 9. Plain: `[data-material="plain"]` (R3, R4, taste v1.23)
+An exact document on white paper (`proposals/plain.md`, `proposals/plain-studies.md`): docs, forms, admin, internal tools and agentic workspaces. White paper and black words in Helvetica Neue, link blue as its own accent with links underlined, bare 1px hairlines with a 4-sided box kept only for what floats, square corners, and Subtraction motion with zero bounce everywhere.
 
 | Depth | Press | Plain |
 |---|---|---|
 | Sunken: a tray | `--tray`, a hairline and the top wall's shade | nothing: no fill and no frame around a group |
-| Sunken: a cut | `--cut` and its top wall's shade | a white field inside the control line, no shade |
+| Sunken: a cut | `--cut` and its top wall's shade | a white field over a single bottom hairline, no shade |
 | Sunken: a slot | `--slot`, both walls, the fill a step darker | a bar inside a 1px control line, the fill the grey ink |
-| Flat: canvas and surfaces | a hairline and the top highlight | white paper and a hairline, no highlight |
-| Raised: a block | white or a warm grey, a contact line and a cast | the page inside one 1px control line, drawn inside the box so it never doubles, and no wall (`--block-wall` is 0); pressed, the line is the ink |
-| Raised: a plate | a lit top edge and a cast | the same line outside it: the current tab, open on its foot, is a folder tab |
+| Flat: canvas and surfaces | a hairline and the top highlight | white paper and single 1px hairlines, no highlight and no card box |
+| Raised: a block | white or a warm grey, a contact line and a cast | a word in grey, and the main action or current choice in full ink inside four corner marks (`[ ]`), with `--block-wall` at 0 |
+| Raised: a plate | a lit top edge and a cast | a row of words, the active one held in four corner marks |
 | Floating | glass, a zero-offset glow, a ring | the page again (`--canvas`) inside one control line: no blur, no glow, no shadow |
 
-- **The values.** Each theme block declares `--plain-*`: the neutrals and the accent (`#0000ee`, the blue a browser draws a link in, and a pale blue in dark that keeps 0.12 from every data hue). The plain block maps the live names onto them, sets the radii, the glass, the shadows and the grain to nothing, zeroes the motion tiers, and Blue 4, pink and monochrome are restated after it. The check runs every pair again under Plain (check 14).
+- **The values.** Each theme block declares `--plain-*`: the neutrals and the accent (the blue a browser draws a link in, and a pale blue in dark that keeps 0.12 from every data hue). The plain block maps the live names onto them, sets Helvetica Neue, sets the radii, the glass, the shadows and the grain to nothing, sets `--spring-expressive` to `280ms 0` (`558ms` settle, `210ms` exit), and restates Blue 4, pink and monochrome after it. The check runs every pair again under Plain (check 14) and holds its bounce cap to 0 (check 9).
 - **Links.** `tokens.css` underlines a link inside Plain in the base layer, so a utility that sets a link's decoration still wins.
-- **Bodies.** None yet: a part draws Press's body in Plain's tokens (`byWorld` falls back to Press). A Plain body per part is the next step.
-- **Never:** a shadow, a gradient, a blur, a rounded corner, or motion.
+- **Bodies.** Controls (`button`, `checkbox`, `input`, `segmented`, `select`, `switch`, `tabs`) draw as words, single hairlines and gliding four-corner brackets; data parts (`stat`, `sparkline`, `chart`, `legend`, `table`) sit bare on white paper with 1px hairlines, white-paper scale cuts through square ink bars and square line vertices (`worlds/plain/`).
+- **Never:** a shadow, a gradient, a blur, a rounded corner, an unneeded 4-sided box, or spring bounce.
 
 ### 10. Rack: `[data-material="rack"]` (R3, a proposal)
 The same depth ladder as a software instrument's rack, after Ableton Live (`proposals/rack.md`; its decisions wait for Nick, so the profile does not name it yet). Flat grey panels sit on a darker grey body, and an outline says what a thing is: a key or a well has a 1px edge, and its fill says which. Nothing casts, glows, blurs or sinks. A project chooses it with the attribute on `<html>`; Press stays the default.

@@ -19,9 +19,10 @@ const base =
   "disabled:cursor-not-allowed data-loading:cursor-wait " +
   "focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-focus";
 
-/* Four corner marks, each two 1px bars 6px long, in the word's color. */
+/* Four corner marks, each two 1px bars 6px long, in the word's color; they tighten slightly inward on press. */
 const brackets =
   "pointer-events-none absolute -inset-x-2.5 inset-y-1.5 bg-no-repeat " +
+  "transition-[opacity,scale] duration-(--dur-instant) ease-litt group-enabled/btn:group-active/btn:scale-[0.96] " +
   "[background-image:linear-gradient(currentColor,currentColor),linear-gradient(currentColor,currentColor),linear-gradient(currentColor,currentColor),linear-gradient(currentColor,currentColor),linear-gradient(currentColor,currentColor),linear-gradient(currentColor,currentColor),linear-gradient(currentColor,currentColor),linear-gradient(currentColor,currentColor)] " +
   "[background-size:6px_1px,1px_6px,6px_1px,1px_6px,6px_1px,1px_6px,6px_1px,1px_6px] " +
   "[background-position:left_top,left_top,right_top,right_top,left_bottom,left_bottom,right_bottom,right_bottom] " +

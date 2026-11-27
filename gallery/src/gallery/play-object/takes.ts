@@ -30,7 +30,7 @@ const SET: Record<Material, string[]> = {
   press: ["autonomy-gate", "deploy-status", "env-switch", "release-rail", "stat", "button", "switch", "segmented", "slider", "input", "select", "menu"],
   flat: ["spotlight-card", "magnetic-button", "working-loader", "assistant-status", "agent-status", "context-budget", "hold-confirm", "agent-run", "toast-stack", "poll", "streak", "kudos"],
   device: ["agent-dispatch", "composer", "agent-indicator", "tool-call", "message", "seven-segment", "tape-progress", "switch", "slider", "gauge", "copy-button", "command-menu"],
-  plain: ["agent-transcript", "form", "input", "select", "checkbox", "button", "table", "details", "callout", "breadcrumb", "tabs", "dialog"],
+  plain: ["agent-transcript", "thinking", "tool-call", "file-changes", "sources", "stat", "chart", "sparkline", "table", "tabs", "segmented", "switch"],
   rack: ["agent-chain", "clip-launcher", "device-rack", "step-sequencer", "slider", "curve-editor", "pad", "time-scrubber", "inspector", "number-field", "segmented", "switch"],
   heat: ["agent-throttle", "pursuit-meter", "lap-timer", "tune-menu", "menu", "tabs", "segmented", "button", "slider", "stat", "progress", "toast"],
 };

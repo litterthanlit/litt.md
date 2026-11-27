@@ -167,28 +167,28 @@ export const MATERIALS: readonly MaterialInfo[] = [
   {
     id: "plain",
     name: "Plain",
-    note: "1px lines on white paper, the way HTML draws a page, links in link blue",
+    note: "Bare 1px hairlines on white paper in Helvetica Neue, four corner marks on what is active, links in link blue",
     attribute: "plain",
     ownAccent: null,
     accentName: "Link blue",
-    face: "System",
+    face: "Helvetica Neue",
     tagline: "No UI. A page that works.",
-    audience: "Docs, forms, admin and internal tools: anything that should just work.",
+    audience: "Docs, forms, admin, internal tools and agentic workspaces: anything that should read like a clean document.",
     object: "document",
-    line: "Lines on paper, for docs, forms and tools that should just work",
+    line: "Lines on paper in Helvetica Neue, for docs, forms, data and agentic tools",
     hero: "settings",
     foundations: {
       color: "White paper and black words, no fills, and link blue as its own accent, the blue a browser draws a link in. A project may ask for Blue 4, monochrome or pink.",
-      type: "The system's own face, the one a page with no stylesheet gets, in the three role weights. Links are underlined.",
-      light: "None. A control is its words: the main action and the current choice are held in four corner marks, the rest are grey, and a field is one line under what you type. No group has a frame, and an overlay is the page again inside one line.",
-      shape: "Square: every corner 0, as a page is.",
-      motion: "None. A page changes in place, at once: nothing fades, slides, grows or springs.",
+      type: "Helvetica Neue in the three role weights: Swiss document clarity, tabular figures on every count, and links underlined.",
+      light: "None. A control is its words: the main action and the current choice are held in four corner marks, the rest are grey, a field is one line under what you type, and data sits bare on the paper.",
+      shape: "Square: every corner 0, as a page is, and a box only round what floats.",
+      motion: "Subtraction: zero bounce everywhere. Four corner marks glide across choices on the 200ms zero-bounce spring and tighten on press, uninvolved marks step back in opacity, and superseded rows pare away fast.",
     },
     abilities: [
       "Underlined links: a link looks like a link, in link blue, everywhere.",
-      "Quiet: words in grey, the one that matters in the ink inside four corner marks, a field one line under the text. Nothing fills, casts, lifts or glows.",
-      "Still: nothing moves, so a state changes the moment you ask, the way reduced motion has it everywhere.",
-      "The system's face: no font to load, so the page is the reader's own from the first paint.",
+      "No unneeded boxes: bare 1px hairlines on white paper, four corner marks on the one word that matters, and a box only round what floats.",
+      "Subtraction: zero bounce everywhere, gliding corner marks, uninvolved marks stepping back, and fast pare-out exits.",
+      "Bare-paper data: square ink bars with white-paper scale cuts, square line vertices and frameless tables directly on the page.",
     ],
   },
   {
@@ -369,7 +369,7 @@ function edits(look: Look): string[] {
         material === "flat"
           ? `   Flat says the depth ladder by fill alone, on neutral greys: nothing casts and nothing catches the light. Its own accent is the ink and its face Geist (load it at 400, 500 and 600). Never set it from an effect.`
           : material === "plain"
-          ? `   Plain draws the page the way HTML does: white paper, black words in the system's own face (nothing to load), link blue for links in running text, which are underlined, controls as words (grey, the main action and the current choice in the ink inside four corner marks), a field as one line under the text, square corners, and no shadow, glass or motion. Never set it from an effect.`
+          ? `   Plain draws the page as an exact document: white paper, black words in Helvetica Neue (nothing to load), link blue for links in running text, which are underlined, controls as words (grey, the main action and the current choice in the ink inside four corner marks), a field as one line under the text, bare-paper charts and tables, square corners, no shadow or glass, and Subtraction motion (zero bounce everywhere). Never set it from an effect.`
           : material === "rack"
           ? `   Rack says the depth ladder as a software instrument: grey panels on a darker grey body, keys and wells in 1px outlines, square corners, five clip colours for what you make (each a fill you see: a pastel clip with a dark mark in light, a deep clip with a bright mark in dark), yellow as its own accent (only ever a fill, the light of a switch that is on), and Inter (load it at 400, 500 and 600). Never set it from an effect.`
           : material === "heat"

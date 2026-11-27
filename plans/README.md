@@ -34,6 +34,7 @@ honor its STOP conditions, and update your row when done.
 | 024  | [Each world is dialled in to the components repo's bar: its materials written, every part built from them, its own studies, then its player body](024-dial-in-each-world.md) | P1 | XL | — | IN PROGRESS (phase 0, the presentation pass, done; STOP for Nick before Device; STOP after every world) |
 | 025  | [Components are interactive: every part does what it shows, once the design is settled](025-components-are-interactive.md) | P1 | L | 024 (every world done) | TODO (waits for 024; phase 0 agrees the scope with Nick) |
 | 026  | [Flat is the Flat studies: its rules, then its gallery, then its parts](026-flat-is-the-flat-studies.md) | P1 | XL | — | IN PROGRESS (phase 1, the rules and the tokens; phase 2, the gallery; 2026-11-23) |
+| 027  | [Plain is the Plain studies: Helvetica Neue, Subtraction motion, and bare-paper data and agentic bodies](027-plain-is-the-plain-studies.md) | P1 | XL | — | IN PROGRESS (phase 1, the rules, tokens and Subtraction; phase 2, Plain's data and control bodies; 2026-11-27) |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale — finding fixed independently or approach abandoned)
 
