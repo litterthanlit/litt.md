@@ -1,0 +1,64 @@
+/**
+ * Self-running demos (plans/026, phase 3; taste v1.22, R4): a Flat tile on `#flat/components` and the component open
+ * in Flat's viewer run their demo by themselves, as the Flat studies do, until a hand arrives. This is the gallery's,
+ * never a shipped part's: a component never moves on its own. A demo calls `useSelfRun` with one step and an interval;
+ * nothing runs unless a `SelfRunProvider` says so (the Flat wall's tiles and Flat's viewer), and nothing runs under
+ * reduced motion, while the demo is off screen or while the tab is hidden.
+ *
+ * A hand is a pointer press, a key, a wheel or focus inside the demo. The first one stops the run for good: what the
+ * hand finds is where the run left it, and from then on the demo is the hand's. While it runs, `running` is true, so a
+ * demo can keep its live region quiet (a step the hand did not take is not news).
+ */
+import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode, type RefCallback } from "react";
+import { useMotionDial } from "@/motion";
+
+const SelfRunContext = createContext(false);
+
+/** Lets the demos inside it run by themselves. Only the Flat wall's tiles and Flat's viewer mount one. */
+export function SelfRunProvider({ on, children }: { on: boolean; children: ReactNode }) {
+  return <SelfRunContext.Provider value={on}>{children}</SelfRunContext.Provider>;
+}
+
+const HANDS = ["pointerdown", "keydown", "wheel", "focusin"] as const;
+
+/**
+ * Runs `step` every `every` ms (the first after `first`), with the count of steps taken so far, until a hand arrives.
+ * Returns the ref for the demo's root, which is where a hand is listened for, and whether the run is going.
+ */
+export function useSelfRun<T extends HTMLElement = HTMLDivElement>(
+  step: (n: number) => void,
+  { every = 2000, first = 600 }: { every?: number; first?: number } = {},
+): { ref: RefCallback<T>; running: boolean } {
+  const allowed = useContext(SelfRunContext);
+  const { reduced } = useMotionDial();
+  const [node, setNode] = useState<T | null>(null);
+  const [handed, setHanded] = useState(false);
+  const latest = useRef(step);
+  latest.current = step;
+  const count = useRef(0);
+  const running = allowed && !reduced && !handed;
+
+  useEffect(() => {
+    if (!running || !node) return;
+    const stop = () => setHanded(true);
+    for (const type of HANDS) node.addEventListener(type, stop, { capture: true, passive: true });
+
+    let visible = false;
+    let timer = 0;
+    const tick = () => {
+      if (visible && !document.hidden) latest.current(count.current++);
+      timer = window.setTimeout(tick, every);
+    };
+    const io = new IntersectionObserver(([entry]) => (visible = entry.isIntersecting));
+    io.observe(node);
+    timer = window.setTimeout(tick, first);
+    return () => {
+      for (const type of HANDS) node.removeEventListener(type, stop, { capture: true });
+      io.disconnect();
+      window.clearTimeout(timer);
+    };
+  }, [running, node, every, first]);
+
+  const ref = useCallback<RefCallback<T>>((el) => setNode(el), []);
+  return { ref, running };
+}

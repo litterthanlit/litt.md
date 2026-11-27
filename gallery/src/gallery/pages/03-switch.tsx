@@ -4,6 +4,7 @@ import { Checkbox } from "@/components/checkbox";
 import { Switch } from "@/components/switch";
 import { useMotionDial } from "@/motion";
 import { Page, Stage, TryIt, type PageDocs, type PageMeta, type PageStudy } from "../kit";
+import { useSelfRun } from "../self-run";
 
 export const meta: PageMeta = {
   id: "switch",
@@ -361,13 +362,25 @@ const LETTER_SETTINGS = [
   { key: "count", label: "Reader count", on: "Shown on your site", off: "Kept to yourself", start: false },
 ] as const;
 
+/** On Flat's wall, one row changes its mind every so often until a hand arrives, and four steps come back to the start. */
+const LETTER_RUN = [
+  ["count", true],
+  ["replies", false],
+  ["count", false],
+  ["replies", true],
+] as const;
+
 /** A newsletter's settings on one paper: each row says what it does, and its line says what that means now. */
 function LetterSettingsDemo() {
   const [on, setOn] = useState<Record<string, boolean>>(() => Object.fromEntries(LETTER_SETTINGS.map((s) => [s.key, s.start])));
   const count = LETTER_SETTINGS.filter((s) => on[s.key]).length;
+  const run = useSelfRun((n) => {
+    const [key, next] = LETTER_RUN[n % LETTER_RUN.length];
+    setOn((was) => ({ ...was, [key]: next }));
+  }, { every: 1900 });
 
   return (
-    <div className="litt-paper grid w-full max-w-sm gap-2 rounded-surface bg-surface-1 px-5 pt-5 pb-3">
+    <div ref={run.ref} className="litt-paper grid w-full max-w-sm gap-2 rounded-surface bg-surface-1 px-5 pt-5 pb-3">
       <div className="flex items-baseline justify-between gap-3">
         <h3 id="letter-settings" className="text-display text-fg">
           Newsletter

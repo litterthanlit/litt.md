@@ -49,6 +49,21 @@ the responsive spring (200ms visual) reads as the studies' 250ms ease-out glide.
 
 ## Phase 3 onward. The parts, a batch per PR
 
+### Batch 1. Self-running demos (2026-11-27)
+
+- [x] `gallery/src/gallery/self-run.tsx`: `useSelfRun(step, { every, first })` and `SelfRunProvider`. Only the Flat
+      wall's tiles (`wall-tile.tsx`, under Flat) and Flat's viewer mount the provider, so the player, the overview, a
+      part's own page and every other world never run. Off under reduced motion, off screen and in a hidden tab; the
+      first pointer press, key, wheel or focus inside the demo stops it for good, and the hand finds it where it was.
+      While it runs, `running` is true, so a demo keeps its live region quiet.
+- [x] Switch (Letter settings: one row changes its mind every 1.9s, four steps back to the start), Segmented
+      (Supporter plan: Monthly, Lifetime, Yearly, 2s apart), Code input (the code types itself, is checked, lands and
+      clears) and Stat (Flat's tile: readers arrive and now and then one leaves, the figure rolling).
+- [ ] Toast stack and Hold to confirm keep their state inside the part, so a self-run needs contract props (controlled
+      notices and fan-out; a rehearsal press). Next batch, with a changelog line each.
+- [ ] The agent parts (Agent status, Assistant status, Working loader, Agent run), Magnetic button and Spotlight card:
+      check each tile against its study, and add a self-run where the part is still at rest.
+
 Add the studies Flat lacks as real components (a contract, Flat's body, a page, a registry item, an `added` changelog
 line, at the top of `SET.flat`, per `.claude/CLAUDE.md`). The studies, against what exists after PR #170:
 

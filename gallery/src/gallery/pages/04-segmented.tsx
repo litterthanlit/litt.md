@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/button";
 import { Segmented } from "@/components/segmented";
 import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
+import { useSelfRun } from "../self-run";
 
 export const meta: PageMeta = {
   id: "segmented",
@@ -587,12 +588,16 @@ const PLANS: Record<Billing, { label: string; amount: string; per: string; note:
   lifetime: { label: "Lifetime", amount: "$249", per: "once", note: "Yours for good, every future issue." },
 };
 
+const PLAN_RUN: Billing[] = ["monthly", "lifetime", "yearly"];
+
 /** The choice on the grey ground, where chosen is white, and under it one paper with the price and the one action. */
 function SupporterPlanDemo() {
   const [billing, setBilling] = useState<Billing>("yearly");
   const plan = PLANS[billing];
+  // On Flat's wall the plans change by themselves, a beat apart, until a hand arrives.
+  const run = useSelfRun((n) => setBilling(PLAN_RUN[n % PLAN_RUN.length]));
   return (
-    <div className="grid w-full max-w-sm justify-items-center gap-4">
+    <div ref={run.ref} className="grid w-full max-w-sm justify-items-center gap-4">
       <Segmented
         legend="Billing period"
         value={billing}
@@ -605,7 +610,7 @@ function SupporterPlanDemo() {
           <span className="text-figure-lg tabular-nums text-fg">{plan.amount}</span>
           <span className="text-body text-fg-subtle">{plan.per}</span>
         </p>
-        <p role="status" className="min-h-5 text-small text-fg-subtle">
+        <p role={run.running ? undefined : "status"} className="min-h-5 text-small text-fg-subtle">
           {plan.note}
         </p>
         <Button variant="secondary" className="mt-3 w-full">

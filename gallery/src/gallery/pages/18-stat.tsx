@@ -3,6 +3,7 @@ import { Segmented } from "@/components/segmented";
 import { Sparkline } from "@/components/sparkline";
 import { Stat, StatGroup } from "@/components/stat";
 import { Page, Stage, TryIt, type PageDocs, type PageMeta } from "../kit";
+import { useSelfRun } from "../self-run";
 
 export const meta: PageMeta = {
   id: "stat",
@@ -177,10 +178,20 @@ function StatTile() {
 
 /* ---------- Flat's tile: one count on its own paper card, the large figure (v1.22) ---------- */
 
+/** On Flat's wall readers arrive by themselves, now and then one leaves, until a hand arrives. */
+const READERS_RUN = [3, 1, 5, -1, 2, 4, 1, -1];
+
 function ReadersTile() {
+  const [readers, setReaders] = useState(12_480);
+  const run = useSelfRun((n) => setReaders((r) => r + READERS_RUN[n % READERS_RUN.length]), { every: 2600 });
   return (
-    <div className="w-full max-w-xs">
-      <Stat label="Subscribers" value="12,480" delta="Up 1,240 this month" tone="good" />
+    <div ref={run.ref} className="w-full max-w-xs">
+      <Stat
+        label="Subscribers"
+        value={readers.toLocaleString("en-US")}
+        delta={`Up ${(readers - 11_240).toLocaleString("en-US")} this month`}
+        tone="good"
+      />
     </div>
   );
 }

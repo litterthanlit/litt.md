@@ -15,6 +15,7 @@ import * as RadixDialog from "@radix-ui/react-dialog";
 import { Button } from "@/components/button";
 import { ArrowRightIcon, ChevronLeftIcon, ChevronRightIcon, XIcon } from "@/components/icons";
 import { lineIn, PreviewContext } from "./kit";
+import { SelfRunProvider } from "./self-run";
 import type { PageEntry } from "./registry";
 
 type Opened = {
@@ -123,9 +124,11 @@ function Viewer({ pages, at: first, hrefOf, tile, onClosed }: Opened & { onClose
           <div className="grid min-h-0 place-items-center px-4 py-6 sm:px-8">
             <div key={page.id} className="grid w-full max-w-4xl min-w-0 place-items-center [&>*]:min-w-0">
               <PreviewContext.Provider value="tile">
-                <Suspense fallback={null}>
-                  <page.Component />
-                </Suspense>
+                <SelfRunProvider on>
+                  <Suspense fallback={null}>
+                    <page.Component />
+                  </Suspense>
+                </SelfRunProvider>
               </PreviewContext.Provider>
             </div>
           </div>

@@ -15,6 +15,7 @@ import { Button } from "@/components/button";
 import { ExpandIcon } from "@/components/icons";
 import { DEVICE_PLATE, lineIn, PreviewContext, WorldContext } from "./kit";
 import type { PageEntry } from "./registry";
+import { SelfRunProvider } from "./self-run";
 
 /** Pages whose tile is two rows tall beside two short ones: their component needs the height. */
 export const TALL = new Set(["plan", "app-shell", "list", "action-bar", "timeline", "message", "rule-builder"]);
@@ -106,7 +107,9 @@ export function WallTile({ page, href, onOpen, onFollow, heading: Heading = "h2"
         {near && (
           <StillMotion active={!awake && !flat}>
             <div data-open-zone={zone} className="grid w-full min-w-0 place-items-center [&>*]:min-w-0">
-              <PageTile page={page} />
+              <SelfRunProvider on={flat}>
+                <PageTile page={page} />
+              </SelfRunProvider>
             </div>
           </StillMotion>
         )}
