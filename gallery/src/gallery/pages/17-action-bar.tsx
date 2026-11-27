@@ -12,6 +12,7 @@ export const meta: PageMeta = {
   lede: "What to do with what you selected.",
   order: 6.06,
   group: "Navigation",
+  worlds: ["press", "device", "plain", "rack", "heat"],
   verbs: ["select", "press"],
   summary:
     "A bar at the bottom of the view while something is selected: the count in words, the actions as small buttons, and Clear. It rises by the travel token on the responsive tier when the selection starts and drops away when it ends. It is a toolbar: one Tab stop, the arrow keys between its buttons, and Esc clears.",

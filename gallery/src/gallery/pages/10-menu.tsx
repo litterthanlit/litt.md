@@ -27,7 +27,7 @@ import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 export const meta: PageMeta = {
   id: "menu",
   title: "Menu",
-  lede: "A glass dropdown with one gliding highlight.",
+  lede: "A dropdown of actions with one gliding highlight.",
   ledeByWorld: { heat: "A slab of actions, with brackets on the row under the keys or the pointer." },
   order: 5.04, group: "Overlays",
   verbs: ["open", "select"],

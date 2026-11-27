@@ -128,14 +128,12 @@ const NAME =
 const TUNE = "the demo names litt's radius scale, whose last step is the pill";
 const k = (page, words, why) => ({ page, words, why });
 const KNOWN = [
-  ...["flat", "rack", "heat", "plain"].flatMap((w) => [
+  ...["rack", "heat", "plain"].flatMap((w) => [
     k(`${w}/header`, ["glass"], NAME),
     k(`${w}/breadcrumb`, ["glass"], NAME),
     k(`${w}/components`, ["glass"], NAME + "; the gallery view lists it by name" + (w === "rack" ? ", and the clip launcher's preset Glass Pad is a name in Rack's demo (rack-fixes.md, step 8)" : "")),
   ]),
   ...["device", "rack", "heat"].map((w) => k(`${w}/tune`, ["pill"], TUNE)),
-  /* Flat's hardware words (taste v1.22): these parts are being redrawn after the studies, and their words with them. */
-  k("flat/time-scrubber", ["needle"], "every world draws the scrubber's fixed needle (it has no Flat body), so the shared Accessibility line names it; it waits on a Flat body"),
   /* Plain's words are Nick's (litt-principles.md, Plain: nothing changes without asking): each page below waits on its
      row in the draft, plans/audits/plain-words.md, and names only the words that row replaces, so a new word on a Plain
      page, or another world named on one the draft does not cover, fails. When a row lands, its entry goes. */

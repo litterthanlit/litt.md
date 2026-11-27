@@ -1,6 +1,6 @@
 {
   "$comment": "Written by scripts/gen-registry.mjs. What each registry item installs, hashed, and the release that last changed it. Commit it with the change.",
-  "latest": "2026.11.23",
+  "latest": "2026.11.27",
   "items": {
     "accordion": {
       "version": "2026.11.18",
@@ -33,6 +33,10 @@
     "agent-run": {
       "version": "2026.11.23",
       "hash": "8515a4a7bdc4756a"
+    },
+    "agent-shapes": {
+      "version": "2026.11.27",
+      "hash": "9d71f7b9df81794a"
     },
     "agent-status": {
       "version": "2026.11.23",
@@ -610,157 +614,49 @@
       "version": "2026.11.23",
       "hash": "02a72c44f2ade63d"
     },
-    "flat-accordion": {
-      "version": "2026.11.18",
-      "hash": "1e5aae2c79bd5196"
-    },
-    "flat-action-bar": {
-      "version": "2026.11.16",
-      "hash": "09c6dfea8cc66216"
-    },
     "flat-agent-run": {
       "version": "2026.11.23",
       "hash": "8515a4a7bdc4756a"
+    },
+    "flat-agent-shapes": {
+      "version": "2026.11.27",
+      "hash": "9d71f7b9df81794a"
     },
     "flat-agent-status": {
       "version": "2026.11.23",
       "hash": "7fcda55d30df2671"
     },
-    "flat-app-shell": {
-      "version": "2026.11.16",
-      "hash": "db759722a42893f7"
-    },
     "flat-assistant-status": {
       "version": "2026.11.23",
       "hash": "6fef40991c015d82"
-    },
-    "flat-avatar": {
-      "version": "2026.11.18",
-      "hash": "837ca518c613c059"
-    },
-    "flat-bar-list": {
-      "version": "2026.11.18",
-      "hash": "e37a0c21ecb32d72"
-    },
-    "flat-breadcrumb": {
-      "version": "2026.11.16",
-      "hash": "8a5b08b686c7051c"
-    },
-    "flat-breakdown": {
-      "version": "2026.11.18",
-      "hash": "a7deda94f7d16e53"
     },
     "flat-button": {
       "version": "2026.11.23",
       "hash": "d7cd83f5b003107e"
     },
-    "flat-callout": {
-      "version": "2026.11.18",
-      "hash": "f1c0e11f898d9880"
-    },
     "flat-card": {
       "version": "2026.11.18",
       "hash": "84066d08fc23afa5"
-    },
-    "flat-card-picker": {
-      "version": "2026.11.16",
-      "hash": "4caab6617728f1f3"
-    },
-    "flat-carousel": {
-      "version": "2026.11.16",
-      "hash": "1ed989a6d72ae8b0"
-    },
-    "flat-cart": {
-      "version": "2026.11.16",
-      "hash": "83eb858b4546db26"
-    },
-    "flat-chart": {
-      "version": "2026.11.19",
-      "hash": "b3a64e5ecee594d1"
     },
     "flat-checkbox": {
       "version": "2026.11.16",
       "hash": "6dcb5cdcc86506e1"
     },
-    "flat-code-block": {
-      "version": "2026.11.16",
-      "hash": "941606ce76eb027f"
-    },
     "flat-code-input": {
       "version": "2026.11.23",
       "hash": "84a48b09b3e196b2"
-    },
-    "flat-cohort-grid": {
-      "version": "2026.11.18",
-      "hash": "3617284cf43bb4f3"
-    },
-    "flat-color-picker": {
-      "version": "2026.11.17",
-      "hash": "f934f4772e571685"
-    },
-    "flat-combobox": {
-      "version": "2026.11.17",
-      "hash": "fd287f602cc1b740"
     },
     "flat-command-menu": {
       "version": "2026.11.16",
       "hash": "6d1f903397f41ea1"
     },
-    "flat-composer": {
-      "version": "2026.11.19",
-      "hash": "512ee5ac9a9da5c0"
-    },
     "flat-context-budget": {
       "version": "2026.11.23",
       "hash": "f30961de58ed75c3"
     },
-    "flat-context-menu": {
-      "version": "2026.11.16",
-      "hash": "c1a658e43874c0f3"
-    },
-    "flat-curve-editor": {
-      "version": "2026.11.18",
-      "hash": "4ad43a88310f6786"
-    },
-    "flat-date-picker": {
-      "version": "2026.11.17",
-      "hash": "bbb0a9c7e30a528b"
-    },
-    "flat-details": {
-      "version": "2026.11.18",
-      "hash": "2f60f5ceec568b06"
-    },
     "flat-dialog": {
       "version": "2026.11.16",
       "hash": "8615d3ab119d5ef0"
-    },
-    "flat-dot-plot": {
-      "version": "2026.11.18",
-      "hash": "5348914944485c67"
-    },
-    "flat-file-changes": {
-      "version": "2026.11.18",
-      "hash": "0052384ef7539aaa"
-    },
-    "flat-file-drop": {
-      "version": "2026.11.23",
-      "hash": "7640e23c4a0246f7"
-    },
-    "flat-form": {
-      "version": "2026.11.16",
-      "hash": "a5a6761e96876358"
-    },
-    "flat-framed": {
-      "version": "2026.11.16",
-      "hash": "4e6ae75229c48c9d"
-    },
-    "flat-funnel": {
-      "version": "2026.11.18",
-      "hash": "0119f83c1d806bd0"
-    },
-    "flat-gauge": {
-      "version": "2026.11.18",
-      "hash": "6e0337bb487e0226"
     },
     "flat-glide": {
       "version": "2026.11.17",
@@ -770,21 +666,9 @@
       "version": "2026.11.23",
       "hash": "a869de4bc32947b2"
     },
-    "flat-header": {
-      "version": "2026.11.16",
-      "hash": "36890aac1240c896"
-    },
-    "flat-heatmap": {
-      "version": "2026.11.23",
-      "hash": "b1fdcef0ce3fef07"
-    },
     "flat-hold-confirm": {
       "version": "2026.11.23",
       "hash": "381c4f3c2090fac8"
-    },
-    "flat-hover-card": {
-      "version": "2026.11.16",
-      "hash": "7bf7fbe15f4bac78"
     },
     "flat-icons": {
       "version": "2026.11.16",
@@ -794,10 +678,6 @@
       "version": "2026.11.16",
       "hash": "c9583ec95884df3a"
     },
-    "flat-inspector": {
-      "version": "2026.11.18",
-      "hash": "4d0e84de897c5158"
-    },
     "flat-kbd": {
       "version": "2026.11.18",
       "hash": "17d1840b1643cf07"
@@ -806,93 +686,25 @@
       "version": "2026.11.23",
       "hash": "6131170027b856a8"
     },
-    "flat-legend": {
-      "version": "2026.11.20",
-      "hash": "c8ae0e56761ed66b"
-    },
-    "flat-lightbox": {
-      "version": "2026.11.16",
-      "hash": "aff81fa2348884dc"
-    },
-    "flat-list": {
-      "version": "2026.11.19",
-      "hash": "44177b5685e0d35b"
-    },
-    "flat-list-cover": {
-      "version": "2026.11.18",
-      "hash": "dd147264254ab4bb"
-    },
     "flat-litt": {
       "version": "2026.11.23",
       "hash": "0b40f1ffc0c967f0"
-    },
-    "flat-log-view": {
-      "version": "2026.11.18",
-      "hash": "7565bfac238912d1"
     },
     "flat-magnetic-button": {
       "version": "2026.11.23",
       "hash": "8ca35dce0636bb89"
     },
-    "flat-media": {
-      "version": "2026.11.16",
-      "hash": "37d4718106f094ae"
-    },
     "flat-menu": {
       "version": "2026.11.19",
       "hash": "561520f972fe5f35"
-    },
-    "flat-message": {
-      "version": "2026.11.18",
-      "hash": "8967a4bc22675a71"
     },
     "flat-motion": {
       "version": "2026.11.21",
       "hash": "7001f5fb0c0621bd"
     },
-    "flat-number-field": {
-      "version": "2026.11.17",
-      "hash": "8e0baca1c4a2bef6"
-    },
-    "flat-option-picker": {
-      "version": "2026.11.16",
-      "hash": "0d9caf855398dae0"
-    },
-    "flat-pad": {
-      "version": "2026.11.18",
-      "hash": "c3478b038b3ec13a"
-    },
-    "flat-pagination": {
-      "version": "2026.11.18",
-      "hash": "d2e38247cf621825"
-    },
-    "flat-plan": {
-      "version": "2026.11.18",
-      "hash": "df73f4f043b78b69"
-    },
     "flat-poll": {
       "version": "2026.11.23",
       "hash": "d98834925d38bab8"
-    },
-    "flat-popover": {
-      "version": "2026.11.16",
-      "hash": "0ab6515e1befac6b"
-    },
-    "flat-price": {
-      "version": "2026.11.16",
-      "hash": "07931a630f63729d"
-    },
-    "flat-product-card": {
-      "version": "2026.11.16",
-      "hash": "9d8b30626009a796"
-    },
-    "flat-progress": {
-      "version": "2026.11.23",
-      "hash": "4cc5d2bb58545260"
-    },
-    "flat-range-chart": {
-      "version": "2026.11.23",
-      "hash": "a92fac940c89ff00"
     },
     "flat-reaction-bar": {
       "version": "2026.11.23",
@@ -902,29 +714,9 @@
       "version": "2026.11.23",
       "hash": "85cfea81a1493e6c"
     },
-    "flat-resizable": {
-      "version": "2026.11.16",
-      "hash": "946f01201b087b18"
-    },
     "flat-rolling-number": {
       "version": "2026.11.16",
       "hash": "b586cbb15698859e"
-    },
-    "flat-rule-builder": {
-      "version": "2026.11.16",
-      "hash": "4a25f2ab928361a0"
-    },
-    "flat-run-card": {
-      "version": "2026.11.18",
-      "hash": "55e5b210575a878b"
-    },
-    "flat-run-list": {
-      "version": "2026.11.16",
-      "hash": "803190ce5ea8b47d"
-    },
-    "flat-scroll-area": {
-      "version": "2026.11.16",
-      "hash": "9d6e7d1ba7b86f41"
     },
     "flat-segmented": {
       "version": "2026.11.23",
@@ -934,53 +726,13 @@
       "version": "2026.11.18",
       "hash": "801436fb7d32fa1e"
     },
-    "flat-shopify": {
-      "version": "2026.11.16",
-      "hash": "18bfba74da1d4e27"
-    },
-    "flat-shopify-cart": {
-      "version": "2026.11.16",
-      "hash": "737cb6f880409b60"
-    },
-    "flat-slide-confirm": {
-      "version": "2026.11.18",
-      "hash": "7961c4270fa30a0e"
-    },
-    "flat-slider": {
-      "version": "2026.11.23",
-      "hash": "52d2ae502c8ed0c6"
-    },
-    "flat-sources": {
-      "version": "2026.11.18",
-      "hash": "239cf493222e03b8"
-    },
-    "flat-sparkline": {
-      "version": "2026.11.18",
-      "hash": "b2401978cb45d117"
-    },
     "flat-spotlight-card": {
       "version": "2026.11.23",
       "hash": "61c20653389ba0af"
     },
-    "flat-spread": {
-      "version": "2026.11.18",
-      "hash": "025cca7319b37365"
-    },
-    "flat-spring-editor": {
-      "version": "2026.11.18",
-      "hash": "1925454f8d693be6"
-    },
     "flat-stat": {
       "version": "2026.11.23",
       "hash": "3f89b9d02dd4837a"
-    },
-    "flat-states": {
-      "version": "2026.11.18",
-      "hash": "e936fa049ab202dd"
-    },
-    "flat-steps": {
-      "version": "2026.11.16",
-      "hash": "eb874003dc2c37b0"
     },
     "flat-streak": {
       "version": "2026.11.23",
@@ -990,33 +742,9 @@
       "version": "2026.11.23",
       "hash": "dd6e61c74ce275ca"
     },
-    "flat-table": {
-      "version": "2026.11.18",
-      "hash": "a59beec8b0411f4e"
-    },
-    "flat-table-filter": {
-      "version": "2026.11.16",
-      "hash": "20ddca6bee9f812e"
-    },
     "flat-tabs": {
       "version": "2026.11.16",
       "hash": "ccb00afcbf2dec4b"
-    },
-    "flat-tag": {
-      "version": "2026.11.22",
-      "hash": "1d1e00cb17d16bf1"
-    },
-    "flat-thinking": {
-      "version": "2026.11.18",
-      "hash": "9519bceec5f6a586"
-    },
-    "flat-time-scrubber": {
-      "version": "2026.11.21",
-      "hash": "11b17c3190eaf8d6"
-    },
-    "flat-timeline": {
-      "version": "2026.11.18",
-      "hash": "fa00a3e4b4f0e221"
     },
     "flat-toast": {
       "version": "2026.11.16",
@@ -1026,25 +754,9 @@
       "version": "2026.11.23",
       "hash": "b0f6d746ee42e8f9"
     },
-    "flat-token-input": {
-      "version": "2026.11.19",
-      "hash": "fd5550b03c6c06d6"
-    },
-    "flat-tool-call": {
-      "version": "2026.11.18",
-      "hash": "c0b324ad42f88be3"
-    },
     "flat-tooltip": {
       "version": "2026.11.16",
       "hash": "e4b624627724b189"
-    },
-    "flat-tree": {
-      "version": "2026.11.16",
-      "hash": "76d264c7857cff66"
-    },
-    "flat-tune": {
-      "version": "2026.11.18",
-      "hash": "033401331cff1fb6"
     },
     "flat-working-loader": {
       "version": "2026.11.23",

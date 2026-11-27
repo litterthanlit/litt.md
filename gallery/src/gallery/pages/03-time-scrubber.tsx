@@ -9,6 +9,7 @@ export const meta: PageMeta = {
   lede: "A moment in a run, found by dragging its ruler.",
   order: 4.04,
   group: "Tools",
+  worlds: ["press", "device", "plain", "rack", "heat"],
   verbs: ["drag", "press"],
   summary:
     "A ruler of time that moves under a fixed marker, with what happened along the run marked on it in its status color. Drag it and it follows one to one; let go and it settles on the nearest step, or on an event let go near, on the responsive tier. In fun mode a flick coasts it to the event its speed reaches. Page Up and Page Down go from event to event.",

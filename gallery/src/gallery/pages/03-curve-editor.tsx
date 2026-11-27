@@ -12,6 +12,7 @@ export const meta: PageMeta = {
   },
   order: 4.03,
   group: "Tools",
+  worlds: ["press", "device", "plain", "rack", "heat"],
   verbs: ["drag"],
   summary:
     "An easing shaped by hand, as a cubic Bézier. Two round handles pull the curve from its start and its end, with an arm from each end to its handle, on a well that shows progress from -0.25 to 1.25 so a curve can pull back or pass its end. Under it the curve is written as CSS and said in words, and a dot crosses a rail on it when you let go. The handles follow the pointer and the keys at once, with no easing.",

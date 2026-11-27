@@ -1,7 +1,7 @@
 /** Hash routing: #button, #playground. The hash is the page id. */
 import { startTransition, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { lookSearch } from "./look";
-import { pages } from "./registry";
+import { inWorld, pages } from "./registry";
 
 /** The page a visit with no hash opens: the one the path ends in, so litt.design/systems/ opens Systems, or the first. */
 function homePage(): string {
@@ -55,13 +55,14 @@ export const worldTitle = (what: string, world: string) => `${what} · ${world} 
 
 /**
  * Where an older address lives now (plans/019): each world is closed, so a component's page is in a world. #button
- * opens #flat/button (the gallery's own world), #playground/device opens Device's player, #playground the gallery's.
+ * opens #flat/button (the gallery's own world), or the first world the part is in when Flat does not hold it (#slider
+ * opens #press/slider); #playground/device opens Device's player, #playground the gallery's.
  */
 export function canonical(route: string): string {
   const [first, rest] = route.split(/\/(.*)/s);
   if (first === "playground") return rest && WORLDS.includes(rest) ? rest : "flat";
   const page = pages.find((p) => p.id === first);
-  if (page && page.group && page.group !== "Worlds" && !page.world) return `flat/${route}`;
+  if (page && page.group && page.group !== "Worlds" && !page.world) return `${inWorld(page, "flat") ? "flat" : page.worlds![0]}/${route}`;
   return route;
 }
 

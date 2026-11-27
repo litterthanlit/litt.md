@@ -11,6 +11,7 @@ export const meta: PageMeta = {
   lede: "One choice shown as cards.",
   order: 3.06,
   group: "Selection",
+  worlds: ["press", "device", "plain", "rack", "heat"],
   verbs: ["select"],
   summary:
     "One choice shown as cards: tiles of a picture over a word, or cards with a title, a line and a price. The picked one shows it in more than color.",

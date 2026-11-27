@@ -13,6 +13,7 @@ export const meta: PageMeta = {
   title: "Empty and loading states",
   lede: "Empty, loading and failed, designed too.",
   order: 8.01, group: "Feedback",
+  worlds: ["press", "device", "plain", "rack", "heat"],
   verbs: ["watch"],
   summary:
     "What a view says when it has nothing yet, is waiting or has failed. Empty offers one action, a skeleton keeps the content's exact size, and an error says how to retry. The states are static, so only the list's own entrance and the retry button move.",

@@ -9,6 +9,7 @@ export const meta: PageMeta = {
   lede: "A stretch of days, brushed by hand and read as one figure.",
   order: 10.03,
   group: "Charts",
+  worlds: ["press", "device", "plain", "rack", "heat"],
   verbs: ["drag", "press"],
   summary:
     "One quantity over time as a barcode of thin bars, its segments and their shares in a strip above, and a range you brush by hand: drag across the bars, drag either end, or drag the whole span. The edges follow the pointer one to one and settle on a bar or a segment start on the responsive tier; the segment the range matches stands out, and the total of what is brushed rolls as you go, its last group in the quiet ink. In fun mode a flicked span coasts, and the bars it sweeps rise.",

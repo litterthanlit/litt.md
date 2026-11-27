@@ -10,6 +10,7 @@ export const meta: PageMeta = {
   lede: "Typed values that turn into tokens.",
   order: 2.04,
   group: "Inputs",
+  worlds: ["press", "device", "plain", "rack", "heat"],
   verbs: ["type"],
   summary:
     "A field that turns typed or pasted values into removable tokens, such as the senders of a mail rule. It is the Input's field with tokens inside, each one you can take out again: it grows as tokens wrap, a long list folds into a +N token until you focus it, and tokens fade in and out on the responsive tier while their neighbors slide.",

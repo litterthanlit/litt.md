@@ -8,6 +8,7 @@ export const meta: PageMeta = {
   lede: "One product in a grid, which opens its page.",
   order: 12.03,
   group: "Commerce",
+  worlds: ["press", "device", "plain", "rack", "heat"],
   verbs: ["press"],
   summary:
     "A Card with an inset 4/5 cover, the product's name and its price, as one link to its page. No buy button and no accent, so a grid of them keeps the page's one accent fill free. Hover steps the fill once on the instant tier; nothing lifts, zooms or swaps.",

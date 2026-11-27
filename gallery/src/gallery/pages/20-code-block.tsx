@@ -10,6 +10,7 @@ export const meta: PageMeta = {
   lede: "Code, quiet and copyable.",
   order: 11.10,
   group: "Agents",
+  worlds: ["press", "device", "plain", "rack", "heat"],
   verbs: ["press"],
   summary:
     "Code in an answer, in a tool's output, or a diff. Mono on a quiet surface with the file name and a Copy button in a header, highlighting in the foreground's tones only, and a diff whose sign carries the status color. Long lines scroll inside the block. Nothing moves.",

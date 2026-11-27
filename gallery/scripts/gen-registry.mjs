@@ -917,6 +917,11 @@ const COPY = {
     description: "An agent's run on one Flat paper: the task and its state in words, the time live as a 44px figure, what it is doing now, three phase pills and only the actions that apply (Run, Stop, Allow, Try again). A Flat part.",
     docs: "Needs data-material=\"flat\" on <html>. Controlled: pass state, step and tokens, and handle onRun, onStop and onAllow. Escape stops a live run.",
   },
+  "agent-shapes": {
+    title: "Agent shapes",
+    description: "One abstract shape following an agent's run on a white Flat paper: a spark, graph, cube, orbit, morph, stack, fold or thread per phase, soft grey with one part in the ink, the step in one sentence, and how far along as short ink pills. A Flat part.",
+    docs: "Needs data-material=\"flat\" on <html>. Pass phase, a label sentence, and step and steps for the pills; tie paused to your run so the shape moves only while the work does.",
+  },
   "assistant-status": {
     title: "Assistant status",
     description: "One white Flat pill saying what a writing assistant is doing: an ink circle with a moving glyph per phase (thinking, searching, reading, weighing, checking, writing) and the phase in words. A Flat part.",

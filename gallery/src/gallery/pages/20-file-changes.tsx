@@ -11,6 +11,7 @@ export const meta: PageMeta = {
   lede: "What an agent changed, to keep or undo file by file.",
   order: 11.11,
   group: "Agents",
+  worlds: ["press", "device", "plain", "rack", "heat"],
   verbs: ["press", "open"],
   summary:
     "What an agent changed in a codebase, to review before keeping it: a header that counts the files and lines and what is left to review, and a row per file with its kind and its lines added and removed, a diff that opens under it, and Keep and Undo beside it. A decision settles the row at once and the count rolls down; when every file is decided the header becomes a receipt. Send keeps the view's accent, so Keep all is a secondary button.",

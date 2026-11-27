@@ -17,6 +17,7 @@ export const meta: PageMeta = {
   title: "List and cards",
   lede: "Airy rows and cards you can scan at a glance.",
   order: 9.02, group: "Data",
+  worlds: ["press", "device", "plain", "rack", "heat"],
   verbs: ["press", "watch"],
   summary:
     "Airy project rows and cards. The rows arrive in one staggered cascade, this page's single expressive moment; filtering and inserting stay responsive, and hover never moves anything.",

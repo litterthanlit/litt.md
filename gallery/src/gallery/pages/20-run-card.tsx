@@ -14,6 +14,7 @@ export const meta: PageMeta = {
   lede: "One agent run, folded to a ring and unfolded to its steps.",
   order: 11.08,
   group: "Agents",
+  worlds: ["press", "device", "plain", "rack", "heat"],
   verbs: ["press", "watch"],
   summary:
     "An agent run as a flat card: its title, where it is in words (Step 1 of 3), a ring of ticks and a figure for how far it has got, and its steps beside a preview. Hide folds it into a block you press to open again. The ring travels between its two seats while the title, the words and the figure move to theirs, the steps leave first and come back with a short drop, and the height snaps.",

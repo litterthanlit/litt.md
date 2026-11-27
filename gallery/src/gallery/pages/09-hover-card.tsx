@@ -9,6 +9,7 @@ export const meta: PageMeta = {
   lede: "A preview of what a link points at.",
   order: 5.03,
   group: "Overlays",
+  worlds: ["press", "device", "plain", "rack", "heat"],
   verbs: ["hover"],
   summary:
     "A small card that previews what a link points at: a person behind their name, a project behind its link. It opens after the pointer rests on the link, or at once on keyboard focus, and stays while the pointer crosses into it. It grows from the link on the responsive tier, as a popover does. A touch never opens it, so the link must lead to the same thing.",

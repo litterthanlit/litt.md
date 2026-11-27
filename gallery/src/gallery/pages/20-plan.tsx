@@ -12,6 +12,7 @@ export const meta: PageMeta = {
   lede: "An agent's steps, ticked off as it works.",
   order: 11.07,
   group: "Agents",
+  worlds: ["press", "device", "plain", "rack", "heat"],
   verbs: ["watch"],
   summary:
     "An agent's steps for a task, ticked off as it works: the label and a count over a thin rail in the foreground, then each step with its status mark. The running step is a half-filled circle that stays still, and a done step steps its color back and is never struck through. A status swaps at once and only colors fade. A step added later fades in.",

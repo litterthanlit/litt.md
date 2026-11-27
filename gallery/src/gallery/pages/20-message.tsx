@@ -13,6 +13,7 @@ export const meta: PageMeta = {
   lede: "A conversation, read top to bottom.",
   order: 11.01,
   group: "Agents",
+  worlds: ["press", "device", "plain", "rack", "heat"],
   summary:
     "A chat between a person and an agent, read top to bottom. The agent's words sit on the page with no bubble, and the person's turn is a bubble on the right. The conversation scrolls on its own, keeps the latest line in view while an answer streams, and offers Jump to latest when you scroll up. A new turn enters once on the responsive tier, and nothing moves while text streams.",
   tiers: ["responsive", "instant"],

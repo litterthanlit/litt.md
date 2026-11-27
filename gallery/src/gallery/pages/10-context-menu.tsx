@@ -24,6 +24,7 @@ export const meta: PageMeta = {
   lede: "The menu, right where you clicked.",
   order: 5.05,
   group: "Overlays",
+  worlds: ["press", "device", "plain", "rack", "heat"],
   verbs: ["open", "select"],
   summary:
     "The Menu at the pointer: a right-click, Shift+F10 or a press and hold on touch. The same rows and highlight, opened at the pointer's corner. Every action in it is also somewhere else.",

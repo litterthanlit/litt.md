@@ -11,6 +11,7 @@ export const meta: PageMeta = {
   lede: "Sections that open in place.",
   order: 7.06,
   group: "Layout",
+  worlds: ["press", "device", "plain", "rack", "heat"],
   verbs: ["open"],
   summary:
     "Sections that open in place, split by hairlines. The height snaps and is never animated: the content fades in and drops a little, the chevron turns half a turn, and the rows below move to their new place by transform, so the page never jumps.",

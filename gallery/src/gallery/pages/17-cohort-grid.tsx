@@ -7,6 +7,7 @@ export const meta: PageMeta = {
   lede: "Who stayed, week by week.",
   order: 10.11,
   group: "Charts",
+  worlds: ["press", "device", "plain", "rack", "heat"],
   summary:
     "Retention by signup week as a real table: a row per cohort, a column per period since signup, and in every cell the number with a dot in one data hue's four steps. It scrolls sideways inside its own box and never moves.",
   tiers: [],

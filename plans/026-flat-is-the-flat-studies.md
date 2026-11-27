@@ -73,6 +73,21 @@ line, at the top of `SET.flat`, per `.claude/CLAUDE.md`). The studies, against w
 | Command menu, Copy button, Step sequencer | Exists: align Flat's body to the study |
 | Gradient keys, Dither card, Ticker, Agent shapes, Fader, Knob, Tape reels, VU meter | New (decide which tool/audio studies enter Flat under the pattern-not-device rule) |
 
+### The cut (2026-11-27, Nick: "Studies + a small base")
+
+Flat holds its studies and a base kit, and nothing else. 70 shared parts left Flat (`worlds` without `"flat"` in each
+page's meta) and stay in the other five worlds; the 2026-11-27 release removes their `flat-<part>` items. Kept: the base
+(Button, Input, Checkbox, Select, Tabs, Card, Dialog, Menu, Toast, Tooltip, and Icons and Kbd, which kept parts use), the
+studies Flat has (Switch, Code input, Segmented, Stat, Rolling number, Toast stack, Hold to confirm, Agent run, Agent
+status, Assistant status, Working loader, Magnetic button, Spotlight card, Command menu), and, for a later pass, Flat's
+own seven (Poll, Streak, Kudos, Reaction bar, Goal ring, Reading progress, Context budget; Nick: keep them for now). A bare
+address now opens a part in its first world when Flat does not hold it (`canonical` in `route.ts`: `#slider` opens
+`#press/slider`). Left for a cleanup: the Flat bodies in `src/worlds/flat/` whose parts left (chart, legend, sparkline,
+table, slider, file-drop, …) still draw under Flat but ship in no item.
+
+Next, in order (Nick, 2026-11-27): Agent shapes, then Copy button and Step sequencer in Flat, then Ticker, Gradient keys
+and Dither card, then decide the audio studies.
+
 **STOP before removing anything**: list Flat's parts that have no study, and Nick picks which go. Removing a part from
 Flat takes it out of `worlds` in its page's `meta`, out of `SET.flat`, and gives the `flat-<part>` item a `removed` line;
 the part stays in the other worlds.

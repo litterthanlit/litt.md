@@ -10,6 +10,7 @@ export const meta: PageMeta = {
   lede: "One image of a set, at the size of the screen.",
   order: 5.08,
   group: "Overlays",
+  worlds: ["press", "device", "plain", "rack", "heat"],
   verbs: ["open", "drag", "press"],
   summary:
     "One image of a set at the size of the screen, on the canvas, with the rest a key or a swipe away. Opening is the view's expressive moment, as a dialog's: the image rises by the travel token and settles from 0.98. Moving to the next image is a short fade on the responsive tier, and on a touch screen a finger swipes it away one to one.",
