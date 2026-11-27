@@ -21,7 +21,8 @@
  *   Index everywhere), or a link named Source points inside the gallery (the top row's link to a part's page is Page),
  * - on Index or on a take, two controls of the player share a name but go to different places (not the same href or
  *   the same data-play-to): the selector is Take, never Components, the top row's link beside it,
- * - a world's set in play-object/takes.ts is not twelve parts, each a component page in that world, or a page's id is
+ * - a world's set in play-object/takes.ts is not twelve parts (Flat's is the Flat studies it holds, 12 to 23), each a
+ *   component page in that world, or a page's id is
  *   components, about or take, which would hide behind the world's own addresses, or a part in Rack's set is named in
  *   none of the tracks its Index draws (TRACKS in play-object/bodies/rack.tsx),
  * - the screen does not open on Index, the world's set (a row each, as many as the slider runs to and takes.ts lists),
@@ -328,7 +329,7 @@ if (selfTest) SETS.heat =[...(SETS.heat ?? []), "seven-segment"];
 for (const [, id] of WORLDS) {
   const set = SETS[id] ?? [];
   const missing = set.filter((p) => !partsIn(id).includes(p));
-  claim("every part in a world's set (takes.ts) is in that world, twelve to a set", set.length === 12 && !missing.length ? null : `${id}: ${set.length} in the set${missing.length ? `, not in the world: ${missing.join(", ")}` : ""}`);
+  claim("every part in a world's set (takes.ts) is in that world, twelve to a set (Flat's, its studies, 12 to 23)", (id === "flat" ? set.length >= 12 && set.length <= 23 : set.length === 12) && !missing.length ? null : `${id}: ${set.length} in the set${missing.length ? `, not in the world: ${missing.join(", ")}` : ""}`);
 }
 
 /* Rack's Index puts each part of its set on a track (TRACKS in play-object/bodies/rack.tsx), and a part no track names
@@ -872,7 +873,7 @@ if (selfTest) {
   const bareCaught = (claims.get("the object is the world's own, or bare for a world not drawn yet") ?? []).some((f) => f.startsWith("Device:"));
   if (!caught) console.error("playground --self-test: the Dialog take's dialog escaped to <body>, and the check missed it.");
   if (!bareCaught) console.error("playground --self-test: Device drew bare with the recorder kept from loading, and the check missed it.");
-  const setCaught = (claims.get("every part in a world's set (takes.ts) is in that world, twelve to a set") ?? []).some((f) => f.startsWith("heat:"));
+  const setCaught = (claims.get("every part in a world's set (takes.ts) is in that world, twelve to a set (Flat's, its studies, 12 to 23)") ?? []).some((f) => f.startsWith("heat:"));
   if (!setCaught) console.error("playground --self-test: Heat's set named a part Heat does not have, and the check missed it.");
   const tileCaught = (claims.get("Index's Every component opens the world's gallery view: a tile for every component in the world, each naming a link to its page there") ?? []).some((f) => f.startsWith("Device:"));
   if (!tileCaught) console.error("playground --self-test: a tile went missing from Device's gallery view, and the check missed it.");
