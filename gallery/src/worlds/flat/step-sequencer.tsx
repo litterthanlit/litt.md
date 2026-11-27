@@ -278,7 +278,6 @@ export function StepSequencerFlatBody({ title = "Step sequencer", bpm: initialBp
                 key={p}
                 type="button"
                 aria-pressed={page === p}
-                aria-label={`Steps ${p * PAGE + 1} to ${p * PAGE + PAGE}`}
                 onClick={() => {
                   pinned.current = performance.now() + PIN;
                   setPage(p);
@@ -288,6 +287,7 @@ export function StepSequencerFlatBody({ title = "Step sequencer", bpm: initialBp
                   (page === p ? "bg-block text-fg" : "text-fg-muted hover:text-fg")
                 }
               >
+                <span className="sr-only">Steps </span>
                 {p * PAGE + 1}–{p * PAGE + PAGE}
               </button>
             ))}

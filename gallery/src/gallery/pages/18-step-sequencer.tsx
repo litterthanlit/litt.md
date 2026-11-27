@@ -30,6 +30,12 @@ export const docs: PageDocs = {
     "Beat programming, drum racks, and quantized step toggles in music apps and creative tools under Rack.",
     "Giving each instrument lane its own clip color while keeping inactive cells quiet grey.",
   ],
+  useByWorld: {
+    flat: [
+      "A beat maker or a pattern of on and off steps in a creative tool, where seeing the groove is the point.",
+      "A small loop of a few lanes, where each lane's name and its set steps read at a glance in the ink.",
+    ],
+  },
   skipByWorld: {
     flat: [
       "Another world's page. This body is Flat's soft squares on white paper; it needs data-material=\"flat\" on <html>.",
