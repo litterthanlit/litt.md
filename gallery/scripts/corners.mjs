@@ -91,12 +91,6 @@ const KNOWN = [
     what: /spans <div\.@container\.rounded-\[min\(var\(--radius-control\)/,
     why: "under Device a condition row keeps the control radius while the Select and the Input inside it are Device's readout and glass in a well at its em radius (plans/024, phase 2), so the readout is rounder than the row it fills; fixing it means a Device body for the rule builder's row",
   },
-  {
-    page: "rule-builder",
-    radius: 6,
-    what: /in the corner of <div\.@container\.rounded-\[min\(var\(--radius-control\)/,
-    why: "at 6px a condition row keeps the control radius and so do the fields 4px inside it, 2px rounder than concentric (at litt's own 4px their corners start where the row's curve ends); fixing it means rows take the surface radius, 8px at the default, which is a taste call",
-  },
 ];
 /* A known break is the part's, in whichever world it shows (an address is #<world>/<part>). */
 const knownFor = (f) => KNOWN.find((k) => k.page === f.id.split("/").pop() && k.radius === f.radius && k.what.test(f.what));
