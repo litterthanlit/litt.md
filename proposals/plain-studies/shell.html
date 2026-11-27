@@ -1,0 +1,784 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Plain — Data, Diagrams & Agentic Components</title>
+<style>
+/* Plain (litt-md, taste/litt-principles.md, "Plain, the document"; proposals/plain-studies.md): a specification page
+   set in Helvetica Neue on white paper. 1px hairlines, 0px corners, zero unnecessary boxes, zero chartjunk, zero
+   floating tooltip bubbles.
+   Motion language: Subtraction. Unselected choices and sibling components step back in opacity; four 1px corner marks
+   frame the one active element; finished scaffolding pares away via FLIP translateY with zero bounce. */
+:root {
+  --page: #ffffff; --surface-2: #f6f6f6; --surface-3: #ececec;
+  --line: #dfdfdf; --line-strong: #a8a8a8; --line-control: #767676;
+  --ink: #000000; --muted: #595959; --disabled: #a3a3a3;
+  --link: #0000ee; --link-hover: #0000b0; --focus: #0000ee;
+  --success: #007c3b; --warning: #9c5a00; --danger: #be2e31;
+  --data-blue: #2d90e9; --data-amber: #c47d04; --data-teal: #099d95; --data-violet: #9579ef; --data-rose: #e25f93;
+  --ink-8: color-mix(in oklab, var(--ink) 8%, var(--page));
+  --ink-18: color-mix(in oklab, var(--ink) 18%, var(--page));
+  --ink-42: color-mix(in oklab, var(--ink) 42%, var(--page));
+  --ink-82: color-mix(in oklab, var(--ink) 82%, var(--page));
+  --font-helvetica: "Helvetica Neue", Helvetica, "TeX Gyre Heros", "Inter", Arial, sans-serif;
+  --font-system: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font: var(--font-helvetica);
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --t-fig: 26px;
+  --t-h3: 15px;
+  --t-body: 14px;
+  --t-meta: 13px;
+  --unselected: 0.40;
+  --step-back: 0.25;
+  --sibling-dim: 0.32;
+  --dur-instant: 100ms;
+  --dur-pare: 150ms;
+  --dur-settle: 220ms;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-settle: linear(0, 0.0609, 0.1306, 0.2509, 0.3322, 0.4472, 0.5167, 0.6085, 0.6615, 0.7293,
+    0.7846, 0.8154, 0.854, 0.8753, 0.9017, 0.9163, 0.9342, 0.944, 0.956, 0.9626,
+    0.9707, 0.977, 0.9805, 0.9847, 0.987, 0.9898, 0.9914, 0.9932, 0.9943, 0.9955,
+    0.9965, 0.997, 0.9977, 0.998, 0.9984, 0.9987, 0.999, 0.9991, 0.9993, 0.9994, 1);
+  color-scheme: light;
+}
+:root[data-face="system"] { --font: var(--font-system) }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]):not(.light) {
+  --page: #0b0b0b; --surface-2: #161616; --surface-3: #222222;
+  --line: #282828; --line-strong: #474747; --line-control: #858585;
+  --ink: #ffffff; --muted: #b8b8b8; --disabled: #666666;
+  --link: #b3c7ff; --link-hover: #ccd8ff; --focus: #b3c7ff;
+  --success: #4bc680; --warning: #d79540; --danger: #ff756f;
+  --data-blue: #2c90e8; --data-amber: #c07b03; --data-teal: #09a198; --data-violet: #8f78df; --data-rose: #d55c8c;
+  color-scheme: dark } }
+:root[data-theme="dark"], :root.dark {
+  --page: #0b0b0b; --surface-2: #161616; --surface-3: #222222;
+  --line: #282828; --line-strong: #474747; --line-control: #858585;
+  --ink: #ffffff; --muted: #b8b8b8; --disabled: #666666;
+  --link: #b3c7ff; --link-hover: #ccd8ff; --focus: #b3c7ff;
+  --success: #4bc680; --warning: #d79540; --danger: #ff756f;
+  --data-blue: #2c90e8; --data-amber: #c07b03; --data-teal: #09a198; --data-violet: #8f78df; --data-rose: #d55c8c;
+  color-scheme: dark }
+@media (prefers-reduced-motion: reduce) {
+  :root { --dur-instant: 0ms; --dur-pare: 0ms; --dur-settle: 0ms }
+}
+
+*, *::before, *::after { box-sizing: border-box }
+html, body { margin: 0 }
+body { background: var(--page); color: var(--ink); font: 400 var(--t-body)/1.5 var(--font); letter-spacing: -0.004em;
+  -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; font-variant-numeric: tabular-nums;
+  padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(24px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)) }
+button, input, select, textarea { font: inherit; letter-spacing: inherit; color: inherit }
+a { color: var(--link); text-decoration: underline; text-underline-offset: 2px }
+a:hover { color: var(--link-hover) }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap }
+[hidden] { display: none !important }
+.pp-mount.is-tile { --t-fig: 21px; --t-h3: 14.5px }
+.pp-mount > * { min-width: 0; max-width: 100% }
+
+/* Shared kit: Plain's quiet controls + Subtraction motion primitives.
+   Unselected controls sit at --unselected (0.40) opacity so the one active choice or action reads at once. */
+.pm-frame { position: absolute; inset: 0; pointer-events: none; opacity: 0; color: var(--ink);
+  transition: opacity var(--dur-pare) var(--ease-out) }
+.pm-frame.is-shown { opacity: 1 }
+.pm-frame > i { position: absolute; left: 0; top: 0; width: 6px; height: 6px; font-style: normal; will-change: transform;
+  background-repeat: no-repeat }
+.pm-frame > .tl { background-image: linear-gradient(currentColor,currentColor), linear-gradient(currentColor,currentColor);
+  background-size: 6px 1px, 1px 6px; background-position: left top, left top }
+.pm-frame > .tr { background-image: linear-gradient(currentColor,currentColor), linear-gradient(currentColor,currentColor);
+  background-size: 6px 1px, 1px 6px; background-position: right top, right top }
+.pm-frame > .bl { background-image: linear-gradient(currentColor,currentColor), linear-gradient(currentColor,currentColor);
+  background-size: 6px 1px, 1px 6px; background-position: left bottom, left bottom }
+.pm-frame > .br { background-image: linear-gradient(currentColor,currentColor), linear-gradient(currentColor,currentColor);
+  background-size: 6px 1px, 1px 6px; background-position: right bottom, right bottom }
+
+.mk { position: relative }
+.mk::before { content: ""; position: absolute; inset: var(--mk-y, 3px) var(--mk-x, -11px); pointer-events: none; opacity: 0;
+  transform: scale(1.06);
+  transition: opacity var(--dur-instant) var(--ease-out), transform var(--dur-pare) var(--ease-out);
+  background-image: linear-gradient(currentColor,currentColor), linear-gradient(currentColor,currentColor), linear-gradient(currentColor,currentColor), linear-gradient(currentColor,currentColor),
+    linear-gradient(currentColor,currentColor), linear-gradient(currentColor,currentColor), linear-gradient(currentColor,currentColor), linear-gradient(currentColor,currentColor);
+  background-repeat: no-repeat;
+  background-size: 6px 1px, 1px 6px, 6px 1px, 1px 6px, 6px 1px, 1px 6px, 6px 1px, 1px 6px;
+  background-position: left top, left top, right top, right top, left bottom, left bottom, right bottom, right bottom }
+.mk[data-on]::before, .mk.is-on::before { opacity: 1; transform: scale(1) }
+
+.q { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 32px; padding: 0; border: 0;
+  background: none; color: var(--ink); opacity: var(--unselected); font-weight: 400; white-space: nowrap; cursor: pointer; -webkit-tap-highlight-color: transparent;
+  transition: color var(--dur-instant) var(--ease-out), opacity var(--dur-pare) var(--ease-out) }
+/* Fixed 26px vertical bracket clearance around the glyph line so short buttons never crush ascenders or descenders. */
+.q::before { content: ""; position: absolute; top: calc(50% - 13px); bottom: calc(50% - 13px); left: -10px; right: -10px;
+  pointer-events: none; opacity: 0; transform: scale(1.06);
+  transition: opacity var(--dur-instant) var(--ease-out), transform var(--dur-instant) var(--ease-out);
+  background-image: linear-gradient(currentColor,currentColor), linear-gradient(currentColor,currentColor), linear-gradient(currentColor,currentColor), linear-gradient(currentColor,currentColor),
+    linear-gradient(currentColor,currentColor), linear-gradient(currentColor,currentColor), linear-gradient(currentColor,currentColor), linear-gradient(currentColor,currentColor);
+  background-repeat: no-repeat;
+  background-size: 6px 1px, 1px 6px, 6px 1px, 1px 6px, 6px 1px, 1px 6px, 6px 1px, 1px 6px;
+  background-position: left top, left top, right top, right top, left bottom, left bottom, right bottom, right bottom }
+.q:hover:not(:disabled) { opacity: 0.88 }
+.q[aria-pressed="true"], .q[aria-checked="true"], .q[aria-selected="true"], .q.is-on, .q.is-main, .q.is-ink { opacity: 1; font-weight: 500 }
+.q:hover:not(:disabled)::before, .q.is-main::before, .q[aria-checked="true"]::before, .q[aria-selected="true"]::before, .q[aria-pressed="true"]::before, .q.is-on::before { opacity: 1; transform: scale(1) }
+.q:active:not(:disabled)::before { transform: scale(0.96) }
+.q.in-frame::before { display: none }
+.q.is-danger { color: var(--danger); opacity: 0.92 }
+.q.is-danger:hover:not(:disabled), .q.is-danger.is-main { color: var(--danger); opacity: 1 }
+.q:disabled { opacity: 0.24; cursor: not-allowed }
+.q:focus-visible { outline-offset: 4px; opacity: 1 }
+
+.field { display: block; width: 100%; min-height: 38px; padding: 6px 0; border: 0; border-radius: 0; background: transparent no-repeat left bottom / 100% 1px;
+  background-image: linear-gradient(var(--line-control), var(--line-control)); outline: none }
+.field:focus { background-image: linear-gradient(var(--focus), var(--focus)); background-size: 100% 2px }
+.field[aria-invalid="true"] { background-image: linear-gradient(var(--danger), var(--danger)); background-size: 100% 2px }
+.box { border: 1px solid var(--line); background: var(--page) }
+/* Boxless Tufte bar track: a clean 4px hairline rail, never a hollow 4-sided rectangle. */
+.bar-track { position: relative; height: 4px; border: 0; background: var(--surface-3); overflow: hidden }
+.bar-fill { width: 100%; height: 100%; background: var(--ink); transform: translateX(calc((var(--p, 0) - 1) * 100%));
+  transition: transform var(--dur-settle) var(--ease-settle); will-change: transform }
+.fig { font-size: var(--t-fig); font-weight: 500; line-height: 1.12; letter-spacing: -0.025em; color: var(--ink); font-variant-numeric: tabular-nums }
+.label { font-size: 12px; font-weight: 600; color: var(--muted); letter-spacing: 0.01em }
+.muted { color: var(--muted) }
+.mono { font-family: var(--mono); font-size: 12.5px }
+[data-focus-group] > * { transition: opacity var(--dur-pare) var(--ease-out) }
+[data-focus-group][data-focusing] > :not([data-active]):not(.pm-frame) { opacity: var(--step-back) }
+
+/* Page shell & top navigation */
+.pg { max-width: 1240px; margin: 0 auto; padding: 40px 12px 88px; transition: opacity var(--dur-pare) var(--ease-out) }
+body.sheet-open .pg { opacity: 0; pointer-events: none }
+.pg-head { display: grid; gap: 22px; margin: 0 0 44px; padding: 0 0 20px; border-bottom: 1px solid var(--line) }
+.pg-top { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px 32px }
+.pg-head h1 { margin: 0; font: 500 28px/1.12 var(--font); letter-spacing: -0.025em }
+.pg-head p { margin: 8px 0 0; font-size: 15px; line-height: 1.5; color: var(--muted); max-width: 60ch }
+.pg-nav-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 28px }
+.pg-views { position: relative; display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px 24px; padding: 2px 10px }
+.pg-tools { display: flex; align-items: center; gap: 24px; padding: 0 10px 0 0 }
+.pg-face-group { position: relative; display: inline-flex; align-items: center; gap: 20px; padding: 2px 10px }
+
+/* View 1: Data, Diagrams & Charts — live open Swiss specification grid (zero outer boxes). */
+.dd-page { display: grid; gap: 64px }
+.dd-chapter { display: grid; gap: 28px }
+.dd-ch-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 24px;
+  padding-bottom: 10px; border-bottom: 1px solid var(--ink) }
+.dd-ch-head h2 { margin: 0; font: 500 17px/1.25 var(--font); letter-spacing: -0.015em }
+.dd-ch-head span { font-size: 13.5px; color: var(--muted) }
+.dd-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 48px 48px }
+/* Sibling component dimming: pointing at one component steps the other components in the chapter back. */
+.dd-grid > .dd-card { min-width: 0; display: grid; align-content: start; gap: 16px; padding-top: 16px; border-top: 1px solid var(--line);
+  transition: opacity var(--dur-pare) var(--ease-out) }
+.dd-grid > .dd-card.is-full { grid-column: 1 / -1; border-top: 0; padding-top: 4px }
+.dd-grid:hover > .dd-card:not(:hover) { opacity: var(--sibling-dim) }
+.dd-card-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 16px }
+.dd-card-title { display: grid; gap: 2px }
+.dd-card-title h3 { margin: 0; font: 500 15px/1.3 var(--font); letter-spacing: -0.01em }
+.dd-card-title p { margin: 0; font-size: 13px; color: var(--muted) }
+.dd-mount { width: 100%; min-width: 0; container-type: inline-size }
+
+/* View 2: Agentic Controls — boxless open-paper tiles parted by a single top hairline; non-hovered tiles step back to 0.32. */
+.pg-wall { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 352px), 1fr)); gap: 52px 40px }
+.pg-wall > li { transition: opacity var(--dur-pare) var(--ease-out) }
+.pg-wall:hover > li:not(:hover) { opacity: var(--sibling-dim) }
+.pg-tile { display: grid; gap: 14px; width: 100%; padding: 0; border: 0; background: transparent; color: var(--ink); text-align: left; cursor: pointer }
+.pg-stage { position: relative; height: 296px; border: 0; border-top: 1px solid var(--line); background: var(--page); overflow: hidden; display: grid; place-items: center }
+.pg-stage::after { content: ""; position: absolute; inset: 8px 0 0 0; pointer-events: none; opacity: 0; transform: scale(1.02);
+  transition: opacity var(--dur-instant) var(--ease-out), transform var(--dur-pare) var(--ease-out);
+  background-image: linear-gradient(var(--ink),var(--ink)), linear-gradient(var(--ink),var(--ink)), linear-gradient(var(--ink),var(--ink)), linear-gradient(var(--ink),var(--ink)),
+    linear-gradient(var(--ink),var(--ink)), linear-gradient(var(--ink),var(--ink)), linear-gradient(var(--ink),var(--ink)), linear-gradient(var(--ink),var(--ink));
+  background-repeat: no-repeat;
+  background-size: 10px 1px, 1px 10px, 10px 1px, 1px 10px, 10px 1px, 1px 10px, 10px 1px, 1px 10px;
+  background-position: left top, left top, right top, right top, left bottom, left bottom, right bottom, right bottom }
+.pg-tile:hover .pg-stage::after { opacity: 1; transform: scale(1) }
+.pg-tile:active .pg-stage::after { transform: scale(0.985) }
+.pg-stage > .pp-mount { width: 100%; height: 100%; display: grid; place-items: center; padding: 20px 4px; container-type: inline-size; pointer-events: none }
+.pg-name { display: grid; gap: 2px; min-width: 0; padding-top: 8px; border-top: 1px solid var(--line) }
+.pg-name b { font-size: 15px; font-weight: 500; line-height: 1.3; letter-spacing: -0.01em; color: var(--ink) }
+.pg-name span { color: var(--muted); font-size: 13.5px; line-height: 1.4; min-width: 0 }
+.pg-tile:focus-visible { outline-offset: 4px }
+
+/* Open study sheet */
+.pg-sheet { position: fixed; inset: 0; z-index: 10; display: none; background: var(--page); overflow: auto; overscroll-behavior: contain }
+.pg-sheet.is-open { display: grid; grid-template-rows: auto 1fr auto }
+.pg-bar { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 12px; padding: 14px 28px; border-bottom: 1px solid var(--line) }
+.pg-bar h2 { margin: 0; font: 500 15px/1.3 var(--font); letter-spacing: -0.01em; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
+.pg-bar .pg-close { justify-self: start } .pg-bar .pg-steps { justify-self: end; display: flex; gap: 24px }
+.pg-open { display: grid; place-items: center; min-height: 0; padding: 48px 24px }
+.pg-open > .pp-mount { width: min(100%, 960px); min-height: min(500px, 100%); display: grid; place-items: center; container-type: inline-size }
+.pg-about { max-width: 560px; margin: 0 auto; padding: 0 24px 36px; text-align: center; color: var(--muted); font-size: 14px }
+.pg-foot { margin-top: 64px; padding-top: 20px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13.5px }
+@media (max-width: 860px) {
+  .dd-grid { grid-template-columns: minmax(0, 1fr); gap: 40px }
+}
+@media (max-width: 720px) {
+  .pg { padding: 24px 4px 56px }
+  .pg-head h1 { font-size: 24px }
+  .pg-stage { height: 288px }
+  .pg-bar { padding: 10px 20px } .pg-bar .pg-steps { gap: 20px }
+  .pg-open { padding: 32px 16px }
+}
+@media (forced-colors: active) { .pm-frame, .mk::before, .q::before, .pg-stage::after { forced-color-adjust: none; color: CanvasText } }
+</style>
+</head>
+<body>
+<main class="pg">
+  <header class="pg-head">
+    <div class="pg-top">
+      <div>
+        <h1>Plain</h1>
+        <p id="pg-lede">Data, diagrams and agentic components on white paper: 1px hairlines, direct labels, zero unnecessary boxes, and focus by subtraction.</p>
+      </div>
+      <div class="pg-tools">
+        <div class="pg-face-group" id="pg-faces" role="radiogroup" aria-label="Typeface">
+          <button class="q in-frame" type="button" role="radio" aria-checked="true" data-face="helvetica">Helvetica</button>
+          <button class="q in-frame" type="button" role="radio" aria-checked="false" data-face="system">System</button>
+        </div>
+        <button class="q" type="button" id="pg-theme">Dark</button>
+      </div>
+    </div>
+    <nav class="pg-nav-bar" aria-label="Component sets">
+      <div class="pg-views" id="pg-views" role="tablist" aria-label="Plain views">
+        <button class="q in-frame" type="button" role="tab" aria-selected="true" data-view="data">Data &amp; diagrams</button>
+        <button class="q in-frame" type="button" role="tab" aria-selected="false" data-view="controls">Agentic controls</button>
+      </div>
+    </nav>
+  </header>
+
+  <section id="pg-data-view" class="dd-page" aria-label="Data, charts and diagrams"></section>
+  <section id="pg-controls-view" hidden aria-label="Agentic controls">
+    <ul class="pg-wall" id="pg-wall"></ul>
+  </section>
+
+  <p class="pg-foot" id="pg-foot">Point at any series, bar, node or row to subtract the rest. Switch to Agentic controls above for all 24 interactive control studies.</p>
+</main>
+<div class="pg-sheet" id="pg-sheet" role="dialog" aria-modal="true" aria-labelledby="pg-sheet-title">
+  <div class="pg-bar">
+    <button class="q pg-close" type="button" id="pg-close">Close</button>
+    <h2 id="pg-sheet-title"></h2>
+    <div class="pg-steps">
+      <button class="q" type="button" id="pg-prev" aria-label="Previous study">Previous</button>
+      <button class="q" type="button" id="pg-next" aria-label="Next study">Next</button>
+    </div>
+  </div>
+  <div class="pg-open" id="pg-open"></div>
+  <p class="pg-about" id="pg-about"></p>
+</div>
+<p class="sr-only" id="pg-live" aria-live="polite"></p>
+<script>
+/* PlainPlayer: shared Subtraction motion engine for both Data/Diagram components and Agentic Control studies. */
+window.PlainPlayer = (function () {
+  const studies = [];
+  const dataItems = [];
+  const reduced = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const EASE_OUT = "cubic-bezier(0.23, 1, 0.32, 1)";
+  const EASE_SETTLE = "cubic-bezier(0.16, 1, 0.3, 1)";
+
+  /* Critically damped spring (bounce forced to 0). */
+  function spring(initial, onUpdate, opts) {
+    const dur = Math.max(0.06, (opts && opts.duration) || 0.2);
+    const w = (2 * Math.PI) / dur, k = w * w, c = 2 * w;
+    let x = initial, v = 0, target = initial, raf = 0, last = 0, dead = false;
+    const step = (now) => {
+      if (dead) return;
+      let dt = Math.max(0, Math.min(0.064, (now - last) / 1000)); last = now;
+      while (dt > 0) { const h = Math.min(dt, 1 / 240); v += (-k * (x - target) - c * v) * h; x += v * h; dt -= h; }
+      if (Math.abs(x - target) < 0.0005 && Math.abs(v) < 0.0005) { x = target; v = 0; raf = 0; onUpdate(x); return; }
+      onUpdate(x); raf = requestAnimationFrame(step);
+    };
+    const api = {
+      set(t, velocity) {
+        target = t; if (velocity !== undefined) v = velocity;
+        if (reduced() || dead) { x = t; v = 0; if (raf) cancelAnimationFrame(raf); raf = 0; onUpdate(x); return; }
+        if (!raf) { last = performance.now(); raf = requestAnimationFrame(step); }
+      },
+      jump(t) { x = target = t; v = 0; if (raf) cancelAnimationFrame(raf); raf = 0; onUpdate(x); },
+      value: () => x, target: () => target,
+      stop() { dead = true; if (raf) cancelAnimationFrame(raf); raf = 0; },
+    };
+    if (opts && opts.signal) opts.signal.addEventListener("abort", () => api.stop(), { once: true });
+    return api;
+  }
+
+  function addStyle(slug, css) {
+    if (!css) return;
+    const st = document.createElement("style");
+    st.dataset.study = slug;
+    st.textContent = css;
+    document.head.appendChild(st);
+  }
+
+  return {
+    studies,
+    dataItems,
+    reduced,
+    spring,
+    EASE_OUT,
+    EASE_SETTLE,
+    register(s) { studies.push(s); addStyle(s.slug, s.css); },
+    registerData(d) { dataItems.push(d); addStyle("dd-" + d.slug, d.css); },
+  };
+})();
+</script>
+<!--STUDY_JS-->
+<script>
+(function () {
+  const P = window.PlainPlayer;
+  const ORDER = [
+    "thinking", "tool-approval", "file-changes",
+    "agent-run", "sources", "composer",
+    "context-budget", "agent-transcript", "prompt-redact",
+    "autonomy-switch", "effort-mode", "agent-tuning",
+    "command-menu", "run-list", "agent-plan",
+    "eval-matrix", "rate-meter", "agent-loaders",
+    "agent-indicators", "event-inbox", "destructive-guard",
+    "approval-code", "run-telemetry", "handoff-command"
+  ];
+  const ordered = ORDER.map((slug) => P.studies.find((s) => s.slug === slug)).filter(Boolean);
+  const extras = P.studies.filter((s) => !ORDER.includes(s.slug));
+  const set = ordered.concat(extras);
+  const n = set.length;
+  const $ = (id) => document.getElementById(id);
+  const wall = $("pg-wall"), sheet = $("pg-sheet"), openEl = $("pg-open"), live = $("pg-live");
+  const dataView = $("pg-data-view"), controlsView = $("pg-controls-view");
+
+  /* Layout-offset box relative to container (immune to running WAAPI/CSS transforms during FLIP or entrance!). */
+  function layoutBoxIn(el, container) {
+    let x = 0, y = 0, n = el;
+    while (n && n !== container && n instanceof HTMLElement) {
+      x += n.offsetLeft - n.scrollLeft;
+      y += n.offsetTop - n.scrollTop;
+      n = n.offsetParent;
+    }
+    if (n === container && el.offsetWidth > 0 && el.offsetHeight > 0) {
+      return { left: x, top: y, width: el.offsetWidth, height: el.offsetHeight };
+    }
+    const cr = container.getBoundingClientRect(), er = el.getBoundingClientRect();
+    if (!cr.width || !er.width) return null;
+    return { left: er.left - cr.left, top: er.top - cr.top, width: er.width, height: er.height };
+  }
+
+  function makeCtx(host, ac, rec, tile, index) {
+    let handed = false;
+    const demoDelay = tile ? (index % 6) * 520 + 350 : 250;
+    let firstDemo = true;
+
+    /* Four 1px corner hairlines: observes BOTH container AND active target element so dynamic text swaps (e.g. Copy -> Copied)
+       always resize the brackets smoothly without cramping glyphs. */
+    function brackets(container, opts) {
+      const raw = Object.assign({ padX: 10, padY: 4, size: 6 }, opts);
+      const o = { padX: raw.padX < 0 ? raw.padX : Math.max(8, raw.padX), padY: raw.padY < 0 ? Math.max(2, raw.padY) : Math.max(3, raw.padY), size: raw.size || 6 };
+      if (opts && opts.exactPad) { o.padX = raw.padX; o.padY = raw.padY; }
+      if (getComputedStyle(container).position === "static") container.style.position = "relative";
+      const wrap = document.createElement("span");
+      wrap.className = "pm-frame"; wrap.setAttribute("aria-hidden", "true");
+      wrap.innerHTML = '<i class="tl"></i><i class="tr"></i><i class="bl"></i><i class="br"></i>';
+      container.appendChild(wrap);
+      const [tl, tr, bl, br] = wrap.children;
+      let curEl = null, shown = false, pressed = false;
+      let bx0 = 0, by0 = 0, bx1 = 0, by1 = 0;
+      const paint = () => {
+        const x0 = sx0.value(), y0 = sy0.value(), x1 = sx1.value(), y1 = sy1.value();
+        tl.style.transform = `translate3d(${x0.toFixed(2)}px,${y0.toFixed(2)}px,0)`;
+        tr.style.transform = `translate3d(${x1.toFixed(2)}px,${y0.toFixed(2)}px,0)`;
+        bl.style.transform = `translate3d(${x0.toFixed(2)}px,${y1.toFixed(2)}px,0)`;
+        br.style.transform = `translate3d(${x1.toFixed(2)}px,${y1.toFixed(2)}px,0)`;
+      };
+      const sig = { duration: 0.2, signal: ac.signal };
+      const sx0 = P.spring(0, paint, sig), sy0 = P.spring(0, paint, sig), sx1 = P.spring(0, paint, sig), sy1 = P.spring(0, paint, sig);
+
+      function measure(el) {
+        if (!el || !el.isConnected) return null;
+        const b = layoutBoxIn(el, container);
+        if (!b) return null;
+        const p = pressed ? 1.5 : 0;
+        return [b.left - o.padX + p, b.top - o.padY + p, b.left + b.width + o.padX - o.size - p, b.top + b.height + o.padY - o.size - p];
+      }
+
+      let ro = null, mo = null;
+      function refit(animate) {
+        if (!curEl || !shown || ac.signal.aborted) return;
+        const m = measure(curEl);
+        if (!m) return;
+        [bx0, by0, bx1, by1] = m;
+        if (animate && !P.reduced()) { sx0.set(m[0]); sy0.set(m[1]); sx1.set(m[2]); sy1.set(m[3]); }
+        else { sx0.jump(m[0]); sy0.jump(m[1]); sx1.jump(m[2]); sy1.jump(m[3]); }
+      }
+      if (typeof ResizeObserver !== "undefined") {
+        ro = new ResizeObserver((entries) => {
+          const isTarget = entries.some((e) => e.target === curEl);
+          refit(isTarget);
+        });
+        ro.observe(container);
+        ac.signal.addEventListener("abort", () => ro.disconnect(), { once: true });
+      }
+      if (typeof MutationObserver !== "undefined") {
+        mo = new MutationObserver(() => requestAnimationFrame(() => refit(true)));
+        ac.signal.addEventListener("abort", () => mo.disconnect(), { once: true });
+      }
+
+      function watchTarget(el) {
+        if (ro) {
+          if (curEl && curEl !== el) { try { ro.unobserve(curEl); } catch (e) {} }
+          if (el) { try { ro.observe(el); } catch (e) {} }
+        }
+        if (mo) {
+          mo.disconnect();
+          if (el) { try { mo.observe(el, { childList: true, characterData: true, subtree: true }); } catch (e) {} }
+        }
+      }
+
+      function moveTo(el, mOpts) {
+        if (!el) return pare();
+        watchTarget(el);
+        curEl = el;
+        const m = measure(el);
+        if (!m) { requestAnimationFrame(() => { if (curEl === el && !ac.signal.aborted) moveTo(el, { immediate: true }); }); return; }
+        [bx0, by0, bx1, by1] = m;
+        const imm = (mOpts && mOpts.immediate) || !shown || P.reduced();
+        shown = true; wrap.classList.add("is-shown");
+        if (imm) { sx0.jump(bx0); sy0.jump(by0); sx1.jump(bx1); sy1.jump(by1); }
+        else { sx0.set(bx0); sy0.set(by0); sx1.set(bx1); sy1.set(by1); }
+      }
+      function clamp(down) {
+        if (pressed === down || !curEl || !shown) return;
+        pressed = down;
+        const m = measure(curEl); if (!m) return;
+        sx0.set(m[0]); sy0.set(m[1]); sx1.set(m[2]); sy1.set(m[3]);
+      }
+      function pare() {
+        watchTarget(null);
+        curEl = null; shown = false; pressed = false; wrap.classList.remove("is-shown");
+        if (!P.reduced()) { sx0.set(bx0 + 3); sy0.set(by0 + 3); sx1.set(bx1 - 3); sy1.set(by1 - 3); }
+      }
+      container.addEventListener("pointerdown", () => clamp(true), { signal: ac.signal });
+      window.addEventListener("pointerup", () => clamp(false), { signal: ac.signal });
+      window.addEventListener("pointercancel", () => clamp(false), { signal: ac.signal });
+      window.addEventListener("plainfacechange", () => refit(false), { signal: ac.signal });
+      return { moveTo, clamp, pare, refresh: () => refit(false), el: wrap, current: () => curEl };
+    }
+
+    function flip(listEl, mutateFn) {
+      if (!listEl || P.reduced()) { mutateFn(); return; }
+      const kids = [...listEl.children].filter((c) => !c.classList.contains("pm-frame") && c.offsetParent !== null);
+      const before = new Map(kids.map((c) => [c, c.getBoundingClientRect()]));
+      mutateFn();
+      for (const c of [...listEl.children]) {
+        const b = before.get(c);
+        if (!b || c.offsetParent === null) continue;
+        const a = c.getBoundingClientRect();
+        const dx = b.left - a.left, dy = b.top - a.top;
+        if (Math.abs(dx) < 0.5 && Math.abs(dy) < 0.5) continue;
+        if (c.animate) c.animate([{ transform: `translate(${dx.toFixed(1)}px, ${dy.toFixed(1)}px)` }, { transform: "none" }], { duration: 210, easing: P.EASE_SETTLE });
+      }
+    }
+
+    function pareOut(el, onRemoved) {
+      let anim = null;
+      const finish = () => {
+        if (ac.signal.aborted) return;
+        const parent = el && el.parentElement;
+        flip(parent, () => { if (onRemoved) onRemoved(); else if (el) el.remove(); });
+        if (anim) { try { anim.cancel(); } catch (e) {} }
+        if (el) el.style.pointerEvents = "";
+      };
+      if (!el || P.reduced() || !el.animate) { finish(); return; }
+      el.style.pointerEvents = "none";
+      anim = el.animate([{ opacity: 1, transform: "translateX(0)" }, { opacity: 0, transform: "translateX(-6px)" }], { duration: 140, easing: P.EASE_OUT, fill: "forwards" });
+      anim.onfinish = finish;
+      ac.signal.addEventListener("abort", () => { try { anim.cancel(); } catch (e) {} }, { once: true });
+    }
+
+    function swapText(el, nextText, onSwapped) {
+      const str = String(nextText);
+      if (!el || el.textContent === str) { if (onSwapped) onSwapped(); return; }
+      if (P.reduced() || !el.animate) { el.textContent = str; if (onSwapped) onSwapped(); return; }
+      if (el._pmSwap) { try { el._pmSwap.cancel(); } catch (e) {} }
+      const out = el.animate([{ opacity: 1, transform: "translateY(0)" }, { opacity: 0, transform: "translateY(-3px)" }], { duration: 85, easing: P.EASE_OUT });
+      el._pmSwap = out;
+      out.onfinish = () => {
+        if (ac.signal.aborted) return;
+        el.textContent = str;
+        if (onSwapped) onSwapped();
+        el._pmSwap = el.animate([{ opacity: 0, transform: "translateY(3px)" }, { opacity: 1, transform: "translateY(0)" }], { duration: 135, easing: P.EASE_OUT });
+      };
+    }
+
+    const ctx = {
+      host, signal: ac.signal, tile: !!tile, reduced: P.reduced,
+      spring: (init, fn, opts) => P.spring(init, fn, Object.assign({ signal: ac.signal }, opts)),
+      brackets, flip, pareOut, swapText,
+      handed: () => handed,
+      after(ms, fn) { const t = setTimeout(() => { if (!ac.signal.aborted) fn(); }, ms); rec.timers.push(t); return t; },
+      every(ms, fn) { const t = setInterval(() => { if (!ac.signal.aborted) fn(); }, ms); rec.intervals.push(t); return t; },
+      demoAfter(ms, fn) {
+        if (P.reduced() || handed) return 0;
+        const wait = firstDemo ? ms + demoDelay : ms; firstDemo = false;
+        const t = setTimeout(() => { if (!ac.signal.aborted && !handed && !P.reduced()) fn(); }, wait);
+        rec.demoTimers.push(t); return t;
+      },
+      demoEvery(ms, fn) {
+        if (P.reduced() || handed) return 0;
+        const t = setInterval(() => { if (!ac.signal.aborted && !handed && !P.reduced()) fn(); }, ms);
+        rec.demoIntervals.push(t); return t;
+      },
+      loop(fn) {
+        const r = { stop: false }; rec.rafs.push(r); let last = performance.now();
+        const f = (now) => { if (r.stop || ac.signal.aborted) return; const dt = Math.max(0, Math.min(0.1, (now - last) / 1000)); last = now; if (fn(dt, now) === false) { r.stop = true; return; } requestAnimationFrame(f); };
+        requestAnimationFrame(f); return r;
+      },
+      onHand(fn) { rec.hands.push(fn); },
+    };
+
+    const stopDemo = () => {
+      if (handed) return;
+      handed = true;
+      rec.demoTimers.forEach(clearTimeout); rec.demoTimers.length = 0;
+      rec.demoIntervals.forEach(clearInterval); rec.demoIntervals.length = 0;
+      rec.hands.forEach((f) => { try { f(); } catch (e) { console.error(e); } });
+    };
+    if (!tile) {
+      for (const ev of ["pointerdown", "keydown", "wheel"]) {
+        host.addEventListener(ev, stopDemo, { signal: ac.signal, capture: true, passive: ev === "wheel" });
+      }
+    }
+    return ctx;
+  }
+
+  function mountInto(box, s, tile, index, clsPrefix) {
+    box.textContent = "";
+    const host = document.createElement("div");
+    host.className = (clsPrefix || "pp-mount ps-") + s.slug + (tile ? " is-tile" : "");
+    host.dataset.study = s.slug;
+    box.appendChild(host);
+    const ac = new AbortController();
+    const rec = { ac, timers: [], intervals: [], demoTimers: [], demoIntervals: [], rafs: [], hands: [], api: null, host };
+    const ctx = makeCtx(host, ac, rec, tile, index || 0);
+    try { rec.api = s.mount(host, ctx) || null; } catch (e) { console.error(s.slug, e); host.textContent = s.title; }
+    return rec;
+  }
+
+  function unmount(rec) {
+    if (!rec) return;
+    try { rec.api && rec.api.destroy && rec.api.destroy(); } catch (e) { console.error(e); }
+    rec.ac.abort();
+    rec.timers.forEach(clearTimeout); rec.intervals.forEach(clearInterval);
+    rec.demoTimers.forEach(clearTimeout); rec.demoIntervals.forEach(clearInterval);
+    rec.rafs.forEach((r) => (r.stop = true));
+    rec.host.remove();
+  }
+
+  /* Mount the Data, Diagrams & Charts chapters */
+  const CHAPTERS = [
+    { key: "charts", title: "Charts & distributions", sub: "Direct labels, 1px baselines, white-paper scale cuts, and scrub without tooltip boxes." },
+    { key: "diagrams", title: "Diagrams, flows & traces", sub: "Frameless Helvetica nodes on orthogonal 1px hairlines; causal paths isolate by subtraction." },
+    { key: "tables", title: "Tables & density matrices", sub: "Right-aligned tabular figures, FLIP column sort, and monochrome ink-step heatmaps." },
+  ];
+  const dataRecs = [];
+  function mountDataPage() {
+    if (dataRecs.length || !P.dataItems.length) return;
+    dataView.textContent = "";
+    CHAPTERS.forEach((ch) => {
+      const items = P.dataItems.filter((d) => d.chapter === ch.key);
+      if (!items.length) return;
+      const sec = document.createElement("section");
+      sec.className = "dd-chapter";
+      sec.innerHTML = `<header class="dd-ch-head"><h2>${ch.title}</h2><span>${ch.sub}</span></header><div class="dd-grid"></div>`;
+      const grid = sec.querySelector(".dd-grid");
+      items.forEach((item, idx) => {
+        const card = document.createElement("article");
+        card.className = "dd-card" + (item.span === "full" ? " is-full" : "");
+        card.dataset.slug = item.slug;
+        card.innerHTML = `<div class="dd-mount"></div>`;
+        const mountBox = card.querySelector(".dd-mount");
+        grid.appendChild(card);
+        dataRecs.push(mountInto(mountBox, item, false, idx, "dd-host dd-"));
+      });
+      dataView.appendChild(sec);
+    });
+  }
+
+  /* Agentic Controls wall */
+  const tiles = set.map((s, i) => {
+    const li = document.createElement("li");
+    li.innerHTML = '<button class="pg-tile" type="button"><div class="pg-stage" inert></div><span class="pg-name"><b></b><span></span></span></button>';
+    const btn = li.firstChild, stage = btn.querySelector(".pg-stage");
+    btn.querySelector("b").textContent = s.title;
+    btn.querySelector(".pg-name span").textContent = s.tagline || "";
+    btn.setAttribute("aria-label", "Open " + s.title);
+    btn.addEventListener("click", () => open(i));
+    wall.appendChild(li);
+    return { s, i, btn, stage, rec: null, visible: false };
+  });
+  let sheetOpen = false, currentView = "data";
+  const sync = (t) => {
+    const want = currentView === "controls" && t.visible && !sheetOpen;
+    if (want && !t.rec) t.rec = mountInto(t.stage, t.s, true, t.i);
+    if (!want && t.rec) { unmount(t.rec); t.rec = null; }
+  };
+  const io = new IntersectionObserver((entries) => {
+    for (const e of entries) { const t = tiles.find((x) => x.stage === e.target); if (t) { t.visible = e.isIntersecting; sync(t); } }
+  }, { rootMargin: "400px 0px" });
+  tiles.forEach((t) => io.observe(t.stage));
+
+  /* Top view switcher: Data, charts & diagrams | Agentic controls */
+  const viewGroup = $("pg-views");
+  const viewBtns = [...viewGroup.querySelectorAll("[data-view]")];
+  const navAc = new AbortController();
+  const navCtx = makeCtx(viewGroup, navAc, { timers: [], intervals: [], demoTimers: [], demoIntervals: [], rafs: [], hands: [] }, true, 0);
+  const viewFrame = navCtx.brackets(viewGroup, { padX: 10, padY: 3, exactPad: true });
+
+  function setView(v, immediate) {
+    currentView = v;
+    const isData = v === "data";
+    dataView.hidden = !isData;
+    controlsView.hidden = isData;
+    for (const b of viewBtns) {
+      const on = b.dataset.view === v;
+      b.setAttribute("aria-selected", on ? "true" : "false");
+      b.tabIndex = on ? 0 : -1;
+      if (on) viewFrame.moveTo(b, { immediate });
+    }
+    $("pg-foot").textContent = isData
+      ? "Point at any series, bar, node or row to subtract the rest. Switch to Agentic controls above for all 24 interactive control studies."
+      : "Each control sits directly on white paper; hover one to step the rest back, or open any study to steer it.";
+    if (isData) mountDataPage();
+    tiles.forEach(sync);
+    requestAnimationFrame(() => window.dispatchEvent(new Event("plainfacechange")));
+  }
+  for (const b of viewBtns) b.addEventListener("click", () => {
+    setView(b.dataset.view, false);
+    try { history.replaceState(null, "", b.dataset.view === "controls" ? "#controls" : location.pathname + location.search); } catch (e) {}
+  });
+  viewGroup.addEventListener("keydown", (e) => {
+    if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+    e.preventDefault();
+    const idx = viewBtns.findIndex((b) => b.getAttribute("aria-selected") === "true");
+    const next = viewBtns[(idx + 1) % viewBtns.length];
+    setView(next.dataset.view, false);
+    next.focus();
+  });
+
+  /* Open study sheet */
+  let cur = -1, openRec = null;
+  function show(i, dir) {
+    cur = ((i % n) + n) % n;
+    const s = set[cur];
+    unmount(openRec);
+    openRec = mountInto(openEl, s, false, cur);
+    if (!P.reduced() && openRec.host.animate) {
+      const dx = dir ? dir * 10 : 0;
+      openRec.host.animate([{ opacity: 0, transform: `translate(${dx}px, ${dir ? 0 : 4}px)` }, { opacity: 1, transform: "none" }], { duration: 200, easing: P.EASE_SETTLE });
+    }
+    $("pg-sheet-title").textContent = s.title;
+    $("pg-about").textContent = s.tagline || "";
+    try { history.replaceState(null, "", "#" + s.slug); } catch (e) {}
+    document.title = s.title + " · Plain";
+    live.textContent = s.title + ", " + (cur + 1) + " of " + n;
+  }
+  function open(i) {
+    if (currentView !== "controls") setView("controls", true);
+    sheetOpen = true; tiles.forEach(sync);
+    document.body.classList.add("sheet-open");
+    sheet.classList.add("is-open"); document.body.style.overflow = "hidden";
+    $("pg-wall").inert = true;
+    if (!P.reduced() && sheet.animate) {
+      sheet.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 160, easing: P.EASE_OUT });
+    }
+    show(i, 0);
+    $("pg-close").focus({ preventScroll: true });
+  }
+  function close() {
+    if (!sheetOpen) return;
+    const finish = () => {
+      unmount(openRec); openRec = null;
+      sheet.classList.remove("is-open"); document.body.style.overflow = "";
+      document.body.classList.remove("sheet-open");
+      $("pg-wall").inert = false;
+      sheetOpen = false;
+      const back = tiles[cur] && tiles[cur].btn;
+      tiles.forEach(sync);
+      if (back) { back.focus({ preventScroll: true }); back.scrollIntoView({ block: "nearest" }); }
+      try { history.replaceState(null, "", "#controls"); } catch (e) {}
+      document.title = "Plain — Data, Diagrams & Agentic Components";
+    };
+    if (!P.reduced() && sheet.animate) {
+      const a = sheet.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 135, easing: P.EASE_OUT });
+      a.onfinish = finish;
+    } else finish();
+  }
+  $("pg-close").addEventListener("click", close);
+  $("pg-prev").addEventListener("click", () => show(cur - 1, -1));
+  $("pg-next").addEventListener("click", () => show(cur + 1, 1));
+  sheet.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && !e.defaultPrevented) { e.preventDefault(); close(); }
+    if (e.key === "Tab") {
+      const f = [...sheet.querySelectorAll('button, [href], input, [tabindex]:not([tabindex="-1"]), select, textarea')].filter((el) => !el.disabled && el.offsetParent !== null);
+      if (!f.length) return;
+      if (e.shiftKey && document.activeElement === f[0]) { e.preventDefault(); f[f.length - 1].focus(); }
+      else if (!e.shiftKey && document.activeElement === f[f.length - 1]) { e.preventDefault(); f[0].focus(); }
+    }
+  });
+
+  /* Helvetica / System toggle */
+  const faceGroup = $("pg-faces");
+  const faceBtns = [...faceGroup.querySelectorAll("[data-face]")];
+  const faceCtx = makeCtx(faceGroup, navAc, { timers: [], intervals: [], demoTimers: [], demoIntervals: [], rafs: [], hands: [] }, true, 0);
+  const faceFrame = faceCtx.brackets(faceGroup, { padX: 9, padY: 3, exactPad: true });
+  function setFace(face, immediate) {
+    document.documentElement.dataset.face = face;
+    for (const b of faceBtns) {
+      const on = b.dataset.face === face;
+      b.setAttribute("aria-checked", on ? "true" : "false");
+      b.tabIndex = on ? 0 : -1;
+      if (on) faceFrame.moveTo(b, { immediate });
+    }
+    requestAnimationFrame(() => window.dispatchEvent(new Event("plainfacechange")));
+  }
+  for (const b of faceBtns) b.addEventListener("click", () => setFace(b.dataset.face, false));
+  faceGroup.addEventListener("keydown", (e) => {
+    if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+    e.preventDefault();
+    const idx = faceBtns.findIndex((b) => b.getAttribute("aria-checked") === "true");
+    const next = faceBtns[(idx + 1) % faceBtns.length];
+    setFace(next.dataset.face, false);
+    next.focus();
+  });
+  setFace("helvetica", true);
+
+  const themeBtn = $("pg-theme");
+  const isDark = () => {
+    const r = document.documentElement;
+    if (r.dataset.theme) return r.dataset.theme === "dark";
+    if (r.classList.contains("dark")) return true;
+    if (r.classList.contains("light")) return false;
+    return matchMedia("(prefers-color-scheme: dark)").matches;
+  };
+  const paintTheme = () => (themeBtn.textContent = isDark() ? "Light" : "Dark");
+  themeBtn.addEventListener("click", () => {
+    const next = isDark() ? "light" : "dark";
+    document.documentElement.dataset.theme = next;
+    document.documentElement.classList.toggle("dark", next === "dark");
+    document.documentElement.classList.toggle("light", next === "light");
+    paintTheme();
+  });
+  window.addEventListener("themechange", paintTheme);
+  paintTheme();
+
+  /* Initial route */
+  const hash = location.hash.slice(1);
+  const studyIdx = set.findIndex((s) => s.slug === hash);
+  if (studyIdx >= 0) {
+    setView("controls", true);
+    open(studyIdx);
+  } else if (hash === "controls" || !P.dataItems.length) {
+    setView("controls", true);
+  } else {
+    setView("data", true);
+  }
+
+  window.PlainGallery = {
+    view: (v) => setView(v, false),
+    open: (slug) => { const i = set.findIndex((s) => s.slug === slug); if (i >= 0) open(i); },
+    close,
+  };
+})();
+</script>
+</body>
+</html>
