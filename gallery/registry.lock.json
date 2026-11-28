@@ -670,6 +670,10 @@
       "version": "2026.11.23",
       "hash": "a869de4bc32947b2"
     },
+    "flat-gradient-keys": {
+      "version": "2026.11.27",
+      "hash": "37652986201038a9"
+    },
     "flat-hold-confirm": {
       "version": "2026.11.23",
       "hash": "381c4f3c2090fac8"
@@ -797,6 +801,10 @@
     "goal-ring": {
       "version": "2026.11.23",
       "hash": "a869de4bc32947b2"
+    },
+    "gradient-keys": {
+      "version": "2026.11.27",
+      "hash": "37652986201038a9"
     },
     "growth": {
       "version": "2026.10.26",

@@ -3,7 +3,8 @@
  * in Flat's viewer run their demo by themselves, as the Flat studies do, until a hand arrives. This is the gallery's,
  * never a shipped part's: a component never moves on its own. A demo calls `useSelfRun` with one step and an interval;
  * nothing runs unless a `SelfRunProvider` says so (the Flat wall's tiles and Flat's viewer), and nothing runs under
- * reduced motion, while the demo is off screen or while the tab is hidden.
+ * reduced motion, while the demo is off screen or while the tab is hidden, nor while <html> carries data-hold-self-run
+ * (a page check reading the wall at rest).
  *
  * A hand is a pointer press, a key, a wheel or focus inside the demo. The first one stops the run for good: what the
  * hand finds is where the run left it, and from then on the demo is the hand's. While it runs, `running` is true, so a
@@ -20,6 +21,9 @@ export function SelfRunProvider({ on, children }: { on: boolean; children: React
 }
 
 const HANDS = ["pointerdown", "keydown", "wheel", "focusin"] as const;
+
+/** On <html>, holds every self-run where it is: a page check that reads the wall at rest sets it (a11y.mjs). */
+const HOLD = "data-hold-self-run";
 
 /**
  * Runs `step` every `every` ms (the first after `first`), with the count of steps taken so far, until a hand arrives.
@@ -46,7 +50,7 @@ export function useSelfRun<T extends HTMLElement = HTMLDivElement>(
     let visible = false;
     let timer = 0;
     const tick = () => {
-      if (visible && !document.hidden) latest.current(count.current++);
+      if (visible && !document.hidden && !document.documentElement.hasAttribute(HOLD)) latest.current(count.current++);
       timer = window.setTimeout(tick, every);
     };
     const io = new IntersectionObserver(([entry]) => (visible = entry.isIntersecting));

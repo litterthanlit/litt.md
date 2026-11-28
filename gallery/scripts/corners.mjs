@@ -128,10 +128,13 @@ function measure(within) {
     return [side[0] && side[3], side[0] && side[1], side[2] && side[1], side[2] && side[3]];
   };
   /* The four radii as drawn: a percentage resolves against the box, and all four scale down together when a side's
-     two radii add up to more than it (CSS Backgrounds 3, "corner overlap"). Elliptical radii count by their first. */
+     two radii add up to more than it (CSS Backgrounds 3, "corner overlap"). Elliptical radii count by their first.
+     A computed length ignores CSS zoom while the box measures it (the player shows Index's part zoomed), so a length
+     is scaled by the element's effective zoom to compare with the box. */
   const radii = (el, r) => {
     const s = getComputedStyle(el);
-    const one = (v, side) => (v.trim().endsWith("%") ? (parseFloat(v) / 100) * side : parseFloat(v) || 0);
+    const zoom = el.currentCSSZoom ?? 1;
+    const one = (v, side) => (v.trim().endsWith("%") ? (parseFloat(v) / 100) * side : (parseFloat(v) || 0) * zoom);
     const [tl, tr, br, bl] = ["TopLeft", "TopRight", "BottomRight", "BottomLeft"].map((k) => one(s[`border${k}Radius`].split(" ")[0], Math.min(r.width, r.height)));
     const f = Math.min(1, r.width / (tl + tr || 1), r.width / (bl + br || 1), r.height / (tl + bl || 1), r.height / (tr + br || 1));
     return [tl * f, tr * f, br * f, bl * f];

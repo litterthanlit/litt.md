@@ -917,6 +917,11 @@ const COPY = {
     description: "An agent's run on one Flat paper: the task and its state in words, the time live as a 44px figure, what it is doing now, three phase pills and only the actions that apply (Run, Stop, Allow, Try again). A Flat part.",
     docs: "Needs data-material=\"flat\" on <html>. Controlled: pass state, step and tokens, and handle onRun, onStop and onAllow. Escape stops a live run.",
   },
+  "gradient-keys": {
+    title: "Gradient keys",
+    description: "A cover picker on white Flat paper: one live long exposure of streaks in the chosen cover's five colour stops, its name as the figure, and a swatch circle per cover. Nothing moves until a hand does; a new cover runs out along the streaks. A Flat part.",
+    docs: "Needs data-material=\"flat\" on <html> and WebGL (it falls back to a still gradient). Pass covers ({ id, name, line?, stops: five colours dark to light, seed? }) and value with onValueChange, or defaultValue.",
+  },
   ticker: {
     title: "Ticker",
     description: "Notifications on one white Flat pill that types each message as it arrives, with the count and two grey circles to step through the queue; a long message slides with its caret and glides back. Warnings and alerts lead with words. A Flat part.",
