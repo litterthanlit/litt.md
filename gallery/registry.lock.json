@@ -598,6 +598,10 @@
       "version": "2026.11.15",
       "hash": "8615d3ab119d5ef0"
     },
+    "dither-card": {
+      "version": "2026.11.27",
+      "hash": "f8b9a7995f890503"
+    },
     "dot-plot": {
       "version": "2026.11.18",
       "hash": "5348914944485c67"
@@ -661,6 +665,10 @@
     "flat-dialog": {
       "version": "2026.11.16",
       "hash": "8615d3ab119d5ef0"
+    },
+    "flat-dither-card": {
+      "version": "2026.11.27",
+      "hash": "f8b9a7995f890503"
     },
     "flat-glide": {
       "version": "2026.11.17",

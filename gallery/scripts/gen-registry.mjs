@@ -917,6 +917,11 @@ const COPY = {
     description: "An agent's run on one Flat paper: the task and its state in words, the time live as a 44px figure, what it is doing now, three phase pills and only the actions that apply (Run, Stop, Allow, Try again). A Flat part.",
     docs: "Needs data-material=\"flat\" on <html>. Controlled: pass state, step and tokens, and handle onRun, onStop and onAllow. Escape stops a live run.",
   },
+  "dither-card": {
+    title: "Dither cards",
+    description: "A row of project cards on Flat's grey ground, each a white paper with a creature (a butterfly, a jellyfish, a bloom) in three-tone ordered dither drawn in the ink. Nothing moves on its own: the card under the hand lifts and its picture quickens, a press rings out. A Flat part.",
+    docs: "Needs data-material=\"flat\" on <html> and WebGL (without it the picture is the paper). Pass projects ({ id, title, line, year?, href, creature }) and, to feature one, active.",
+  },
   "gradient-keys": {
     title: "Gradient keys",
     description: "A cover picker on white Flat paper: one live long exposure of streaks in the chosen cover's five colour stops, its name as the figure, and a swatch circle per cover. Nothing moves until a hand does; a new cover runs out along the streaks. A Flat part.",
