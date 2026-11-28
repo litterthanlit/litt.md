@@ -799,8 +799,8 @@ const COPY = {
   },
   "tape-progress": {
     title: "Tape progress",
-    description: "Progress as two tape reels: the supply empties and the take-up fills, each turning at the speed the tape's constant pace gives its radius, with the value said in words. A Device part.",
-    docs: "Needs data-material=\"device\" on <html>. The same props as Progress (label, value, max, status). Under reduced motion the reels jump to the value.",
+    description: "Progress that eases in on a critically damped spring. Under Device, two tape reels: the supply empties and the take-up fills, each turning at the speed the tape's constant pace gives its radius. Under Flat, a large percentage over a fat ink pill on white paper. A Device and Flat part.",
+    docs: "Needs data-material=\"device\" or \"flat\" on <html>. The same props as Progress (label, value, max, status), with message and an optional action at the foot. Under reduced motion it jumps to the value.",
   },
   "seven-segment": {
     title: "Seven-segment readout",

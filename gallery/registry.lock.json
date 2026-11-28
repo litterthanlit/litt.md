@@ -555,8 +555,8 @@
       "hash": "ac25932f48a3664c"
     },
     "device-tape-progress": {
-      "version": "2026.11.17",
-      "hash": "035bcb9334f209c8"
+      "version": "2026.11.27",
+      "hash": "e605c2e7d43901ab"
     },
     "device-thinking": {
       "version": "2026.11.18",
@@ -777,6 +777,10 @@
     "flat-tabs": {
       "version": "2026.11.16",
       "hash": "ccb00afcbf2dec4b"
+    },
+    "flat-tape-progress": {
+      "version": "2026.11.27",
+      "hash": "4708953b7af46d4e"
     },
     "flat-ticker": {
       "version": "2026.11.27",
@@ -2683,8 +2687,8 @@
       "hash": "1e9183b7d271bf08"
     },
     "tape-progress": {
-      "version": "2026.11.17",
-      "hash": "035bcb9334f209c8"
+      "version": "2026.11.27",
+      "hash": "4b7db33b1dd495f2"
     },
     "team": {
       "version": "2026.11.03",
