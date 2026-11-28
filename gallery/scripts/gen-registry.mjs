@@ -917,6 +917,11 @@ const COPY = {
     description: "An agent's run on one Flat paper: the task and its state in words, the time live as a 44px figure, what it is doing now, three phase pills and only the actions that apply (Run, Stop, Allow, Try again). A Flat part.",
     docs: "Needs data-material=\"flat\" on <html>. Controlled: pass state, step and tokens, and handle onRun, onStop and onAllow. Escape stops a live run.",
   },
+  knob: {
+    title: "Knob",
+    description: "A detented control as a pill slider on white Flat paper, for a value a preset recalls: its name and value over a grey track with an ink fill and a paper thumb, on a linear or log taper, bipolar for a gain. A recalled value glides into place; the hand's lands at once. A Flat part.",
+    docs: "Needs data-material=\"flat\" on <html>. Pass label, min, max, detents, taper?, bipolar?, format? and value with onValueChange; onSettle says a glided value has landed.",
+  },
   fader: {
     title: "Fader",
     description: "A mixer channel's level as a fat vertical pill on white Flat paper: the ink fill is the level, the level in decibels above it, the name under it. Outside values glide on a motor while the hand's land at once; 0 dB catches the hand. A Flat part.",

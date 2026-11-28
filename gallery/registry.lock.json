@@ -706,6 +706,10 @@
       "version": "2026.11.18",
       "hash": "17d1840b1643cf07"
     },
+    "flat-knob": {
+      "version": "2026.11.27",
+      "hash": "897459e2fb741de9"
+    },
     "flat-kudos": {
       "version": "2026.11.23",
       "hash": "6131170027b856a8"
@@ -1257,6 +1261,10 @@
     "kbd": {
       "version": "2026.11.18",
       "hash": "17d1840b1643cf07"
+    },
+    "knob": {
+      "version": "2026.11.27",
+      "hash": "897459e2fb741de9"
     },
     "kudos": {
       "version": "2026.11.23",
