@@ -917,6 +917,11 @@ const COPY = {
     description: "An agent's run on one Flat paper: the task and its state in words, the time live as a 44px figure, what it is doing now, three phase pills and only the actions that apply (Run, Stop, Allow, Try again). A Flat part.",
     docs: "Needs data-material=\"flat\" on <html>. Controlled: pass state, step and tokens, and handle onRun, onStop and onAllow. Escape stops a live run.",
   },
+  "vu-meter": {
+    title: "VU meter",
+    description: "A level meter for a mic check on white Flat paper: the level as the large figure, its meaning in words, and a pill bar per channel with a peak mark that holds and falls, on the VU standard's ballistics. A Flat part.",
+    docs: "Needs data-material=\"flat\" on <html>. Feed levels (linear amplitude per channel, 1 reads 0 dB) as often as you measure; the meter does the ballistics. Under reduced motion it shows each level at once.",
+  },
   knob: {
     title: "Knob",
     description: "A detented control as a pill slider on white Flat paper, for a value a preset recalls: its name and value over a grey track with an ink fill and a paper thumb, on a linear or log taper, bipolar for a gain. A recalled value glides into place; the hand's lands at once. A Flat part.",

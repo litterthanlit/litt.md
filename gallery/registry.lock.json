@@ -798,6 +798,10 @@
       "version": "2026.11.16",
       "hash": "e4b624627724b189"
     },
+    "flat-vu-meter": {
+      "version": "2026.11.27",
+      "hash": "f616f1917dfd22b7"
+    },
     "flat-working-loader": {
       "version": "2026.11.23",
       "hash": "113775c8707d1e76"
@@ -2745,6 +2749,10 @@
     "usage": {
       "version": "2026.10.26",
       "hash": "bda1d7576a9c59e5"
+    },
+    "vu-meter": {
+      "version": "2026.11.27",
+      "hash": "f616f1917dfd22b7"
     },
     "working-loader": {
       "version": "2026.11.23",
