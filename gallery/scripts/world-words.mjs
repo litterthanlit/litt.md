@@ -259,8 +259,8 @@ async function checkPage(id) {
   const pg = await ctx.newPage();
   try {
     await pg.goto(`http://localhost:${port}/index.html#${id}`, { waitUntil: "domcontentloaded" });
-    /* The player has no h1 in main: it opens on Home, inside its screen. */
-    await pg.waitForSelector(id === world ? 'main [data-play-take="home"]' : "main h1", { timeout: 15_000 });
+    /* The player has no h1 in main: it opens on Home, inside its screen. Flat's address draws the studies, with an h1. */
+    await pg.waitForSelector(id === world ? 'main [data-play-take="home"], main h1' : "main h1", { timeout: 15_000 });
     await pg.waitForLoadState("networkidle");
     await pg.evaluate(() => document.fonts.ready);
     await pg.waitForTimeout(300);
