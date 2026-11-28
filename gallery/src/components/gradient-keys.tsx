@@ -311,7 +311,7 @@ export function GradientKeys({ covers, value, defaultValue, onValueChange, label
 
   return (
     <div className={"w-full max-w-xl min-w-0 " + className}>
-      <div className="litt-paper grid gap-3.5 rounded-surface bg-surface-1 p-3 text-fg select-none forced-colors:border">
+      <div className="litt-paper grid grid-cols-1 gap-3.5 rounded-surface bg-surface-1 p-3 text-fg select-none forced-colors:border">
         <div
           ref={box}
           role="img"
@@ -333,10 +333,10 @@ export function GradientKeys({ covers, value, defaultValue, onValueChange, label
             transition={settle}
             className="min-w-0"
           >
-            <p className="text-figure leading-none">{cover.name}</p>
+            <p className="truncate text-figure leading-none">{cover.name}</p>
             {cover.line && <p className="mt-1 truncate text-small text-fg-muted">{cover.line}</p>}
           </motion.div>
-          <div role="radiogroup" aria-label={label} className="flex shrink-0 items-center gap-1">
+          <div role="radiogroup" aria-label={label} className="flex shrink-0 items-center gap-0.5 sm:gap-1">
             {covers.map((c, i) => {
               const on = i === at;
               return (
@@ -352,7 +352,7 @@ export function GradientKeys({ covers, value, defaultValue, onValueChange, label
                   tabIndex={on ? 0 : -1}
                   onClick={() => pick(i, true)}
                   onKeyDown={(e) => onKey(e, i)}
-                  className="litt-target relative grid size-11 cursor-pointer place-items-center rounded-pill focus-visible:outline-2 focus-visible:outline-offset-0 focus-visible:outline-focus [-webkit-tap-highlight-color:transparent]"
+                  className="litt-target relative grid size-9 cursor-pointer place-items-center rounded-pill sm:size-11 focus-visible:outline-2 focus-visible:outline-offset-0 focus-visible:outline-focus [-webkit-tap-highlight-color:transparent]"
                 >
                   <motion.span
                     aria-hidden="true"
@@ -360,9 +360,9 @@ export function GradientKeys({ covers, value, defaultValue, onValueChange, label
                     animate={{ scale: on ? 1 : 0.7 }}
                     transition={grow}
                     style={{ background: `linear-gradient(135deg, ${c.stops[0]}, ${c.stops[2]} 55%, ${c.stops[4]})`, color: ticks[i] }}
-                    className="grid size-10 place-items-center rounded-pill forced-colors:border"
+                    className="grid size-8 place-items-center rounded-pill forced-colors:border sm:size-10"
                   >
-                    <svg viewBox="0 0 20 20" aria-hidden="true" className={"size-5 transition-opacity duration-(--dur-instant) ease-litt " + (on ? "opacity-100" : "opacity-0")}>
+                    <svg viewBox="0 0 20 20" aria-hidden="true" className={"size-4 transition-opacity sm:size-5 duration-(--dur-instant) ease-litt " + (on ? "opacity-100" : "opacity-0")}>
                       <path d="M5.5 10.5l3 3 6-7" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </motion.span>
