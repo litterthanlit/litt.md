@@ -7,6 +7,7 @@ export const meta: PageMeta = {
   lede: "One value against a range.",
   order: 10.07,
   group: "Charts",
+  worlds: ["press", "device", "plain", "rack", "heat"],
   summary:
     "One value against a range, drawn as a semicircle of fine ticks with the figure in the opening. The ticks up to the value take the foreground or one data hue, and the last one is longer to mark the value. It is static, like the meter.",
   summaryByWorld: {

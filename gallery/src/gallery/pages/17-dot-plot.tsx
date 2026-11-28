@@ -9,6 +9,7 @@ export const meta: PageMeta = {
   lede: "Where most values fall, in stacks of dots.",
   order: 10.08,
   group: "Charts",
+  worlds: ["press", "device", "plain", "rack", "heat"],
   verbs: ["hover"],
   summary:
     "A distribution drawn as stacks of dots, mirrored about a center line, so you see where most values fall. With a goal, dots inside it take a data hue and the rest stay gray. The median is a line, an outlier can be named, and the legend gives the shares in numbers.",

@@ -8,6 +8,7 @@ export const meta: PageMeta = {
   lede: "Drop files in, or choose them, and watch them go up.",
   order: 2.05,
   group: "Inputs",
+  worlds: ["press", "device", "plain", "rack", "heat"],
   verbs: ["drag", "press"],
   summary:
     "An area to drop files on or choose them from. It holds the words and a Choose files button. While files are over it the area changes and the words say what a drop will do. It turns away files of the wrong type or size and says which and why, and the list below shows each file uploading, with Retry for one that failed.",

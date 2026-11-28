@@ -8,6 +8,7 @@ export const meta: PageMeta = {
   lede: "A run's output, as it arrives.",
   order: 9.07,
   group: "Data",
+  worlds: ["press", "device", "plain", "rack", "heat"],
   verbs: ["watch"],
   summary:
     "The lines a build or a deploy writes as it runs, on the code block's quiet surface: numbered, timed, with warnings and errors marked in their status color and in words. It follows the newest line while you are at the bottom; scroll up to read and it stays put, with a button that says how many lines came since. Nothing moves on its own.",

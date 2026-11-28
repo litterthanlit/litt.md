@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { ASSISTANT_PHASES, AssistantStatus, PHASE_WORDS, type AssistantPhase } from "@/components/assistant-status";
 import { useMotionDial } from "@/motion";
 import { Page, Stage, TryIt, useReplay, type PageDocs, type PageMeta } from "../kit";
+import { useSelfRun } from "../self-run";
 
 export const meta: PageMeta = {
   id: "assistant-status",
@@ -130,6 +131,18 @@ function PhasesDemo({ play = 0 }: { play?: number }) {
   );
 }
 
+/** On Flat's wall the phases follow one another by themselves, each glyph moving, until a hand arrives. */
+function PhasesTile() {
+  const [at, setAt] = useState(1);
+  const run = useSelfRun((n) => setAt((n + 2) % ASSISTANT_PHASES.length), { every: TURN, first: TURN });
+  const phase = ASSISTANT_PHASES[at];
+  return (
+    <div ref={run.ref} className="grid w-full justify-items-center">
+      <AssistantStatus phase={phase} detail={DETAILS[phase]} paused={!run.running} />
+    </div>
+  );
+}
+
 function WordsDemo() {
   return (
     <div className="grid justify-items-center gap-3">
@@ -143,7 +156,7 @@ function WordsDemo() {
 export default function AssistantStatusPage() {
   const [play, replay] = useReplay();
   return (
-    <Page meta={meta} docs={docs} tile={<AssistantStatus phase="searching" detail="12 sources" paused />}>
+    <Page meta={meta} docs={docs} tile={<PhasesTile />}>
       <Stage
         title="Six phases"
         tier="expressive"

@@ -91,12 +91,6 @@ const KNOWN = [
     what: /spans <div\.@container\.rounded-\[min\(var\(--radius-control\)/,
     why: "under Device a condition row keeps the control radius while the Select and the Input inside it are Device's readout and glass in a well at its em radius (plans/024, phase 2), so the readout is rounder than the row it fills; fixing it means a Device body for the rule builder's row",
   },
-  {
-    page: "rule-builder",
-    radius: 6,
-    what: /in the corner of <div\.@container\.rounded-\[min\(var\(--radius-control\)/,
-    why: "at 6px a condition row keeps the control radius and so do the fields 4px inside it, 2px rounder than concentric (at litt's own 4px their corners start where the row's curve ends); fixing it means rows take the surface radius, 8px at the default, which is a taste call",
-  },
 ];
 /* A known break is the part's, in whichever world it shows (an address is #<world>/<part>). */
 const knownFor = (f) => KNOWN.find((k) => k.page === f.id.split("/").pop() && k.radius === f.radius && k.what.test(f.what));
@@ -134,10 +128,13 @@ function measure(within) {
     return [side[0] && side[3], side[0] && side[1], side[2] && side[1], side[2] && side[3]];
   };
   /* The four radii as drawn: a percentage resolves against the box, and all four scale down together when a side's
-     two radii add up to more than it (CSS Backgrounds 3, "corner overlap"). Elliptical radii count by their first. */
+     two radii add up to more than it (CSS Backgrounds 3, "corner overlap"). Elliptical radii count by their first.
+     A computed length ignores CSS zoom while the box measures it (the player shows Index's part zoomed), so a length
+     is scaled by the element's effective zoom to compare with the box. */
   const radii = (el, r) => {
     const s = getComputedStyle(el);
-    const one = (v, side) => (v.trim().endsWith("%") ? (parseFloat(v) / 100) * side : parseFloat(v) || 0);
+    const zoom = el.currentCSSZoom ?? 1;
+    const one = (v, side) => (v.trim().endsWith("%") ? (parseFloat(v) / 100) * side : (parseFloat(v) || 0) * zoom);
     const [tl, tr, br, bl] = ["TopLeft", "TopRight", "BottomRight", "BottomLeft"].map((k) => one(s[`border${k}Radius`].split(" ")[0], Math.min(r.width, r.height)));
     const f = Math.min(1, r.width / (tl + tr || 1), r.width / (bl + br || 1), r.height / (tl + bl || 1), r.height / (tr + br || 1));
     return [tl * f, tr * f, br * f, bl * f];

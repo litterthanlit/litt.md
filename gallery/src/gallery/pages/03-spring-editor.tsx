@@ -12,6 +12,7 @@ export const meta: PageMeta = {
   lede: "A spring shaped by hand, as time and bounce.",
   order: 4.02,
   group: "Tools",
+  worlds: ["press", "device", "plain", "rack", "heat"],
   verbs: ["drag"],
   summary:
     "A spring shaped by hand, as time and bounce: Motion's visualDuration and bounce, Framer's Time and Bounce. It is the Pad with the spring's curve drawn on its floor: drag the handle right for a slower spring and up for more bounce, and the curve follows at once. Under it the spring is said in words, and a dot crosses a rail on the spring you drew when you let go. Pass a tier and litt's limits for it wash the floor beyond them, with a Fits or Change row per rule.",

@@ -11,6 +11,7 @@ export const meta: PageMeta = {
   lede: "One option of a product, such as its size or its frame.",
   order: 12.02,
   group: "Commerce",
+  worlds: ["press", "device", "plain", "rack", "heat"],
   verbs: ["select"],
   summary:
     "One option of a product as native radios with a visible legend that names the pick. Words, colors and images each get their own small control, and the pick shows it in more than color. A value that is sold out stays pickable, steps back and says so in words.",

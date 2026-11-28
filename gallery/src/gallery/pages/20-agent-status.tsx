@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AgentStatus, type AgentRunState, type AgentStep } from "@/components/agent-status";
 import { Page, Stage, TryIt, type PageDocs, type PageMeta } from "../kit";
+import { useSelfRun } from "../self-run";
 
 export const meta: PageMeta = {
   id: "agent-status",
@@ -163,10 +164,19 @@ function SendDemo() {
   return <AgentStatus {...run} />;
 }
 
-/* The tile: a call waiting on your OK, still until a hand answers it. */
+/* The tile: a call waiting on your OK. On Flat's wall it answers itself and runs the tidy-up again, until a hand arrives. */
 function WaitingTile() {
   const run = useScriptedRun(TIDY, { at: 5, tokens: 412, elapsed: 4.4 });
-  return <AgentStatus {...run} />;
+  const latest = { state: run.state, onAllow: run.onAllow, onRun: run.onRun };
+  const self = useSelfRun(() => {
+    if (latest.state === "waiting") latest.onAllow();
+    else if (latest.state === "done" || latest.state === "ready" || latest.state === "stopped") latest.onRun();
+  }, { every: 2600, first: 1400 });
+  return (
+    <div ref={self.ref} className="grid w-full justify-items-center">
+      <AgentStatus {...run} />
+    </div>
+  );
 }
 
 export default function AgentStatusPage() {

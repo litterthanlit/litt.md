@@ -17,6 +17,7 @@ export const meta: PageMeta = {
   lede: "The store parts on a Shopify store.",
   order: 12.05,
   group: "Commerce",
+  worlds: ["press", "device", "plain", "rack", "heat"],
   verbs: ["press", "select", "open"],
   summary:
     "A small Storefront API client pinned to one version, functions that fetch products and collections as litt's Product, and a cart kept in Shopify with the same shape as the cart in memory. It draws nothing: the parts it feeds keep their own looks and motion.",

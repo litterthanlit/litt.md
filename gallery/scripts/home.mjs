@@ -147,14 +147,14 @@ for (const [look, want] of [["press", 1], ["flat", 0]]) {
   await pg.keyboard.press("Control+k");
   await pg.getByRole("dialog").waitFor();
   check((await dialogs(pg)) === 1, "Ctrl+K opens one search menu");
-  await pg.keyboard.type("slider");
+  await pg.keyboard.type("switch");
   await pg.keyboard.press("Enter");
-  await pg.waitForFunction(() => location.hash === "#flat/slider");
-  check(true, "typing slider and Enter opens the Slider page, in the gallery's world (#flat/slider)");
+  await pg.waitForFunction(() => location.hash === "#flat/switch");
+  check(true, "typing switch and Enter opens the Switch page, in the gallery's world (#flat/switch)");
   await pg.getByRole("dialog").waitFor({ state: "detached" });
   check((await dialogs(pg)) === 0, "the menu closes when a page is picked");
 
-  /* Slider's page is in Flat's world, which has no gallery search: back to the overview for the header's. */
+  /* Switch's page is in Flat's world, which has no gallery search: back to the overview for the header's. */
   await pg.goto(`http://localhost:${port}/index.html#overview`, { waitUntil: "networkidle" });
   await pg.getByRole("button", { name: "Search" }).first().click();
   await pg.getByRole("dialog").waitFor();

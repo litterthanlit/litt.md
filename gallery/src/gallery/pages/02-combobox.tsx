@@ -11,6 +11,7 @@ export const meta: PageMeta = {
   lede: "Type to find one value, or several, in a long list.",
   order: 2.07,
   group: "Inputs",
+  worlds: ["press", "device", "plain", "rack", "heat"],
   verbs: ["type", "select"],
   summary:
     "Type to find one value, or several, in a long list. The Input's field with the Menu's list under it: the list opens from the field as you type, filters at once with the first match lit, and keeps one highlight that follows the keys. Several picks stand in the field as tokens you can take out again.",

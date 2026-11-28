@@ -27,6 +27,7 @@ export const meta: PageMeta = {
   lede: "Rows and columns, with real table semantics.",
   ledeByWorld: { heat: "Rows and columns on a slab, under a striped header band." },
   order: 9.01, group: "Data",
+  worlds: ["press", "device", "plain", "rack", "heat"],
   verbs: ["press"],
   summary:
     "Real table semantics with hairline rows, tabular figures and a sticky header. Its rows can arrive in one staggered cascade, this page's single expressive moment; sorting, filtering and inserting stay responsive, and hover never moves anything. A virtual body draws only the rows in view, so ten thousand rows scroll as lightly as forty, loads the next page from a server as you near the end, and rows can be selected with a box, Shift for a range. Filters can live in the page address, so a filtered view can be bookmarked or shared.",

@@ -3,6 +3,7 @@ import { Button } from "@/components/button";
 import { CodeInput } from "@/components/code-input";
 import { useMotionDial } from "@/motion";
 import { Page, Stage, TryIt, type PageDocs, type PageMeta, type PageStudy } from "../kit";
+import { useSelfRun } from "../self-run";
 
 export const meta: PageMeta = {
   id: "code-input",
@@ -218,25 +219,49 @@ function PairingStatesDemo() {
 
 /* ---------- Flat's own (plans/024, phase 3): a reader confirms their email ---------- */
 
+/**
+ * On Flat's wall the code types itself, a digit a beat, is checked and lands, then clears for the next reader, until a
+ * hand arrives: one round is SUBSCRIBE_ROUND beats.
+ */
+const SUBSCRIBE_ROUND = 22;
+
 function ConfirmSubscribeDemo() {
   const [round, setRound] = useState(0);
+  const [code, setCode] = useState("");
   const [result, setResult] = useState<"idle" | "checking" | "wrong" | "right">("idle");
+  const check = (next: string) => {
+    setResult("checking");
+    window.setTimeout(() => setResult(next === RIGHT ? "right" : "wrong"), 500);
+  };
+  const run = useSelfRun(
+    (n) => {
+      const beat = n % SUBSCRIBE_ROUND;
+      if (beat < RIGHT.length) setCode(RIGHT.slice(0, beat + 1));
+      if (beat === RIGHT.length - 1) check(RIGHT);
+      if (beat === SUBSCRIBE_ROUND - 1) {
+        setCode("");
+        setResult("idle");
+      }
+    },
+    { every: 280, first: 800 },
+  );
   return (
-    <div className="grid w-full max-w-sm gap-6">
+    <div ref={run.ref} className="grid w-full max-w-sm gap-6">
       <CodeInput
         key={round}
         size="lg"
         label="Your code"
         help={`We sent six digits to mara@example.com, so we know it is you. Try ${RIGHT}.`}
         error={result === "wrong" ? "That code is not right. Check it, or send a new one." : undefined}
-        onValueChange={() => result === "wrong" && setResult("idle")}
-        onComplete={(code) => {
-          setResult("checking");
-          window.setTimeout(() => setResult(code === RIGHT ? "right" : "wrong"), 500);
+        value={code}
+        onValueChange={(next) => {
+          setCode(next);
+          if (result === "wrong") setResult("idle");
         }}
+        onComplete={check}
       />
       <div className="flex items-center justify-between gap-4">
-        <p role="status" className="min-h-5 text-small text-fg-subtle">
+        <p role={run.running ? undefined : "status"} className="min-h-5 text-small text-fg-subtle">
           {result === "checking" ? "Checking the code…" : result === "right" ? "You are subscribed. Issue 14 comes Friday." : ""}
         </p>
         <Button
@@ -244,6 +269,7 @@ function ConfirmSubscribeDemo() {
           variant="ghost"
           onClick={() => {
             setRound((r) => r + 1);
+            setCode("");
             setResult("idle");
           }}
         >

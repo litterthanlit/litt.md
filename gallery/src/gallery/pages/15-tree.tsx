@@ -8,6 +8,7 @@ export const meta: PageMeta = {
   lede: "Things inside things, a level at a time.",
   order: 6.05,
   group: "Navigation",
+  worlds: ["press", "device", "plain", "rack", "heat"],
   verbs: ["select", "press"],
   summary:
     "Things inside things, opened a level at a time: a project's files, a docs site's pages. Rows of 32px indented 16px a level, with a hairline guide down each level, and the selected row in the selected segment's look. The chevron turns on the responsive tier and the children appear in place, with nothing growing. It has the keys of a file tree.",

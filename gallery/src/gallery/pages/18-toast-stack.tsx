@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { ToastStack, type StackNotice } from "@/components/toast-stack";
 import { Page, Stage, TryIt, type PageDocs, type PageMeta } from "../kit";
+import { useSelfRun } from "../self-run";
 
 export const meta: PageMeta = {
   id: "toast-stack",
@@ -53,9 +55,20 @@ function OneNoticeDemo() {
   return <ToastStack defaultNotices={ONE_NOTICE} />;
 }
 
+/** On Flat's wall a new notice arrives every few seconds and tucks the others behind it, until a hand arrives. */
+function NoticesTile() {
+  const [arrive, setArrive] = useState(0);
+  const run = useSelfRun((n) => setArrive(n + 1), { every: 2600, first: 1200 });
+  return (
+    <div ref={run.ref} className="grid w-full justify-items-center">
+      <ToastStack arrive={arrive} />
+    </div>
+  );
+}
+
 export default function ToastStackPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<ToastStack />}>
+    <Page meta={meta} docs={docs} tile={<NoticesTile />}>
       <Stage
         title="Site notices"
         tier="expressive"

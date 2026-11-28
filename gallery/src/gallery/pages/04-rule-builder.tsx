@@ -9,6 +9,7 @@ export const meta: PageMeta = {
   lede: "When this, and that, or any of these: rules built from rows.",
   order: 4.05,
   group: "Tools",
+  worlds: ["press", "device", "plain", "rack", "heat"],
   verbs: ["drag", "select", "type", "press"],
   summary:
     "A rule as rows of field, operator and value, joined by one And or Or per group, with a group inside the rule. Take a row by its handle and it lifts out of the rule and follows your hand one to one, while the rows it passes make room on the responsive spring; let go and it settles into its place, and only then does the rule change, once. Space picks a row up for the arrow keys.",

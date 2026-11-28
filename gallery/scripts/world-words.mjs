@@ -128,14 +128,12 @@ const NAME =
 const TUNE = "the demo names litt's radius scale, whose last step is the pill";
 const k = (page, words, why) => ({ page, words, why });
 const KNOWN = [
-  ...["flat", "rack", "heat", "plain"].flatMap((w) => [
+  ...["rack", "heat", "plain"].flatMap((w) => [
     k(`${w}/header`, ["glass"], NAME),
     k(`${w}/breadcrumb`, ["glass"], NAME),
     k(`${w}/components`, ["glass"], NAME + "; the gallery view lists it by name" + (w === "rack" ? ", and the clip launcher's preset Glass Pad is a name in Rack's demo (rack-fixes.md, step 8)" : "")),
   ]),
   ...["device", "rack", "heat"].map((w) => k(`${w}/tune`, ["pill"], TUNE)),
-  /* Flat's hardware words (taste v1.22): these parts are being redrawn after the studies, and their words with them. */
-  k("flat/time-scrubber", ["needle"], "every world draws the scrubber's fixed needle (it has no Flat body), so the shared Accessibility line names it; it waits on a Flat body"),
   /* Plain's words are Nick's (litt-principles.md, Plain: nothing changes without asking): each page below waits on its
      row in the draft, plans/audits/plain-words.md, and names only the words that row replaces, so a new word on a Plain
      page, or another world named on one the draft does not cover, fails. When a row lands, its entry goes. */
@@ -261,8 +259,8 @@ async function checkPage(id) {
   const pg = await ctx.newPage();
   try {
     await pg.goto(`http://localhost:${port}/index.html#${id}`, { waitUntil: "domcontentloaded" });
-    /* The player has no h1 in main: it opens on Home, inside its screen. */
-    await pg.waitForSelector(id === world ? 'main [data-play-take="home"]' : "main h1", { timeout: 15_000 });
+    /* The player has no h1 in main: it opens on Home, inside its screen. Flat's address draws the studies, with an h1. */
+    await pg.waitForSelector(id === world ? 'main [data-play-take="home"], main h1' : "main h1", { timeout: 15_000 });
     await pg.waitForLoadState("networkidle");
     await pg.evaluate(() => document.fonts.ready);
     await pg.waitForTimeout(300);

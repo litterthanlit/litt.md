@@ -19,6 +19,7 @@ import { MoonIcon, SunIcon } from "@/components/icons";
 import { useCustomize, useDark } from "./customize-state";
 import { materialOf, type Material } from "./look";
 import { PlayObject } from "./play-object/contract";
+import { FlatStudiesHome } from "./studies-wall";
 import { inWorld, pages } from "./registry";
 import { hasNavigated, isPlayerRoute, useRoute, worldTitle } from "./route";
 import { WorldContext } from "./kit";
@@ -36,7 +37,7 @@ const LINK =
 /** A world's pages of the gallery's own beside about and components: Device's voices (plans/021). No page id may be one. */
 const OWN_PAGES: Partial<Record<Material, string[]>> = { device: ["sound"] };
 
-type Here = "player" | "components" | "about" | "own" | "page";
+type Here = "player" | "studies" | "components" | "about" | "own" | "page";
 
 /** Home, the world's name (which leads back to its player), its gallery view and its About page. */
 function Lead({ material, here }: { material: Material; here: Here }) {
@@ -49,7 +50,7 @@ function Lead({ material, here }: { material: Material; here: Here }) {
       <span aria-hidden="true" className="text-small text-fg-subtle">
         /
       </span>
-      <a href={`#${material}`} aria-current={here === "player" ? "page" : undefined} className={LINK}>
+      <a href={`#${material}`} aria-current={here === "player" || here === "studies" ? "page" : undefined} className={LINK}>
         {world.name}
       </a>
       <a href={`#${material}/components`} aria-current={here === "components" ? "page" : undefined} className={LINK}>
@@ -105,8 +106,10 @@ export function WorldSite({ material }: { material: Material }) {
   const own = !!sub && !!OWN_PAGES[material]?.includes(sub);
   /* #<world>/take/<id> is the player on that take (route.ts, takeOfRoute): the player reads it from the address. */
   const player = isPlayerRoute(route, material);
+  /* Flat's home is the Flat studies' wall, and its player is hidden for now (Nick, 2026-11-28). */
+  const studies = player && material === "flat";
   const page = sub && !player && sub !== "about" && sub !== "components" && !own ? pages.find((p) => p.id === sub && p.group && p.group !== "Worlds" && !p.world && inWorld(p, material)) : undefined;
-  const here: Here = player ? "player" : sub === "about" ? "about" : sub === "components" ? "components" : own ? "own" : "page";
+  const here: Here = studies ? "studies" : player ? "player" : sub === "about" ? "about" : sub === "components" ? "components" : own ? "own" : "page";
   const main = useFocusOnArrival(route);
   const world = materialOf(material);
   const [muted, setMuted] = useMuted();
@@ -114,7 +117,7 @@ export function WorldSite({ material }: { material: Material }) {
   useMuteKey(muted, setMuted, sounds);
 
   /* Every address names itself in the tab. The player names itself after its take (contract.tsx), so it is left out. */
-  const named = here === "about" ? "About" : here === "components" ? "Components" : here === "own" ? sub.charAt(0).toUpperCase() + sub.slice(1) : page ? page.title : `Not in ${world.name}`;
+  const named = studies ? "Studies" : here === "about" ? "About" : here === "components" ? "Components" : here === "own" ? sub.charAt(0).toUpperCase() + sub.slice(1) : page ? page.title : `Not in ${world.name}`;
   useEffect(() => {
     if (here !== "player") document.title = worldTitle(named, world.name);
   }, [here, named, world.name]);
@@ -131,6 +134,7 @@ export function WorldSite({ material }: { material: Material }) {
     );
   else if (here === "about") body = <World material={material} />;
   else if (here === "components") body = <WorldGallery material={material} />;
+  else if (studies) body = <FlatStudiesHome />;
   else if (here === "own") body = <SoundPage />;
   else if (page)
     body = (

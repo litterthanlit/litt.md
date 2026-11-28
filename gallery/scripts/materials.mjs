@@ -402,11 +402,9 @@ if (selfTest) {
       box.removeAttribute("data-part");
       box.classList.add("litt-raised");
     }],
-    ["a Device key's kind on Flat's player", "kind", () => {
-      document.querySelector('[data-play-object="flat"] [data-part="pill"]').setAttribute("data-part", "key");
-    }, FLAT],
-    ["an unmarked Play on Flat's player", "unmarked", () => {
-      document.querySelector('[data-play-object="flat"] button[aria-label="Play"]').removeAttribute("data-part");
+    /* Flat's address draws the studies wall (its player is hidden for now), so the break goes on a study's paper. */
+    ["a Device key's kind on Flat's studies", "kind", () => {
+      document.querySelector('main [data-part="paper"]').setAttribute("data-part", "key");
     }, FLAT],
     ["a rounded slab on Heat's player", "radius", () => {
       document.querySelector('[data-play-object="heat"] > :nth-child(2)').style.borderRadius = "12px";

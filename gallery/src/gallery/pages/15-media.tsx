@@ -11,6 +11,7 @@ export const meta: PageMeta = {
   lede: "One picture in a frame that keeps its shape.",
   order: 7.02,
   group: "Layout",
+  worlds: ["press", "device", "plain", "rack", "heat"],
   verbs: ["press"],
   summary:
     "One picture in a frame with a fixed shape, so the page never jumps when it arrives. While it loads the frame is still surface-2, then the image fades in on the instant tier; if it fails, the frame keeps its size and says so. A hairline lies over every image, and with onOpen the frame becomes a button that opens a Lightbox.",

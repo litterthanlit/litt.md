@@ -13,6 +13,7 @@ export const meta: PageMeta = {
   lede: "What someone is about to buy, in a sheet.",
   order: 12.04,
   group: "Commerce",
+  worlds: ["press", "device", "plain", "rack", "heat"],
   verbs: ["press", "type", "open"],
   summary:
     "The cart is a sheet from the right, a bottom sheet on a phone: lines with a quantity and Remove, and a summary pinned at its foot with the subtotal rolling and Check out as its one accent fill. Remove is undone from a toast. Add to cart shows Added with a check for two seconds while the header's count rolls; nothing flies to the cart.",

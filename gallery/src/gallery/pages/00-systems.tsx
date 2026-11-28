@@ -1,19 +1,26 @@
 /**
- * Systems: the worlds as design systems, after design.how's systems. Each card is the system at work (its
- * cover scene, live in its own world but out of reach), its name and its one line; the card opens the system's page.
- * The page runs the whole width with no sidebar (meta.wall), one column like the index it is.
+ * The landing page (litt.design/systems/, #systems; Nick, 2026-11-28: "make the Flat studies the landing page"): the
+ * Flat studies as a wall, then the six worlds.
+ *
+ * - The wall is studies-wall.tsx, as Flat's home (#flat) draws it: the 23 studies in the studies page's order and its
+ *   three-column grid, each Flat's own self-running tile, opening in Flat's viewer.
+ * - The worlds follow, as before: each card is the system at work (its cover scene, live in its own world but out of
+ *   reach), its name and its one line, opening the system's player. So every world's Home still lands on a page that
+ *   shows all the worlds.
+ * The page runs the whole width with no sidebar (meta.wall).
  */
 import { Suspense, use } from "react";
 import { MaterialProvider } from "@/motion";
 import { PageTitle, type PageMeta } from "../kit";
+import { StudiesWall } from "../studies-wall";
 import { useCustomize, useDark } from "../customize-state";
 import { lookAttributes, MATERIALS, type MaterialInfo } from "../look";
 import { scenesOf } from "../systems";
 
 export const meta: PageMeta = {
   id: "systems",
-  title: "Systems",
-  lede: "Six worlds, one set of parts.",
+  title: "Flat studies",
+  lede: "Small studies in motion, feedback and touch. Open one to use it; six worlds below.",
   order: 0.05,
   wall: true,
   summary:
@@ -74,13 +81,19 @@ function Card({ world }: { world: MaterialInfo }) {
 
 export default function SystemsPage() {
   return (
-    <article aria-labelledby="page-systems" className="mx-auto grid w-full max-w-184 gap-10 pt-8 pb-24">
+    <article aria-labelledby="page-systems" className="grid w-full gap-16 pt-8 pb-24">
       <PageTitle id="page-systems" title={meta.title} lede={meta.lede} />
+      <StudiesWall />
+      <section aria-labelledby="systems-worlds" className="mx-auto grid w-full max-w-184 gap-8">
+        <h2 id="systems-worlds" className="text-h2 text-fg">
+          Six worlds, one set of parts
+        </h2>
       <ul aria-label="Systems" className="grid gap-14">
         {MATERIALS.map((m) => (
           <Card key={m.id} world={m} />
         ))}
       </ul>
+      </section>
     </article>
   );
 }

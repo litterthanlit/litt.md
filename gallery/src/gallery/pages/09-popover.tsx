@@ -11,6 +11,7 @@ export const meta: PageMeta = {
   title: "Popover",
   lede: "A floating glass panel for a small task.",
   order: 5.02, group: "Overlays",
+  worlds: ["press", "device", "plain", "rack", "heat"],
   verbs: ["open"],
   summary:
     "A panel over the page for a small form, a share link or a detail card. It opens from its trigger's corner, on the side it really opens on. On a phone it becomes a bottom sheet.",

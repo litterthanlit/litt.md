@@ -1,7 +1,10 @@
 /**
- * Tape progress: Progress said as two tape reels in a window (proposals/device-studies.md, Tape reels). A Device part:
- * the window is LCD glass (--field, --field-ink, --field-shade), so it is only at home under data-material="device"
- * (components.md, "Tape progress"). It takes Progress's props and says the value the way Progress does.
+ * Tape progress: Progress said as two tape reels in a window (proposals/device-studies.md, Tape reels). A Device and
+ * Flat part (components.md, "Tape progress"). It takes Progress's props and says the value the way Progress does.
+ *
+ * - One contract, two bodies. Device's, below (the default), is the reels in a window of LCD glass (--field,
+ *   --field-ink, --field-shade). Flat's (worlds/flat/tape-progress.tsx, the Flat studies' Tape reels) is the progress
+ *   underneath the reels: a large percentage over a fat ink pill on white paper, eased by the same spring.
  *
  * - Anatomy: the label and the reading above, as Progress has them, then a smoked window (200 by 110 in its own units,
  *   at most 440px wide): the supply reel on the left emptying, the take-up on the right filling, the tape between them
@@ -23,7 +26,8 @@
  *   reading as aria-valuetext, as Progress is. Ending done or failed is said once in a polite status.
  */
 import { useEffect, useId, useRef, type CSSProperties, type ReactNode, type RefObject } from "react";
-import { useMotionDial } from "@/motion";
+import { byWorld, useMaterial, useMotionDial } from "@/motion";
+import { TapeProgressFlatBody } from "@/worlds/flat/tape-progress";
 
 export type TapeProgressStatus = "active" | "done" | "failed";
 
@@ -42,6 +46,8 @@ export type TapeProgressProps = {
   message?: ReactNode;
   /** Hides the label row but keeps it as the name, for a row that already shows the name. */
   hideLabel?: boolean;
+  /** A control at the foot, beside the message: Pause, Resume, Download. */
+  action?: ReactNode;
   className?: string;
 };
 
@@ -57,9 +63,9 @@ const GUIDE_R = { x: 187, y: 96 };
 const TAPE_Y = 91;
 
 /* The spring that eases the value: critically damped, integrated in fixed steps. */
-const STIFFNESS = 140;
-const DAMPING = 24;
-const STEP = 1 / 240;
+export const STIFFNESS = 140;
+export const DAMPING = 24;
+export const STEP = 1 / 240;
 
 const packRadius = (p: number, supply: boolean) => Math.sqrt(HUB * HUB + (supply ? 1 - p : p) * SPAN);
 
@@ -82,7 +88,14 @@ const tapePath = (p: number) => {
 const inkMix = (pct: number) => `color-mix(in oklab, var(--field-ink) ${pct}%, transparent)`;
 
 /** Progress as two tape reels: the supply empties and the take-up fills, each turning at the pace its radius gives it. */
-export function TapeProgress({ label, value, max = 100, valueText, status = "active", message, hideLabel = false, className = "" }: TapeProgressProps) {
+/** One contract, two bodies: Device's reels, below, are the default; worlds/flat/tape-progress.tsx is Flat's pill. */
+export function TapeProgress(props: TapeProgressProps) {
+  const Body = byWorld(useMaterial(), { press: PressBody, flat: TapeProgressFlatBody });
+  return <Body {...props} />;
+}
+
+/** Device's body: the reels in a window. */
+function PressBody({ label, value, max = 100, valueText, status = "active", message, hideLabel = false, action, className = "" }: TapeProgressProps) {
   const labelId = useId();
   const messageId = useId();
   const { reduced } = useMotionDial();
@@ -206,6 +219,7 @@ export function TapeProgress({ label, value, max = 100, valueText, status = "act
           {message}
         </p>
       )}
+      {action && <div className="flex justify-end">{action}</div>}
       {/* The end is said once, so nobody has to watch the reels. Kept mounted, so the change is announced. */}
       <span role="status" className="sr-only">
         {status === "active" ? "" : `${typeof label === "string" ? `${label}: ` : ""}${status === "done" ? "done" : "failed"}.`}

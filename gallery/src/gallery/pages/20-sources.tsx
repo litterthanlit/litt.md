@@ -12,6 +12,7 @@ export const meta: PageMeta = {
   lede: "Where an answer came from, in the text and under it.",
   order: 11.06,
   group: "Agents",
+  worlds: ["press", "device", "plain", "rack", "heat"],
   verbs: ["hover", "open"],
   summary:
     "Where an answer came from: a quiet numbered chip in the running text that opens its source and previews it in a hover card, and the same sources as rows under the answer or inside the search call that found them. Rest on a mark and its row lights, and so does every other mark of that source; rest on a row and its marks light. Color only, nothing moves.",

@@ -1,7 +1,10 @@
 /**
- * Copy button: a key that copies a command, and the LCD line that shows it (proposals/device-studies.md, Copy button).
- * A Device part: it reads the key and field tokens every material sets, so it is only at home under
- * data-material="device" (components.md, "Copy button").
+ * Copy button: a key that copies a command, and the line that shows it (proposals/device-studies.md, Copy button; the
+ * Flat studies, Copy button). In Device and Flat (components.md, "Copy button").
+ *
+ * - One contract, two bodies: this file is the contract (the clipboard, the state, the hold and the status) and
+ *   Device's body (PressBody, below, the default). worlds/flat/copy-button.tsx is Flat's: the command in a white
+ *   pill and an ink circle that copies it, the line swapping to "Copied to clipboard" (byWorld).
  *
  * - Anatomy: a key (2.9em square: its face --block, its skirt and rim --key-lift) beside a line of LCD glass (--field,
  *   --field-ink, --field-shade) that shows the command in the mono, after a prompt in --field-ink-subtle. The key is
@@ -26,7 +29,8 @@
  */
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { animate } from "motion/react";
-import { useMotionDial, useTransition } from "@/motion";
+import { byWorld, useMaterial, useMotionDial, useTransition } from "@/motion";
+import { CopyButtonFlatBody } from "@/worlds/flat/copy-button";
 
 export type CopyButtonProps = {
   /** What a press puts on the clipboard. */
@@ -35,6 +39,11 @@ export type CopyButtonProps = {
   label?: string;
   /** What the line shows. Default: the text itself. Pass a shorter or prettier form when the text is long. */
   command?: string;
+  /**
+   * Plays the copy each time it changes, for a demo that runs itself: the line says Copied as a press would, but
+   * nothing goes on the clipboard and nothing is said. Leave it out and only a press copies.
+   */
+  rehearse?: number;
   className?: string;
 };
 
@@ -181,10 +190,8 @@ function copyBySelection(text: string): boolean {
 
 const glyph = "col-start-1 row-start-1 size-4 transition-[opacity,scale] duration-(--dur-responsive) ease-responsive";
 
-/** A key that copies `text`, beside an LCD line that shows the command and decodes it back in after the copy. */
-export function CopyButton({ text, label = "Copy command", command, className = "" }: CopyButtonProps) {
-  const shown = command ?? text;
-  const [state, setState] = useState<"idle" | "copied" | "failed">("idle");
+/** The default body, Device's: a key beside an LCD line that shows the command and decodes it back in after the copy. */
+function PressBody({ label, shown, state, onPress, className }: CopyButtonBodyProps) {
   const { reduced } = useMotionDial();
   const move = useTransition("responsive");
 
@@ -192,7 +199,6 @@ export function CopyButton({ text, label = "Copy command", command, className = 
   const word = useRef<HTMLSpanElement>(null);
   const check = useRef<SVGPathElement>(null);
   const wave = useRef<Wave | null>(null);
-  const hold = useRef(0);
   const reducedNow = useRef(reduced);
   reducedNow.current = reduced;
 
@@ -217,7 +223,15 @@ export function CopyButton({ text, label = "Copy command", command, className = 
     };
   }, [shown]);
 
-  useEffect(() => () => window.clearTimeout(hold.current), []);
+  /* A copy clears the line; the end of the hold decodes it back. A failed copy selects it, to copy by hand. */
+  const was = useRef(state);
+  useEffect(() => {
+    if (state === was.current) return;
+    was.current = state;
+    if (state === "copied") wave.current?.hide();
+    else if (state === "idle") wave.current?.show();
+    else if (line.current) window.getSelection()?.selectAllChildren(line.current);
+  }, [state]);
 
   /* The check draws in when the key says Copied. */
   useEffect(() => {
@@ -231,33 +245,13 @@ export function CopyButton({ text, label = "Copy command", command, className = 
     return () => run.stop();
   }, [state, reduced, move]);
 
-  const copied = () => {
-    setState("copied");
-    wave.current?.hide();
-    window.clearTimeout(hold.current);
-    hold.current = window.setTimeout(() => {
-      setState("idle");
-      wave.current?.show();
-    }, HOLD_MS);
-  };
-  const failed = () => {
-    const box = line.current;
-    if (box) window.getSelection()?.selectAllChildren(box);
-    setState("failed");
-  };
-  const press = () => {
-    if (navigator.clipboard?.writeText) navigator.clipboard.writeText(text).then(copied, () => (copyBySelection(text) ? copied() : failed()));
-    else if (copyBySelection(text)) copied();
-    else failed();
-  };
-
   const done = state === "copied";
   return (
     <span className={"inline-flex w-full max-w-lg items-center gap-3 text-body " + className}>
       <button
         type="button"
         aria-label={label}
-        onClick={press}
+        onClick={onPress}
         className={
           "litt-target relative grid size-[2.9em] shrink-0 cursor-pointer select-none place-items-center rounded-control bg-block text-fg shadow-(--key-lift) forced-colors:border " +
           "transition-[background-color,color,translate] duration-(--dur-instant) ease-litt [-webkit-tap-highlight-color:transparent] " +
@@ -299,9 +293,57 @@ export function CopyButton({ text, label = "Copy command", command, className = 
         </span>
       </span>
 
-      <span role="status" className="sr-only">
-        {state === "copied" ? "Copied" : state === "failed" ? "Copy failed. The command is selected; copy it by hand." : ""}
-      </span>
     </span>
+  );
+}
+
+/** What the contract hands a body: the state and the press; the body draws the key and the line. */
+export type CopyButtonBodyProps = {
+  label: string;
+  /** What the line shows. */
+  shown: string;
+  state: CopyState;
+  /** Copies the text. */
+  onPress: () => void;
+  className: string;
+};
+export type CopyState = "idle" | "copied" | "failed";
+
+/** A key that copies `text`, beside a line that shows the command; the line says when it is copied. */
+export function CopyButton({ text, label = "Copy command", command, rehearse, className = "" }: CopyButtonProps) {
+  const [state, setState] = useState<CopyState>("idle");
+  /* A rehearsed copy is not news: the status speaks only for a real one. */
+  const [rehearsed, setRehearsed] = useState(false);
+  const hold = useRef(0);
+  useEffect(() => () => window.clearTimeout(hold.current), []);
+
+  const copied = (real = true) => {
+    setRehearsed(!real);
+    setState("copied");
+    window.clearTimeout(hold.current);
+    hold.current = window.setTimeout(() => setState("idle"), HOLD_MS);
+  };
+  const press = () => {
+    if (navigator.clipboard?.writeText) navigator.clipboard.writeText(text).then(() => copied(), () => (copyBySelection(text) ? copied() : setState("failed")));
+    else if (copyBySelection(text)) copied();
+    else setState("failed");
+  };
+
+  const latestCopied = useRef(copied);
+  latestCopied.current = copied;
+  const firstRehearsal = useRef(rehearse);
+  useEffect(() => {
+    if (rehearse === undefined || rehearse === firstRehearsal.current) return;
+    latestCopied.current(false);
+  }, [rehearse]);
+
+  const Body = byWorld(useMaterial(), { press: PressBody, flat: CopyButtonFlatBody });
+  return (
+    <>
+      <Body label={label} shown={command ?? text} state={state} onPress={press} className={className} />
+      <span role="status" className="sr-only">
+        {state === "copied" ? (rehearsed ? "" : "Copied") : state === "failed" ? "Copy failed. The command is selected; copy it by hand." : ""}
+      </span>
+    </>
   );
 }

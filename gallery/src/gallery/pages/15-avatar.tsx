@@ -7,6 +7,7 @@ export const meta: PageMeta = {
   lede: "A round mark for a person or a company.",
   order: 7.04,
   group: "Layout",
+  worlds: ["press", "device", "plain", "rack", "heat"],
   summary:
     "A round mark for a person, a client or a company: a photo, initials on the tint of one of the five data hues, or a picture drawn from the name in that hue: fluid, film or thermal, under static grain. The hue and the picture follow from the name, so the same name looks the same everywhere. A group overlaps them and counts the rest. Nothing about it moves.",
   tiers: [],

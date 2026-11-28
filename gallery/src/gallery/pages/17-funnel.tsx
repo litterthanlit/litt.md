@@ -7,6 +7,7 @@ export const meta: PageMeta = {
   lede: "How many went on at each step.",
   order: 10.06,
   group: "Charts",
+  worlds: ["press", "device", "plain", "rack", "heat"],
   summary:
     "How many went on at each step, as rows rather than a trapezoid: a thin rail per step filled to its share of the first, in one data hue, with the step-to-step share in words between them. It is static, like the meter.",
   tiers: [],

@@ -11,6 +11,7 @@ export const meta: PageMeta = {
   lede: "A box that scrolls inside the page.",
   order: 7.07,
   group: "Layout",
+  worlds: ["press", "device", "plain", "rack", "heat"],
   verbs: ["drag"],
   summary:
     "A region that scrolls inside the page, never the page itself. The scrolling is the browser's own; only the thumb is litt's, shown while it scrolls or a mouse is over it, and a hairline marks each edge that has more beyond it. Both fade on the instant tier.",

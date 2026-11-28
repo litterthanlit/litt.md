@@ -9,6 +9,7 @@ export const meta: PageMeta = {
   lede: "Two values set at once on one surface.",
   order: 4.01,
   group: "Tools",
+  worlds: ["press", "device", "plain", "rack", "heat"],
   verbs: ["drag"],
   summary:
     "Two values set at once on one surface, like tone against length. A square with a static dot grid, a round handle with dashed crosshairs, a dashed circle for the default, and a tooltip that says the value in words. The handle follows the pointer and the keys at once, with no easing. Only the tooltip fades, on the responsive tier.",

@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { HoldConfirm } from "@/components/hold-confirm";
 import { Page, Stage, TryIt, type PageDocs, type PageMeta } from "../kit";
+import { useSelfRun } from "../self-run";
 
 export const meta: PageMeta = {
   id: "hold-confirm",
@@ -67,9 +69,20 @@ function UnpublishDemo() {
   );
 }
 
+/** On Flat's wall the pill is held to the end, then undone, again and again, until a hand arrives. */
+function HoldTile() {
+  const [rehearse, setRehearse] = useState(0);
+  const run = useSelfRun((n) => setRehearse(n + 1), { every: 2800, first: 1000 });
+  return (
+    <div ref={run.ref} className="grid w-full justify-items-center">
+      <HoldConfirm rehearse={rehearse} />
+    </div>
+  );
+}
+
 export default function HoldConfirmPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<HoldConfirm />}>
+    <Page meta={meta} docs={docs} tile={<HoldTile />}>
       <Stage
         title="Delete a draft"
         tier="expressive"

@@ -20,6 +20,7 @@ export const meta: PageMeta = {
   },
   order: 3.03,
   group: "Selection",
+  worlds: ["press", "device", "plain", "rack", "heat"],
   verbs: ["drag"],
   summary:
     "One value on a range, such as the default animation speed, or a span, such as the builds that took between 20s and 80s. Take the thumb and it follows your hand 1:1, or press the track and it goes there. Notches mark steps, and the default holds the value a little. The label row says the value.",

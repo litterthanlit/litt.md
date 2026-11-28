@@ -9,6 +9,7 @@ export const meta: PageMeta = {
   title: "Pagination",
   lede: "Previous and next, for one page of many.",
   order: 6.07, group: "Navigation",
+  worlds: ["press", "device", "plain", "rack", "heat"],
   verbs: ["press"],
   summary:
     "Previous and next for a table that shows one page of many. The range comes first, in words and tabular figures. Previous and Next sit at the ends with the page numbers between them. The numbers show when the row is wide enough. The button at either end disables and lies flat. Nothing about it moves; the rows it pages are the table's job.",

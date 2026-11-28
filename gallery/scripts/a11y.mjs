@@ -112,8 +112,12 @@ async function check(ctx, id, theme, label) {
     await pg.evaluate(() => document.fonts.ready);
     await pg.waitForSelector("h1", { timeout: 10_000 });
     await openVariants(pg);
+    await pg.evaluate(() => document.documentElement.setAttribute("data-hold-self-run", "")); // Flat's wall holds still
     await pg.waitForTimeout(400); // let entrances settle, so axe reads the resting colors
     await pg.evaluate(quiet, QUIET);
+    /* A page that never goes quiet (Flat's wall, whose tiles run themselves) can be caught mid-fade: finish what is in
+       flight, so axe reads every animated element at its resting colours. */
+    await pg.evaluate(() => document.getAnimations().forEach((a) => { try { a.finish(); } catch { /* an endless one */ } }));
     await pg.addScriptTag({ content: axeSource });
     const violations = await pg.evaluate(async (tags) => {
       const r = await window.axe.run(document, { runOnly: { type: "tag", values: tags }, resultTypes: ["violations"] });

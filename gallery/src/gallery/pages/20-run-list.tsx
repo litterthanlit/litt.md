@@ -9,6 +9,7 @@ export const meta: PageMeta = {
   lede: "An agent's runs, the ones that need you first.",
   order: 11.09,
   group: "Agents",
+  worlds: ["press", "device", "plain", "rack", "heat"],
   verbs: ["press", "select", "watch"],
   summary:
     "An agent's runs for a sidebar or an inbox: each run's title, its status in words and a mark, where it has got and when it last changed. The runs that need you come first, a Select filters by status with counts, and Stop or Archive sits on the row. The open run's row has a block behind it, which moves to the row you press, and a filter moves the rows to their new places. A run the agent changes moves at once.",

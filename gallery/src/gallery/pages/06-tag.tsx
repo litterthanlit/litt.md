@@ -7,6 +7,7 @@ export const meta: PageMeta = {
   title: "Tag",
   lede: "A small label that names, files or reports.",
   order: 3.08, group: "Selection",
+  worlds: ["press", "device", "plain", "rack", "heat"],
   summary:
     "A small label that names a thing, files it under a category or reports its state. A status tag colors its text, never the fill, and always says the status in words. A category can take one of the five data hues. A value in a field, one you can lift back out, takes the raised prop. Nothing about it moves.",
   tiers: [],

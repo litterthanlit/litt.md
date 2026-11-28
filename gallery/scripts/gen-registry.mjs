@@ -794,13 +794,13 @@ const COPY = {
   },
   "copy-button": {
     title: "Copy button",
-    description: "A key that copies a command shown on LCD glass: the key sinks its 2px, the check draws in, and the command's glyphs decode back in a wave. A Device part.",
-    docs: "Needs data-material=\"device\" on <html>. Pass the text to copy; it says Copied for a moment and goes back. Under reduced motion the glyphs swap at once.",
+    description: "A key that copies a command, beside the line that shows it. Under Device the line is LCD glass whose glyphs decode back in a wave; under Flat it is a white pill whose line swaps to Copied to clipboard. A Device and Flat part.",
+    docs: "Needs data-material=\"device\" or \"flat\" on <html>. Pass the text to copy; it says Copied for a moment and goes back. Under reduced motion the line changes at once.",
   },
   "tape-progress": {
     title: "Tape progress",
-    description: "Progress as two tape reels: the supply empties and the take-up fills, each turning at the speed the tape's constant pace gives its radius, with the value said in words. A Device part.",
-    docs: "Needs data-material=\"device\" on <html>. The same props as Progress (label, value, max, status). Under reduced motion the reels jump to the value.",
+    description: "Progress that eases in on a critically damped spring. Under Device, two tape reels: the supply empties and the take-up fills, each turning at the speed the tape's constant pace gives its radius. Under Flat, a large percentage over a fat ink pill on white paper. A Device and Flat part.",
+    docs: "Needs data-material=\"device\" or \"flat\" on <html>. The same props as Progress (label, value, max, status), with message and an optional action at the foot. Under reduced motion it jumps to the value.",
   },
   "seven-segment": {
     title: "Seven-segment readout",
@@ -867,8 +867,8 @@ const COPY = {
   },
   "step-sequencer": {
     title: "Step sequencer",
-    description: "A colorful 8-step drum and bass pattern grid with four color-coded instrument lanes, pattern presets, and a Play / Stop playhead. A Rack part.",
-    docs: "Needs data-material=\"rack\" on <html>. Starts stopped; click any step to toggle a hit on the frame, cycle patterns, or press Play to step across all 8 beats.",
+    description: "A step sequencer: lanes of steps to toggle and a Play / Stop playhead. Under Rack a colorful 8-step drum and bass grid with pattern presets; under Flat a monochrome grid of soft squares on white paper with the tempo as its figure. A Rack and Flat part.",
+    docs: "Needs data-material=\"rack\" or \"flat\" on <html>. Starts stopped; click any step to toggle it, or press Play to step the playhead across the pattern.",
   },
   /* Press's own parts (plans/024, Press; taste/litt-principles.md, Press): tactile warm-stone product/deploy controls. */
   "deploy-status": {
@@ -916,6 +916,41 @@ const COPY = {
     title: "Agent status",
     description: "An agent's run on one Flat paper: the task and its state in words, the time live as a 44px figure, what it is doing now, three phase pills and only the actions that apply (Run, Stop, Allow, Try again). A Flat part.",
     docs: "Needs data-material=\"flat\" on <html>. Controlled: pass state, step and tokens, and handle onRun, onStop and onAllow. Escape stops a live run.",
+  },
+  "vu-meter": {
+    title: "VU meter",
+    description: "A level meter for a mic check on white Flat paper: the level as the large figure, its meaning in words, and a pill bar per channel with a peak mark that holds and falls, on the VU standard's ballistics. A Flat part.",
+    docs: "Needs data-material=\"flat\" on <html>. Feed levels (linear amplitude per channel, 1 reads 0 dB) as often as you measure; the meter does the ballistics. Under reduced motion it shows each level at once.",
+  },
+  knob: {
+    title: "Knob",
+    description: "A detented control as a pill slider on white Flat paper, for a value a preset recalls: its name and value over a grey track with an ink fill and a paper thumb, on a linear or log taper, bipolar for a gain. A recalled value glides into place; the hand's lands at once. A Flat part.",
+    docs: "Needs data-material=\"flat\" on <html>. Pass label, min, max, detents, taper?, bipolar?, format? and value with onValueChange; onSettle says a glided value has landed.",
+  },
+  fader: {
+    title: "Fader",
+    description: "A mixer channel's level as a fat vertical pill on white Flat paper: the ink fill is the level, the level in decibels above it, the name under it. Outside values glide on a motor while the hand's land at once; 0 dB catches the hand. A Flat part.",
+    docs: "Needs data-material=\"flat\" on <html>. value is the travel, 0 to 100 (75 is 0 dB), with onValueChange; onHoldChange says when a hand takes it, and owner says Auto or Yours.",
+  },
+  "dither-card": {
+    title: "Dither cards",
+    description: "A row of project cards on Flat's grey ground, each a white paper with a creature (a butterfly, a jellyfish, a bloom) in three-tone ordered dither drawn in the ink. Nothing moves on its own: the card under the hand lifts and its picture quickens, a press rings out. A Flat part.",
+    docs: "Needs data-material=\"flat\" on <html> and WebGL (without it the picture is the paper). Pass projects ({ id, title, line, year?, href, creature }) and, to feature one, active.",
+  },
+  "gradient-keys": {
+    title: "Gradient keys",
+    description: "A cover picker on white Flat paper: one live long exposure of streaks in the chosen cover's five colour stops, its name as the figure, and a swatch circle per cover. Nothing moves until a hand does; a new cover runs out along the streaks. A Flat part.",
+    docs: "Needs data-material=\"flat\" on <html> and WebGL (it falls back to a still gradient). Pass covers ({ id, name, line?, stops: five colours dark to light, seed? }) and value with onValueChange, or defaultValue.",
+  },
+  ticker: {
+    title: "Ticker",
+    description: "Notifications on one white Flat pill that types each message as it arrives, with the count and two grey circles to step through the queue; a long message slides with its caret and glides back. Warnings and alerts lead with words. A Flat part.",
+    docs: "Needs data-material=\"flat\" on <html>. Pass messages ({ id, text, tone? }) oldest first and append as they arrive; messages there at mount show whole. Hover or focus holds it.",
+  },
+  "agent-shapes": {
+    title: "Agent shapes",
+    description: "One abstract shape following an agent's run on a white Flat paper: a spark, graph, cube, orbit, morph, stack, fold or thread per phase, soft grey with one part in the ink, the step in one sentence, and how far along as short ink pills. A Flat part.",
+    docs: "Needs data-material=\"flat\" on <html>. Pass phase, a label sentence, and step and steps for the pills; tie paused to your run so the shape moves only while the work does.",
   },
   "assistant-status": {
     title: "Assistant status",

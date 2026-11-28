@@ -18,6 +18,7 @@ export const meta: PageMeta = {
   lede: "The steps of a run, in order.",
   order: 9.06,
   group: "Data",
+  worlds: ["press", "device", "plain", "rack", "heat"],
   verbs: ["hover"],
   summary:
     "The steps of a run in order: when each started, a status icon on a hairline rail, a label and how long it took, grouped into phases. In a proportional timeline a long step draws its time as a bar on the rail in its phase's color, with the last run beside it. A strip shows the whole run at a glance. Nothing moves.",

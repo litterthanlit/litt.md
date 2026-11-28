@@ -9,6 +9,7 @@ export const meta: PageMeta = {
   lede: "Panels with a line you drag between them.",
   order: 7.08,
   group: "Layout",
+  worlds: ["press", "device", "plain", "rack", "heat"],
   verbs: ["drag"],
   summary:
     "Panels side by side or stacked, with a hairline between each two that a person drags to give one more room. The line follows the pointer one to one, each panel stays between its smallest and largest size, and a double click puts the two back. The arrow keys move it too, and the layout can be kept for next time.",

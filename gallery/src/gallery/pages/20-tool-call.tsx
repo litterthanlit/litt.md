@@ -12,6 +12,7 @@ export const meta: PageMeta = {
   lede: "What an agent did, one row per call.",
   order: 11.05,
   group: "Agents",
+  worlds: ["press", "device", "plain", "rack", "heat"],
   verbs: ["open", "watch"],
   summary:
     "What an agent did, one row per call: a status mark, the action in words, the target in mono and the time, with the input and output folded under it. A group folds a run of calls and closes itself when they finish. An approval asks first, in the flow. Nothing spins: running is a still half circle.",

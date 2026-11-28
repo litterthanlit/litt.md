@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Segmented } from "@/components/segmented";
 import { WorkingLoader, type LoaderStyle } from "@/components/working-loader";
 import { Page, Stage, TryIt, useReplay, type PageDocs, type PageMeta } from "../kit";
+import { useSelfRun } from "../self-run";
 
 export const meta: PageMeta = {
   id: "working-loader",
@@ -60,6 +61,8 @@ const TURN = 2400;
 function StylesDemo({ play = 0 }: { play?: number }) {
   const [style, setStyle] = useState<LoaderStyle>("wave");
   const [running, setRunning] = useState(false);
+  /* On Flat's wall each style takes a turn by itself, running, until a hand picks one. */
+  const run = useSelfRun((n) => setStyle(STYLES[(n + 2) % STYLES.length]!.value), { every: TURN, first: TURN });
   const timers = useRef<number[]>([]);
   const clear = () => {
     timers.current.forEach((t) => window.clearTimeout(t));
@@ -84,9 +87,9 @@ function StylesDemo({ play = 0 }: { play?: number }) {
 
   const doing = STYLES.find((s) => s.value === style)!.doing;
   return (
-    <div data-part="paper" className="litt-paper grid w-full max-w-md min-w-0 gap-2 rounded-surface bg-surface-1 p-3 forced-colors:border">
+    <div ref={run.ref} data-part="paper" className="litt-paper grid w-full max-w-md min-w-0 gap-2 rounded-surface bg-surface-1 p-3 forced-colors:border">
       <div className="grid h-40 place-items-center sm:h-50">
-        <WorkingLoader variant={style} label={doing} paused={!running} />
+        <WorkingLoader variant={style} label={doing} paused={!running && !run.running} />
       </div>
       {/* Its own sideways scroller, so the four pills never push a phone's page sideways. */}
       <div className="min-w-0 overflow-x-auto">

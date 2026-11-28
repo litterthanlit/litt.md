@@ -7,6 +7,7 @@ export const meta: PageMeta = {
   lede: "Bars, lines and a meter in plain SVG.",
   ledeByWorld: { heat: "Bars and lines on a square slab with dashed gridlines, the active reading marked." },
   order: 10.01, group: "Charts",
+  worlds: ["press", "device", "plain", "rack", "heat"],
   verbs: ["hover"],
   summary:
     "Bar and line charts in plain SVG, and a meter. Marks are never the accent: by default the foreground, one series at 55% with the current mark full, or up to three stepping down; or the data hues, when color says which series is which. Hairline gridlines, labels in tabular figures, a tooltip on hover and focus, and one entrance on the responsive tier.",
