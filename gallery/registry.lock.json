@@ -610,6 +610,10 @@
       "version": "2026.11.21",
       "hash": "0a07ceedc0353720"
     },
+    "fader": {
+      "version": "2026.11.27",
+      "hash": "0060670ef4020049"
+    },
     "file-changes": {
       "version": "2026.11.18",
       "hash": "0052384ef7539aaa"
@@ -669,6 +673,10 @@
     "flat-dither-card": {
       "version": "2026.11.27",
       "hash": "f8b9a7995f890503"
+    },
+    "flat-fader": {
+      "version": "2026.11.27",
+      "hash": "0060670ef4020049"
     },
     "flat-glide": {
       "version": "2026.11.17",

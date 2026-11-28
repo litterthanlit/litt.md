@@ -917,6 +917,11 @@ const COPY = {
     description: "An agent's run on one Flat paper: the task and its state in words, the time live as a 44px figure, what it is doing now, three phase pills and only the actions that apply (Run, Stop, Allow, Try again). A Flat part.",
     docs: "Needs data-material=\"flat\" on <html>. Controlled: pass state, step and tokens, and handle onRun, onStop and onAllow. Escape stops a live run.",
   },
+  fader: {
+    title: "Fader",
+    description: "A mixer channel's level as a fat vertical pill on white Flat paper: the ink fill is the level, the level in decibels above it, the name under it. Outside values glide on a motor while the hand's land at once; 0 dB catches the hand. A Flat part.",
+    docs: "Needs data-material=\"flat\" on <html>. value is the travel, 0 to 100 (75 is 0 dB), with onValueChange; onHoldChange says when a hand takes it, and owner says Auto or Yours.",
+  },
   "dither-card": {
     title: "Dither cards",
     description: "A row of project cards on Flat's grey ground, each a white paper with a creature (a butterfly, a jellyfish, a bloom) in three-tone ordered dither drawn in the ink. Nothing moves on its own: the card under the hand lifts and its picture quickens, a press rings out. A Flat part.",
