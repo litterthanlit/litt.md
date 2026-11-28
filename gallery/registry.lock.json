@@ -31,8 +31,8 @@
       "hash": "ff0a695ce52c48ed"
     },
     "agent-run": {
-      "version": "2026.11.23",
-      "hash": "8515a4a7bdc4756a"
+      "version": "2026.11.27",
+      "hash": "d98ef73580431615"
     },
     "agent-shapes": {
       "version": "2026.11.27",
@@ -164,7 +164,7 @@
     },
     "copy-button": {
       "version": "2026.11.27",
-      "hash": "2b29fcf3820f129f"
+      "hash": "52195a872c7e775f"
     },
     "curve-editor": {
       "version": "2026.11.18",
@@ -292,7 +292,7 @@
     },
     "device-copy-button": {
       "version": "2026.11.27",
-      "hash": "dcf7ee367ac0964c"
+      "hash": "e47fe32606bb705a"
     },
     "device-curve-editor": {
       "version": "2026.11.18",
@@ -623,8 +623,8 @@
       "hash": "02a72c44f2ade63d"
     },
     "flat-agent-run": {
-      "version": "2026.11.23",
-      "hash": "8515a4a7bdc4756a"
+      "version": "2026.11.27",
+      "hash": "d98ef73580431615"
     },
     "flat-agent-shapes": {
       "version": "2026.11.27",
@@ -664,7 +664,7 @@
     },
     "flat-copy-button": {
       "version": "2026.11.27",
-      "hash": "6a655e4f03f8bff7"
+      "hash": "e34315246ceeefda"
     },
     "flat-dialog": {
       "version": "2026.11.16",
@@ -691,8 +691,8 @@
       "hash": "0eb5fc0390cf5176"
     },
     "flat-hold-confirm": {
-      "version": "2026.11.23",
-      "hash": "381c4f3c2090fac8"
+      "version": "2026.11.27",
+      "hash": "44a5f6fac0ae6073"
     },
     "flat-icons": {
       "version": "2026.11.16",
@@ -764,7 +764,7 @@
     },
     "flat-step-sequencer": {
       "version": "2026.11.27",
-      "hash": "ef533b823b2cbdb7"
+      "hash": "e938013be86573c7"
     },
     "flat-streak": {
       "version": "2026.11.23",
@@ -791,8 +791,8 @@
       "hash": "b30bfa89cc3a2976"
     },
     "flat-toast-stack": {
-      "version": "2026.11.23",
-      "hash": "b0f6d746ee42e8f9"
+      "version": "2026.11.27",
+      "hash": "4a63c05afa4c0f5d"
     },
     "flat-tooltip": {
       "version": "2026.11.16",
@@ -1243,8 +1243,8 @@
       "hash": "bdbcf78e2361e216"
     },
     "hold-confirm": {
-      "version": "2026.11.23",
-      "hash": "381c4f3c2090fac8"
+      "version": "2026.11.27",
+      "hash": "44a5f6fac0ae6073"
     },
     "hover-card": {
       "version": "2026.11.15",
@@ -2660,7 +2660,7 @@
     },
     "step-sequencer": {
       "version": "2026.11.27",
-      "hash": "8ab4b6cd8ae8c73c"
+      "hash": "da5fdfa1d5f4adea"
     },
     "steps": {
       "version": "2026.11.06",
@@ -2719,8 +2719,8 @@
       "hash": "b30bfa89cc3a2976"
     },
     "toast-stack": {
-      "version": "2026.11.23",
-      "hash": "b0f6d746ee42e8f9"
+      "version": "2026.11.27",
+      "hash": "4a63c05afa4c0f5d"
     },
     "token-input": {
       "version": "2026.11.19",

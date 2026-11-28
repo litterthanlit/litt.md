@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { MagneticButton } from "@/components/magnetic-button";
+import { ghostMove, useSelfRun } from "../self-run";
 import { Page, Stage, TryIt, type PageDocs, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
@@ -81,9 +82,34 @@ function ReadDemo() {
   return <MagneticButton strength={0.25}>Read the letter {ARROW}</MagneticButton>;
 }
 
+const FRAME = 33;
+
+/** On Flat's wall a ghost pointer circles Subscribe, near enough to pull it and then out of reach, until a hand arrives. */
+function SundayLetterTile() {
+  const box = useRef<HTMLDivElement | null>(null);
+  const run = useSelfRun((n) => {
+    const button = box.current?.querySelector("button");
+    if (!button) return;
+    const t = (n * FRAME) / 1000;
+    const reach = 0.55 + 0.5 * (1 + Math.sin(t * 0.6));
+    ghostMove(button, 0.5 + reach * Math.cos(t * 1.3), 0.5 + reach * 1.8 * Math.sin(t * 1.3));
+  }, { every: FRAME, first: 600 });
+  return (
+    <div
+      ref={(el) => {
+        box.current = el;
+        run.ref(el);
+      }}
+      className="grid w-full justify-items-center"
+    >
+      <SundayLetterDemo />
+    </div>
+  );
+}
+
 export default function MagneticButtonPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<SundayLetterDemo />}>
+    <Page meta={meta} docs={docs} tile={<SundayLetterTile />}>
       <Stage
         title="The Sunday letter"
         tier="expressive"

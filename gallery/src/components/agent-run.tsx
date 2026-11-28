@@ -37,6 +37,11 @@ export type AgentRunProps = {
   defaultExpanded?: boolean;
   /** Fires when a run started by Run again finishes. */
   onComplete?: () => void;
+  /**
+   * Plays the turn again from the start each time it changes, as Run again does, but without moving focus or saying
+   * the phases: for a demo that runs itself. Leave it out and only Run again plays.
+   */
+  replay?: number;
   className?: string;
 };
 
@@ -71,6 +76,7 @@ export function AgentRun({
   answer = DEFAULT_RUN_ANSWER,
   defaultExpanded = false,
   onComplete,
+  replay,
   className = "",
 }: AgentRunProps) {
   const { reduced } = useMotionDial();
@@ -88,7 +94,10 @@ export function AgentRun({
   const [streamed, setStreamed] = useState(words.length);
   const [open, setOpen] = useState(defaultExpanded);
   const [seconds, setSeconds] = useState(thought);
-  const [live, setLive] = useState("");
+  const [live, setSpoken] = useState("");
+  /* A replay the host asked for is not news: only a run a hand started says its phases. */
+  const speak = useRef(true);
+  const setLive = useCallback((line: string) => speak.current && setSpoken(line), []);
 
   const timers = useRef<number[]>([]);
   const ticker = useRef<number | null>(null);
@@ -104,9 +113,10 @@ export function AgentRun({
 
   const busy = phase === "thinking" || phase === "working";
 
-  const run = useCallback(() => {
+  const run = useCallback((byHand = true) => {
     clear();
-    headRef.current?.focus({ preventScroll: true });
+    speak.current = byHand;
+    if (byHand) headRef.current?.focus({ preventScroll: true });
     if (reduced) {
       setPhase("done");
       setRevealed(steps.length);
@@ -153,7 +163,15 @@ export function AgentRun({
       setLive(`Answer ready. ${answer}`);
       onComplete?.();
     });
-  }, [answer, clear, onComplete, reduced, steps, thought, words]);
+  }, [answer, clear, onComplete, reduced, setLive, steps, thought, words]);
+
+  const latestRun = useRef(run);
+  latestRun.current = run;
+  const firstReplay = useRef(replay);
+  useEffect(() => {
+    if (replay === undefined || replay === firstReplay.current) return;
+    latestRun.current(false);
+  }, [replay]);
 
   const current = steps[Math.max(0, revealed - 1)];
   const shownSteps = steps.slice(0, revealed);
@@ -213,7 +231,7 @@ export function AgentRun({
           <button
             type="button"
             data-part="pill"
-            onClick={run}
+            onClick={() => run()}
             className="litt-target relative mr-2 inline-flex h-9 shrink-0 cursor-pointer items-center rounded-pill bg-block px-4 text-small font-title text-fg transition-[background-color,transform] duration-(--dur-instant) ease-litt hover:bg-(--block-hover) motion-safe:active:scale-97 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus forced-colors:border"
           >
             Run again

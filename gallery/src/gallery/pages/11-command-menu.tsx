@@ -23,6 +23,7 @@ import {
 import { ActivityIcon, ClockIcon, DownloadIcon, FlagIcon, PlayIcon } from "@/components/icons";
 import { DeviceProvider, useMotionDial } from "@/motion";
 import { Page, Stage, type PageDocs, type PageMeta, type PageStudy } from "../kit";
+import { useSelfRun } from "../self-run";
 
 export const meta: PageMeta = {
   id: "command-menu",
@@ -486,9 +487,36 @@ function SiteOpenDemo() {
   );
 }
 
+/* Flat's tile: the panel on the page, typing a search, a letter at a time, then the next, until a hand arrives. */
+const SEARCHES = ["open", "send", "theme"];
+
+function SiteTypingTile() {
+  const [query, setQuery] = useState("");
+  const run = useSelfRun((n) => {
+    /* Each search: its letters one by one, a beat held, then cleared. */
+    const per = SEARCHES.map((w) => w.length + 9);
+    const cycle = per.reduce((a, b) => a + b, 0);
+    let at = n % cycle;
+    for (const [i, word] of SEARCHES.entries()) {
+      if (at < per[i]!) {
+        setQuery(word.slice(0, Math.min(word.length, at)));
+        return;
+      }
+      at -= per[i]!;
+    }
+  }, { every: 180, first: 900 });
+  return (
+    <div ref={run.ref} className="grid w-full min-w-0 justify-items-center">
+      <div className="litt-paper w-full min-w-0 max-w-md rounded-surface bg-surface-1 forced-colors:border">
+        <CommandPanel groups={SITE_GROUPS} query={query} onQueryChange={setQuery} initialSource="keyboard" onSelect={() => setQuery("")} />
+      </div>
+    </div>
+  );
+}
+
 export default function CommandMenuPage() {
   return (
-    <Page meta={meta} docs={docs} study={study}>
+    <Page meta={meta} docs={docs} study={study} tileByWorld={{ flat: <SiteTypingTile /> }}>
       <Stage
         title="Open it"
         tier="responsive"

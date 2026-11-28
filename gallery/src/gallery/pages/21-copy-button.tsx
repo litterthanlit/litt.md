@@ -1,7 +1,8 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CopyButton } from "@/components/copy-button";
 import { useMotionDial } from "@/motion";
 import { Page, Stage, TryIt, type PageDocs, type PageMeta, type PageStudy } from "../kit";
+import { useSelfRun } from "../self-run";
 
 export const meta: PageMeta = {
   id: "copy-button",
@@ -152,10 +153,13 @@ function TakeCommandsDemo() {
 /* ---------- Flat's own: a small site's commands ---------- */
 
 /** Flat's lead: the install line. It never presses itself, since a press writes to the visitor's clipboard. */
+/* On Flat's wall (and in its viewer) the copy plays itself every few seconds, with nothing put on the clipboard. */
 function FlatInstallDemo() {
+  const [rehearse, setRehearse] = useState(0);
+  const run = useSelfRun((n) => setRehearse(n + 1), { every: 3200, first: 1200 });
   return (
-    <div className="grid w-full justify-items-center">
-      <CopyButton text={INSTALL} command="npx shadcn add copy-button" />
+    <div ref={run.ref} className="grid w-full justify-items-center">
+      <CopyButton text={INSTALL} command="npx shadcn add copy-button" rehearse={rehearse} />
     </div>
   );
 }

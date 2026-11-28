@@ -15,7 +15,7 @@ export const meta: PageMeta = {
   summary:
     "An Ableton-style 8-step pattern grid, a lane per instrument in its own clip color: Kick in orange, Snare in green, Hi-hat in cyan and Bass in blue, across two beats of four steps. Click any step to toggle a hit on the frame, cycle House / Breakbeat / Minimal presets, or press Play to step the playhead across the bar. Starts stopped and never auto-runs on mount. It belongs to Rack.",
   summaryByWorld: {
-    flat: "A beat maker on one white paper: a row per lane of sixteen soft grey squares, the ink where a step is set, and the tempo as the one large figure with − and + and an ink Play. While it plays, the step under the playhead pops a little in the ink and its lane's name lights. On a narrow screen it shows eight steps at a time and follows the playhead. Starts stopped, and the beat is seen, not heard.",
+    flat: "A beat maker on one white paper: a row per lane of sixteen soft grey squares, the ink where a step is set, and the tempo as the one large figure with − and + and an ink Play. While it plays, the step under the playhead pops a little in its lane's colour and its lane's name lights. On a narrow screen it shows eight steps at a time and follows the playhead. Starts stopped, and the beat is seen, not heard.",
   },
   tiers: ["instant"],
 };
@@ -56,7 +56,7 @@ export const docs: PageDocs = {
     flat: [
       "Starts stopped so nothing moves or flashes on mount; Play and Stop say so once in a polite status.",
       "The steps are a grid, a row per lane with its name as the row header. It is one tab stop, and the arrows move in it.",
-      "Every step is a native button with aria-pressed and a label naming its lane and step, and a set step is the ink while an empty one is grey, so the state never rests on a hue.",
+      "Every step is a native button with aria-pressed and a label naming its lane and step, and a set step is the ink while an empty one is grey, so the state never rests on a colour; a firing step takes its lane's colour only while it fires.",
       "The tempo is a slider named Tempo: the arrow keys change it a beat at a time, Page Up and Page Down by ten.",
       "Under reduced motion it still plays when asked, but nothing scales.",
     ],
@@ -77,8 +77,8 @@ const COMPACT_LANES: StepLane[] = [
 
 const FLAT_LANES: StepLane[] = [
   { id: "press", name: "Press", hue: "blue", steps: [true, false, false, true, false, false, true, false] },
-  { id: "tick", name: "Tick", hue: "blue", steps: [false, true, false, true, false, true, false, true] },
-  { id: "select", name: "Select", hue: "blue", steps: [true, false, false, false, true, false, false, false] },
+  { id: "tick", name: "Tick", hue: "amber", steps: [false, true, false, true, false, true, false, true] },
+  { id: "select", name: "Select", hue: "violet", steps: [true, false, false, false, true, false, false, false] },
 ];
 
 function DrumRackDemo() {
@@ -132,7 +132,7 @@ export default function StepSequencerPage() {
             demo: <FlatBeatDemo />,
             title: "A beat",
             code: "FlatBeatDemo",
-            caption: "Press Play and the playhead walks the sixteen steps, each set step popping in the ink as it fires. Tap a square to set or clear it, drag the tempo or press − and +. On a narrow screen it shows eight steps at a time and turns the page with the playhead.",
+            caption: "Press Play and the playhead walks the sixteen steps, each set step popping in its lane's colour as it fires. Tap a square to set or clear it, drag the tempo or press − and +. On a narrow screen it shows eight steps at a time and turns the page with the playhead.",
           },
         }}
         caption="Click any cell to add or remove a hit on the frame. Press House to cycle through Breakbeat and Minimal patterns, or press Play to step the playhead across all 8 beats."

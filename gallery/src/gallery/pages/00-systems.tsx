@@ -2,22 +2,17 @@
  * The landing page (litt.design/systems/, #systems; Nick, 2026-11-28: "make the Flat studies the landing page"): the
  * Flat studies as a wall, then the six worlds.
  *
- * - The wall is Flat's set, the 23 studies in the studies page's order (`shelvesOf("flat")`'s "In the set", which is
- *   SET.flat), and no base kit. Each is Flat's own tile (wall-tile.tsx under Flat's WorldContext): the object on the
- *   grey ground with its name and line, running itself until a hand arrives (self-run.tsx), and opening large in
- *   Flat's viewer (flat-viewer.tsx), which steps through the studies. A tile's name opens the study's page in Flat.
+ * - The wall is studies-wall.tsx, as Flat's home (#flat) draws it: the 23 studies in the studies page's order and its
+ *   three-column grid, each Flat's own self-running tile, opening in Flat's viewer.
  * - The worlds follow, as before: each card is the system at work (its cover scene, live in its own world but out of
  *   reach), its name and its one line, opening the system's player. So every world's Home still lands on a page that
  *   shows all the worlds.
  * The page runs the whole width with no sidebar (meta.wall).
  */
 import { Suspense, use } from "react";
-import { Toaster } from "@/components/toast";
 import { MaterialProvider } from "@/motion";
-import { PageTitle, WorldContext, type PageMeta } from "../kit";
-import { ViewerHost, openViewer } from "../flat-viewer";
-import { shelvesOf } from "../play-object/takes";
-import { WallTile } from "../wall-tile";
+import { PageTitle, type PageMeta } from "../kit";
+import { StudiesWall } from "../studies-wall";
 import { useCustomize, useDark } from "../customize-state";
 import { lookAttributes, MATERIALS, type MaterialInfo } from "../look";
 import { scenesOf } from "../systems";
@@ -81,33 +76,6 @@ function Card({ world }: { world: MaterialInfo }) {
         <span className="text-small text-fg-muted">{world.line}</span>
       </a>
     </li>
-  );
-}
-
-/** The studies, in the studies page's order: Flat's set. */
-const studies = () => shelvesOf("flat")[0]?.pages ?? [];
-const studyHref = (p: { id: string }) => `#flat/${p.id}`;
-
-/** The Flat studies as a wall: Flat's own tiles, running themselves, opening in Flat's viewer. */
-function StudiesWall() {
-  const all = studies();
-  return (
-    <WorldContext.Provider value="flat">
-      <Toaster>
-        <ul aria-label="Flat studies" className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {all.map((p, i) => (
-            <li key={p.id} className="grid min-w-0">
-              <WallTile
-                page={p}
-                href={studyHref(p)}
-                onOpen={(tile, button) => openViewer({ pages: all, at: i, hrefOf: studyHref, tile, returnTo: button ?? tile })}
-              />
-            </li>
-          ))}
-        </ul>
-        <ViewerHost />
-      </Toaster>
-    </WorldContext.Provider>
   );
 }
 

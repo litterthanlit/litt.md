@@ -1,5 +1,7 @@
 import { SpotlightCard, SpotlightGroup } from "@/components/spotlight-card";
+import { useRef } from "react";
 import { Page, Stage, TryIt, type PageDocs, type PageMeta } from "../kit";
+import { ghostMove, useSelfRun } from "../self-run";
 
 export const meta: PageMeta = {
   id: "spotlight-card",
@@ -58,9 +60,33 @@ function OneCardDemo() {
   );
 }
 
+const FRAME = 33;
+
+/** On Flat's wall a ghost pointer wanders across both papers, so the circle crosses the gap, until a hand arrives. */
+function WeekTile() {
+  const box = useRef<HTMLDivElement | null>(null);
+  const run = useSelfRun((n) => {
+    const group = box.current?.firstElementChild;
+    if (!(group instanceof HTMLElement)) return;
+    const t = (n * FRAME) / 1000;
+    ghostMove(group, 0.5 + 0.42 * Math.sin(t * 0.9), 0.5 + 0.32 * Math.sin(t * 1.7));
+  }, { every: FRAME, first: 600 });
+  return (
+    <div
+      ref={(el) => {
+        box.current = el;
+        run.ref(el);
+      }}
+      className="grid w-full"
+    >
+      <WeekDemo />
+    </div>
+  );
+}
+
 export default function SpotlightCardPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<WeekDemo />}>
+    <Page meta={meta} docs={docs} tile={<WeekTile />}>
       <Stage
         title="This week"
         tier="instant"

@@ -34,6 +34,12 @@ export type HoldConfirmProps = {
   onConfirm?: () => void;
   /** Fires when the reader chooses Undo after confirming. */
   onUndo?: () => void;
+  /**
+   * Rehearses the action each time it changes, for a demo that runs itself: a full hold if the item is there, Undo if
+   * it is gone. A rehearsal moves no focus, says nothing and fires neither onConfirm nor onUndo. Leave it out and only
+   * a hand holds.
+   */
+  rehearse?: number;
   className?: string;
 };
 
@@ -54,6 +60,7 @@ export function HoldConfirm({
   duration = 1200,
   onConfirm,
   onUndo,
+  rehearse,
   className = "",
 }: HoldConfirmProps) {
   const { reduced } = useMotionDial();
@@ -66,7 +73,10 @@ export function HoldConfirm({
   const [holding, setHolding] = useState(false);
   const [confirmed, setConfirmed] = useState(false);
   const [restored, setRestored] = useState(0);
-  const [live, setLive] = useState("");
+  const [live, setSpoken] = useState("");
+  /* True while a rehearsal plays: it is not the hand's, so it moves no focus, says nothing and calls nothing. */
+  const rehearsing = useRef(false);
+  const setLive = useCallback((line: string) => !rehearsing.current && setSpoken(line), []);
 
   const rafRef = useRef<number | null>(null);
   const litRef = useRef<number | null>(null);
@@ -90,11 +100,12 @@ export function HoldConfirm({
     progressRef.current = 0;
     setProgress(0);
     const active = document.activeElement;
-    if (active === holdRef.current || active === document.body) focusNext.current = "undo";
+    if (!rehearsing.current && (active === holdRef.current || active === document.body)) focusNext.current = "undo";
     setConfirmed(true);
     setLive(`${doneNote}: ${title}. Undo is available.`);
-    onConfirm?.();
-  }, [doneNote, onConfirm, title]);
+    if (!rehearsing.current) onConfirm?.();
+    rehearsing.current = false;
+  }, [doneNote, onConfirm, setLive, title]);
 
   const complete = useCallback(() => {
     stopLoop();
@@ -153,7 +164,7 @@ export function HoldConfirm({
       lastFrameRef.current = performance.now();
       if (rafRef.current === null) rafRef.current = requestAnimationFrame(tick);
     }
-  }, [tick]);
+  }, [setLive, tick]);
 
   const undo = useCallback(() => {
     stopLoop();
@@ -161,12 +172,26 @@ export function HoldConfirm({
     progressRef.current = 0;
     setHolding(false);
     setProgress(0);
-    focusNext.current = "hold";
+    if (!rehearsing.current) focusNext.current = "hold";
     setConfirmed(false);
     setRestored((n) => n + 1);
     setLive(`${title} restored.`);
-    onUndo?.();
-  }, [onUndo, stopLoop, title]);
+    if (!rehearsing.current) onUndo?.();
+  }, [onUndo, setLive, stopLoop, title]);
+
+  /* A rehearsal: a full hold while the item is there, Undo once it is gone.  */
+  const latest = useRef({ confirmed, startHold, undo });
+  latest.current = { confirmed, startHold, undo };
+  const firstRehearsal = useRef(rehearse);
+  useEffect(() => {
+    if (rehearse === undefined || rehearse === firstRehearsal.current) return;
+    const { confirmed: gone, startHold: hold, undo: back } = latest.current;
+    rehearsing.current = true;
+    if (gone) {
+      back();
+      rehearsing.current = false;
+    } else hold();
+  }, [rehearse]);
 
   // Focus follows the hand: from the pill to Undo once it turns, and back to the pill after Undo.
   useEffect(() => {

@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { AgentRun, type AgentRunStep } from "@/components/agent-run";
 import { Page, Stage, TryIt, type PageDocs, type PageMeta } from "../kit";
+import { useSelfRun } from "../self-run";
 
 export const meta: PageMeta = {
   id: "agent-run",
@@ -68,9 +70,20 @@ function OpenStepsDemo() {
   );
 }
 
+/** On Flat's wall the turn plays itself again every few seconds, until a hand arrives. */
+function RunTile() {
+  const [replay, setReplay] = useState(0);
+  const run = useSelfRun((n) => setReplay(n + 1), { every: 9000, first: 800 });
+  return (
+    <div ref={run.ref} className="grid w-full justify-items-center">
+      <AgentRun title="Spring issue" replay={replay} />
+    </div>
+  );
+}
+
 export default function AgentRunPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<AgentRun title="Spring issue" />}>
+    <Page meta={meta} docs={docs} tile={<RunTile />}>
       <Stage
         title="A finished turn"
         tier="expressive"

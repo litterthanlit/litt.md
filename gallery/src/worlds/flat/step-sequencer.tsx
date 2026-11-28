@@ -6,9 +6,8 @@
  *   top the tempo is the one large figure (`text-figure`, "112 BPM"), with − and + as grey circles and Play as the ink
  *   circle. Under it a row per lane: its name in the muted ink, then its steps.
  * - A step: a grey square (`bg-block`, 8px corners: the surface radius less 8, drawn 4px inside a 12px hit area) when
- *   empty, the ink when set. Monochrome first (v1.22): a lane carries no hue
- *   here, so the step under the playhead pops a little larger in the ink, and its lane's name takes the ink, while it
- *   fires. The playhead's column darkens its empty steps a shade.
+ *   empty, the ink when set. While it fires, the step under the playhead pops a little larger in its lane's data hue
+ *   (Flat's Candy hues, as the study lights its tracks), and its lane's name takes the ink. The playhead's column darkens its empty steps a shade.
  * - Steps: as many as the lanes carry (sixteen by default). Below 33rem it shows eight at a time and follows the
  *   playhead, with 1–8 and 9–16 to turn the page; a hand on the grid holds the page for three seconds.
  * - Tempo: drag the figure (right or up is faster, a beat per 4px), use the arrow keys on it (it is a slider), or press
@@ -34,18 +33,27 @@ const PIN = 3000;
 const WIDE = 528;
 
 /** Flat's own groove when no lanes are given: the player's own clicks, as the study has them. */
-const GROOVE: [string, number[]][] = [
-  ["Press", [0, 3, 8, 10]],
-  ["Tick", [2, 6, 10, 14, 15]],
-  ["Bump", [4, 12]],
-  ["Select", [0, 7, 11]],
+const GROOVE: [string, StepLane["hue"], number[]][] = [
+  ["Press", "blue", [0, 3, 8, 10]],
+  ["Tick", "amber", [2, 6, 10, 14, 15]],
+  ["Bump", "teal", [4, 12]],
+  ["Select", "violet", [0, 7, 11]],
 ];
-const FLAT_LANES: StepLane[] = GROOVE.map(([name, on]) => ({
+const FLAT_LANES: StepLane[] = GROOVE.map(([name, hue, on]) => ({
   id: name.toLowerCase(),
   name,
-  hue: "blue",
+  hue,
   steps: Array.from({ length: 16 }, (_, i) => on.includes(i)),
 }));
+
+/** A firing step lights in its lane's data hue (Flat's Candy hues), as the study's do. */
+const FIRE: Record<StepLane["hue"], string> = {
+  blue: "bg-data-blue",
+  amber: "bg-data-amber",
+  teal: "bg-data-teal",
+  violet: "bg-data-violet",
+  rose: "bg-data-rose",
+};
 
 const CIRCLE =
   "litt-target relative grid shrink-0 cursor-pointer place-items-center rounded-pill transition-transform duration-(--dur-instant) ease-litt " +
@@ -256,7 +264,7 @@ export function StepSequencerFlatBody({ title = "Step sequencer", bpm: initialBp
                       <i
                         className={
                           "absolute inset-1 rounded-[calc(var(--radius-surface)-8px)] transition-transform duration-(--dur-instant) ease-litt group-active/step:scale-90 forced-colors:border " +
-                          (on ? "bg-fg forced-colors:bg-[CanvasText] " : c === lit ? "bg-[color-mix(in_oklab,var(--block),var(--fg)_12%)] " : "bg-block ") +
+                          (firing ? FIRE[lane.hue] + " forced-colors:bg-[CanvasText] " : on ? "bg-fg forced-colors:bg-[CanvasText] " : c === lit ? "bg-[color-mix(in_oklab,var(--block),var(--fg)_12%)] " : "bg-block ") +
                           (firing && !reduced ? "scale-110" : "")
                         }
                       />

@@ -26,6 +26,11 @@ export type ToastStackProps = {
   defaultNotices?: StackNotice[];
   /** How many notices show, tucked or fanned out. Default 3. */
   visible?: number;
+  /**
+   * Sends one more notice each time it changes, as Send a notice does but without saying it: for a demo that runs
+   * itself. Leave it out and only the button sends.
+   */
+  arrive?: number;
   className?: string;
 };
 
@@ -50,7 +55,7 @@ const STEP = 0.05;
 const FALLBACK_HEIGHT = 64;
 
 /** Flat's notifications: a Send pill, and paper notices that tuck behind the newest and fan out when you look. */
-export function ToastStack({ defaultNotices = DEFAULT_NOTICES, visible = 3, className = "" }: ToastStackProps) {
+export function ToastStack({ defaultNotices = DEFAULT_NOTICES, visible = 3, arrive, className = "" }: ToastStackProps) {
   const { reduced } = useMotionDial();
   const spring = useTransition("expressive");
   const exit = useExit("responsive");
@@ -95,13 +100,21 @@ export function ToastStack({ defaultNotices = DEFAULT_NOTICES, visible = 3, clas
   const tucked = front + PEEK * Math.max(0, inView.length - 1);
   const listHeight = expanded ? fanned : tucked;
 
-  function send() {
+  function send(say = true) {
     const sample = SENT_NOTICES[seq.current % SENT_NOTICES.length]!;
     seq.current += 1;
     const next: StackNotice = { id: `sent-${seq.current}`, ...sample };
     setNotices((cur) => [next, ...cur]);
-    setLive(`${next.title}. ${next.body}`);
+    if (say) setLive(`${next.title}. ${next.body}`);
   }
+
+  const latestSend = useRef(send);
+  latestSend.current = send;
+  const firstArrival = useRef(arrive);
+  useEffect(() => {
+    if (arrive === undefined || arrive === firstArrival.current) return;
+    latestSend.current(false);
+  }, [arrive]);
 
   function dismiss(item: StackNotice) {
     const hadFocus = listRef.current?.querySelector(`[data-notice="${CSS.escape(item.id)}"]`)?.contains(document.activeElement);
@@ -133,7 +146,7 @@ export function ToastStack({ defaultNotices = DEFAULT_NOTICES, visible = 3, clas
         ref={sendRef}
         type="button"
         data-part="pill"
-        onClick={send}
+        onClick={() => send()}
         className="litt-target relative inline-flex h-10 cursor-pointer items-center rounded-pill bg-fg px-5 text-body font-title text-canvas transition-[opacity,transform] duration-(--dur-instant) ease-litt hover:opacity-90 motion-safe:active:scale-97 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus forced-colors:border"
       >
         Send notification

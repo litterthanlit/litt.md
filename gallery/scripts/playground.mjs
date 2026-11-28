@@ -82,6 +82,9 @@ const selfTest = args.includes("--self-test");
 const greyscale = get("greyscale", null);
 /* Every world has an object of its own (plans/018, phase 2 & 4). */
 const OBJECTS = ["press", "flat", "device", "plain", "rack", "heat"];
+/* Players hidden for now: #flat is the Flat studies' wall (studies-wall.tsx; Nick, 2026-11-28), so Flat's player is
+   not opened. Its set is still checked, and its body stays in play-object/ for when it comes back. */
+const HIDDEN = new Set(["flat"]);
 /* A string only the recorder's body ships, so --self-test can keep that chunk from loading. */
 const RECORDER_MARK = "data-recorder-dial";
 /* How much of Heat's screen the pursuit meter covers, at least (plans/audits/heat-fixes.md, finding 7): 13.8% at
@@ -401,8 +404,8 @@ for (const [from, to] of [["playground/device", "#device"], ["playground", "#fla
 const [shard, shards] = get("shard", "1/1").split("/").map(Number);
 const dialogWorld = WORLDS.find(([, id]) => id === "device" && SETS.device?.includes("dialog")) ?? WORLDS.find(([, id]) => SETS[id]?.includes("dialog"));
 const RUN = selfTest
-  ? WORLDS.filter((w) => w[1] === "device" || w[1] === "heat" || w[1] === "press" || w[1] === "flat" || w[1] === "rack" || w === dialogWorld)
-  : WORLDS.filter((_, i) => i % shards === shard - 1);
+  ? WORLDS.filter((w) => !HIDDEN.has(w[1]) && (w[1] === "device" || w[1] === "heat" || w[1] === "press" || w[1] === "flat" || w[1] === "rack" || w === dialogWorld))
+  : WORLDS.filter((w) => !HIDDEN.has(w[1])).filter((_, i) => i % shards === shard - 1);
 for (const [world, id, attribute] of RUN) {
   const { ctx, pg, errors } = await open(id);
   const htmlBefore = await pg.evaluate(() => document.documentElement.dataset.material ?? null);
@@ -887,7 +890,7 @@ if (selfTest) {
   if (!orderCaught) console.error("playground --self-test: Heat's menu strip drawn under its screen again, and the check missed it.");
   const pressOrderCaught = (claims.get(ORDER_CLAIM) ?? []).some((f) => f.startsWith("Press:"));
   if (!pressOrderCaught) console.error("playground --self-test: Press's deck drawn under its screen again, and the check missed it.");
-  const flatOrderCaught = (claims.get(ORDER_CLAIM) ?? []).some((f) => f.startsWith("Flat:"));
+  const flatOrderCaught = HIDDEN.has("flat") || (claims.get(ORDER_CLAIM) ?? []).some((f) => f.startsWith("Flat:"));
   if (!flatOrderCaught) console.error("playground --self-test: Flat's controls drawn under its screen, and the check missed it.");
   const rackOrderCaught = (claims.get(ORDER_CLAIM) ?? []).some((f) => f.startsWith("Rack:"));
   if (!rackOrderCaught) console.error("playground --self-test: Rack's clip lane drawn under its screen again, and the check missed it.");
@@ -895,7 +898,7 @@ if (selfTest) {
   if (!menuCaught) console.error("playground --self-test: Heat's Index lost its live part and gained a second current row, and the check missed it.");
   const pressMenuCaught = (claims.get(OWN_INDEX_CLAIM) ?? []).some((f) => f.startsWith("Press:"));
   if (!pressMenuCaught) console.error("playground --self-test: Press's Index lost its live part and gained a second current row, and the check missed it.");
-  const flatMenuCaught = (claims.get(OWN_INDEX_CLAIM) ?? []).some((f) => f.startsWith("Flat:"));
+  const flatMenuCaught = HIDDEN.has("flat") || (claims.get(OWN_INDEX_CLAIM) ?? []).some((f) => f.startsWith("Flat:"));
   if (!flatMenuCaught) console.error("playground --self-test: Flat's live part pushed off its screen and a second pill current, and the check missed it.");
   const rackMenuCaught = (claims.get(OWN_INDEX_CLAIM) ?? []).some((f) => f.startsWith("Rack:"));
   if (!rackMenuCaught) console.error("playground --self-test: Rack's Index lost its live part and gained a second current row, and the check missed it.");

@@ -39,6 +39,11 @@ export type CopyButtonProps = {
   label?: string;
   /** What the line shows. Default: the text itself. Pass a shorter or prettier form when the text is long. */
   command?: string;
+  /**
+   * Plays the copy each time it changes, for a demo that runs itself: the line says Copied as a press would, but
+   * nothing goes on the clipboard and nothing is said. Leave it out and only a press copies.
+   */
+  rehearse?: number;
   className?: string;
 };
 
@@ -305,28 +310,39 @@ export type CopyButtonBodyProps = {
 export type CopyState = "idle" | "copied" | "failed";
 
 /** A key that copies `text`, beside a line that shows the command; the line says when it is copied. */
-export function CopyButton({ text, label = "Copy command", command, className = "" }: CopyButtonProps) {
+export function CopyButton({ text, label = "Copy command", command, rehearse, className = "" }: CopyButtonProps) {
   const [state, setState] = useState<CopyState>("idle");
+  /* A rehearsed copy is not news: the status speaks only for a real one. */
+  const [rehearsed, setRehearsed] = useState(false);
   const hold = useRef(0);
   useEffect(() => () => window.clearTimeout(hold.current), []);
 
-  const copied = () => {
+  const copied = (real = true) => {
+    setRehearsed(!real);
     setState("copied");
     window.clearTimeout(hold.current);
     hold.current = window.setTimeout(() => setState("idle"), HOLD_MS);
   };
   const press = () => {
-    if (navigator.clipboard?.writeText) navigator.clipboard.writeText(text).then(copied, () => (copyBySelection(text) ? copied() : setState("failed")));
+    if (navigator.clipboard?.writeText) navigator.clipboard.writeText(text).then(() => copied(), () => (copyBySelection(text) ? copied() : setState("failed")));
     else if (copyBySelection(text)) copied();
     else setState("failed");
   };
+
+  const latestCopied = useRef(copied);
+  latestCopied.current = copied;
+  const firstRehearsal = useRef(rehearse);
+  useEffect(() => {
+    if (rehearse === undefined || rehearse === firstRehearsal.current) return;
+    latestCopied.current(false);
+  }, [rehearse]);
 
   const Body = byWorld(useMaterial(), { press: PressBody, flat: CopyButtonFlatBody });
   return (
     <>
       <Body label={label} shown={command ?? text} state={state} onPress={press} className={className} />
       <span role="status" className="sr-only">
-        {state === "copied" ? "Copied" : state === "failed" ? "Copy failed. The command is selected; copy it by hand." : ""}
+        {state === "copied" ? (rehearsed ? "" : "Copied") : state === "failed" ? "Copy failed. The command is selected; copy it by hand." : ""}
       </span>
     </>
   );
